@@ -94,19 +94,29 @@ model Categoria {
 }
 
 model Producto {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  nombre      String
-  descripcion String?
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  nombre           String
+  descripcion      String?
+  // Resumen de una linea para la tarjeta del listado; `descripcion` es para
+  // la ficha completa y no cabe ahi.
+  descripcionCorta String?
+  // Insignia corta sobre la imagen: "Nuevo", "Mas vendido". Texto libre.
+  etiqueta         String?
+  // Si sale en "Productos destacados" de portada. No sirve de nada si
+  // `activo` es false: un producto oculto no aparece en ningun lado.
+  destacada        Boolean  @default(false)
+  tituloSeo        String?
+  descripcionSeo   String?
   // Marca como texto: con pocas marcas propias no compensa una tabla y su
   // join. Se promueve a tabla si algun dia pasan de ~15.
-  marca       String?
-  categoriaId String
-  precio      Decimal  @db.Decimal(10, 2)
-  precioLista Decimal? @db.Decimal(10, 2)
-  activo      Boolean  @default(true)
-  creadoEn    DateTime @default(now())
-  editadoEn   DateTime @updatedAt
+  marca            String?
+  categoriaId      String
+  precio           Decimal  @db.Decimal(10, 2)
+  precioLista      Decimal? @db.Decimal(10, 2)
+  activo           Boolean  @default(true)
+  creadoEn         DateTime @default(now())
+  editadoEn        DateTime @updatedAt
 
   categoria Categoria        @relation(fields: [categoriaId], references: [id])
   imagenes  ImagenProducto[]
