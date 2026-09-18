@@ -1,0 +1,40 @@
+{
+  "name": "appweb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tienda de basicos: boxers, medias y accesorios.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @appweb/web",
+    "dev:admin": "npm run dev -w @appweb/admin",
+    "build": "npm run build -w @appweb/web && npm run build -w @appweb/admin",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generar": "npm run generar -w @appweb/db",
+    "db:migrar": "npm run migrar -w @appweb/db",
+    "db:semilla": "npm run semilla -w @appweb/db",
+    "db:studio": "npm run studio -w @appweb/db",
+    "ui:tokens": "npm run tokens -w @appweb/ui"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^6.0.3"
+  },
+  "//allowScripts": "npm 12 bloquea los scripts de instalacion por defecto. Prisma NECESITA su postinstall para descargar los engines: sin el, no funciona.",
+  "allowScripts": {
+    "prisma@7.10.0": true,
+    "@prisma/engines@7.10.0": true,
+    "esbuild@0.28.2": true
+  },
+  "//overrides": "Parches de seguridad sobre dependencias transitivas de prisma 7.10. Subir en vez de bajar: `npm audit fix --force` degradaria a prisma 6. Revisar y quitar cuando prisma las actualice por su cuenta.",
+  "overrides": {
+    "deepmerge-ts": "^8.0.2",
+    "mysql2": "^3.24.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

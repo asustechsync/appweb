@@ -1,0 +1,29 @@
+{
+  "name": "@appweb/admin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@appweb/api": "*",
+    "@appweb/core": "*",
+    "@appweb/db": "*",
+    "@appweb/ui": "*",
+    "@tanstack/react-query": "^5.90.5",
+    "@trpc/client": "^11.8.1",
+    "@trpc/server": "^11.8.1",
+    "@trpc/tanstack-react-query": "^11.8.1",
+    "next": "^16.3.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2"
+  }
+}
