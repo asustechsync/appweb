@@ -73,12 +73,17 @@ model Direccion {
 // ── Catalogo ───────────────────────────────────────────────────────────────
 
 model Categoria {
-  id      String  @id @default(cuid())
-  slug    String  @unique
-  nombre  String
-  orden   Int     @default(0)
-  activa  Boolean @default(true)
-  padreId String?
+  id             String  @id @default(cuid())
+  slug           String  @unique
+  nombre         String
+  descripcion    String?
+  imagenUrl      String?
+  destacada      Boolean @default(false)
+  tituloSeo      String?
+  descripcionSeo String?
+  orden          Int     @default(0)
+  activa         Boolean @default(true)
+  padreId        String?
 
   padre     Categoria?  @relation("Arbol", fields: [padreId], references: [id])
   hijas     Categoria[] @relation("Arbol")
