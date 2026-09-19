@@ -10,7 +10,9 @@ export default async function PaginaPortada() {
   return (
     <main>
       <Contenedor>
-        <h1>Tienda</h1>
+        {/* Oculto visualmente: sigue habiendo un h1 para SEO/accesibilidad,
+            solo que no se muestra — era el placeholder que molestaba. */}
+        <h1 className="ui-solo-lectores">Tienda</h1>
 
         {ofertas.length > 0 ? (
           <section>
