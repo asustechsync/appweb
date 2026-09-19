@@ -4,17 +4,18 @@
 
 .ui-carrusel-productos {
   --visibles: 2;
+  position: relative;
+}
+.ui-carrusel-productos__pista {
+  display: flex;
+  gap: var(--espacio-4);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.ui-carrusel-productos::-webkit-scrollbar {
+.ui-carrusel-productos__pista::-webkit-scrollbar {
   display: none;
-}
-.ui-carrusel-productos__pista {
-  display: flex;
-  gap: var(--espacio-4);
 }
 .ui-carrusel-productos__pista > * {
   flex: 0 0 auto;
@@ -22,9 +23,43 @@
   inline-size: calc((100% - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
 }
 
+.ui-carrusel-productos__flecha {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--espacio-10);
+  block-size: var(--espacio-10);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-md);
+  cursor: pointer;
+  transition: opacity var(--transicion-rapida);
+  z-index: 1;
+}
+.ui-carrusel-productos__flecha:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.ui-carrusel-productos__flecha--prev {
+  inset-inline-start: calc(-1 * var(--espacio-4));
+}
+.ui-carrusel-productos__flecha--next {
+  inset-inline-end: calc(-1 * var(--espacio-4));
+}
+
+/* En movil el espacio no alcanza para flechas sin tapar la primera/ultima
+   tarjeta: ahi el deslizar con el dedo basta. */
 @media (min-width: 40rem) {
   .ui-carrusel-productos {
     --visibles: 3;
+  }
+  .ui-carrusel-productos__flecha {
+    display: inline-flex;
   }
 }
 @media (min-width: 52rem) {
