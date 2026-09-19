@@ -1,0 +1,5 @@
+.ui-contenedor {
+  max-inline-size: var(--contenedor-ancho);
+  margin-inline: auto;
+  padding-inline: var(--espacio-4);
+}

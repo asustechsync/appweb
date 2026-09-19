@@ -1,4 +1,4 @@
-import { CarruselProductos, TarjetaProducto } from "@appweb/ui";
+import { CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
 
 import { productosEnOferta } from "@/lib/consultas";
 
@@ -9,18 +9,20 @@ export default async function PaginaPortada() {
 
   return (
     <main>
-      <h1>Tienda</h1>
+      <Contenedor>
+        <h1>Tienda</h1>
 
-      {ofertas.length > 0 ? (
-        <section>
-          <h2>Ofertas</h2>
-          <CarruselProductos etiqueta="Ofertas">
-            {ofertas.map((producto) => (
-              <TarjetaProducto key={producto.slug} {...producto} />
-            ))}
-          </CarruselProductos>
-        </section>
-      ) : null}
+        {ofertas.length > 0 ? (
+          <section>
+            <h2>Ofertas</h2>
+            <CarruselProductos etiqueta="Ofertas">
+              {ofertas.map((producto) => (
+                <TarjetaProducto key={producto.slug} {...producto} />
+              ))}
+            </CarruselProductos>
+          </section>
+        ) : null}
+      </Contenedor>
     </main>
   );
 }
