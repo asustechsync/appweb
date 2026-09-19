@@ -60,7 +60,7 @@ export function TarjetaProducto({
       {/* `?? null`: precioLista opcional puede llegar como `undefined`, y
           exactOptionalPropertyTypes distingue "prop omitida" de "prop en
           undefined". Precio si acepta null. */}
-      <Precio valor={precio} antes={precioLista ?? null} />
+      <Precio valor={precio} antes={precioLista ?? null} tamano="sm" />
     </a>
   );
 }
