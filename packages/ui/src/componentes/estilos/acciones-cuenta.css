@@ -1,0 +1,19 @@
+.ui-acciones-cuenta {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  flex: 0 0 auto;
+}
+.ui-acciones-cuenta a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--control-alto);
+  block-size: var(--control-alto);
+  border-radius: var(--radio-md);
+  color: var(--color-texto);
+  transition: background-color var(--transicion-rapida);
+}
+.ui-acciones-cuenta a:hover {
+  background: var(--color-fondoSutil);
+}

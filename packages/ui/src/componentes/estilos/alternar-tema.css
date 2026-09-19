@@ -1,0 +1,17 @@
+.ui-alternar-tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--control-alto);
+  block-size: var(--control-alto);
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  color: var(--color-texto);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+.ui-alternar-tema:hover {
+  background: var(--color-fondoSutil);
+}

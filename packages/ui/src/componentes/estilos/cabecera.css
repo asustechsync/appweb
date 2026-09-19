@@ -1,6 +1,6 @@
-/* Colocacion de la cabecera. El aspecto de lo que contiene (Logo,
-   Buscador) vive en sus propios archivos -- aqui solo se decide como se
-   acomodan uno junto al otro. */
+/* Colocacion de la cabecera. El aspecto de lo que contiene (Logo, Buscador,
+   AccionesCuenta, AlternarTema) vive en sus propios archivos -- aqui solo se
+   decide como se acomodan uno junto al otro. */
 
 .ui-cabecera {
   border-block-end: 1px solid var(--color-borde);
@@ -20,6 +20,12 @@
 .ui-cabecera .ui-buscador {
   flex: 1;
   max-inline-size: 38rem;
+}
+.ui-cabecera__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  flex: 0 0 auto;
 }
 
 @media (min-width: 48rem) {

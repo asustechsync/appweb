@@ -6,4 +6,6 @@ export { GUION_TEMA, TEMA_LLAVE, type Tema } from "./tema";
 // src/componentes/estilos/, que consume las variables de theme.css.
 export { Logo, type PropsLogo } from "./componentes/Logo";
 export { Buscador, type PropsBuscador } from "./componentes/Buscador";
+export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
+export { AlternarTema } from "./componentes/AlternarTema";
 export { Cabecera, type PropsCabecera } from "./componentes/Cabecera";
