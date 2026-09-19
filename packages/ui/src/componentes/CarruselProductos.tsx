@@ -6,14 +6,23 @@ import "./primitivos.css";
 
 export interface PropsCarruselProductos {
   children: ReactNode;
+  /** Se ancla a la izquierda, fuera de la pista: no se desliza con el resto. */
+  fijo?: ReactNode;
   /** Nombre accesible de la region, para lectores de pantalla. */
   etiqueta?: string;
 }
 
 /**
- * Fila de tarjetas que se desliza en horizontal, una sola linea. Muestra
- * ~6 tarjetas en escritorio; el resto se llega con las flechas, deslizando
- * con el dedo, el trackpad o la rueda del mouse.
+ * Fila de tarjetas que se desliza en horizontal, una sola linea, con un
+ * elemento fijo opcional (el banner de oferta) que se queda anclado a la
+ * izquierda mientras el resto se desliza. Muestra ~6 tarjetas en escritorio
+ * ademas del fijo; el resto se llega con las flechas, deslizando con el
+ * dedo, el trackpad o la rueda del mouse.
+ *
+ * `fijo` y cada tarjeta de `children` miden lo mismo aunque vivan en
+ * contenedores distintos: ambos usan `cqw` contra el mismo `container-type`
+ * en `.ui-carrusel-productos`, asi que el ancho no depende de cual sea su
+ * padre inmediato.
  *
  * Isla cliente: las flechas necesitan saber si ya se llego a un extremo
  * para deshabilitarse, y eso exige leer la posicion real del scroll. El
@@ -22,7 +31,7 @@ export interface PropsCarruselProductos {
  * FIRST MOBILE: cuantas tarjetas se ven por vez sube por quiebres via la
  * variable `--visibles` en el CSS; aqui no hay medidas.
  */
-export function CarruselProductos({ children, etiqueta = "Productos" }: PropsCarruselProductos) {
+export function CarruselProductos({ children, fijo, etiqueta = "Productos" }: PropsCarruselProductos) {
   const pistaRef = useRef<HTMLDivElement>(null);
   const [alInicio, setAlInicio] = useState(true);
   const [alFinal, setAlFinal] = useState(true);
@@ -64,6 +73,8 @@ export function CarruselProductos({ children, etiqueta = "Productos" }: PropsCar
 
   return (
     <div className="ui-carrusel-productos" role="region" aria-roledescription="carrusel" aria-label={etiqueta}>
+      {fijo ? <div className="ui-carrusel-productos__fijo">{fijo}</div> : null}
+
       <div className="ui-carrusel-productos__pista" ref={pistaRef}>
         {children}
       </div>

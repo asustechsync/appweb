@@ -1,12 +1,27 @@
-/* El ancho de cada tarjeta lo decide este contenedor via `--visibles`,
-   no TarjetaProducto: asi la misma tarjeta sirve igual en un grid
-   (RejillaProductos) que en una fila deslizable (aqui). */
+/* `container-type: inline-size` + unidades `cqw`: asi __fijo (hijo directo)
+   y cada tarjeta dentro de __pista (nieta) miden exactamente lo mismo,
+   calculado sobre el ancho de ESTE contenedor, sin importar que vivan en
+   niveles distintos del arbol. `%` no serviria aqui: seria relativo a cada
+   padre inmediato, y __pista ya es mas angosta que el carrusel completo
+   porque __fijo le resta espacio. */
 
 .ui-carrusel-productos {
-  --visibles: 2;
+  --visibles: 3;
+  container-type: inline-size;
+  display: flex;
+  align-items: stretch;
+  gap: var(--espacio-4);
   position: relative;
 }
+
+.ui-carrusel-productos__fijo {
+  flex: 0 0 auto;
+  inline-size: calc((100cqw - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
+}
+
 .ui-carrusel-productos__pista {
+  flex: 1 1 auto;
+  min-inline-size: 0;
   display: flex;
   gap: var(--espacio-4);
   overflow-x: auto;
@@ -20,7 +35,7 @@
 .ui-carrusel-productos__pista > * {
   flex: 0 0 auto;
   scroll-snap-align: start;
-  inline-size: calc((100% - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
+  inline-size: calc((100cqw - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
 }
 
 .ui-carrusel-productos__flecha {
@@ -52,11 +67,16 @@
   inset-inline-end: calc(-1 * var(--espacio-4));
 }
 
-/* En movil el espacio no alcanza para flechas sin tapar la primera/ultima
-   tarjeta: ahi el deslizar con el dedo basta. */
+/* Cada paso sube --visibles en 1: el fijo se queda en 1 slot siempre, asi
+   que la cuenta de tarjetas visibles en la pista es --visibles menos 1. */
+@media (min-width: 30rem) {
+  .ui-carrusel-productos {
+    --visibles: 4;
+  }
+}
 @media (min-width: 40rem) {
   .ui-carrusel-productos {
-    --visibles: 3;
+    --visibles: 5;
   }
   .ui-carrusel-productos__flecha {
     display: inline-flex;
@@ -64,11 +84,12 @@
 }
 @media (min-width: 52rem) {
   .ui-carrusel-productos {
-    --visibles: 4;
+    --visibles: 6;
   }
 }
 @media (min-width: 64rem) {
   .ui-carrusel-productos {
-    --visibles: 6;
+    /* fijo (1) + 6 tarjetas visibles en la pista */
+    --visibles: 7;
   }
 }

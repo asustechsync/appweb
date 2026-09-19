@@ -17,8 +17,10 @@ export default async function PaginaPortada() {
             {/* Sin hrefVerTodo: no existe /ofertas todavia, no apuntamos a
                 una ruta que da 404. */}
             <CabeceraSeccion titulo="Ofertas" />
-            <CarruselProductos etiqueta="Ofertas">
-              <BannerOferta titulo="Ofertas de temporada" texto="Hasta 30% de descuento" />
+            <CarruselProductos
+              etiqueta="Ofertas"
+              fijo={<BannerOferta titulo="Ofertas de temporada" texto="Hasta 30% de descuento" />}
+            >
               {ofertas.map((producto) => (
                 <TarjetaProducto key={producto.slug} {...producto} />
               ))}
