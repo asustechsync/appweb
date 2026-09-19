@@ -13,5 +13,6 @@ export { Cabecera, type PropsCabecera } from "./componentes/Cabecera";
 export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/CabeceraSeccion";
 export { Precio, type PropsPrecio } from "./componentes/Precio";
 export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/TarjetaProducto";
+export { BannerOferta, type PropsBannerOferta } from "./componentes/BannerOferta";
 export { RejillaProductos, type PropsRejillaProductos } from "./componentes/RejillaProductos";
 export { CarruselProductos, type PropsCarruselProductos } from "./componentes/CarruselProductos";

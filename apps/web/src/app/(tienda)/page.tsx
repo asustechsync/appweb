@@ -1,4 +1,4 @@
-import { CabeceraSeccion, CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
+import { BannerOferta, CabeceraSeccion, CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
 
 import { productosEnOferta } from "@/lib/consultas";
 
@@ -18,6 +18,7 @@ export default async function PaginaPortada() {
                 una ruta que da 404. */}
             <CabeceraSeccion titulo="Ofertas" />
             <CarruselProductos etiqueta="Ofertas">
+              <BannerOferta titulo="Ofertas de temporada" texto="Hasta 30% de descuento" />
               {ofertas.map((producto) => (
                 <TarjetaProducto key={producto.slug} {...producto} />
               ))}
