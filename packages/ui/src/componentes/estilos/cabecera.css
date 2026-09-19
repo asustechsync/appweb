@@ -12,6 +12,7 @@
 .ui-cabecera__contenido {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--espacio-4);
   max-inline-size: var(--contenedor-ancho);
   margin-inline: auto;
