@@ -25,7 +25,7 @@ export interface ProductoDeRejilla {
  * oferta de verdad y si hay stock — las mismas funciones que usara la
  * ficha, para no calcular lo mismo dos veces con resultados distintos.
  */
-export async function productosEnOferta(limite = 8): Promise<ProductoDeRejilla[]> {
+export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[]> {
   "use cache";
   cacheLife("hours");
   cacheTag(etiquetas.portada());
