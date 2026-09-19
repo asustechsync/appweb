@@ -1,0 +1,11 @@
+.ui-logo {
+  display: inline-block;
+  flex: 0 0 auto;
+  font-family: var(--tipo-familia-base);
+  font-size: var(--tipo-tamano-xl);
+  font-weight: var(--tipo-peso-negrita);
+  letter-spacing: 0.02em;
+  color: var(--color-texto);
+  text-decoration: none;
+  white-space: nowrap;
+}

@@ -1,0 +1,10 @@
+/* Indice de estilos de los primitivos. Cada componente tiene su propio
+   archivo en ./estilos/; este archivo solo los importa en orden.
+
+   Ninguno contiene un color ni una medida literal: todo sale de las
+   variables de ../theme.css, generado desde ../tokens.ts. */
+
+@import "./estilos/base.css";
+@import "./estilos/logo.css";
+@import "./estilos/buscador.css";
+@import "./estilos/cabecera.css";

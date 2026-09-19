@@ -1,10 +1,16 @@
+import { Cabecera } from "@appweb/ui";
+
 /**
  * Layout de la tienda publica — CLASE A.
  *
- * La cabecera sale de una funcion cacheada con etiqueta, asi que forma parte
- * del shell estatico. El contador del carrito y el interruptor de tema son
- * islas cliente: se hidratan aparte y no obligan a renderizar en cada peticion.
+ * La cabecera es un componente de servidor puro: nada que hidratar, forma
+ * parte del shell estatico igual que el resto de la pagina.
  */
 export default function LayoutTienda({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <Cabecera />
+      {children}
+    </>
+  );
 }

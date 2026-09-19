@@ -1,0 +1,30 @@
+/* Colocacion de la cabecera. El aspecto de lo que contiene (Logo,
+   Buscador) vive en sus propios archivos -- aqui solo se decide como se
+   acomodan uno junto al otro. */
+
+.ui-cabecera {
+  border-block-end: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-cabecera);
+}
+.ui-cabecera__contenido {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  max-inline-size: var(--contenedor-ancho);
+  margin-inline: auto;
+  padding: var(--espacio-3) var(--espacio-4);
+}
+.ui-cabecera .ui-buscador {
+  flex: 1;
+  max-inline-size: 38rem;
+}
+
+@media (min-width: 48rem) {
+  .ui-cabecera__contenido {
+    gap: var(--espacio-6);
+    padding-block: var(--espacio-4);
+  }
+}

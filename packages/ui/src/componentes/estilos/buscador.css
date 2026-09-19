@@ -1,0 +1,63 @@
+/* Buscador — el aspecto del componente, no su colocacion.
+   Como se coloca dentro de un contenedor es asunto de ese contenedor: mira
+   `.ui-cabecera .ui-buscador` en cabecera.css. */
+
+.ui-buscador {
+  /* El borde reacciona en dos pasos -- un poco al pasar el raton, mas al
+     enfocar -- en vez de saltar directo al color de marca. */
+  --buscador-borde-hover: color-mix(in srgb, var(--color-textoSuave) 24%, var(--color-borde));
+  --buscador-focus: color-mix(in srgb, var(--color-textoSuave) 58%, var(--color-borde));
+
+  display: flex;
+  align-items: center;
+  block-size: var(--control-alto);
+  min-inline-size: 0;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+  transition:
+    border-color var(--transicion-rapida),
+    box-shadow var(--transicion-rapida);
+}
+.ui-buscador:hover {
+  border-color: var(--buscador-borde-hover);
+}
+/* Halo discreto: suficiente para el foco por teclado, sin anillo grueso. */
+.ui-buscador:focus-within {
+  border-color: color-mix(in srgb, var(--buscador-focus) 68%, var(--color-borde));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--buscador-focus) 7%, transparent);
+}
+.ui-buscador input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding-inline: var(--control-paddingX);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+}
+/* `opacity: 1` porque Firefox aplica opacidad propia al placeholder. */
+.ui-buscador input::placeholder {
+  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+  opacity: 1;
+}
+.ui-buscador button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  inline-size: var(--espacio-10);
+  flex: 0 0 auto;
+  border: 0;
+  border-inline-start: 1px solid var(--color-borde);
+  background: transparent;
+  color: var(--color-textoSuave);
+  cursor: pointer;
+  transition: color var(--transicion-rapida);
+}
+.ui-buscador button:hover {
+  color: var(--color-texto);
+}
