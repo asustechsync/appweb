@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 
-import { resolverPrecio } from "@appweb/core";
+import { resolverDisponibilidad, resolverPrecio } from "@appweb/core";
 import { prisma } from "@appweb/db";
 
 import { etiquetas } from "./cache";
@@ -8,19 +8,22 @@ import { etiquetas } from "./cache";
 export interface ProductoDeRejilla {
   slug: string;
   nombre: string;
+  marca: string | null;
   imagenUrl: string;
   precio: number;
   precioLista: number | null;
   descuentoPct: number | null;
   etiqueta: string | null;
+  disponible: boolean;
 }
 
 /**
  * Productos en oferta para la portada. Etiqueta `portada`: se invalida
  * cuando el panel cambia el precio o el precioLista de cualquier producto.
  *
- * `resolverPrecio` de @appweb/core decide si es oferta de verdad — la misma
- * funcion que usa la ficha, para no mostrar cifras distintas en dos sitios.
+ * `resolverPrecio` y `resolverDisponibilidad` de @appweb/core deciden si es
+ * oferta de verdad y si hay stock — las mismas funciones que usara la
+ * ficha, para no calcular lo mismo dos veces con resultados distintos.
  */
 export async function productosEnOferta(limite = 8): Promise<ProductoDeRejilla[]> {
   "use cache";
@@ -33,6 +36,7 @@ export async function productosEnOferta(limite = 8): Promise<ProductoDeRejilla[]
     take: limite,
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
+      variantes: { select: { stock: true, activa: true, talla: true, color: true } },
     },
   });
 
@@ -44,14 +48,18 @@ export async function productosEnOferta(limite = 8): Promise<ProductoDeRejilla[]
 
     if (!precio.enOferta) return null;
 
+    const disponibilidad = resolverDisponibilidad(p.variantes);
+
     return {
       slug: p.slug,
       nombre: p.nombre,
+      marca: p.marca,
       imagenUrl: p.imagenes[0]?.url ?? "",
       precio: precio.precio,
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
       etiqueta: p.etiqueta,
+      disponible: disponibilidad.hayStock,
     };
   });
 

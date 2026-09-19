@@ -11,8 +11,11 @@ export interface PropsTarjetaProducto {
   precioLista?: number | null;
   /** Ya calculado por `resolverPrecio` de @appweb/core; esta tarjeta no calcula nada. */
   descuentoPct?: number | null;
-  /** Insignia libre: "Nuevo", "Más vendido". */
+  /** Insignia libre sobre la imagen: "Nuevo", "Más vendido". */
   etiqueta?: string | null;
+  marca?: string | null;
+  /** Ya calculado por `resolverDisponibilidad` de @appweb/core. */
+  disponible: boolean;
 }
 
 /**
@@ -28,6 +31,8 @@ export function TarjetaProducto({
   precioLista,
   descuentoPct,
   etiqueta,
+  marca,
+  disponible,
 }: PropsTarjetaProducto) {
   return (
     <a className="ui-tarjeta-producto" href={`/productos/${slug}`}>
@@ -38,7 +43,20 @@ export function TarjetaProducto({
         ) : null}
         {etiqueta ? <span className="ui-tarjeta-producto__etiqueta">{etiqueta}</span> : null}
       </span>
+
+      {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
       <span className="ui-tarjeta-producto__nombre">{nombre}</span>
+
+      <span
+        className={
+          disponible
+            ? "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--disponible"
+            : "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado"
+        }
+      >
+        {disponible ? "Disponible" : "Agotado"}
+      </span>
+
       {/* `?? null`: precioLista opcional puede llegar como `undefined`, y
           exactOptionalPropertyTypes distingue "prop omitida" de "prop en
           undefined". Precio si acepta null. */}
