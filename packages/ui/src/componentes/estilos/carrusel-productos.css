@@ -1,0 +1,39 @@
+/* El ancho de cada tarjeta lo decide este contenedor via `--visibles`,
+   no TarjetaProducto: asi la misma tarjeta sirve igual en un grid
+   (RejillaProductos) que en una fila deslizable (aqui). */
+
+.ui-carrusel-productos {
+  --visibles: 2;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ui-carrusel-productos::-webkit-scrollbar {
+  display: none;
+}
+.ui-carrusel-productos__pista {
+  display: flex;
+  gap: var(--espacio-4);
+}
+.ui-carrusel-productos__pista > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  inline-size: calc((100% - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
+}
+
+@media (min-width: 40rem) {
+  .ui-carrusel-productos {
+    --visibles: 3;
+  }
+}
+@media (min-width: 52rem) {
+  .ui-carrusel-productos {
+    --visibles: 4;
+  }
+}
+@media (min-width: 64rem) {
+  .ui-carrusel-productos {
+    --visibles: 6;
+  }
+}

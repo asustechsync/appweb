@@ -1,4 +1,4 @@
-import { RejillaProductos, TarjetaProducto } from "@appweb/ui";
+import { CarruselProductos, TarjetaProducto } from "@appweb/ui";
 
 import { productosEnOferta } from "@/lib/consultas";
 
@@ -14,11 +14,11 @@ export default async function PaginaPortada() {
       {ofertas.length > 0 ? (
         <section>
           <h2>Ofertas</h2>
-          <RejillaProductos>
+          <CarruselProductos etiqueta="Ofertas">
             {ofertas.map((producto) => (
               <TarjetaProducto key={producto.slug} {...producto} />
             ))}
-          </RejillaProductos>
+          </CarruselProductos>
         </section>
       ) : null}
     </main>
