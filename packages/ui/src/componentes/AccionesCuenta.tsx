@@ -1,14 +1,15 @@
-import { IconoCarrito, IconoUsuario } from "../iconos";
+import { IconoCarrito, IconoPedidos, IconoUsuario } from "../iconos";
 
 import "./primitivos.css";
 
 export interface PropsAccionesCuenta {
   hrefUsuario?: string;
+  hrefPedidos?: string;
   hrefCarrito?: string;
 }
 
 /**
- * Accesos de cuenta y carrito en la cabecera.
+ * Accesos de cuenta, pedidos y carrito en la cabecera.
  *
  * Componente de servidor, sin JS propio. El dia que el carrito muestre un
  * contador de unidades, esa sera una isla cliente aparte montada encima del
@@ -16,12 +17,16 @@ export interface PropsAccionesCuenta {
  */
 export function AccionesCuenta({
   hrefUsuario = "/ingresar",
+  hrefPedidos = "/mi-cuenta/pedidos",
   hrefCarrito = "/carrito",
 }: PropsAccionesCuenta) {
   return (
     <div className="ui-acciones-cuenta">
       <a href={hrefUsuario} aria-label="Mi cuenta" title="Mi cuenta">
         <IconoUsuario />
+      </a>
+      <a href={hrefPedidos} aria-label="Mis pedidos" title="Mis pedidos">
+        <IconoPedidos />
       </a>
       <a href={hrefCarrito} aria-label="Carrito" title="Carrito">
         <IconoCarrito />
