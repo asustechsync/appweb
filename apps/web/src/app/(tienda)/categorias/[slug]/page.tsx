@@ -6,6 +6,10 @@
  * panel de filtros son enlaces: no hay estado de cliente que hidratar.
  */
 
+// TEMPORAL: sigue siendo un stub que lee `params` sin `use cache`. Cuando se
+// implemente el listado real con `generateStaticParams`, este export sobra.
+export const instant = false;
+
 interface Props {
   params: Promise<{ slug: string }>;
   searchParams: Promise<Record<string, string | undefined>>;

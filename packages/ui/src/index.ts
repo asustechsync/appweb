@@ -9,3 +9,6 @@ export { Buscador, type PropsBuscador } from "./componentes/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
 export { AlternarTema } from "./componentes/AlternarTema";
 export { Cabecera, type PropsCabecera } from "./componentes/Cabecera";
+export { Precio, type PropsPrecio } from "./componentes/Precio";
+export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/TarjetaProducto";
+export { RejillaProductos, type PropsRejillaProductos } from "./componentes/RejillaProductos";

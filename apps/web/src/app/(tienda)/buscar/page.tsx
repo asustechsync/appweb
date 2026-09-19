@@ -5,6 +5,11 @@
  * con una vida corta. No vale la pena invalidarla por evento.
  */
 
+// El termino llega por la URL; con cacheComponents, leer searchParams fuera
+// de "use cache" exige esta declaracion explicita o Next se niega a
+// prerenderizar la ruta.
+export const instant = false;
+
 interface Props {
   searchParams: Promise<{ q?: string }>;
 }

@@ -5,6 +5,10 @@
  * islas cliente y se hidratan sin bloquear el resto.
  */
 
+// TEMPORAL: sigue siendo un stub que lee `params` sin `use cache`. Cuando se
+// implemente la ficha real con `generateStaticParams`, este export sobra.
+export const instant = false;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

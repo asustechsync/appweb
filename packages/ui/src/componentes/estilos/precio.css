@@ -1,0 +1,26 @@
+.ui-precio {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--espacio-2);
+  flex-wrap: wrap;
+}
+.ui-precio__actual {
+  font-family: var(--tipo-familia-numeros);
+  font-weight: var(--tipo-peso-fuerte);
+  color: var(--color-texto);
+}
+.ui-precio--sm .ui-precio__actual {
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-precio--md .ui-precio__actual {
+  font-size: var(--tipo-tamano-lg);
+}
+.ui-precio--lg .ui-precio__actual {
+  font-size: var(--tipo-tamano-2xl);
+}
+.ui-precio__antes {
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-sm);
+  color: var(--color-textoTenue);
+  text-decoration: line-through;
+}
