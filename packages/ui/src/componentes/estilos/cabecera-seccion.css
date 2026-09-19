@@ -1,0 +1,25 @@
+.ui-cabecera-seccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  margin-block-end: var(--espacio-4);
+  padding: var(--espacio-4) var(--espacio-5);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+}
+.ui-cabecera-seccion__titulo {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+  color: var(--color-texto);
+}
+.ui-cabecera-seccion__ver-todo {
+  flex: 0 0 auto;
+  font-size: var(--tipo-tamano-sm);
+  color: var(--color-textoTenue);
+  transition: color var(--transicion-rapida);
+}
+.ui-cabecera-seccion__ver-todo:hover {
+  color: var(--color-texto);
+}

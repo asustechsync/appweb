@@ -1,4 +1,4 @@
-import { CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
+import { CabeceraSeccion, CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
 
 import { productosEnOferta } from "@/lib/consultas";
 
@@ -14,7 +14,9 @@ export default async function PaginaPortada() {
 
         {ofertas.length > 0 ? (
           <section>
-            <h2>Ofertas</h2>
+            {/* Sin hrefVerTodo: no existe /ofertas todavia, no apuntamos a
+                una ruta que da 404. */}
+            <CabeceraSeccion titulo="Ofertas" />
             <CarruselProductos etiqueta="Ofertas">
               {ofertas.map((producto) => (
                 <TarjetaProducto key={producto.slug} {...producto} />
