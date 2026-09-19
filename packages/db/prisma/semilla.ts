@@ -102,8 +102,8 @@ interface ProductoSeed {
 const productos: ProductoSeed[] = [
   // ═══ HOMBRES ═══════════════════════════════════════════════════════════
   {
-    slug: "polo-basico-algodon-hombre",
-    nombre: "Polo Básico Algodón Pima",
+    slug: "polo-basico-algodon-pima-hombre",
+    nombre: "Polo Básico Algodón Pima Hombre",
     descripcion:
       "Polo de algodón pima peruano, cuello redondo y corte recto. Suave al tacto y resistente al lavado diario.",
     descripcionCorta: "Algodón pima 100%, corte recto.",
@@ -122,8 +122,8 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-dry-fit-hombre",
-    nombre: "Polo Deportivo Dry-Fit",
+    slug: "polo-deportivo-dry-fit-hombre",
+    nombre: "Polo Deportivo Dry-Fit Hombre",
     descripcion:
       "Polo deportivo con tecnología dry-fit que absorbe la humedad. Ideal para entrenar o el uso diario en climas calurosos.",
     descripcionCorta: "Tela dry-fit, transpirable.",
@@ -142,8 +142,8 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-algodon-pack3-hombre",
-    nombre: "Medias Algodón Pack x3",
+    slug: "medias-de-algodon-pack-x3-hombre",
+    nombre: "Medias de Algodón Pack x3 Hombre",
     descripcion:
       "Pack de 3 pares de medias de algodón con refuerzo en talón y punta. Talla única, elástico suave que no marca.",
     descripcionCorta: "Pack x3, talla única.",
@@ -242,14 +242,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-oversize-mujer",
-    nombre: "Polo Oversize Mujer",
+    slug: "polo-oversize-algodon-mujer",
+    nombre: "Polo Oversize Algodón Mujer",
     descripcion:
       "Polo de corte oversize en algodón grueso. Hombro caído y largo midi, ideal para combinar de varias formas.",
     descripcionCorta: "Corte oversize, algodón grueso.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Oversize Mujer | Tienda",
+    tituloSeo: "Polo Oversize Algodón Mujer | Tienda",
     descripcionSeo: "Polo oversize de algodón para mujer. Hombro caído, largo midi.",
     marca: "Boston",
     categoriaSlug: "mujeres",
@@ -280,14 +280,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-termicas-mujer",
-    nombre: "Medias Térmicas Mujer",
+    slug: "medias-termicas-de-invierno-mujer",
+    nombre: "Medias Térmicas de Invierno Mujer",
     descripcion:
       "Medias térmicas con forro polar interior. Abrigan sin perder elasticidad, ideales para climas fríos.",
     descripcionCorta: "Forro polar interior.",
     etiqueta: "Oferta",
     destacada: false,
-    tituloSeo: "Medias Térmicas Mujer | Tienda",
+    tituloSeo: "Medias Térmicas de Invierno Mujer | Tienda",
     descripcionSeo: "Medias térmicas para mujer con forro polar interior.",
     marca: "San Shan",
     categoriaSlug: "mujeres",
@@ -341,14 +341,14 @@ const productos: ProductoSeed[] = [
 
   // ═══ JÓVENES ═══════════════════════════════════════════════════════════
   {
-    slug: "polo-basico-joven",
-    nombre: "Polo Básico Unisex Joven",
+    slug: "polo-basico-unisex-joven-casual",
+    nombre: "Polo Básico Unisex Joven Casual",
     descripcion:
       "Polo unisex de algodón, corte recto pensado para adolescentes. Resistente a lavados frecuentes.",
     descripcionCorta: "Unisex, algodón resistente.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Polo Básico Unisex Joven | Tienda",
+    tituloSeo: "Polo Básico Unisex Joven Casual | Tienda",
     descripcionSeo: "Polo básico unisex para jóvenes. Algodón resistente, corte recto.",
     marca: "Boston",
     categoriaSlug: "jovenes",
@@ -360,14 +360,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-estampado-joven",
-    nombre: "Polo Estampado Juvenil",
+    slug: "polo-estampado-juvenil-casual",
+    nombre: "Polo Estampado Juvenil Casual",
     descripcion:
       "Polo con estampado frontal, corte regular en algodón suave. Diseño pensado para el uso diario juvenil.",
     descripcionCorta: "Estampado frontal, corte regular.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Estampado Juvenil | Tienda",
+    tituloSeo: "Polo Estampado Juvenil Casual | Tienda",
     descripcionSeo: "Polo estampado para jóvenes. Corte regular, algodón suave.",
     marca: "San Shan",
     categoriaSlug: "jovenes",
@@ -397,14 +397,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-deportivas-joven",
-    nombre: "Medias Deportivas Joven",
+    slug: "medias-deportivas-running-joven",
+    nombre: "Medias Deportivas Running Joven",
     descripcion:
       "Medias deportivas acolchadas en la planta, ideales para educación física y deporte.",
     descripcionCorta: "Acolchadas, uso deportivo.",
     etiqueta: "Oferta",
     destacada: false,
-    tituloSeo: "Medias Deportivas Joven | Tienda",
+    tituloSeo: "Medias Deportivas Running Joven | Tienda",
     descripcionSeo: "Medias deportivas acolchadas para jóvenes.",
     marca: "Amanecer",
     categoriaSlug: "jovenes",
@@ -435,14 +435,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-estampado-joven",
-    nombre: "Boxer Estampado Joven",
+    slug: "boxer-estampado-divertido-joven",
+    nombre: "Boxer Estampado Divertido Joven",
     descripcion:
       "Boxer de algodón con estampado, pretina elástica ancha. Diseño divertido para el día a día.",
     descripcionCorta: "Estampado, algodón suave.",
     etiqueta: "Oferta",
     destacada: false,
-    tituloSeo: "Boxer Estampado Joven | Tienda",
+    tituloSeo: "Boxer Estampado Divertido Joven | Tienda",
     descripcionSeo: "Boxer estampado de algodón para jóvenes.",
     marca: "Boston",
     categoriaSlug: "jovenes",
@@ -456,14 +456,14 @@ const productos: ProductoSeed[] = [
 
   // ═══ NIÑOS ═════════════════════════════════════════════════════════════
   {
-    slug: "polo-basico-nino",
-    nombre: "Polo Básico Algodón Niño",
+    slug: "polo-basico-algodon-para-nino",
+    nombre: "Polo Básico Algodón para Niño",
     descripcion:
       "Polo de algodón suave, corte holgado pensado para el movimiento de los niños. Resistente a lavados frecuentes.",
     descripcionCorta: "Algodón suave, corte holgado.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Polo Básico Algodón Niño | Tienda",
+    tituloSeo: "Polo Básico Algodón para Niño | Tienda",
     descripcionSeo: "Polo básico de algodón para niño. Corte holgado, resistente.",
     marca: "San Shan",
     categoriaSlug: "ninos",
@@ -475,14 +475,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-estampado-nino",
-    nombre: "Polo Estampado Niño",
+    slug: "polo-estampado-divertido-nino",
+    nombre: "Polo Estampado Divertido Niño",
     descripcion:
       "Polo con estampado divertido, algodón suave que no irrita la piel. Ideal para el colegio o el juego.",
     descripcionCorta: "Estampado divertido, algodón suave.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Estampado Niño | Tienda",
+    tituloSeo: "Polo Estampado Divertido Niño | Tienda",
     descripcionSeo: "Polo estampado para niño. Algodón suave, no irrita la piel.",
     marca: "Qiling",
     categoriaSlug: "ninos",
@@ -512,14 +512,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-deportivas-nino",
-    nombre: "Medias Deportivas Niño",
+    slug: "medias-deportivas-running-nino",
+    nombre: "Medias Deportivas Running Niño",
     descripcion:
       "Medias deportivas con refuerzo en talón y punta, ideales para educación física.",
     descripcionCorta: "Refuerzo talón y punta.",
     etiqueta: "Oferta",
     destacada: false,
-    tituloSeo: "Medias Deportivas Niño | Tienda",
+    tituloSeo: "Medias Deportivas Running Niño | Tienda",
     descripcionSeo: "Medias deportivas para niño con refuerzo en talón y punta.",
     marca: "Fila",
     categoriaSlug: "ninos",
@@ -550,14 +550,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-estampado-nino",
-    nombre: "Boxer Estampado Niño",
+    slug: "boxer-estampado-divertido-nino",
+    nombre: "Boxer Estampado Divertido Niño",
     descripcion:
       "Boxer de algodón con estampado, pretina elástica suave. Diseño divertido pensado para niños.",
     descripcionCorta: "Estampado, pretina suave.",
     etiqueta: "Oferta",
     destacada: false,
-    tituloSeo: "Boxer Estampado Niño | Tienda",
+    tituloSeo: "Boxer Estampado Divertido Niño | Tienda",
     descripcionSeo: "Boxer estampado de algodón para niño.",
     marca: "San Shan",
     categoriaSlug: "ninos",
@@ -571,14 +571,14 @@ const productos: ProductoSeed[] = [
 
   // ═══ BEBÉS ═════════════════════════════════════════════════════════════
   {
-    slug: "body-manga-corta-bebe",
-    nombre: "Body Manga Corta Algodón",
+    slug: "body-manga-corta-de-algodon-bebe",
+    nombre: "Body Manga Corta de Algodón Bebé",
     descripcion:
       "Body de algodón con broches en la entrepierna para facilitar el cambio de pañal. Suave e hipoalergénico.",
     descripcionCorta: "Broches en entrepierna, hipoalergénico.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Body Manga Corta Algodón Bebé | Tienda",
+    tituloSeo: "Body Manga Corta de Algodón Bebé | Tienda",
     descripcionSeo: "Body de algodón para bebé. Broches en entrepierna, hipoalergénico.",
     marca: "Qiling",
     categoriaSlug: "bebes",
@@ -590,14 +590,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-basico-bebe",
-    nombre: "Polo Básico Bebé",
+    slug: "polo-basico-de-algodon-bebe",
+    nombre: "Polo Básico de Algodón Bebé",
     descripcion:
       "Polo de algodón suave para bebé, cuello ancho para facilitar el vestido. Costuras planas que no irritan.",
     descripcionCorta: "Cuello ancho, costuras planas.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Básico Bebé | Tienda",
+    tituloSeo: "Polo Básico de Algodón Bebé | Tienda",
     descripcionSeo: "Polo básico de algodón para bebé. Cuello ancho, costuras planas.",
     marca: "Amanecer",
     categoriaSlug: "bebes",
