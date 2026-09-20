@@ -1,0 +1,135 @@
+.ui-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.ui-hero__vitrina {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radio-lg);
+  aspect-ratio: 4 / 3;
+  background: var(--color-neutro-200);
+}
+.ui-hero__diapositiva {
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--transicion-lenta);
+}
+.ui-hero__diapositiva img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.ui-hero__texto {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  padding: var(--espacio-6);
+  background: linear-gradient(to top, rgb(0 0 0 / 0.65), rgb(0 0 0 / 0) 75%);
+  color: var(--color-textoInverso);
+}
+.ui-hero__titulo {
+  font-size: var(--tipo-tamano-2xl);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+}
+.ui-hero__subtitulo {
+  font-size: var(--tipo-tamano-sm);
+  color: color-mix(in srgb, var(--color-textoInverso) 85%, transparent);
+  max-inline-size: 32rem;
+}
+.ui-hero__cta {
+  margin-block-start: var(--espacio-1);
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espacio-2) var(--espacio-5);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  text-decoration: none;
+  transition: transform var(--transicion-rapida);
+}
+.ui-hero__cta:hover {
+  transform: translateY(-1px);
+}
+
+.ui-hero__flecha {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--espacio-10);
+  block-size: var(--espacio-10);
+  border: none;
+  border-radius: var(--radio-completo);
+  background: rgb(255 255 255 / 0.85);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-md);
+  cursor: pointer;
+  z-index: 1;
+}
+.ui-hero__flecha--prev {
+  inset-inline-start: var(--espacio-4);
+}
+.ui-hero__flecha--next {
+  inset-inline-end: var(--espacio-4);
+}
+
+.ui-hero__puntos {
+  position: absolute;
+  inset-block-end: var(--espacio-4);
+  inset-inline-end: var(--espacio-4);
+  display: flex;
+  gap: var(--espacio-2);
+  z-index: 1;
+}
+.ui-hero__punto {
+  inline-size: var(--espacio-2);
+  block-size: var(--espacio-2);
+  padding: 0;
+  border: none;
+  border-radius: var(--radio-completo);
+  background: rgb(255 255 255 / 0.5);
+  cursor: pointer;
+}
+.ui-hero__punto--activo {
+  background: var(--color-superficie);
+}
+
+.ui-hero__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+/* Los hijos (normalmente dos BannerPromo) se reparten la altura del panel
+   por igual, sin que BannerPromo necesite saber que vive aqui dentro. */
+.ui-hero__panel > * {
+  flex: 1 1 0%;
+  min-block-size: 0;
+}
+
+/* Mismo quiebre que FichaProducto: por debajo, una columna apilada. */
+@media (min-width: 64rem) {
+  .ui-hero {
+    flex-direction: row;
+    align-items: stretch;
+    block-size: 26rem;
+  }
+  .ui-hero__vitrina {
+    flex: 7 1 0%;
+    aspect-ratio: auto;
+  }
+  .ui-hero__panel {
+    flex: 3 1 0%;
+  }
+}

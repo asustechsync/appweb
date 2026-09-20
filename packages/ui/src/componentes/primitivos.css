@@ -11,11 +11,13 @@
 @import "./estilos/acciones-cuenta.css";
 @import "./estilos/alternar-tema.css";
 @import "./estilos/cabecera.css";
+@import "./estilos/hero.css";
 @import "./estilos/precio.css";
 @import "./estilos/cabecera-seccion.css";
 @import "./estilos/tarjeta-producto.css";
 @import "./estilos/tarjeta-marca.css";
 @import "./estilos/banner-oferta.css";
+@import "./estilos/banner-promo.css";
 @import "./estilos/rejilla-productos.css";
 @import "./estilos/carrusel.css";
 @import "./estilos/galeria-producto.css";

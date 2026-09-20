@@ -35,8 +35,8 @@
 
 .ui-tarjeta-marca__nombre {
   text-align: center;
-  font-size: var(--tipo-tamanio-sm);
+  font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-fuerte);
-  line-height: var(--tipo-altura-ajustada);
+  line-height: var(--tipo-altura-apretada);
   color: var(--color-texto);
 }

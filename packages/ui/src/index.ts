@@ -10,11 +10,13 @@ export { Buscador, type PropsBuscador } from "./componentes/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
 export { AlternarTema } from "./componentes/AlternarTema";
 export { Cabecera, type PropsCabecera } from "./componentes/Cabecera";
+export { Hero, type PropsHero, type DiapositivaHero } from "./componentes/Hero";
 export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/CabeceraSeccion";
 export { Precio, type PropsPrecio } from "./componentes/Precio";
 export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/TarjetaProducto";
 export { TarjetaMarca, type PropsTarjetaMarca } from "./componentes/TarjetaMarca";
 export { BannerOferta, type PropsBannerOferta } from "./componentes/BannerOferta";
+export { BannerPromo, type PropsBannerPromo } from "./componentes/BannerPromo";
 export { RejillaProductos, type PropsRejillaProductos } from "./componentes/RejillaProductos";
 export { Carrusel, type PropsCarrusel } from "./componentes/Carrusel";
 // Alias temporal para compatibilidad
