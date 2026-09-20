@@ -8,9 +8,7 @@ import { Cabecera, type SeccionDeNavegacion } from "@appweb/ui";
  *
  * Las secciones de la barra combinan datos reales (ancla de Marcas y de
  * Ofertas en la portada) con paginas de contenido estatico (Guia de Tallas,
- * Envios, Mayorista, Ayuda/*). "Packs x3/x5" queda como `visual`: todavia no
- * hay productos etiquetados como pack en la base, asi que no apunta a ningun
- * lado hasta que los haya.
+ * Envios, Mayorista, Ayuda/*).
  *
  * Los `/#...` en vez de `#...` son a proposito: esas anclas solo existen en
  * la portada, y la cabecera se renderiza en todas las paginas.
@@ -18,7 +16,6 @@ import { Cabecera, type SeccionDeNavegacion } from "@appweb/ui";
 export default function LayoutTienda({ children }: { children: React.ReactNode }) {
   const secciones: SeccionDeNavegacion[] = [
     { tipo: "enlace", etiqueta: "Ofertas", href: "/#ofertas" },
-    { tipo: "visual", etiqueta: "Packs x3/x5" },
     { tipo: "enlace", etiqueta: "Guía de Tallas", href: "/guia-tallas" },
     { tipo: "enlace", etiqueta: "Marcas", href: "/#marcas" },
     { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },

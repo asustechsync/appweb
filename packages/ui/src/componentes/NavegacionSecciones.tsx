@@ -6,9 +6,7 @@ import "./primitivos.css";
 
 export type SeccionDeNavegacion =
   | { tipo: "enlace"; etiqueta: string; href: string }
-  | { tipo: "desplegable"; etiqueta: string; items: EnlaceDeDesplegable[] }
-  /** Sin destino todavia: se pinta pero no navega, para no apuntar a un 404. */
-  | { tipo: "visual"; etiqueta: string };
+  | { tipo: "desplegable"; etiqueta: string; items: EnlaceDeDesplegable[] };
 
 export interface PropsNavegacionSecciones {
   secciones: SeccionDeNavegacion[];
@@ -30,13 +28,8 @@ export function NavegacionSecciones({ secciones }: PropsNavegacionSecciones) {
           <li key={seccion.etiqueta}>
             {seccion.tipo === "enlace" ? (
               <Link href={seccion.href}>{seccion.etiqueta}</Link>
-            ) : seccion.tipo === "desplegable" ? (
-              <ItemDesplegable etiqueta={seccion.etiqueta} items={seccion.items} />
             ) : (
-              <span className="ui-navegacion-secciones__proximamente">
-                {seccion.etiqueta}
-                <em>Pronto</em>
-              </span>
+              <ItemDesplegable etiqueta={seccion.etiqueta} items={seccion.items} />
             )}
           </li>
         ))}
