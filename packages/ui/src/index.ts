@@ -16,6 +16,11 @@ export {
   type PropsNavegacionSecciones,
   type SeccionDeNavegacion,
 } from "./componentes/NavegacionSecciones";
+export {
+  ItemDesplegable,
+  type PropsItemDesplegable,
+  type EnlaceDeDesplegable,
+} from "./componentes/ItemDesplegable";
 export { Hero, type PropsHero, type DiapositivaHero } from "./componentes/Hero";
 export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/CabeceraSeccion";
 export { Precio, type PropsPrecio } from "./componentes/Precio";
@@ -34,3 +39,7 @@ export {
   type OpcionDeCompra,
 } from "./componentes/SelectorVariantes";
 export { FichaProducto, type PropsFichaProducto } from "./componentes/FichaProducto";
+export {
+  PaginaInformativa,
+  type PropsPaginaInformativa,
+} from "./componentes/PaginaInformativa";

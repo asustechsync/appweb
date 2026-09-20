@@ -20,3 +20,26 @@
 .ui-navegacion-secciones a:hover {
   color: var(--color-texto);
 }
+
+/* Seccion sin destino todavia (ej. Packs x3/x5): visible pero no clicable,
+   con una marca "Pronto" para que no parezca un enlace roto. */
+.ui-navegacion-secciones__proximamente {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding-block: var(--espacio-2);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  white-space: nowrap;
+  cursor: default;
+}
+.ui-navegacion-secciones__proximamente em {
+  padding: 1px var(--espacio-1);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondoSutil);
+  color: var(--color-textoTenue);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: var(--tipo-peso-medio);
+}

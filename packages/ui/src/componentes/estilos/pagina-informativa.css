@@ -1,0 +1,75 @@
+.ui-pagina-informativa {
+  max-inline-size: 42rem;
+  margin-inline: auto;
+  padding-block: var(--espacio-8) var(--espacio-16);
+}
+.ui-pagina-informativa > h1 {
+  font-size: var(--tipo-tamano-2xl);
+  margin-block-end: var(--espacio-6);
+}
+.ui-pagina-informativa h2 {
+  font-size: var(--tipo-tamano-lg);
+  margin-block: var(--espacio-6) var(--espacio-2);
+}
+.ui-pagina-informativa p {
+  color: var(--color-textoSuave);
+  line-height: var(--tipo-altura-suelta);
+  margin-block-end: var(--espacio-3);
+}
+.ui-pagina-informativa ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  margin-block-end: var(--espacio-3);
+  padding-inline-start: var(--espacio-5);
+  list-style: disc;
+  color: var(--color-textoSuave);
+  line-height: var(--tipo-altura-suelta);
+}
+.ui-pagina-informativa__tabla-envoltorio {
+  overflow-x: auto;
+  margin-block-end: var(--espacio-4);
+}
+.ui-pagina-informativa table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-pagina-informativa th,
+.ui-pagina-informativa td {
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  text-align: start;
+  white-space: nowrap;
+}
+.ui-pagina-informativa th {
+  background: var(--color-superficie);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-pagina-informativa td {
+  color: var(--color-textoSuave);
+}
+
+.ui-pagina-informativa strong {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-pagina-informativa a {
+  color: var(--color-texto);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Enlace de contacto destacado (WhatsApp, correo): mismo trato que un CTA. */
+.ui-pagina-informativa__cta {
+  display: inline-flex;
+  align-items: center;
+  margin-block-start: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-5);
+  border-radius: var(--radio-completo);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  text-decoration: none;
+}

@@ -12,6 +12,7 @@
 @import "./estilos/alternar-tema.css";
 @import "./estilos/cabecera.css";
 @import "./estilos/selector-ubicacion.css";
+@import "./estilos/item-desplegable.css";
 @import "./estilos/navegacion-secciones.css";
 @import "./estilos/hero.css";
 @import "./estilos/precio.css";
@@ -25,3 +26,4 @@
 @import "./estilos/galeria-producto.css";
 @import "./estilos/selector-variantes.css";
 @import "./estilos/ficha-producto.css";
+@import "./estilos/pagina-informativa.css";

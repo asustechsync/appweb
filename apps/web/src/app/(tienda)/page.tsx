@@ -77,7 +77,7 @@ export default async function PaginaPortada() {
         </section>
 
         {lasMarcas.length > 0 ? (
-          <section className="portada__seccion">
+          <section id="marcas" className="portada__seccion">
             <Carrusel etiqueta="Marcas">
               {lasMarcas.map((marca) => (
                 <TarjetaMarca key={marca.slug} {...marca} />
