@@ -18,40 +18,69 @@ export interface PropsItemDesplegable {
 }
 
 /**
- * Item de NavegacionSecciones con submenu ("Categorias ▾", "Ayuda ▾").
- * Isla cliente solo por el abrir/cerrar — misma mecanica que
- * SelectorUbicacion, sin la parte de localStorage.
+ * Item de NavegacionSecciones con submenu ("Ayuda ▾"). Isla cliente solo por
+ * el abrir/cerrar — misma mecanica que SelectorUbicacion, sin localStorage.
+ *
+ * El panel usa `position: fixed` con coordenadas calculadas del disparador,
+ * en vez de `absolute` dentro de su contenedor: la barra de secciones tiene
+ * `overflow-x: auto` para hacer scroll en movil, y eso recorta cualquier
+ * hijo `absolute` que se salga de su alto — el desplegable quedaba aplastado
+ * dentro de la misma linea en vez de flotar debajo. `fixed` no lo sufre.
  */
 export function ItemDesplegable({ etiqueta, items }: PropsItemDesplegable) {
   const [abierto, setAbierto] = useState(false);
+  const [posicion, setPosicion] = useState({ top: 0, left: 0 });
   const contenedorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!abierto) return;
+
+    function cerrar() {
+      setAbierto(false);
+    }
     function alHacerClicFuera(evento: MouseEvent) {
-      if (!contenedorRef.current?.contains(evento.target as Node)) {
-        setAbierto(false);
-      }
+      if (!contenedorRef.current?.contains(evento.target as Node)) cerrar();
     }
     document.addEventListener("mousedown", alHacerClicFuera);
-    return () => document.removeEventListener("mousedown", alHacerClicFuera);
+    // Con `fixed`, la posicion calculada queda desactualizada si la pagina
+    // se desplaza o cambia de tamaño mientras esta abierto: se cierra en vez
+    // de arrastrar un panel mal ubicado.
+    window.addEventListener("scroll", cerrar, true);
+    window.addEventListener("resize", cerrar);
+    return () => {
+      document.removeEventListener("mousedown", alHacerClicFuera);
+      window.removeEventListener("scroll", cerrar, true);
+      window.removeEventListener("resize", cerrar);
+    };
   }, [abierto]);
 
   if (items.length === 0) return null;
+
+  function alternar() {
+    if (!abierto && contenedorRef.current) {
+      const rect = contenedorRef.current.getBoundingClientRect();
+      setPosicion({ top: rect.bottom + 4, left: rect.left });
+    }
+    setAbierto((valor) => !valor);
+  }
 
   return (
     <div className="ui-item-desplegable" ref={contenedorRef}>
       <button
         type="button"
         className="ui-item-desplegable__disparador"
-        onClick={() => setAbierto((valor) => !valor)}
+        onClick={alternar}
         aria-expanded={abierto}
       >
         <span>{etiqueta}</span>
         <IconoChevronAbajo tamano={12} />
       </button>
       {abierto ? (
-        <ul className="ui-item-desplegable__lista" role="menu">
+        <ul
+          className="ui-item-desplegable__lista"
+          role="menu"
+          style={{ top: posicion.top, left: posicion.left }}
+        >
           {items.map((item) => (
             <li key={item.href} role="none">
               <Link role="menuitem" href={item.href} onClick={() => setAbierto(false)}>

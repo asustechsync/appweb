@@ -24,9 +24,9 @@
 }
 
 .ui-item-desplegable__lista {
-  position: absolute;
-  inset-block-start: calc(100% + var(--espacio-1));
-  inset-inline-start: 0;
+  /* `top`/`left` llegan por estilo en linea, calculados en JS desde el
+     disparador — ver el comentario en ItemDesplegable.tsx. */
+  position: fixed;
   z-index: var(--z-desplegable);
   min-inline-size: 11rem;
   margin: 0;
