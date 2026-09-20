@@ -1,6 +1,7 @@
 import { BannerOferta, CabeceraSeccion, CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
 
 import { productosEnOferta, productosNuevos } from "@/lib/consultas";
+import "./portada.css";
 
 /** CLASE A — portada. Etiqueta `portada`. Presupuesto: 20-40 ms. */
 
@@ -18,7 +19,7 @@ export default async function PaginaPortada() {
         <h1 className="ui-solo-lectores">Tienda</h1>
 
         {ofertas.length > 0 ? (
-          <section>
+          <section className="portada__seccion">
             {/* Sin hrefVerTodo: no existe /ofertas todavia, no apuntamos a
                 una ruta que da 404. */}
             <CabeceraSeccion titulo="Ofertas" />
@@ -34,7 +35,7 @@ export default async function PaginaPortada() {
         ) : null}
 
         {nuevos.length > 0 ? (
-          <section>
+          <section className="portada__seccion">
             <CabeceraSeccion titulo="Nuevos Ingresos" />
             <CarruselProductos etiqueta="Nuevos Ingresos">
               {nuevos.map((producto) => (

@@ -1,0 +1,7 @@
+.portada__seccion {
+  margin-top: var(--espacio-8);
+}
+
+.portada__seccion:first-of-type {
+  margin-top: 0;
+}
