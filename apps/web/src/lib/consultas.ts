@@ -18,6 +18,12 @@ export interface ProductoDeRejilla {
   disponible: boolean;
 }
 
+export interface MarcaDeFicha {
+  slug: string;
+  nombre: string;
+  logo?: string | null;
+}
+
 /**
  * Productos en oferta para la portada. Etiqueta `portada`: se invalida
  * cuando el panel cambia el precio o el precioLista de cualquier producto.
@@ -199,4 +205,25 @@ export async function slugsDeProductos(): Promise<string[]> {
   });
 
   return productos.map((producto) => producto.slug);
+}
+
+export async function marcas(limite = 10): Promise<MarcaDeFicha[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.portada());
+
+  const productos = await prisma.producto.findMany({
+    where: { activo: true, marca: { not: null } },
+    select: { marca: true },
+    distinct: ["marca"],
+    take: limite,
+  });
+
+  return productos
+    .map((p) => p.marca)
+    .filter((marca): marca is string => marca !== null)
+    .map((marca) => ({
+      slug: marca.toLowerCase().replace(/\s+/g, "-"),
+      nombre: marca,
+    }));
 }

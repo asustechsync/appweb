@@ -1,14 +1,15 @@
-import { BannerOferta, CabeceraSeccion, CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
+import { BannerOferta, CabeceraSeccion, Carrusel, Contenedor, TarjetaProducto, TarjetaMarca } from "@appweb/ui";
 
-import { productosEnOferta, productosNuevos } from "@/lib/consultas";
+import { productosEnOferta, productosNuevos, marcas } from "@/lib/consultas";
 import "./portada.css";
 
 /** CLASE A — portada. Etiqueta `portada`. Presupuesto: 20-40 ms. */
 
 export default async function PaginaPortada() {
-  const [ofertas, nuevos] = await Promise.all([
+  const [ofertas, nuevos, lasMarcas] = await Promise.all([
     productosEnOferta(),
     productosNuevos(),
+    marcas(),
   ]);
 
   return (
@@ -23,25 +24,36 @@ export default async function PaginaPortada() {
             {/* Sin hrefVerTodo: no existe /ofertas todavia, no apuntamos a
                 una ruta que da 404. */}
             <CabeceraSeccion titulo="Ofertas" />
-            <CarruselProductos
+            <Carrusel
               etiqueta="Ofertas"
               fijo={<BannerOferta titulo="Ofertas de temporada" texto="Hasta 30% de descuento" />}
             >
               {ofertas.map((producto) => (
                 <TarjetaProducto key={producto.slug} {...producto} contexto="carrusel" />
               ))}
-            </CarruselProductos>
+            </Carrusel>
           </section>
         ) : null}
 
         {nuevos.length > 0 ? (
           <section className="portada__seccion">
             <CabeceraSeccion titulo="Nuevos Ingresos" />
-            <CarruselProductos etiqueta="Nuevos Ingresos">
+            <Carrusel etiqueta="Nuevos Ingresos">
               {nuevos.map((producto) => (
                 <TarjetaProducto key={producto.slug} {...producto} contexto="carrusel" />
               ))}
-            </CarruselProductos>
+            </Carrusel>
+          </section>
+        ) : null}
+
+        {lasMarcas.length > 0 ? (
+          <section className="portada__seccion">
+            <CabeceraSeccion titulo="Marcas" />
+            <Carrusel etiqueta="Marcas">
+              {lasMarcas.map((marca) => (
+                <TarjetaMarca key={marca.slug} {...marca} />
+              ))}
+            </Carrusel>
           </section>
         ) : null}
       </Contenedor>

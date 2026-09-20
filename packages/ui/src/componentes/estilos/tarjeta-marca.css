@@ -1,0 +1,42 @@
+.ui-tarjeta-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transicion-rapida);
+}
+.ui-tarjeta-marca:hover {
+  border-color: var(--color-marca-500);
+  box-shadow: var(--sombra-md);
+}
+
+.ui-tarjeta-marca__logo {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-neutro-100);
+  border-radius: var(--radio-sm);
+  padding: var(--espacio-2);
+}
+.ui-tarjeta-marca__logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.ui-tarjeta-marca__nombre {
+  text-align: center;
+  font-size: var(--tipo-tamanio-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-ajustada);
+  color: var(--color-texto);
+}
