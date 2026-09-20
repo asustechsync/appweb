@@ -7,8 +7,7 @@ import { Cabecera, type SeccionDeNavegacion } from "@appweb/ui";
  * y el item "desplegable" (Ayuda) son islas cliente.
  *
  * Las secciones de la barra combinan datos reales (ancla de Marcas y de
- * Ofertas en la portada) con paginas de contenido estatico (Guia de Tallas,
- * Envios, Ayuda/*).
+ * Ofertas en la portada) con paginas de contenido estatico (Envios, Ayuda/*).
  *
  * Los `/#...` en vez de `#...` son a proposito: esas anclas solo existen en
  * la portada, y la cabecera se renderiza en todas las paginas.
@@ -16,7 +15,6 @@ import { Cabecera, type SeccionDeNavegacion } from "@appweb/ui";
 export default function LayoutTienda({ children }: { children: React.ReactNode }) {
   const secciones: SeccionDeNavegacion[] = [
     { tipo: "enlace", etiqueta: "Ofertas", href: "/#ofertas" },
-    { tipo: "enlace", etiqueta: "Guía de Tallas", href: "/guia-tallas" },
     { tipo: "enlace", etiqueta: "Marcas", href: "/#marcas" },
     {
       tipo: "desplegable",
