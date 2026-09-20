@@ -1,14 +1,14 @@
 .ui-hero {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
+  gap: var(--espacio-3);
 }
 
 .ui-hero__vitrina {
   position: relative;
   overflow: hidden;
   border-radius: var(--radio-lg);
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   background: var(--color-neutro-200);
 }
 .ui-hero__diapositiva {
@@ -29,13 +29,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--espacio-2);
-  padding: var(--espacio-6);
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
   background: linear-gradient(to top, rgb(0 0 0 / 0.65), rgb(0 0 0 / 0) 75%);
   color: var(--color-textoInverso);
 }
 .ui-hero__titulo {
-  font-size: var(--tipo-tamano-2xl);
+  font-size: var(--tipo-tamano-xl);
   font-weight: var(--tipo-peso-fuerte);
   line-height: var(--tipo-altura-apretada);
 }
@@ -48,7 +48,7 @@
   margin-block-start: var(--espacio-1);
   display: inline-flex;
   align-items: center;
-  padding: var(--espacio-2) var(--espacio-5);
+  padding: var(--espacio-1) var(--espacio-4);
   border-radius: var(--radio-completo);
   background: var(--color-superficie);
   color: var(--color-texto);
@@ -68,8 +68,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--espacio-10);
-  block-size: var(--espacio-10);
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
   border: none;
   border-radius: var(--radio-completo);
   background: rgb(255 255 255 / 0.85);
@@ -87,8 +87,8 @@
 
 .ui-hero__puntos {
   position: absolute;
-  inset-block-end: var(--espacio-4);
-  inset-inline-end: var(--espacio-4);
+  inset-block-end: var(--espacio-3);
+  inset-inline-end: var(--espacio-3);
   display: flex;
   gap: var(--espacio-2);
   z-index: 1;
@@ -109,7 +109,7 @@
 .ui-hero__panel {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
+  gap: var(--espacio-3);
 }
 /* Los hijos (normalmente dos BannerPromo) se reparten la altura del panel
    por igual, sin que BannerPromo necesite saber que vive aqui dentro. */
@@ -123,7 +123,7 @@
   .ui-hero {
     flex-direction: row;
     align-items: stretch;
-    block-size: 26rem;
+    block-size: 19rem;
   }
   .ui-hero__vitrina {
     flex: 7 1 0%;
