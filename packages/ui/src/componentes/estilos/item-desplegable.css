@@ -9,17 +9,14 @@
   padding-block: var(--espacio-2);
   border: 0;
   background: none;
-  color: var(--color-textoSuave);
+  color: var(--color-texto);
   font: inherit;
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-medio);
   cursor: pointer;
-  transition: color var(--transicion-rapida);
-}
-.ui-item-desplegable__disparador:hover {
-  color: var(--color-texto);
 }
 .ui-item-desplegable__disparador svg {
+  color: var(--color-textoTenue);
   transition: transform var(--transicion-rapida);
 }
 .ui-item-desplegable__disparador[aria-expanded="true"] svg {

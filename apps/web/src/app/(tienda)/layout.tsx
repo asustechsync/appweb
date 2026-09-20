@@ -18,7 +18,6 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
     { tipo: "enlace", etiqueta: "Ofertas", href: "/#ofertas" },
     { tipo: "enlace", etiqueta: "Guía de Tallas", href: "/guia-tallas" },
     { tipo: "enlace", etiqueta: "Marcas", href: "/#marcas" },
-    { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },
     {
       tipo: "desplegable",
       etiqueta: "Ayuda",
@@ -28,6 +27,7 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
         { etiqueta: "Contacto", href: "/ayuda/contacto" },
       ],
     },
+    { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },
   ];
 
   return (
