@@ -4,7 +4,14 @@ export { GUION_TEMA, TEMA_LLAVE, type Tema } from "./tema";
 // Iconos que las paginas necesitan pasar como prop (ej. NavegacionSecciones).
 // El resto de los iconos son detalle interno de cada primitivo y no hace
 // falta exponerlos aqui.
-export { type PropsIcono, IconoEtiqueta, IconoPregunta, IconoMoneda, IconoMarca } from "./iconos";
+export {
+  type PropsIcono,
+  IconoEtiqueta,
+  IconoPregunta,
+  IconoMoneda,
+  IconoMarca,
+  IconoTicket,
+} from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
 // Se van añadiendo conforme hagan falta; cada uno con su CSS en

@@ -11,7 +11,9 @@ import "./primitivos.css";
 // otro del limite — solo un arbol ya resuelto.
 export type SeccionDeNavegacion =
   | { tipo: "enlace"; etiqueta: string; href: string; icono?: ReactNode }
-  | { tipo: "desplegable"; etiqueta: string; items: EnlaceDeDesplegable[]; icono?: ReactNode };
+  | { tipo: "desplegable"; etiqueta: string; items: EnlaceDeDesplegable[]; icono?: ReactNode }
+  /** Sin destino todavia: se pinta pero no navega, para no apuntar a un 404. */
+  | { tipo: "visual"; etiqueta: string; icono?: ReactNode };
 
 export interface PropsNavegacionSecciones {
   secciones: SeccionDeNavegacion[];
@@ -36,12 +38,18 @@ export function NavegacionSecciones({ secciones }: PropsNavegacionSecciones) {
                 {seccion.icono}
                 {seccion.etiqueta}
               </Link>
-            ) : (
+            ) : seccion.tipo === "desplegable" ? (
               <ItemDesplegable
                 etiqueta={seccion.etiqueta}
                 items={seccion.items}
                 icono={seccion.icono}
               />
+            ) : (
+              <span className="ui-navegacion-secciones__proximamente">
+                {seccion.icono}
+                {seccion.etiqueta}
+                <em>Pronto</em>
+              </span>
             )}
           </li>
         ))}

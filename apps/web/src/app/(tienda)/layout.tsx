@@ -3,6 +3,7 @@ import {
   IconoEtiqueta,
   IconoMarca,
   IconoPregunta,
+  IconoTicket,
   type SeccionDeNavegacion,
 } from "@appweb/ui";
 
@@ -14,6 +15,9 @@ import {
  *
  * Las secciones de la barra combinan datos reales (ancla de Marcas y de
  * Ofertas en la portada) con paginas de contenido estatico (Envios, Ayuda/*).
+ * "Cupones" queda como `visual`: todavia no hay sistema de cupones (sin
+ * tabla ni logica de canje en el checkout), asi que no apunta a ningun
+ * lado hasta que exista de verdad.
  *
  * Los `/#...` en vez de `#...` son a proposito: esas anclas solo existen en
  * la portada, y la cabecera se renderiza en todas las paginas.
@@ -43,6 +47,7 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
       ],
     },
     { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },
+    { tipo: "visual", etiqueta: "Cupones", icono: <IconoTicket tamano={16} /> },
   ];
 
   return (
