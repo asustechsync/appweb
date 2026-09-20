@@ -10,6 +10,12 @@ export { Buscador, type PropsBuscador } from "./componentes/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
 export { AlternarTema } from "./componentes/AlternarTema";
 export { Cabecera, type PropsCabecera } from "./componentes/Cabecera";
+export { SelectorUbicacion } from "./componentes/SelectorUbicacion";
+export {
+  NavegacionSecciones,
+  type PropsNavegacionSecciones,
+  type SeccionDeNavegacion,
+} from "./componentes/NavegacionSecciones";
 export { Hero, type PropsHero, type DiapositivaHero } from "./componentes/Hero";
 export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/CabeceraSeccion";
 export { Precio, type PropsPrecio } from "./componentes/Precio";

@@ -32,6 +32,27 @@
   margin-inline-start: auto;
 }
 
+/* Fila secundaria: ubicacion a la izquierda, secciones a la derecha. El
+   fondo cubre todo el ancho; el contenido se limita igual que la fila
+   principal. */
+.ui-cabecera__secundaria {
+  background: var(--color-superficie);
+}
+.ui-cabecera__secundaria-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  max-inline-size: var(--contenedor-ancho);
+  margin-inline: auto;
+  padding: 0 var(--espacio-4);
+}
+/* Si las secciones no caben, esta es la que se encoge y hace scroll --
+   SelectorUbicacion se queda fijo a la izquierda. */
+.ui-cabecera__secundaria-contenido .ui-navegacion-secciones {
+  min-inline-size: 0;
+}
+
 @media (min-width: 48rem) {
   .ui-cabecera__contenido {
     gap: var(--espacio-6);
