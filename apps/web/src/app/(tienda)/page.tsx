@@ -19,6 +19,17 @@ export default async function PaginaPortada() {
             solo que no se muestra — era el placeholder que molestaba. */}
         <h1 className="ui-solo-lectores">Tienda</h1>
 
+        {lasMarcas.length > 0 ? (
+          <section className="portada__seccion">
+            <CabeceraSeccion titulo="Marcas" />
+            <Carrusel etiqueta="Marcas">
+              {lasMarcas.map((marca) => (
+                <TarjetaMarca key={marca.slug} {...marca} />
+              ))}
+            </Carrusel>
+          </section>
+        ) : null}
+
         {ofertas.length > 0 ? (
           <section className="portada__seccion">
             {/* Sin hrefVerTodo: no existe /ofertas todavia, no apuntamos a
@@ -41,17 +52,6 @@ export default async function PaginaPortada() {
             <Carrusel etiqueta="Nuevos Ingresos">
               {nuevos.map((producto) => (
                 <TarjetaProducto key={producto.slug} {...producto} contexto="carrusel" />
-              ))}
-            </Carrusel>
-          </section>
-        ) : null}
-
-        {lasMarcas.length > 0 ? (
-          <section className="portada__seccion">
-            <CabeceraSeccion titulo="Marcas" />
-            <Carrusel etiqueta="Marcas">
-              {lasMarcas.map((marca) => (
-                <TarjetaMarca key={marca.slug} {...marca} />
               ))}
             </Carrusel>
           </section>
