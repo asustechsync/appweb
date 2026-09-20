@@ -3,7 +3,6 @@
    decide como se acomodan uno junto al otro. */
 
 .ui-cabecera {
-  border-block-end: 1px solid var(--color-borde);
   background: transparent;
   position: sticky;
   inset-block-start: 0;
