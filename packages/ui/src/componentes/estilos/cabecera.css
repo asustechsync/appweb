@@ -12,22 +12,25 @@
 .ui-cabecera__contenido {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--espacio-4);
   max-inline-size: var(--contenedor-ancho);
   margin-inline: auto;
   padding: var(--espacio-3) var(--espacio-4);
 }
+.ui-cabecera .ui-logo {
+  flex: 0 0 auto;
+  margin-inline-end: auto;
+}
 .ui-cabecera .ui-buscador {
   flex: 0 1 38rem;
-  margin-inline-start: auto;
 }
 .ui-cabecera__acciones {
   display: flex;
   align-items: center;
   gap: var(--espacio-1);
   flex: 0 0 auto;
-  margin-inline-start: var(--espacio-4);
+  margin-inline-start: auto;
 }
 
 @media (min-width: 48rem) {
