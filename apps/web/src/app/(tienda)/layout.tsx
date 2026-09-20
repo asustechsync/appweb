@@ -1,4 +1,10 @@
-import { Cabecera, IconoEtiqueta, IconoPregunta, type SeccionDeNavegacion } from "@appweb/ui";
+import {
+  Cabecera,
+  IconoEtiqueta,
+  IconoMarca,
+  IconoPregunta,
+  type SeccionDeNavegacion,
+} from "@appweb/ui";
 
 /**
  * Layout de la tienda publica — CLASE A.
@@ -20,7 +26,12 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
       href: "/#ofertas",
       icono: <IconoEtiqueta tamano={14} />,
     },
-    { tipo: "enlace", etiqueta: "Marcas", href: "/#marcas" },
+    {
+      tipo: "enlace",
+      etiqueta: "Marcas",
+      href: "/#marcas",
+      icono: <IconoMarca tamano={14} />,
+    },
     {
       tipo: "desplegable",
       etiqueta: "Ayuda",
