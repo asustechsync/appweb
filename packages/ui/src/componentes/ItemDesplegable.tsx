@@ -76,7 +76,7 @@ export function ItemDesplegable({ etiqueta, items, icono }: PropsItemDesplegable
       >
         {icono}
         <span>{etiqueta}</span>
-        <IconoChevronAbajo tamano={12} />
+        <IconoChevronAbajo tamano={14} />
       </button>
       {abierto ? (
         <ul

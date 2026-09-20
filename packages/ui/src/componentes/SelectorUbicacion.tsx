@@ -70,9 +70,9 @@ export function SelectorUbicacion() {
         onClick={() => setAbierto((valor) => !valor)}
         aria-expanded={abierto}
       >
-        <IconoUbicacion />
+        <IconoUbicacion tamano={18} />
         <span>{ubicacion}</span>
-        <IconoChevronAbajo />
+        <IconoChevronAbajo tamano={14} />
       </button>
       {abierto ? (
         <ul className="ui-selector-ubicacion__lista" role="listbox">

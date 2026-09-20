@@ -11,7 +11,7 @@
   background: none;
   color: var(--color-texto);
   font: inherit;
-  font-size: var(--tipo-tamano-xs);
+  font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-medio);
   cursor: pointer;
 }

@@ -13,7 +13,7 @@
   gap: var(--espacio-1);
   padding-block: var(--espacio-2);
   color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
+  font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-medio);
   text-decoration: none;
   white-space: nowrap;

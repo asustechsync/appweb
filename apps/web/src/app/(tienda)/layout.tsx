@@ -24,18 +24,18 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
       tipo: "enlace",
       etiqueta: "Ofertas",
       href: "/#ofertas",
-      icono: <IconoEtiqueta tamano={14} />,
+      icono: <IconoEtiqueta tamano={16} />,
     },
     {
       tipo: "enlace",
       etiqueta: "Marcas",
       href: "/#marcas",
-      icono: <IconoMarca tamano={14} />,
+      icono: <IconoMarca tamano={16} />,
     },
     {
       tipo: "desplegable",
       etiqueta: "Ayuda",
-      icono: <IconoPregunta tamano={14} />,
+      icono: <IconoPregunta tamano={16} />,
       items: [
         { etiqueta: "Cambios y devoluciones", href: "/ayuda/cambios-y-devoluciones" },
         { etiqueta: "Preguntas frecuentes", href: "/ayuda/preguntas-frecuentes" },
