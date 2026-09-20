@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import "./primitivos.css";
 
 export interface PropsCabeceraSeccion {
@@ -17,9 +19,9 @@ export function CabeceraSeccion({
     <div className="ui-cabecera-seccion">
       <h2 className="ui-cabecera-seccion__titulo">{titulo}</h2>
       {hrefVerTodo ? (
-        <a className="ui-cabecera-seccion__ver-todo" href={hrefVerTodo}>
+        <Link className="ui-cabecera-seccion__ver-todo" href={hrefVerTodo}>
           {textoVerTodo}
-        </a>
+        </Link>
       ) : null}
     </div>
   );

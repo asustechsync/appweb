@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { IconoCarrito, IconoPedidos, IconoUsuario } from "../iconos";
 
 import "./primitivos.css";
@@ -22,15 +24,15 @@ export function AccionesCuenta({
 }: PropsAccionesCuenta) {
   return (
     <div className="ui-acciones-cuenta">
-      <a href={hrefUsuario} aria-label="Mi cuenta" title="Mi cuenta">
+      <Link href={hrefUsuario} aria-label="Mi cuenta" title="Mi cuenta">
         <IconoUsuario />
-      </a>
-      <a href={hrefPedidos} aria-label="Mis pedidos" title="Mis pedidos">
+      </Link>
+      <Link href={hrefPedidos} aria-label="Mis pedidos" title="Mis pedidos">
         <IconoPedidos />
-      </a>
-      <a href={hrefCarrito} aria-label="Carrito" title="Carrito">
+      </Link>
+      <Link href={hrefCarrito} aria-label="Carrito" title="Carrito">
         <IconoCarrito />
-      </a>
+      </Link>
     </div>
   );
 }

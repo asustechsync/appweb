@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import "./primitivos.css";
 
 export interface PropsLogo {
@@ -13,8 +15,8 @@ export interface PropsLogo {
  */
 export function Logo({ href = "/" }: PropsLogo) {
   return (
-    <a className="ui-logo" href={href} aria-label="Ir a la portada">
+    <Link className="ui-logo" href={href} aria-label="Ir a la portada">
       SOCKS
-    </a>
+    </Link>
   );
 }

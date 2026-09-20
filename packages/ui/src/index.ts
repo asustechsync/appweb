@@ -16,3 +16,10 @@ export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/Tarjet
 export { BannerOferta, type PropsBannerOferta } from "./componentes/BannerOferta";
 export { RejillaProductos, type PropsRejillaProductos } from "./componentes/RejillaProductos";
 export { CarruselProductos, type PropsCarruselProductos } from "./componentes/CarruselProductos";
+export { GaleriaProducto, type PropsGaleriaProducto, type ImagenGaleria } from "./componentes/GaleriaProducto";
+export {
+  SelectorVariantes,
+  type PropsSelectorVariantes,
+  type OpcionDeCompra,
+} from "./componentes/SelectorVariantes";
+export { FichaProducto, type PropsFichaProducto } from "./componentes/FichaProducto";

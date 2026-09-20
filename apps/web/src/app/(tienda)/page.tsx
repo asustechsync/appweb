@@ -1,11 +1,14 @@
 import { BannerOferta, CabeceraSeccion, CarruselProductos, Contenedor, TarjetaProducto } from "@appweb/ui";
 
-import { productosEnOferta } from "@/lib/consultas";
+import { productosEnOferta, productosNuevos } from "@/lib/consultas";
 
 /** CLASE A — portada. Etiqueta `portada`. Presupuesto: 20-40 ms. */
 
 export default async function PaginaPortada() {
-  const ofertas = await productosEnOferta();
+  const [ofertas, nuevos] = await Promise.all([
+    productosEnOferta(),
+    productosNuevos(),
+  ]);
 
   return (
     <main>
@@ -24,7 +27,18 @@ export default async function PaginaPortada() {
               fijo={<BannerOferta titulo="Ofertas de temporada" texto="Hasta 30% de descuento" />}
             >
               {ofertas.map((producto) => (
-                <TarjetaProducto key={producto.slug} {...producto} />
+                <TarjetaProducto key={producto.slug} {...producto} contexto="carrusel" />
+              ))}
+            </CarruselProductos>
+          </section>
+        ) : null}
+
+        {nuevos.length > 0 ? (
+          <section>
+            <CabeceraSeccion titulo="Nuevos Ingresos" />
+            <CarruselProductos etiqueta="Nuevos Ingresos">
+              {nuevos.map((producto) => (
+                <TarjetaProducto key={producto.slug} {...producto} contexto="carrusel" />
               ))}
             </CarruselProductos>
           </section>

@@ -11,6 +11,12 @@ export {
   type Disponibilidad,
 } from "./catalogo/precios";
 
+export {
+  opcionesDeCompra,
+  type VarianteElegible,
+  type OpcionDeTalla,
+} from "./catalogo/variantes";
+
 // Carrito
 export {
   calcularTotales,

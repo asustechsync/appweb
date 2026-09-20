@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import "./primitivos.css";
 
 export interface PropsBannerOferta {
@@ -25,9 +27,9 @@ export function BannerOferta({ titulo, texto, href }: PropsBannerOferta) {
 
   if (href) {
     return (
-      <a className="ui-banner-oferta" href={href}>
+      <Link className="ui-banner-oferta" href={href}>
         {contenido}
-      </a>
+      </Link>
     );
   }
 

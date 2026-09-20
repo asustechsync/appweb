@@ -91,6 +91,10 @@ export const tokens = {
       xs: 12, sm: 14, base: 16, lg: 18, xl: 20,
       "2xl": 24, "3xl": 30, "4xl": 38, "5xl": 48,
     },
+    // La web solo carga 400, 500 y 600 (ver apps/web/src/app/layout.tsx).
+    // `ligero` y `negrita` siguen aqui para la app movil, que carga sus
+    // propias fuentes; en la web caerian al peso cargado mas cercano sin
+    // avisar, asi que antes de usarlos hay que añadir el peso a next/font.
     peso: { ligero: 300, normal: 400, medio: 500, fuerte: 600, negrita: 700 },
     altura: { apretada: 1.2, normal: 1.5, suelta: 1.7 },
   },

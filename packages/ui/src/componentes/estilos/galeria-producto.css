@@ -1,0 +1,74 @@
+.ui-galeria-producto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+.ui-galeria-producto__principal {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  background: var(--color-neutro-200);
+  padding: var(--espacio-4);
+}
+.ui-galeria-producto__principal img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+.ui-galeria-producto__insignia {
+  position: absolute;
+  inset-block-start: var(--espacio-3);
+  inset-inline-start: var(--espacio-3);
+  padding: 0.1rem var(--espacio-1);
+  border-radius: var(--radio-sm);
+  background: var(--color-oferta);
+  color: var(--color-textoInverso);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-galeria-producto__etiqueta {
+  position: absolute;
+  inset-block-start: var(--espacio-3);
+  inset-inline-end: var(--espacio-3);
+  padding: 0.1rem var(--espacio-1);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  box-shadow: var(--sombra-sm);
+}
+.ui-galeria-producto__miniaturas {
+  display: flex;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+.ui-galeria-producto__miniatura {
+  display: block;
+  box-sizing: border-box;
+  inline-size: var(--espacio-16);
+  aspect-ratio: 1;
+  padding: var(--espacio-1);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-neutro-200);
+  cursor: pointer;
+  transition: border-color var(--transicion-rapida);
+}
+.ui-galeria-producto__miniatura img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+.ui-galeria-producto__miniatura:hover {
+  border-color: var(--color-bordeFuerte);
+}
+.ui-galeria-producto__miniatura--activa {
+  border-color: var(--color-marca-500);
+}

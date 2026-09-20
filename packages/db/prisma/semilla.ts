@@ -734,8 +734,8 @@ async function crearProductos() {
 
     await prisma.imagenProducto.createMany({
       data: [
-        { productoId: producto.id, url: `https://picsum.photos/seed/${p.slug}/800/800`, alt: p.nombre, orden: 0 },
-        { productoId: producto.id, url: `https://picsum.photos/seed/${p.slug}-2/800/800`, alt: p.nombre, orden: 1 },
+        { productoId: producto.id, url: `/producto.webp`, alt: p.nombre, orden: 0 },
+        { productoId: producto.id, url: `/producto.webp`, alt: p.nombre, orden: 1 },
       ],
     });
 

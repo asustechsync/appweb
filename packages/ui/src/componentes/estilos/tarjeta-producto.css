@@ -1,21 +1,24 @@
 .ui-tarjeta-producto {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-1);
+  gap: 0.25rem;
   color: inherit;
 }
 .ui-tarjeta-producto__imagen {
   position: relative;
   display: block;
+  box-sizing: border-box;
   aspect-ratio: 1;
   border-radius: var(--radio-lg);
   overflow: hidden;
-  background: var(--color-fondoSutil);
+  background: var(--color-neutro-200);
+  padding: var(--espacio-6) var(--espacio-1) var(--espacio-1);
 }
 .ui-tarjeta-producto__imagen img {
   inline-size: 100%;
   block-size: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center bottom;
   transition: transform var(--transicion-normal);
 }
 .ui-tarjeta-producto:hover .ui-tarjeta-producto__imagen img {
@@ -25,8 +28,8 @@
   position: absolute;
   inset-block-start: var(--espacio-2);
   inset-inline-start: var(--espacio-2);
-  padding: var(--espacio-1) var(--espacio-2);
-  border-radius: var(--radio-completo);
+  padding: 0.1rem var(--espacio-1);
+  border-radius: var(--radio-sm);
   background: var(--color-oferta);
   color: var(--color-textoInverso);
   font-size: var(--tipo-tamano-xs);
@@ -36,8 +39,8 @@
   position: absolute;
   inset-block-start: var(--espacio-2);
   inset-inline-end: var(--espacio-2);
-  padding: var(--espacio-1) var(--espacio-2);
-  border-radius: var(--radio-completo);
+  padding: 0.1rem var(--espacio-1);
+  border-radius: var(--radio-sm);
   background: var(--color-superficie);
   color: var(--color-texto);
   font-size: var(--tipo-tamano-xs);

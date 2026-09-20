@@ -1,3 +1,6 @@
+import Image from "next/image";
+import Link from "next/link";
+
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
@@ -16,7 +19,27 @@ export interface PropsTarjetaProducto {
   marca?: string | null;
   /** Ya calculado por `resolverDisponibilidad` de @appweb/core. */
   disponible: boolean;
+  /**
+   * Donde se pinta la tarjeta. No cambia nada visual: decide que ancho de
+   * imagen pide el navegador, y los dos contextos difieren mucho.
+   */
+  contexto?: "rejilla" | "carrusel";
 }
+
+/**
+ * Ancho real de la tarjeta en cada contexto, para que el navegador no baje
+ * una imagen mas grande de la que se ve.
+ *
+ * En el carrusel la tarjeta mide ~182px en escritorio; pedir ahi el ancho de
+ * la rejilla trae 640px (44 KB) donde bastan 256px (7 KB).
+ */
+const ANCHOS: Record<"rejilla" | "carrusel", string> = {
+  // 2 columnas en movil, 3 desde 40rem y 4 desde 64rem, donde el contenedor
+  // topa en 1400px y cada tarjeta no pasa de ~330px.
+  rejilla: "(min-width: 64rem) 350px, (min-width: 40rem) 33vw, 50vw",
+  // De 3 tarjetas visibles en movil a 7 en escritorio (ver --visibles).
+  carrusel: "(min-width: 64rem) 190px, (min-width: 40rem) 20vw, 30vw",
+};
 
 /**
  * Tarjeta de producto para cualquier listado: rejilla de categoria, ofertas,
@@ -33,11 +56,24 @@ export function TarjetaProducto({
   etiqueta,
   marca,
   disponible,
+  contexto = "rejilla",
 }: PropsTarjetaProducto) {
   return (
-    <a className="ui-tarjeta-producto" href={`/productos/${slug}`}>
+    <Link className="ui-tarjeta-producto" href={`/productos/${slug}`}>
       <span className="ui-tarjeta-producto__imagen">
-        <img src={imagenUrl} alt={nombre} width={400} height={400} loading="lazy" decoding="async" />
+        {/* Sin imagen queda el fondo del recuadro: `next/image` con src vacio
+            lanza en tiempo de ejecucion, y un producto sin foto no puede
+            tumbar el listado entero. */}
+        {imagenUrl ? (
+          <Image
+            src={imagenUrl}
+            alt={nombre}
+            width={400}
+            height={400}
+            sizes={ANCHOS[contexto]}
+            loading="lazy"
+          />
+        ) : null}
         {descuentoPct ? (
           <span className="ui-tarjeta-producto__insignia">-{descuentoPct}%</span>
         ) : null}
@@ -60,7 +96,7 @@ export function TarjetaProducto({
       {/* `?? null`: precioLista opcional puede llegar como `undefined`, y
           exactOptionalPropertyTypes distingue "prop omitida" de "prop en
           undefined". Precio si acepta null. */}
-      <Precio valor={precio} antes={precioLista ?? null} tamano="sm" />
-    </a>
+      <Precio valor={precio} antes={precioLista ?? null} tamano="md" />
+    </Link>
   );
 }
