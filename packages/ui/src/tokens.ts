@@ -60,9 +60,13 @@ export const tokens = {
     calificacion: "#F2A93B",
 
     // Roles de superficie: son los que usan los componentes.
-    fondo: "#F6F6F7",
-    fondoSutil: "#F2F2F2",
-    superficie: "#FFFFFF",
+    // Invertido a proposito: el fondo de la pagina es blanco y los bloques
+    // (tarjetas, cabecera, carrusel...) llevan el gris que antes era el
+    // fondo. fondoSutil baja un poco para seguir distinguiendose encima de
+    // superficie, que ya no es blanco puro.
+    fondo: "#FFFFFF",
+    fondoSutil: "#ECECED",
+    superficie: "#F6F6F7",
     borde: "#E3E3E6",
     bordeFuerte: "#D4D4D8",
     texto: "#171717",
