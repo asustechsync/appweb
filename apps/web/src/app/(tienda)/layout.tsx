@@ -30,6 +30,7 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
       href: "/#ofertas",
       icono: <IconoEtiqueta tamano={16} />,
     },
+    { tipo: "visual", etiqueta: "Cupones", icono: <IconoTicket tamano={16} /> },
     {
       tipo: "enlace",
       etiqueta: "Marcas",
@@ -47,7 +48,6 @@ export default function LayoutTienda({ children }: { children: React.ReactNode }
       ],
     },
     { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },
-    { tipo: "visual", etiqueta: "Cupones", icono: <IconoTicket tamano={16} /> },
   ];
 
   return (
