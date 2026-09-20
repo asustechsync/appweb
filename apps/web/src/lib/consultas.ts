@@ -207,28 +207,6 @@ export async function slugsDeProductos(): Promise<string[]> {
   return productos.map((producto) => producto.slug);
 }
 
-export interface CategoriaDeNavegacion {
-  slug: string;
-  nombre: string;
-}
-
-/**
- * Categorias destacadas para la barra de secciones de la cabecera.
- * Etiqueta `navegacion`: la usa todo el arbol de paginas, no solo la portada.
- */
-export async function categoriasDestacadas(limite = 6): Promise<CategoriaDeNavegacion[]> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(etiquetas.navegacion());
-
-  return prisma.categoria.findMany({
-    where: { activa: true, destacada: true },
-    orderBy: { orden: "asc" },
-    take: limite,
-    select: { slug: true, nombre: true },
-  });
-}
-
 export async function marcas(limite = 10): Promise<MarcaDeFicha[]> {
   "use cache";
   cacheLife("hours");
