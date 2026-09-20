@@ -4,3 +4,4 @@ export { IconoCarrito } from "./IconoCarrito";
 export { IconoPedidos } from "./IconoPedidos";
 export { IconoSol } from "./IconoSol";
 export { IconoLuna } from "./IconoLuna";
+export { IconoSearch } from "./IconoSearch";

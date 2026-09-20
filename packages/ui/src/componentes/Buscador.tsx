@@ -1,5 +1,4 @@
-import Image from "next/image";
-import IconoSearch from "../iconos/search.svg";
+import { IconoSearch } from "../iconos";
 import "./primitivos.css";
 
 export interface PropsBuscador {
@@ -32,7 +31,7 @@ export function Buscador({
       </label>
       <input id={id} name="q" type="search" placeholder={textoBuscar} />
       <button type="submit" aria-label="Buscar">
-        <Image src={IconoSearch} alt="" width={20} height={20} aria-hidden="true" />
+        <IconoSearch tamano={20} />
       </button>
     </form>
   );
