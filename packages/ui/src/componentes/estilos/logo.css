@@ -2,7 +2,7 @@
   display: inline-block;
   flex: 0 0 auto;
   font-family: var(--tipo-familia-base);
-  font-size: var(--tipo-tamano-xl);
+  font-size: var(--tipo-tamano-2xl);
   font-weight: var(--tipo-peso-fuerte);
   letter-spacing: 0.02em;
   color: var(--color-texto);
