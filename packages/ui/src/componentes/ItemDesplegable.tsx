@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { IconoChevronAbajo } from "../iconos";
 
@@ -15,6 +15,8 @@ export interface EnlaceDeDesplegable {
 export interface PropsItemDesplegable {
   etiqueta: string;
   items: EnlaceDeDesplegable[];
+  /** Nodo ya renderizado (`<IconoTal tamano={14} />`), no el componente. */
+  icono?: ReactNode;
 }
 
 /**
@@ -27,7 +29,7 @@ export interface PropsItemDesplegable {
  * hijo `absolute` que se salga de su alto — el desplegable quedaba aplastado
  * dentro de la misma linea en vez de flotar debajo. `fixed` no lo sufre.
  */
-export function ItemDesplegable({ etiqueta, items }: PropsItemDesplegable) {
+export function ItemDesplegable({ etiqueta, items, icono }: PropsItemDesplegable) {
   const [abierto, setAbierto] = useState(false);
   const [posicion, setPosicion] = useState({ top: 0, left: 0 });
   const contenedorRef = useRef<HTMLDivElement>(null);
@@ -72,6 +74,7 @@ export function ItemDesplegable({ etiqueta, items }: PropsItemDesplegable) {
         onClick={alternar}
         aria-expanded={abierto}
       >
+        {icono}
         <span>{etiqueta}</span>
         <IconoChevronAbajo tamano={12} />
       </button>

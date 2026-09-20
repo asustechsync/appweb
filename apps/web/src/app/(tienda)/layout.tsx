@@ -1,4 +1,10 @@
-import { Cabecera, type SeccionDeNavegacion } from "@appweb/ui";
+import {
+  Cabecera,
+  IconoEtiqueta,
+  IconoMoneda,
+  IconoPregunta,
+  type SeccionDeNavegacion,
+} from "@appweb/ui";
 
 /**
  * Layout de la tienda publica — CLASE A.
@@ -14,18 +20,29 @@ import { Cabecera, type SeccionDeNavegacion } from "@appweb/ui";
  */
 export default function LayoutTienda({ children }: { children: React.ReactNode }) {
   const secciones: SeccionDeNavegacion[] = [
-    { tipo: "enlace", etiqueta: "Ofertas", href: "/#ofertas" },
+    {
+      tipo: "enlace",
+      etiqueta: "Ofertas",
+      href: "/#ofertas",
+      icono: <IconoEtiqueta tamano={14} />,
+    },
     { tipo: "enlace", etiqueta: "Marcas", href: "/#marcas" },
     {
       tipo: "desplegable",
       etiqueta: "Ayuda",
+      icono: <IconoPregunta tamano={14} />,
       items: [
         { etiqueta: "Cambios y devoluciones", href: "/ayuda/cambios-y-devoluciones" },
         { etiqueta: "Preguntas frecuentes", href: "/ayuda/preguntas-frecuentes" },
         { etiqueta: "Contacto", href: "/ayuda/contacto" },
       ],
     },
-    { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },
+    {
+      tipo: "enlace",
+      etiqueta: "Envío GRATIS desde S/99",
+      href: "/envios",
+      icono: <IconoMoneda tamano={14} />,
+    },
   ];
 
   return (

@@ -8,7 +8,9 @@
   overflow-x: auto;
 }
 .ui-navegacion-secciones a {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
   padding-block: var(--espacio-2);
   color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-xs);
@@ -19,4 +21,7 @@
 }
 .ui-navegacion-secciones a:hover {
   color: var(--color-texto);
+}
+.ui-navegacion-secciones a svg {
+  color: var(--color-textoTenue);
 }
