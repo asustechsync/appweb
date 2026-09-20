@@ -17,9 +17,11 @@
 }
 .ui-item-desplegable__disparador svg {
   color: var(--color-textoTenue);
+}
+.ui-item-desplegable__disparador svg:last-child {
   transition: transform var(--transicion-rapida);
 }
-.ui-item-desplegable__disparador[aria-expanded="true"] svg {
+.ui-item-desplegable__disparador[aria-expanded="true"] svg:last-child {
   transform: rotate(180deg);
 }
 
