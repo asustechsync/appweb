@@ -106,8 +106,10 @@
   background: var(--color-superficie);
 }
 
+/* Oculto en movil: no hay espacio para el slide y dos banners a la vez, y
+   el slide ya lleva sus propios CTA a las mismas secciones. */
 .ui-hero__panel {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: var(--espacio-3);
 }
@@ -130,6 +132,7 @@
     aspect-ratio: auto;
   }
   .ui-hero__panel {
+    display: flex;
     flex: 3 1 0%;
   }
 }
