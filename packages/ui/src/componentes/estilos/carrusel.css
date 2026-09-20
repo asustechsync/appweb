@@ -5,8 +5,8 @@
    padre inmediato, y __pista ya es mas angosta que el carrusel completo
    porque __fijo le resta espacio. */
 
-.ui-carrusel-productos {
-  --visibles: 3;
+.ui-carrusel {
+  --visibles: 2;
   container-type: inline-size;
   display: flex;
   align-items: stretch;
@@ -14,12 +14,12 @@
   position: relative;
 }
 
-.ui-carrusel-productos__fijo {
+.ui-carrusel__fijo {
   flex: 0 0 auto;
   inline-size: calc((100cqw - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
 }
 
-.ui-carrusel-productos__pista {
+.ui-carrusel__pista {
   flex: 1 1 auto;
   min-inline-size: 0;
   display: flex;
@@ -29,16 +29,16 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.ui-carrusel-productos__pista::-webkit-scrollbar {
+.ui-carrusel__pista::-webkit-scrollbar {
   display: none;
 }
-.ui-carrusel-productos__pista > * {
+.ui-carrusel__pista > * {
   flex: 0 0 auto;
   scroll-snap-align: start;
   inline-size: calc((100cqw - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));
 }
 
-.ui-carrusel-productos__flecha {
+.ui-carrusel__flecha {
   position: absolute;
   inset-block-start: 50%;
   transform: translateY(-50%);
@@ -56,39 +56,39 @@
   transition: opacity var(--transicion-rapida);
   z-index: 1;
 }
-.ui-carrusel-productos__flecha:disabled {
+.ui-carrusel__flecha:disabled {
   opacity: 0;
   pointer-events: none;
 }
-.ui-carrusel-productos__flecha--prev {
+.ui-carrusel__flecha--prev {
   inset-inline-start: calc(-1 * var(--espacio-4));
 }
-.ui-carrusel-productos__flecha--next {
+.ui-carrusel__flecha--next {
   inset-inline-end: calc(-1 * var(--espacio-4));
 }
 
 /* Cada paso sube --visibles en 1: el fijo se queda en 1 slot siempre, asi
    que la cuenta de tarjetas visibles en la pista es --visibles menos 1. */
 @media (min-width: 30rem) {
-  .ui-carrusel-productos {
+  .ui-carrusel {
     --visibles: 4;
   }
 }
 @media (min-width: 40rem) {
-  .ui-carrusel-productos {
+  .ui-carrusel {
     --visibles: 5;
   }
-  .ui-carrusel-productos__flecha {
+  .ui-carrusel__flecha {
     display: inline-flex;
   }
 }
 @media (min-width: 52rem) {
-  .ui-carrusel-productos {
+  .ui-carrusel {
     --visibles: 6;
   }
 }
 @media (min-width: 64rem) {
-  .ui-carrusel-productos {
+  .ui-carrusel {
     /* fijo (1) + 6 tarjetas visibles en la pista */
     --visibles: 7;
   }

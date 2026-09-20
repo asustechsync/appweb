@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
+import "./estilos/carrusel.css";
 import "./primitivos.css";
 
-export interface PropsCarruselProductos {
+export interface PropsCarrusel {
   children: ReactNode;
   /** Se ancla a la izquierda, fuera de la pista: no se desliza con el resto. */
   fijo?: ReactNode;
@@ -13,25 +14,26 @@ export interface PropsCarruselProductos {
 }
 
 /**
- * Fila de tarjetas que se desliza en horizontal, una sola linea, con un
- * elemento fijo opcional (el banner de oferta) que se queda anclado a la
- * izquierda mientras el resto se desliza. Muestra ~6 tarjetas en escritorio
- * ademas del fijo; el resto se llega con las flechas, deslizando con el
- * dedo, el trackpad o la rueda del mouse.
+ * Fila de items que se desliza en horizontal, una sola linea, con un
+ * elemento fijo opcional que se queda anclado a la izquierda mientras el
+ * resto se desliza. Muestra ~6 items en escritorio ademas del fijo; el resto
+ * se llega con las flechas, deslizando con el dedo, el trackpad o la rueda
+ * del mouse.
  *
- * `fijo` y cada tarjeta de `children` miden lo mismo aunque vivan en
+ * Reutilizable para carruseles de productos, marcas, categorias, etc.
+ *
+ * El fijo y cada hijo de `children` miden lo mismo aunque vivan en
  * contenedores distintos: ambos usan `cqw` contra el mismo `container-type`
- * en `.ui-carrusel-productos`, asi que el ancho no depende de cual sea su
- * padre inmediato.
+ * en `.ui-carrusel`, asi que el ancho no depende de cual sea su padre inmediato.
  *
  * Isla cliente: las flechas necesitan saber si ya se llego a un extremo
  * para deshabilitarse, y eso exige leer la posicion real del scroll. El
  * scroll en si sigue siendo nativo, no hay una libreria de carrusel.
  *
- * FIRST MOBILE: cuantas tarjetas se ven por vez sube por quiebres via la
+ * FIRST MOBILE: cuantos items se ven por vez sube por quiebres via la
  * variable `--visibles` en el CSS; aqui no hay medidas.
  */
-export function CarruselProductos({ children, fijo, etiqueta = "Productos" }: PropsCarruselProductos) {
+export function Carrusel({ children, fijo, etiqueta = "Carrusel" }: PropsCarrusel) {
   const pistaRef = useRef<HTMLDivElement>(null);
   const [alInicio, setAlInicio] = useState(true);
   const [alFinal, setAlFinal] = useState(true);
@@ -72,16 +74,16 @@ export function CarruselProductos({ children, fijo, etiqueta = "Productos" }: Pr
   }
 
   return (
-    <div className="ui-carrusel-productos" role="region" aria-roledescription="carrusel" aria-label={etiqueta}>
-      {fijo ? <div className="ui-carrusel-productos__fijo">{fijo}</div> : null}
+    <div className="ui-carrusel" role="region" aria-roledescription="carrusel" aria-label={etiqueta}>
+      {fijo ? <div className="ui-carrusel__fijo">{fijo}</div> : null}
 
-      <div className="ui-carrusel-productos__pista" ref={pistaRef}>
+      <div className="ui-carrusel__pista" ref={pistaRef}>
         {children}
       </div>
 
       <button
         type="button"
-        className="ui-carrusel-productos__flecha ui-carrusel-productos__flecha--prev"
+        className="ui-carrusel__flecha ui-carrusel__flecha--prev"
         aria-label="Ver anteriores"
         onClick={() => desplazar(-1)}
         disabled={alInicio}
@@ -91,7 +93,7 @@ export function CarruselProductos({ children, fijo, etiqueta = "Productos" }: Pr
 
       <button
         type="button"
-        className="ui-carrusel-productos__flecha ui-carrusel-productos__flecha--next"
+        className="ui-carrusel__flecha ui-carrusel__flecha--next"
         aria-label="Ver siguientes"
         onClick={() => desplazar(1)}
         disabled={alFinal}

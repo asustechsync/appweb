@@ -15,7 +15,9 @@ export { Precio, type PropsPrecio } from "./componentes/Precio";
 export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/TarjetaProducto";
 export { BannerOferta, type PropsBannerOferta } from "./componentes/BannerOferta";
 export { RejillaProductos, type PropsRejillaProductos } from "./componentes/RejillaProductos";
-export { CarruselProductos, type PropsCarruselProductos } from "./componentes/CarruselProductos";
+export { Carrusel, type PropsCarrusel } from "./componentes/Carrusel";
+// Alias temporal para compatibilidad
+export { Carrusel as CarruselProductos, type PropsCarrusel as PropsCarruselProductos } from "./componentes/Carrusel";
 export { GaleriaProducto, type PropsGaleriaProducto, type ImagenGaleria } from "./componentes/GaleriaProducto";
 export {
   SelectorVariantes,
