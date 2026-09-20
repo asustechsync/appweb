@@ -14,6 +14,16 @@ const config: NextConfig = {
   // Clase A: HTML cacheado que no toca la base en el request del visitante.
   // `experimental.useCache` esta deprecado en esta version; absorbido aqui.
   cacheComponents: true,
+  // Sin esto, `npm run dev` abierto desde el celular (o cualquier IP de la
+  // red local) carga el HTML pero Next bloquea los chunks de /_next/* por
+  // venir de un origen distinto a localhost: la pagina nunca hidrata y
+  // ningun boton responde. Solo aplica en dev, next build lo ignora.
+  //
+  // No admite rangos CIDR, solo hosts exactos o comodin de subdominio
+  // (`*.ejemplo.com`) — hay que listar cada IP de LAN que se vaya a usar.
+  // Esta es la que "npm run dev" imprime como "Network:" al arrancar; si
+  // cambia (otra red, otra maquina), hay que actualizarla aqui.
+  allowedDevOrigins: ["172.25.64.1"],
 };
 
 export default config;
