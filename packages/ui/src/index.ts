@@ -11,6 +11,7 @@ export {
   IconoMoneda,
   IconoMarca,
   IconoTicket,
+  IconoCarrito,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -55,3 +56,21 @@ export {
   PaginaInformativa,
   type PropsPaginaInformativa,
 } from "./componentes/PaginaInformativa";
+
+// Compra (Clase B): carrito y checkout.
+export {
+  DisposicionCompra,
+  type PropsDisposicionCompra,
+} from "./componentes/DisposicionCompra";
+export {
+  SelectorCantidad,
+  type PropsSelectorCantidad,
+} from "./componentes/SelectorCantidad";
+export { LineaDeCarrito, type PropsLineaDeCarrito } from "./componentes/LineaDeCarrito";
+export {
+  ResumenCompra,
+  type PropsResumenCompra,
+  type MetodoEnvioElegible,
+} from "./componentes/ResumenCompra";
+export { EstadoVacio, type PropsEstadoVacio } from "./componentes/EstadoVacio";
+export { Cargando, type PropsCargando } from "./componentes/Cargando";

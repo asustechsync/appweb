@@ -1,0 +1,20 @@
+.ui-cargando {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding-block: var(--espacio-8);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-cargando__punto {
+  inline-size: var(--espacio-2);
+  block-size: var(--espacio-2);
+  border-radius: var(--radio-completo);
+  background: currentColor;
+  animation: ui-cargando-latido 1s ease-in-out infinite;
+}
+
+@keyframes ui-cargando-latido {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}

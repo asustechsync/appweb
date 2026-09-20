@@ -834,10 +834,47 @@ async function crearProductos() {
   }
 }
 
+// ── Metodos de envio ─────────────────────────────────────────────────────
+
+/**
+ * Tarifas del carrito y el checkout. `gratisDesde` en S/ 99 para Lima y Callao
+ * es la misma promesa que anuncian el hero y /envios: si cambia una, cambian
+ * las tres.
+ */
+const metodosEnvio = [
+  { nombre: "Lima y Callao", costo: 12, gratisDesde: 99, orden: 1 },
+  { nombre: "Provincias (agencia)", costo: 22, gratisDesde: null, orden: 2 },
+  { nombre: "Recojo en tienda", costo: 0, gratisDesde: null, orden: 3 },
+];
+
+async function crearMetodosEnvio() {
+  console.log("Metodos de envio:");
+
+  // MetodoEnvio no tiene una columna unica de negocio (el id es cuid), asi que
+  // la idempotencia se consigue buscando por nombre antes de crear.
+  for (const metodo of metodosEnvio) {
+    const existente = await prisma.metodoEnvio.findFirst({
+      where: { nombre: metodo.nombre },
+      select: { id: true },
+    });
+
+    if (existente) {
+      await prisma.metodoEnvio.update({ where: { id: existente.id }, data: metodo });
+    } else {
+      await prisma.metodoEnvio.create({ data: metodo });
+    }
+
+    const gratis = metodo.gratisDesde ? ` — gratis desde S/ ${metodo.gratisDesde}` : "";
+    console.log(`  ✔ ${metodo.nombre} — S/ ${metodo.costo}${gratis}`);
+  }
+}
+
 async function main() {
   await crearCategorias();
   console.log("");
   await crearProductos();
+  console.log("");
+  await crearMetodosEnvio();
 }
 
 main()

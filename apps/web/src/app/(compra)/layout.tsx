@@ -1,3 +1,7 @@
+import { Cabecera } from "@appweb/ui";
+
+import { SECCIONES } from "@/lib/secciones";
+
 /**
  * Layout de compra — CLASE B (carrito y checkout).
  *
@@ -6,5 +10,10 @@
  * cliente. Aqui no se leen cookies: eso volveria dinamico el arbol.
  */
 export default function LayoutCompra({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <Cabecera secciones={SECCIONES} />
+      {children}
+    </>
+  );
 }

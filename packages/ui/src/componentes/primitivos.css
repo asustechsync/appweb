@@ -27,3 +27,9 @@
 @import "./estilos/selector-variantes.css";
 @import "./estilos/ficha-producto.css";
 @import "./estilos/pagina-informativa.css";
+@import "./estilos/disposicion-compra.css";
+@import "./estilos/selector-cantidad.css";
+@import "./estilos/linea-carrito.css";
+@import "./estilos/resumen-compra.css";
+@import "./estilos/estado-vacio.css";
+@import "./estilos/cargando.css";

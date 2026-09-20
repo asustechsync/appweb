@@ -26,6 +26,16 @@ export {
   type TotalesCompra,
 } from "./carrito/totales";
 
+export {
+  agregarAlCarrito,
+  cambiarCantidad,
+  quitarDelCarrito,
+  unidadesEn,
+  normalizarCarrito,
+  MAX_POR_LINEA,
+  type LineaGuardada,
+} from "./carrito/guardado";
+
 // Stock
 export {
   movimientosPorVenta,

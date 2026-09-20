@@ -1,0 +1,42 @@
+/* FIRST MOBILE: una columna. Desde 64rem (mismo quiebre que FichaProducto y
+   Hero) el resumen pasa al lado y se queda pegado al hacer scroll. */
+
+.ui-disposicion-compra {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-5);
+  padding-block: var(--espacio-6) var(--espacio-16);
+}
+.ui-disposicion-compra__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+.ui-disposicion-compra__cabecera h1 {
+  font-size: var(--tipo-tamano-2xl);
+}
+.ui-disposicion-compra__cabecera p {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-disposicion-compra__principal {
+  min-inline-size: 0;
+}
+
+@media (min-width: 64rem) {
+  .ui-disposicion-compra {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    column-gap: var(--espacio-8);
+    align-items: start;
+  }
+  .ui-disposicion-compra__cabecera {
+    grid-column: 1 / -1;
+  }
+  .ui-disposicion-compra__lateral {
+    position: sticky;
+    /* La cabecera es sticky y mide ~4.5rem: sin este margen el resumen se
+       metería debajo de ella al hacer scroll. */
+    inset-block-start: var(--espacio-20);
+  }
+}

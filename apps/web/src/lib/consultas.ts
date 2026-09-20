@@ -207,6 +207,106 @@ export async function slugsDeProductos(): Promise<string[]> {
   return productos.map((producto) => producto.slug);
 }
 
+export interface VarianteDeCarrito {
+  varianteId: string;
+  slug: string;
+  nombre: string;
+  talla: string;
+  color: string;
+  imagenUrl: string;
+  precio: number;
+  precioLista: number | null;
+  stock: number;
+}
+
+/**
+ * Datos frescos de una variante para pintar su linea del carrito.
+ *
+ * El carrito guardado solo tiene varianteId y cantidad: el precio, el nombre y
+ * el stock se leen aqui en cada visita. Un carrito de hace una semana cobraria
+ * el precio de hace una semana si se guardara con la linea.
+ *
+ * Cacheada por variante y con vida corta: el stock cambia con cada venta y
+ * mostrar uno muy viejo llevaria a prometer unidades que ya no estan. La
+ * comprobacion que manda sigue siendo la del checkout, contra MovimientoStock.
+ */
+export async function varianteParaCarrito(
+  varianteId: string,
+): Promise<VarianteDeCarrito | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(etiquetas.catalogo());
+
+  const variante = await prisma.variante.findFirst({
+    where: { id: varianteId, activa: true, producto: { activo: true } },
+    select: {
+      id: true,
+      talla: true,
+      color: true,
+      stock: true,
+      producto: {
+        select: {
+          slug: true,
+          nombre: true,
+          precio: true,
+          precioLista: true,
+          imagenes: { orderBy: { orden: "asc" }, take: 1, select: { url: true } },
+        },
+      },
+    },
+  });
+
+  if (variante === null) return null;
+
+  const { producto } = variante;
+  const precio = resolverPrecio({
+    precio: Number(producto.precio),
+    precioLista: producto.precioLista !== null ? Number(producto.precioLista) : null,
+  });
+
+  return {
+    varianteId: variante.id,
+    slug: producto.slug,
+    nombre: producto.nombre,
+    talla: variante.talla,
+    color: variante.color,
+    imagenUrl: producto.imagenes[0]?.url ?? "",
+    precio: precio.precio,
+    precioLista: precio.precioLista,
+    stock: variante.stock,
+  };
+}
+
+export interface MetodoDeEnvio {
+  id: string;
+  nombre: string;
+  costo: number;
+  gratisDesde: number | null;
+}
+
+/**
+ * Metodos de envio activos, para el resumen del carrito y el checkout.
+ * Etiqueta `envios`: cambiar una tarifa en el panel invalida las dos pantallas.
+ */
+export async function metodosDeEnvio(): Promise<MetodoDeEnvio[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.envios());
+
+  const metodos = await prisma.metodoEnvio.findMany({
+    where: { activo: true },
+    orderBy: { orden: "asc" },
+    select: { id: true, nombre: true, costo: true, gratisDesde: true },
+  });
+
+  return metodos.map((metodo) => ({
+    id: metodo.id,
+    nombre: metodo.nombre,
+    costo: Number(metodo.costo),
+    gratisDesde: metodo.gratisDesde !== null ? Number(metodo.gratisDesde) : null,
+  }));
+}
+
 export async function marcas(limite = 10): Promise<MarcaDeFicha[]> {
   "use cache";
   cacheLife("hours");
