@@ -14,6 +14,8 @@ import { prisma } from "@appweb/db";
 export interface Sesion {
   usuarioId: string;
   rol: Rol;
+  /** Viaja dentro del token para pintar "conectado como ..." sin consultar. */
+  nombre: string;
 }
 
 export interface Contexto {
