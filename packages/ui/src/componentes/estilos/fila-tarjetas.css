@@ -1,0 +1,20 @@
+.ui-fila-tarjetas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  align-items: stretch;
+}
+.ui-fila-tarjetas > :first-child {
+  flex: 2;
+  min-inline-size: 0;
+}
+.ui-fila-tarjetas > :last-child {
+  flex: 1;
+  min-inline-size: 0;
+}
+@media (min-width: 64rem) {
+  .ui-fila-tarjetas {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}

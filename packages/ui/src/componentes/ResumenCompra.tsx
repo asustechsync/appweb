@@ -29,7 +29,12 @@ export interface PropsResumenCompra {
   onMetodo: (id: string) => void;
   /** Bloquea el paso a pagar (lineas sin stock, por ejemplo). */
   motivoBloqueo?: string | null;
-  hrefContinuar: string;
+  /** Carrito -> navega al checkout. */
+  hrefContinuar?: string;
+  /** Checkout -> confirma el pedido en el sitio, sin navegar. */
+  onConfirmar?: () => void;
+  textoContinuar?: string;
+  confirmando?: boolean;
 }
 
 const FORMATO = new Intl.NumberFormat("es-PE", {
@@ -58,8 +63,11 @@ export function ResumenCompra({
   onMetodo,
   motivoBloqueo,
   hrefContinuar,
+  onConfirmar,
+  textoContinuar = "Continuar compra",
+  confirmando,
 }: PropsResumenCompra) {
-  const bloqueado = Boolean(motivoBloqueo);
+  const bloqueado = Boolean(motivoBloqueo) || confirmando;
 
   return (
     <aside className="ui-resumen-compra" aria-label="Resumen de la compra">
@@ -131,15 +139,23 @@ export function ResumenCompra({
       {bloqueado ? (
         <>
           <span className="ui-resumen-compra__continuar ui-resumen-compra__continuar--bloqueado">
-            Continuar compra
+            {confirmando ? "Confirmando…" : textoContinuar}
           </span>
-          <p className="ui-resumen-compra__bloqueo">{motivoBloqueo}</p>
+          {motivoBloqueo ? <p className="ui-resumen-compra__bloqueo">{motivoBloqueo}</p> : null}
         </>
-      ) : (
+      ) : onConfirmar ? (
+        <button
+          type="button"
+          className="ui-resumen-compra__continuar"
+          onClick={onConfirmar}
+        >
+          {textoContinuar}
+        </button>
+      ) : hrefContinuar ? (
         <Link className="ui-resumen-compra__continuar" href={hrefContinuar}>
-          Continuar compra
+          {textoContinuar}
         </Link>
-      )}
+      ) : null}
 
       <p className="ui-resumen-compra__nota">
         El costo final y la dirección se confirman en el siguiente paso.

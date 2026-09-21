@@ -17,3 +17,15 @@
 .ui-acciones-cuenta a:hover {
   background: var(--color-fondoSutil);
 }
+.ui-acciones-cuenta__salir {
+  padding-inline: var(--espacio-2);
+  border: 0;
+  background: none;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  cursor: pointer;
+  transition: color var(--transicion-rapida);
+}
+.ui-acciones-cuenta__salir:hover {
+  color: var(--color-texto);
+}

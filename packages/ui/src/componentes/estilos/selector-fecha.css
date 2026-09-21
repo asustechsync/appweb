@@ -1,0 +1,18 @@
+.ui-selector-fecha {
+  display: flex;
+  gap: var(--espacio-2);
+}
+.ui-selector-fecha > .ui-selector-buscable {
+  flex: 1;
+  min-inline-size: 0;
+}
+/* Dia: solo dos digitos, no necesita el mismo espacio que Mes o Año. */
+.ui-selector-fecha > .ui-selector-buscable:first-child {
+  flex: 0.8;
+}
+.ui-selector-fecha > .ui-selector-buscable:nth-child(2) {
+  flex: 1.4;
+}
+.ui-selector-fecha > .ui-selector-buscable:nth-child(3) {
+  flex: 0.9;
+}

@@ -1,0 +1,41 @@
+.ui-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+}
+.ui-tarjeta__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+.ui-tarjeta__titulo {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-tarjeta__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-2);
+}
+.ui-tarjeta__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+/* Desde tablet el titulo y sus acciones comparten fila. */
+@media (min-width: 48rem) {
+  .ui-tarjeta {
+    padding: var(--espacio-5);
+  }
+  .ui-tarjeta__cabecera {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

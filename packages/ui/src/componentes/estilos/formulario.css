@@ -1,0 +1,19 @@
+.ui-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  max-inline-size: 28rem;
+}
+.ui-formulario--completo {
+  max-inline-size: none;
+}
+.ui-formulario__pie {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-align: center;
+}
+.ui-formulario__pie a {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: underline;
+}

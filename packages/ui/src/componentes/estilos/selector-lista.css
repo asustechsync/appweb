@@ -1,0 +1,75 @@
+.ui-selector-lista {
+  position: relative;
+}
+.ui-selector-lista__disparador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-1);
+  inline-size: 100%;
+  block-size: var(--control-alto);
+  padding-inline: var(--control-paddingX);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  cursor: pointer;
+  transition: border-color var(--transicion-rapida);
+}
+.ui-selector-lista__disparador:focus {
+  outline: 0;
+  border-color: var(--color-texto);
+}
+.ui-selector-lista__disparador:disabled {
+  color: var(--color-textoTenue);
+  background: var(--color-fondoSutil);
+  cursor: not-allowed;
+}
+.ui-selector-lista__vacio {
+  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+}
+
+.ui-selector-lista__lista {
+  position: absolute;
+  z-index: var(--z-desplegable);
+  inset-block-start: calc(100% + 4px);
+  inset-inline-start: 0;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: var(--espacio-1);
+  list-style: none;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-lg);
+}
+/* Recien a partir de la 5ta opcion tiene sentido acotar el alto: con 4 o
+   menos, mostrarlas todas sin scroll se ve mejor que el borde de scroll
+   pegado justo al limite. */
+.ui-selector-lista__lista--con-scroll {
+  max-block-size: calc(4 * 2.25rem + 5 * var(--espacio-1));
+  overflow-y: auto;
+}
+.ui-selector-lista__opcion {
+  display: block;
+  inline-size: 100%;
+  block-size: 2.25rem;
+  padding-inline: var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: none;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  text-align: start;
+  cursor: pointer;
+}
+.ui-selector-lista__opcion:hover,
+.ui-selector-lista__opcion[aria-selected="true"] {
+  background: var(--color-fondoSutil);
+}

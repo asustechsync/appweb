@@ -15,6 +15,9 @@
     "tokens": "tsx src/generar-theme.ts",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "flag-icons": "^7.5.0"
+  },
   "peerDependencies": {
     "next": "^16.0.0",
     "react": "^19.0.0"

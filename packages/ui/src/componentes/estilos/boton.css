@@ -1,0 +1,42 @@
+.ui-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Ancho por contenido por defecto, aunque el padre sea un flex column con
+     stretch (Formulario): sin esto se estira solo por vivir ahi, sin que
+     nadie haya pedido `anchoCompleto`. */
+  align-self: flex-start;
+  block-size: var(--control-alto);
+  padding-inline: var(--espacio-6);
+  border: 1px solid transparent;
+  border-radius: var(--radio-md);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  cursor: pointer;
+  transition:
+    opacity var(--transicion-rapida),
+    border-color var(--transicion-rapida);
+}
+.ui-boton--primario {
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+}
+.ui-boton--primario:hover:not(:disabled) {
+  opacity: 0.88;
+}
+.ui-boton--secundario {
+  background: var(--color-fondo);
+  border-color: var(--color-borde);
+  color: var(--color-texto);
+}
+.ui-boton--secundario:hover:not(:disabled) {
+  border-color: var(--color-bordeFuerte);
+}
+.ui-boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ui-boton--ancho-completo {
+  align-self: stretch;
+  inline-size: 100%;
+}

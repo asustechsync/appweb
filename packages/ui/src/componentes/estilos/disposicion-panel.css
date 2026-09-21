@@ -1,0 +1,171 @@
+/* FIRST MOBILE: en telefono la navegacion es una barra horizontal arriba;
+   desde lg pasa a columna lateral fija. */
+
+.ui-disposicion-panel {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+}
+
+.ui-disposicion-panel__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3);
+  border-block-end: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+}
+.ui-disposicion-panel__marca {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+}
+
+.ui-disposicion-panel__volver {
+  font-size: var(--tipo-tamano-xs);
+  color: var(--color-textoSuave);
+  text-decoration: underline;
+}
+.ui-disposicion-panel__volver:hover {
+  color: var(--color-texto);
+}
+
+.ui-disposicion-panel__nav {
+  display: flex;
+  gap: var(--espacio-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ui-disposicion-panel__nav::-webkit-scrollbar {
+  display: none;
+}
+.ui-disposicion-panel__seccion {
+  flex: 0 0 auto;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-align: start;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition:
+    background var(--transicion-rapida),
+    color var(--transicion-rapida),
+    border-color var(--transicion-rapida);
+}
+.ui-disposicion-panel__seccion:hover {
+  border-color: var(--color-bordeFuerte);
+  color: var(--color-texto);
+}
+.ui-disposicion-panel__seccion--activa {
+  border-color: var(--color-texto);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+}
+
+.ui-disposicion-panel__usuario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  margin-block-start: auto;
+  padding: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+}
+
+.ui-disposicion-panel__usuario-datos {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+
+.ui-disposicion-panel__avatar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: var(--radio-completo);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}
+
+.ui-disposicion-panel__usuario-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+}
+.ui-disposicion-panel__nombre {
+  inline-size: 100%;
+  overflow: hidden;
+  font-weight: var(--tipo-peso-medio);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-disposicion-panel__usuario-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block-start: var(--espacio-2);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-disposicion-panel__salir {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.ui-disposicion-panel__salir:hover {
+  color: var(--color-texto);
+}
+
+.ui-disposicion-panel__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+}
+
+@media (min-width: 64rem) {
+  .ui-disposicion-panel {
+    flex-direction: row;
+    max-inline-size: var(--contenedor-ancho);
+    margin-inline: auto;
+    border-inline: 1px solid var(--color-borde);
+  }
+  .ui-disposicion-panel__lateral {
+    position: sticky;
+    inset-block-start: 0;
+    flex: 0 0 15rem;
+    block-size: 100dvh;
+    padding: var(--espacio-5);
+    border-block-end: 0;
+    border-inline-end: 1px solid var(--color-borde);
+  }
+  .ui-disposicion-panel__nav {
+    flex-direction: column;
+    flex: 1;
+    overflow-x: visible;
+  }
+  .ui-disposicion-panel__usuario {
+    flex-wrap: wrap;
+  }
+  .ui-disposicion-panel__contenido {
+    flex: 1;
+    min-inline-size: 0;
+    padding: var(--espacio-8);
+  }
+}

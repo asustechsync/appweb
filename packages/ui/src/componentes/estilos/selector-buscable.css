@@ -1,0 +1,83 @@
+.ui-selector-buscable {
+  position: relative;
+}
+.ui-selector-buscable__disparador {
+  inline-size: 100%;
+  block-size: var(--control-alto);
+  padding-inline: var(--control-paddingX) calc(var(--control-paddingX) + 1em);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  transition: border-color var(--transicion-rapida);
+}
+.ui-selector-buscable__flecha {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--control-paddingX);
+  translate: 0 -50%;
+  color: var(--color-textoSuave);
+  pointer-events: none;
+}
+.ui-selector-buscable__disparador::placeholder {
+  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+  opacity: 1;
+}
+.ui-selector-buscable__disparador:focus {
+  outline: 0;
+  border-color: var(--color-texto);
+}
+.ui-selector-buscable__disparador:disabled {
+  color: var(--color-textoTenue);
+  background: var(--color-fondoSutil);
+  cursor: not-allowed;
+}
+
+.ui-selector-buscable__lista {
+  position: absolute;
+  z-index: var(--z-desplegable);
+  inset-block-start: calc(100% + 4px);
+  inset-inline-start: 0;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: var(--espacio-1);
+  list-style: none;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-lg);
+}
+/* Recien a partir de la 5ta opcion tiene sentido acotar el alto: con 4 o
+   menos, mostrarlas todas sin scroll se ve mejor. */
+.ui-selector-buscable__lista--con-scroll {
+  max-block-size: calc(4 * 2.25rem + 5 * var(--espacio-1));
+  overflow-y: auto;
+}
+.ui-selector-buscable__opcion {
+  display: block;
+  inline-size: 100%;
+  block-size: 2.25rem;
+  padding-inline: var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: none;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  text-align: start;
+  cursor: pointer;
+}
+.ui-selector-buscable__opcion:hover,
+.ui-selector-buscable__opcion[aria-selected="true"] {
+  background: var(--color-fondoSutil);
+}
+.ui-selector-buscable__vacio-lista {
+  padding: var(--espacio-2);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}

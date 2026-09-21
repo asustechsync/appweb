@@ -33,3 +33,17 @@
 @import "./estilos/resumen-compra.css";
 @import "./estilos/estado-vacio.css";
 @import "./estilos/cargando.css";
+@import "./estilos/formulario.css";
+@import "./estilos/campo.css";
+@import "./estilos/boton.css";
+@import "./estilos/alerta.css";
+@import "./estilos/tarjeta-seleccionable.css";
+@import "./estilos/seccion-checkout.css";
+@import "./estilos/tarjeta-pedido.css";
+
+/* Cuenta y panel (Clase C). */
+@import "./estilos/disposicion-cuenta.css";
+@import "./estilos/disposicion-panel.css";
+@import "./estilos/tarjeta.css";
+@import "./estilos/fila-lista.css";
+@import "./estilos/insignia.css";

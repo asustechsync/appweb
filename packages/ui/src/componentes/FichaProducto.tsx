@@ -24,6 +24,8 @@ export interface PropsFichaProducto {
   /** Ya resueltas por `opcionesDeCompra` de @appweb/core. */
   opciones: OpcionDeCompra[];
   categoria?: { slug: string; nombre: string } | null;
+  onAgregar?: (varianteId: string) => void;
+  agregando?: boolean;
 }
 
 /**
@@ -48,6 +50,8 @@ export function FichaProducto({
   stockTotal,
   opciones,
   categoria,
+  onAgregar,
+  agregando,
 }: PropsFichaProducto) {
   return (
     <article className="ui-ficha-producto">
@@ -92,7 +96,13 @@ export function FichaProducto({
           ) : null}
         </div>
 
-        {disponible ? <SelectorVariantes opciones={opciones} /> : null}
+        {disponible ? (
+          <SelectorVariantes
+            opciones={opciones}
+            {...(onAgregar ? { onAgregar } : {})}
+            {...(agregando !== undefined ? { agregando } : {})}
+          />
+        ) : null}
 
         {descripcion ? (
           <section className="ui-ficha-producto__descripcion">

@@ -74,3 +74,62 @@ export {
 } from "./componentes/ResumenCompra";
 export { EstadoVacio, type PropsEstadoVacio } from "./componentes/EstadoVacio";
 export { Cargando, type PropsCargando } from "./componentes/Cargando";
+export { Formulario, type PropsFormulario } from "./componentes/Formulario";
+export { Campo, type PropsCampo } from "./componentes/Campo";
+export { FilaCampos, type PropsFilaCampos } from "./componentes/FilaCampos";
+export { SelectorPais, type PropsSelectorPais } from "./componentes/SelectorPais";
+export { SelectorFecha, type PropsSelectorFecha } from "./componentes/SelectorFecha";
+export { PAISES, type Pais } from "./datos/paises";
+export { Boton, type PropsBoton } from "./componentes/Boton";
+export { Alerta, type PropsAlerta } from "./componentes/Alerta";
+export {
+  TarjetaSeleccionable,
+  type PropsTarjetaSeleccionable,
+} from "./componentes/TarjetaSeleccionable";
+export {
+  SeccionCheckout,
+  type PropsSeccionCheckout,
+} from "./componentes/SeccionCheckout";
+export {
+  TarjetaPedido,
+  type PropsTarjetaPedido,
+  type ItemDePedido,
+} from "./componentes/TarjetaPedido";
+
+// Cuenta y panel (Clase C).
+export {
+  DisposicionCuenta,
+  type PropsDisposicionCuenta,
+  type SeccionDeCuenta,
+} from "./componentes/DisposicionCuenta";
+export {
+  DisposicionPanel,
+  type PropsDisposicionPanel,
+  type SeccionDePanel,
+} from "./componentes/DisposicionPanel";
+export { Tarjeta, type PropsTarjeta } from "./componentes/Tarjeta";
+export { TarjetaInfo, type PropsTarjetaInfo } from "./componentes/TarjetaInfo";
+export { FilaTarjetas, type PropsFilaTarjetas } from "./componentes/FilaTarjetas";
+export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/TarjetaMetrica";
+export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/RejillaMetricas";
+export { FilaLista, type PropsFilaLista } from "./componentes/FilaLista";
+export { Insignia, type PropsInsignia } from "./componentes/Insignia";
+export {
+  CampoSelect,
+  type PropsCampoSelect,
+  type OpcionDeSelect,
+} from "./componentes/CampoSelect";
+export {
+  SelectorBuscable,
+  type PropsSelectorBuscable,
+  type OpcionDeSelectorBuscable,
+} from "./componentes/SelectorBuscable";
+export {
+  CampoSelectorLista,
+  type PropsCampoSelectorLista,
+} from "./componentes/CampoSelectorLista";
+export {
+  SelectorLista,
+  type PropsSelectorLista,
+  type OpcionDeSelectorLista,
+} from "./componentes/SelectorLista";

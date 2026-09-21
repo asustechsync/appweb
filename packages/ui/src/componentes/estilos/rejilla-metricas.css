@@ -1,0 +1,7 @@
+/* Auto-fit: una columna en movil y tantas como quepan al ensanchar, sin
+   tener que declarar un quiebre por cada cantidad de metricas. */
+.ui-rejilla-metricas {
+  display: grid;
+  gap: var(--espacio-3);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}

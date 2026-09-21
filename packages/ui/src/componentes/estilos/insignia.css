@@ -1,0 +1,32 @@
+.ui-insignia {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--espacio-2);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  white-space: nowrap;
+}
+.ui-insignia--marca {
+  border-color: var(--color-texto);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+}
+.ui-insignia--exito {
+  border-color: color-mix(in srgb, var(--color-exito) 40%, transparent);
+  background: color-mix(in srgb, var(--color-exito) 12%, var(--color-fondo));
+  color: var(--color-exito);
+}
+.ui-insignia--alerta {
+  border-color: color-mix(in srgb, var(--color-alerta) 40%, transparent);
+  background: color-mix(in srgb, var(--color-alerta) 12%, var(--color-fondo));
+  color: var(--color-alerta);
+}
+.ui-insignia--error {
+  border-color: color-mix(in srgb, var(--color-error) 40%, transparent);
+  background: color-mix(in srgb, var(--color-error) 12%, var(--color-fondo));
+  color: var(--color-error);
+}

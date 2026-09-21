@@ -1,0 +1,31 @@
+.ui-tarjeta-info {
+  display: flex;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+}
+.ui-tarjeta-info__icono {
+  flex-shrink: 0;
+  color: var(--color-info);
+}
+.ui-tarjeta-info__titulo {
+  margin-block-end: var(--espacio-2);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-tarjeta-info__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  line-height: var(--tipo-altura-normal);
+}
+
+@media (min-width: 48rem) {
+  .ui-tarjeta-info {
+    padding: var(--espacio-5);
+  }
+}

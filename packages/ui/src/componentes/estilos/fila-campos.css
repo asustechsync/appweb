@@ -1,0 +1,14 @@
+.ui-fila-campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+.ui-fila-campos > * {
+  flex: 1;
+  min-inline-size: 0;
+}
+@media (min-width: 48rem) {
+  .ui-fila-campos {
+    flex-direction: row;
+  }
+}

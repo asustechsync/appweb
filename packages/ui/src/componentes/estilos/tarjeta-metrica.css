@@ -1,0 +1,44 @@
+.ui-tarjeta-metrica {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+}
+.ui-tarjeta-metrica__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+.ui-tarjeta-metrica__etiqueta {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-tarjeta-metrica__cambio {
+  padding: 0 var(--espacio-1);
+  border-radius: var(--radio-sm);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-tarjeta-metrica__cambio--sube {
+  background: color-mix(in srgb, var(--color-exito) 8%, transparent);
+  color: var(--color-exito);
+}
+.ui-tarjeta-metrica__cambio--baja {
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+  color: var(--color-error);
+}
+.ui-tarjeta-metrica__valor {
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-2xl);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+}
+.ui-tarjeta-metrica__contexto {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}

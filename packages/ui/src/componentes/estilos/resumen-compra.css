@@ -113,14 +113,18 @@
 
 .ui-resumen-compra__continuar {
   display: block;
+  inline-size: 100%;
   padding: var(--espacio-3) var(--espacio-5);
+  border: 0;
   border-radius: var(--radio-completo);
   background: var(--color-texto);
   color: var(--color-textoInverso);
+  font: inherit;
   font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-fuerte);
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
   transition: opacity var(--transicion-rapida);
 }
 .ui-resumen-compra__continuar:hover {

@@ -7,6 +7,7 @@ export { IconoLuna } from "./IconoLuna";
 export { IconoSearch } from "./IconoSearch";
 export { IconoUbicacion } from "./IconoUbicacion";
 export { IconoChevronAbajo } from "./IconoChevronAbajo";
+export { IconoFlechaAbajo } from "./IconoFlechaAbajo";
 export { IconoEtiqueta } from "./IconoEtiqueta";
 export { IconoPregunta } from "./IconoPregunta";
 export { IconoMoneda } from "./IconoMoneda";

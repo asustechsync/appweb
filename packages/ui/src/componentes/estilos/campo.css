@@ -1,0 +1,99 @@
+.ui-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+.ui-campo label {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-campo__input {
+  block-size: var(--control-alto);
+  padding-inline: var(--control-paddingX);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  transition: border-color var(--transicion-rapida);
+}
+.ui-campo__input::placeholder {
+  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+  opacity: 1;
+}
+.ui-campo__input:focus {
+  outline: 0;
+  border-color: var(--color-texto);
+}
+.ui-campo__input:disabled {
+  color: var(--color-textoTenue);
+  background: var(--color-fondoSutil);
+  cursor: not-allowed;
+}
+.ui-campo__input--error {
+  border-color: var(--color-error);
+}
+
+.ui-campo__separado {
+  display: flex;
+  gap: var(--espacio-2);
+}
+.ui-campo__separado > .ui-campo__input {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ui-campo__grupo {
+  display: flex;
+  align-items: stretch;
+  block-size: var(--control-alto);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  transition: border-color var(--transicion-rapida);
+}
+.ui-campo__grupo:focus-within {
+  border-color: var(--color-texto);
+}
+.ui-campo__grupo--error {
+  border-color: var(--color-error);
+}
+.ui-campo__prefijo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding-inline: var(--control-paddingX);
+  border-inline-end: 1px solid var(--color-borde);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  white-space: nowrap;
+}
+.ui-campo__bandera {
+  border-radius: var(--radio-sm);
+  /* flag-icons calcula el alto en base al ancho: 1.33em da un icono legible
+     sin desbordar la altura del control. */
+  inline-size: 1.33em;
+  block-size: 1em;
+}
+.ui-campo__input--con-prefijo {
+  flex: 1;
+  min-inline-size: 0;
+  border: 0;
+  background: none;
+}
+.ui-campo__input--con-prefijo:focus {
+  border: 0;
+}
+.ui-campo__select {
+  padding-inline-end: var(--espacio-2);
+  cursor: pointer;
+}
+.ui-campo__select:disabled {
+  color: var(--color-textoTenue);
+  cursor: not-allowed;
+}
+.ui-campo__error {
+  color: var(--color-error);
+  font-size: var(--tipo-tamano-xs);
+}

@@ -1,0 +1,63 @@
+.ui-tarjeta-pedido {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+}
+.ui-tarjeta-pedido__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+.ui-tarjeta-pedido__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+.ui-tarjeta-pedido__nombre {
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-tarjeta-pedido__variante {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-tarjeta-pedido__cifras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding-block-start: var(--espacio-4);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-tarjeta-pedido__cifras > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+.ui-tarjeta-pedido__cifras dt {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-tarjeta-pedido__cifras dd {
+  margin: 0;
+  font-size: var(--tipo-tamano-sm);
+  font-variant-numeric: tabular-nums;
+}
+.ui-tarjeta-pedido__descuento dd {
+  color: var(--color-exito);
+}
+
+.ui-tarjeta-pedido__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding-block-start: var(--espacio-4);
+  border-block-start: 1px solid var(--color-borde);
+  font-weight: var(--tipo-peso-fuerte);
+}
