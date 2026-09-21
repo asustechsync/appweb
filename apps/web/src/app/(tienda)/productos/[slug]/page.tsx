@@ -9,9 +9,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { Contenedor, FichaProducto } from "@appweb/ui";
+import { Contenedor } from "@appweb/ui";
 
 import { productoPorSlug, slugsDeProductos } from "@/lib/consultas";
+
+import { FichaProductoCliente } from "./FichaProductoCliente";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -48,7 +50,7 @@ export default async function PaginaProducto({ params }: Props) {
   return (
     <main>
       <Contenedor>
-        <FichaProducto
+        <FichaProductoCliente
           nombre={producto.nombre}
           marca={producto.marca}
           descripcion={producto.descripcion}

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "kill-port 3000",
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start --port 3000",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2"
+    "@types/react-dom": "^19.2.2",
+    "kill-port": "^2.0.1"
   }
 }

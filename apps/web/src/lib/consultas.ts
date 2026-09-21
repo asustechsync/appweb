@@ -153,7 +153,7 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
       variantes: {
         where: { activa: true },
         orderBy: [{ talla: "asc" }, { color: "asc" }],
-        select: { talla: true, color: true, stock: true, activa: true },
+        select: { id: true, talla: true, color: true, stock: true, activa: true },
       },
     },
   });
@@ -186,7 +186,14 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
     disponible: disponibilidad.hayStock,
     stockBajo: disponibilidad.stockBajo,
     stockTotal: disponibilidad.stockTotal,
-    opciones: opcionesDeCompra(producto.variantes),
+    opciones: opcionesDeCompra(
+      producto.variantes.map((variante) => ({
+        varianteId: variante.id,
+        talla: variante.talla,
+        color: variante.color,
+        stock: variante.stock,
+      })),
+    ),
   };
 }
 
