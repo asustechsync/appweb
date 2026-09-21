@@ -9,7 +9,11 @@
  * falta permisos a medida por usuario, entonces si toca la tabla.
  */
 
-export type Rol = "CLIENTE" | "VENDEDOR" | "ALMACEN" | "ADMIN";
+/** Los cuatro roles, en una sola lista: de aqui sale el tipo y tambien el
+    esquema de validacion de tipos/, para que no se separen nunca. */
+export const ROLES = ["CLIENTE", "VENDEDOR", "ALMACEN", "ADMIN"] as const;
+
+export type Rol = (typeof ROLES)[number];
 
 export type Accion =
   | "comprar"

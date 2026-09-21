@@ -14,6 +14,7 @@ export {
 export {
   opcionesDeCompra,
   type VarianteElegible,
+  type ColorElegible,
   type OpcionDeTalla,
 } from "./catalogo/variantes";
 
@@ -58,11 +59,48 @@ export {
   type EstadoPedido,
 } from "./pedidos/estados";
 
+export { generarCodigoPedido } from "./pedidos/codigo";
+
+// Panel
+export {
+  ESTADOS_VENTA,
+  ESTADOS_PENDIENTES,
+  UMBRAL_STOCK_BAJO,
+  DIAS_VENTANA,
+  inicioDeHace,
+  variacion,
+  diasDesde,
+} from "./panel/resumen";
+
 // Usuarios
 export {
   puede,
   accionesDe,
   seccionesDelPanel,
+  ROLES,
   type Rol,
   type Accion,
 } from "./usuarios/permisos";
+
+export {
+  revisarCambioRol,
+  revisarDesactivacion,
+  mensajeDeRechazo,
+  type RechazoGestionUsuario,
+} from "./usuarios/administracion";
+
+export { hashClave, verificarClave } from "./usuarios/credenciales";
+
+export {
+  crearTokenSesion,
+  verificarTokenSesion,
+  type CargaSesion,
+} from "./usuarios/sesion";
+
+export {
+  TIPOS_DOCUMENTO,
+  ETIQUETA_TIPO_DOCUMENTO,
+  type TipoDocumento,
+} from "./usuarios/documento";
+
+export { GENEROS, ETIQUETA_GENERO, type Genero } from "./usuarios/genero";

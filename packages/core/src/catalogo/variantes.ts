@@ -14,15 +14,21 @@
  */
 
 export interface VarianteElegible {
+  varianteId: string;
   talla: string;
   color: string;
   stock: number;
 }
 
+export interface ColorElegible {
+  color: string;
+  varianteId: string;
+}
+
 export interface OpcionDeTalla {
   talla: string;
   /** Solo los colores que tienen stock en esa talla. Nunca vacio. */
-  colores: string[];
+  colores: ColorElegible[];
 }
 
 /** Tallas de letra en su orden natural; lo demas se ordena por numero. */
@@ -66,17 +72,19 @@ function compararTallas(a: string, b: string): number {
  * comprador a un callejon sin salida.
  */
 export function opcionesDeCompra(variantes: VarianteElegible[]): OpcionDeTalla[] {
-  const porTalla = new Map<string, string[]>();
+  const porTalla = new Map<string, ColorElegible[]>();
 
   for (const variante of variantes) {
     if (variante.stock <= 0) continue;
 
     const colores = porTalla.get(variante.talla);
     if (colores === undefined) {
-      porTalla.set(variante.talla, [variante.color]);
+      porTalla.set(variante.talla, [{ color: variante.color, varianteId: variante.varianteId }]);
       continue;
     }
-    if (!colores.includes(variante.color)) colores.push(variante.color);
+    if (!colores.some((c) => c.color === variante.color)) {
+      colores.push({ color: variante.color, varianteId: variante.varianteId });
+    }
   }
 
   return [...porTalla]

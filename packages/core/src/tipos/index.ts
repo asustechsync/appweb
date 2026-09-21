@@ -7,6 +7,10 @@
 
 import { z } from "zod";
 
+import { TIPOS_DOCUMENTO } from "../usuarios/documento";
+import { GENEROS } from "../usuarios/genero";
+import { ROLES } from "../usuarios/permisos";
+
 // ── Cuenta ─────────────────────────────────────────────────────────────────
 
 export const esquemaRegistro = z.object({
@@ -23,6 +27,48 @@ export const esquemaRegistro = z.object({
 export const esquemaIngreso = z.object({
   email: z.email("Revisa el correo").toLowerCase(),
   clave: z.string().min(1, "Escribe tu clave"),
+});
+
+/** Actualizacion del perfil desde /mi-cuenta. El tipo y numero de documento
+    van juntos o no van: uno sin el otro no sirve para precargar el checkout
+    ni para identificar al cliente. */
+export const esquemaPerfil = z.object({
+  nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
+  apellido: z.string().trim().min(2, "Escribe tu apellido").max(80).optional(),
+  telefono: z
+    .string()
+    .trim()
+    .regex(/^9\d{8}$/, "Numero de 9 digitos que empieza en 9")
+    .optional(),
+  tipoDocumento: z.enum(TIPOS_DOCUMENTO).optional(),
+  numeroDocumento: z.string().trim().min(6).max(20).optional(),
+  fechaNacimiento: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha invalida")
+    .optional(),
+  genero: z.enum(GENEROS).optional(),
+}).refine((datos) => !datos.tipoDocumento === !datos.numeroDocumento, {
+  message: "Elige el tipo y escribe el numero de documento",
+  path: ["numeroDocumento"],
+});
+
+// ── Usuarios (panel) ───────────────────────────────────────────────────────
+
+/** Alta de cuenta desde el panel: lo mismo que un registro, mas el rol. El
+    autorregistro publico nunca elige rol; siempre sale CLIENTE. */
+export const esquemaUsuarioPanel = esquemaRegistro.extend({
+  rol: z.enum(ROLES),
+});
+
+export const esquemaCambioRol = z.object({
+  usuarioId: z.string().min(1),
+  rol: z.enum(ROLES),
+});
+
+export const esquemaCambioActivo = z.object({
+  usuarioId: z.string().min(1),
+  activo: z.boolean(),
 });
 
 // ── Direccion ──────────────────────────────────────────────────────────────
@@ -80,6 +126,8 @@ export const esquemaCheckout = z.object({
 
 export type DatosRegistro = z.infer<typeof esquemaRegistro>;
 export type DatosIngreso = z.infer<typeof esquemaIngreso>;
+export type DatosPerfil = z.infer<typeof esquemaPerfil>;
+export type DatosUsuarioPanel = z.infer<typeof esquemaUsuarioPanel>;
 export type DatosDireccion = z.infer<typeof esquemaDireccion>;
 export type DatosProducto = z.infer<typeof esquemaProducto>;
 export type DatosVariante = z.infer<typeof esquemaVariante>;
