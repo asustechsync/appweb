@@ -6,9 +6,9 @@ import "./globals.css";
  * ═══════════════════════════════════════════════════════════════════════════
  *  CLASE C — el panel entero. Presupuesto: 0 ms de navegacion.
  *
- *  Este layout se ejecuta UNA vez: verifica el token en local con la clave
- *  publica (cero viajes de red), comprueba que el rol puede entrar al panel y
- *  monta el shell.
+ *  Este layout monta el documento y nada mas. La unica ruta del panel
+ *  (src/app/[[...ruta]]/page.tsx) verifica el token en local (cero viajes a
+ *  la base), comprueba que el rol puede entrar y monta el shell una sola vez.
  *
  *  A partir de ahi, cambiar de seccion es navegacion del router del cliente y
  *  los datos salen de la cache de TanStack Query. Quien trabaja en el panel
