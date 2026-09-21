@@ -37,15 +37,34 @@ enum Rol {
   ADMIN
 }
 
+enum TipoDocumento {
+  DNI
+  RUC
+  CARNE_EXTRANJERIA
+  PASAPORTE
+}
+
+enum Genero {
+  MASCULINO
+  FEMENINO
+  OTRO
+  PREFIERO_NO_DECIR
+}
+
 model Usuario {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  clave     String
-  nombre    String
-  telefono  String?
-  rol       Rol      @default(CLIENTE)
-  activo    Boolean  @default(true)
-  creadoEn  DateTime @default(now())
+  id               String         @id @default(cuid())
+  email            String         @unique
+  clave            String
+  nombre           String
+  apellido         String?
+  telefono         String?
+  tipoDocumento    TipoDocumento?
+  numeroDocumento  String?
+  fechaNacimiento  DateTime?      @db.Date
+  genero           Genero?
+  rol              Rol            @default(CLIENTE)
+  activo           Boolean        @default(true)
+  creadoEn         DateTime       @default(now())
 
   direcciones Direccion[]
   pedidos     Pedido[]
@@ -202,6 +221,18 @@ enum EstadoPedido {
   CANCELADO
 }
 
+enum TipoComprobante {
+  BOLETA
+  FACTURA
+}
+
+enum MedioPago {
+  YAPE
+  PLIN
+  TRANSFERENCIA
+  CONTRA_ENTREGA
+}
+
 model Pedido {
   id        String       @id @default(cuid())
   codigo    String       @unique
@@ -222,6 +253,17 @@ model Pedido {
   envioReferencia   String?
   envioMetodo       String
   envioTelefono     String?
+
+  // Pedidas en el checkout DESDE AHORA aunque la boleta electronica se emita
+  // fuera del sistema por ahora: si no se capturan al inicio, el dia que
+  // toque emitir no hay forma de conseguirlas.
+  comprobante  TipoComprobante @default(BOLETA)
+  documento    String
+  razonSocial  String?
+
+  // Elegido en el checkout; `PasarelaPago` lo necesita para recalcular las
+  // instrucciones de pago en la pagina de confirmacion sin volver a preguntar.
+  medioPago MedioPago
 
   creadoEn  DateTime @default(now())
   editadoEn DateTime @updatedAt
