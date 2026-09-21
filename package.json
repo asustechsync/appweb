@@ -7,9 +7,13 @@
     "apps/*",
     "packages/*"
   ],
+  "//dev:todo": "Tienda y panel en una sola terminal, con la salida etiquetada por app. `concurrently` esta aqui porque npm no corre scripts en paralelo: `--workspaces` los encadena y el primer servidor bloquearia al segundo para siempre. El `-k` cierra los dos cuando uno cae, para no dejar un puerto ocupado por un servidor huerfano.",
+  "//dev:paneles": "Lo mismo pero cada app en su propio panel de Windows Terminal, con su scrollback aparte. Solo Windows; en Linux o Mac se usa `dev:todo`. Son DOS llamadas a `wt` sobre la ventana `-w appweb` en vez de una con `;`: el `;` que separa subcomandos de wt no sobrevive al paso por cmd (probado: solo se ejecuta el primer panel). El `ping` es la espera para que la ventana exista antes de partirla.",
   "scripts": {
     "dev": "npm run dev -w @appweb/web",
     "dev:admin": "npm run dev -w @appweb/admin",
+    "dev:todo": "concurrently -k -n tienda,panel -c cyan,magenta \"npm:dev\" \"npm:dev:admin\"",
+    "dev:paneles": "wt -w appweb -d . --title tienda cmd /k npm run dev && ping -n 3 127.0.0.1 >nul && wt -w appweb split-pane -d . --title panel cmd /k npm run dev:admin",
     "build": "npm run build -w @appweb/web && npm run build -w @appweb/admin",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "db:generar": "npm run generar -w @appweb/db",
@@ -20,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "concurrently": "^10.0.5",
     "tsx": "^4.20.6",
     "typescript": "^6.0.3"
   },
