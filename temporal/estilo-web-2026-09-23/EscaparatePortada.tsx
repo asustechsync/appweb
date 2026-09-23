@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconoBeneficio } from "../iconos";
 
 import "./estilos/escaparate-portada.css";
 
@@ -84,24 +85,22 @@ export function EscaparatePortada({ nombre, subtitulo, imagen, categoria, precio
           </div>
 
           <div className="ui-escaparate__promocion-asistente">
-            <section className="ui-escaparate__asistente" aria-label="Beneficios de compra">
-              <article className="ui-escaparate__editorial">
-                <span className="ui-escaparate__editorial-etiqueta">{categoria}</span>
-                <img src={imagen} alt="" />
-                <div className="ui-escaparate__editorial-texto">
-                  <span>Para tu día a día</span>
-                  <h2>Comodidad con personalidad.</h2>
-                </div>
-              </article>
-              <div className="ui-escaparate__atributos">
-                <article><span>Seguridad</span><strong>Protección</strong><small>Compra con confianza</small></article>
-                <article><span>Envíos</span><strong>Nacionales</strong><small>Llegamos a todo el Perú</small></article>
-                <article><span>Garantía</span><strong>Cobertura</strong><small>Para tu compra</small></article>
-                <article><span>Soporte</span><strong>Atención</strong><small>Para tus consultas</small></article>
-              </div>
-              <Link className="ui-escaparate__atributos-enlace" href="/categorias/hombres">
-                Ver la colección <span aria-hidden="true">↗</span>
+            <article className="ui-escaparate__banner" aria-label="Promoción destacada">
+              <span className="ui-escaparate__banner-ceja">Edición especial</span>
+              <h2>Renueva tus básicos</h2>
+              <p>Comodidad que te acompaña todos los días.</p>
+              <Link href="/categorias/hombres" className="ui-escaparate__banner-enlace">
+                Descubre la colección <span aria-hidden="true">→</span>
               </Link>
+            </article>
+
+            <section className="ui-escaparate__asistente" aria-label="Beneficios de compra">
+              <div className="ui-escaparate__asistente-opciones">
+                <div><span className="ui-escaparate__asistente-icono"><IconoBeneficio nombre="security" /></span><span><strong>Seguridad</strong><small>Compra segura y protegida.</small></span></div>
+                <div><span className="ui-escaparate__asistente-icono"><IconoBeneficio nombre="box-time" /></span><span><strong>Envíos</strong><small>Recibe tus pedidos rápido.</small></span></div>
+                <div><span className="ui-escaparate__asistente-icono"><IconoBeneficio nombre="verify" /></span><span><strong>Garantía</strong><small>Productos respaldados por nosotros.</small></span></div>
+                <div><span className="ui-escaparate__asistente-icono"><IconoBeneficio nombre="message-text" /></span><span><strong>Soporte</strong><small>Estamos aquí para ayudarte.</small></span></div>
+              </div>
             </section>
           </div>
         </div>
