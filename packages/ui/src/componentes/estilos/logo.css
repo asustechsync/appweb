@@ -1,11 +1,19 @@
 .ui-logo {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
   flex: 0 0 auto;
   font-family: var(--tipo-familia-base);
-  font-size: var(--tipo-tamano-2xl);
+  font-size: var(--tipo-tamano-lg);
   font-weight: var(--tipo-peso-fuerte);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   color: var(--color-texto);
   text-decoration: none;
   white-space: nowrap;
+}
+
+.ui-logo__simbolo {
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-6);
+  fill: currentColor;
 }

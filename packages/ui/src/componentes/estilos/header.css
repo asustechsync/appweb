@@ -1,0 +1,104 @@
+.ui-header {
+  --color-fondoSutil: var(--color-neutro-200);
+  --color-texto: var(--color-neutro-900);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(16rem, 1fr) auto auto;
+  align-items: center;
+  gap: var(--espacio-6);
+  min-block-size: var(--espacio-24);
+  padding-inline: var(--espacio-6);
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+
+.ui-header__marca {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.ui-header__marca .ui-logo {
+  font-size: var(--tipo-tamano-2xl);
+}
+
+.ui-header__marca .ui-logo__simbolo {
+  inline-size: var(--espacio-10);
+  block-size: var(--espacio-8);
+}
+
+.ui-header__buscador {
+  inline-size: min(100%, 32rem);
+  min-inline-size: 0;
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ui-header__buscador .ui-buscador {
+  block-size: var(--espacio-12);
+  box-sizing: border-box;
+}
+
+.ui-header__ubicacion .ui-ubicacion {
+  block-size: var(--espacio-12);
+  box-sizing: border-box;
+}
+
+.ui-header__ubicacion {
+  grid-column: 3;
+}
+
+.ui-header__acciones {
+  grid-column: 4;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+}
+
+.ui-header__menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.ui-header__menu:hover {
+  background: var(--color-neutro-0);
+}
+
+@media (max-width: 48rem) {
+  .ui-header {
+    grid-template-columns: 1fr auto;
+    gap: var(--espacio-3);
+    padding: var(--espacio-4);
+  }
+  .ui-header__marca { grid-row: 1; grid-column: 1; }
+  .ui-header__buscador {
+    position: static;
+    grid-row: 2;
+    grid-column: 1 / -1;
+    inline-size: calc(100% - var(--espacio-12) - var(--espacio-2));
+    justify-self: start;
+    transform: none;
+  }
+  .ui-header__ubicacion { display: none; }
+  .ui-header__acciones { grid-row: 1; grid-column: 2; }
+  .ui-header__acciones .ui-acciones-cuenta { gap: var(--espacio-2); }
+  .ui-header__menu {
+    display: inline-flex;
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+}

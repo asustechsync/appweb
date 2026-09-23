@@ -21,7 +21,7 @@ export interface PropsItemDesplegable {
 
 /**
  * Item de NavegacionSecciones con submenu ("Ayuda ▾"). Isla cliente solo por
- * el abrir/cerrar — misma mecanica que SelectorUbicacion, sin localStorage.
+ * el abrir/cerrar sin depender de almacenamiento del navegador.
  *
  * El panel usa `position: fixed` con coordenadas calculadas del disparador,
  * en vez de `absolute` dentro de su contenedor: la barra de secciones tiene

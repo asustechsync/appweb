@@ -1,0 +1,16 @@
+.ui-ubicacion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  white-space: nowrap;
+}
+
+.ui-ubicacion svg {
+  flex: 0 0 auto;
+  color: var(--color-textoSuave);
+}

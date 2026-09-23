@@ -4,28 +4,24 @@
   gap: var(--espacio-1);
   flex: 0 0 auto;
 }
-.ui-acciones-cuenta a {
+.ui-acciones-cuenta a,
+.ui-acciones-cuenta button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--control-alto);
-  block-size: var(--control-alto);
-  border-radius: var(--radio-md);
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  box-sizing: border-box;
+  border-radius: var(--radio-lg);
+  border: 0;
+  background: var(--color-superficie);
   color: var(--color-texto);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
   transition: background-color var(--transicion-rapida);
 }
-.ui-acciones-cuenta a:hover {
-  background: var(--color-fondoSutil);
-}
-.ui-acciones-cuenta__salir {
-  padding-inline: var(--espacio-2);
-  border: 0;
-  background: none;
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
-  cursor: pointer;
-  transition: color var(--transicion-rapida);
-}
-.ui-acciones-cuenta__salir:hover {
-  color: var(--color-texto);
+.ui-acciones-cuenta a:hover,
+.ui-acciones-cuenta button:hover {
+  background: var(--color-neutro-0);
 }

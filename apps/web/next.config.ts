@@ -23,7 +23,7 @@ const config: NextConfig = {
   // (`*.ejemplo.com`) — hay que listar cada IP de LAN que se vaya a usar.
   // Esta es la que "npm run dev" imprime como "Network:" al arrancar; si
   // cambia (otra red, otra maquina), hay que actualizarla aqui.
-  allowedDevOrigins: ["172.25.64.1"],
+  allowedDevOrigins: ["172.25.64.1", "192.168.18.211"],
 };
 
 export default config;

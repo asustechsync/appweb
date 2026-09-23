@@ -16,7 +16,10 @@ export interface PropsLogo {
 export function Logo({ href = "/" }: PropsLogo) {
   return (
     <Link className="ui-logo" href={href} aria-label="Ir a la portada">
-      SOCKS
+      <svg className="ui-logo__simbolo" viewBox="0 0 32 24" aria-hidden="true">
+        <path d="M3 21 14 3h4l11 18h-5L16 8 8 21H3Z" />
+      </svg>
+      <span>SOCKS</span>
     </Link>
   );
 }

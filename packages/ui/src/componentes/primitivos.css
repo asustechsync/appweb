@@ -10,8 +10,6 @@
 @import "./estilos/buscador.css";
 @import "./estilos/acciones-cuenta.css";
 @import "./estilos/alternar-tema.css";
-@import "./estilos/cabecera.css";
-@import "./estilos/selector-ubicacion.css";
 @import "./estilos/item-desplegable.css";
 @import "./estilos/navegacion-secciones.css";
 @import "./estilos/hero.css";
@@ -27,6 +25,9 @@
 @import "./estilos/selector-variantes.css";
 @import "./estilos/ficha-producto.css";
 @import "./estilos/pagina-informativa.css";
+@import "./estilos/layout-producto.css";
+@import "./estilos/panel-acciones.css";
+@import "./estilos/informacion-grid.css";
 @import "./estilos/disposicion-compra.css";
 @import "./estilos/selector-cantidad.css";
 @import "./estilos/linea-carrito.css";

@@ -1,0 +1,54 @@
+/* Grid de información: tarjetas inferiores */
+
+.ui-informacion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--espacio-5);
+}
+
+.ui-informacion-grid__tarjeta {
+  padding: var(--espacio-5);
+  background: var(--color-fondoSutil);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+.ui-informacion-grid__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.ui-informacion-grid__icono {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  color: var(--color-acentoVerde);
+}
+
+.ui-informacion-grid__titulo {
+  margin: 0;
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-bold);
+  color: var(--color-texto);
+}
+
+.ui-informacion-grid__contenido {
+  font-size: var(--tipo-tamano-sm);
+  color: var(--color-textoSuave);
+  line-height: 1.6;
+}
+
+/* Mobile */
+@media (max-width: 48rem) {
+  .ui-informacion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ui-informacion-grid__tarjeta {
+    padding: var(--espacio-4);
+  }
+}

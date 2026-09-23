@@ -12,6 +12,7 @@ export {
   IconoMarca,
   IconoTicket,
   IconoCarrito,
+  IconoMenu,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -19,11 +20,15 @@ export {
 // src/componentes/estilos/, que consume las variables de theme.css.
 export { Contenedor, type PropsContenedor } from "./componentes/Contenedor";
 export { Logo, type PropsLogo } from "./componentes/Logo";
+export { Header, type PropsHeader } from "./componentes/Header";
+export { Ubicacion, type PropsUbicacion } from "./componentes/Ubicacion";
 export { Buscador, type PropsBuscador } from "./componentes/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
 export { AlternarTema } from "./componentes/AlternarTema";
-export { Cabecera, type PropsCabecera } from "./componentes/Cabecera";
-export { SelectorUbicacion } from "./componentes/SelectorUbicacion";
+export {
+  EscaparatePortada,
+  type PropsEscaparatePortada,
+} from "./componentes/EscaparatePortada";
 export {
   NavegacionSecciones,
   type PropsNavegacionSecciones,
@@ -56,6 +61,19 @@ export {
   PaginaInformativa,
   type PropsPaginaInformativa,
 } from "./componentes/PaginaInformativa";
+export {
+  LayoutProducto,
+  type PropsLayoutProducto,
+} from "./componentes/LayoutProducto";
+export {
+  PanelAcciones,
+  type PropsPanelAcciones,
+} from "./componentes/PanelAcciones";
+export {
+  InformacionGrid,
+  type PropsInformacionGrid,
+  type Dato,
+} from "./componentes/InformacionGrid";
 
 // Compra (Clase B): carrito y checkout.
 export {

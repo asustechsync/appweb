@@ -1,6 +1,8 @@
 export type { PropsIcono } from "./tipos";
+export { IconoBeneficio } from "./IconoBeneficio";
 export { IconoUsuario } from "./IconoUsuario";
 export { IconoCarrito } from "./IconoCarrito";
+export { IconoMenu } from "./IconoMenu";
 export { IconoPedidos } from "./IconoPedidos";
 export { IconoSol } from "./IconoSol";
 export { IconoLuna } from "./IconoLuna";
