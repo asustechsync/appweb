@@ -58,6 +58,7 @@ export const tokens = {
     agotado: "#B92A1F",
     favorito: "#EF7A1E",
     calificacion: "#F2A93B",
+    envioGratis: "#0F9D70",
 
     // Roles de superficie: son los que usan los componentes.
     // Invertido a proposito: el fondo de la pagina es blanco y los bloques

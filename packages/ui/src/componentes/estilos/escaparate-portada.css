@@ -304,7 +304,7 @@
   gap: var(--espacio-2);
 }
 
-.ui-escaparate__atributos article {
+.ui-escaparate__tarjeta-beneficio {
   min-inline-size: 0;
   min-block-size: calc(var(--espacio-24) + var(--espacio-6));
   display: flex;
@@ -313,13 +313,13 @@
   gap: var(--espacio-1);
 }
 
-.ui-escaparate__atributos article > span {
+.ui-escaparate__tarjeta-beneficio > span {
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
   text-transform: uppercase;
 }
 
-.ui-escaparate__atributos strong {
+.ui-escaparate__tarjeta-beneficio strong {
   margin-block-start: auto;
   font-family: var(--tipo-familia-numeros);
   font-size: var(--tipo-tamano-xl);
@@ -327,18 +327,51 @@
   line-height: var(--tipo-altura-apretada);
 }
 
-.ui-escaparate__atributos small {
+.ui-escaparate__tarjeta-beneficio small {
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
 }
 
-.ui-escaparate__atributos-enlace {
+.ui-escaparate__asistente > .ui-escaparate__envio-gratis {
   min-block-size: var(--espacio-20);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--espacio-3);
+  gap: var(--espacio-4);
+  padding: var(--espacio-4) var(--espacio-5);
+  border-color: color-mix(in srgb, var(--color-envioGratis) 28%, var(--color-borde));
+  background: color-mix(in srgb, var(--color-envioGratis) 9%, var(--color-superficie));
+}
+
+.ui-escaparate__envio-icono {
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--color-envioGratis);
+}
+
+.ui-escaparate__envio-icono svg { inline-size: var(--espacio-12); block-size: var(--espacio-12); }
+
+.ui-escaparate__envio-texto {
+  display: grid;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+}
+
+.ui-escaparate__envio-texto strong {
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__envio-texto small {
+  color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__envio-texto b {
+  color: color-mix(in srgb, var(--color-envioGratis) 70%, var(--color-texto));
   font-weight: var(--tipo-peso-fuerte);
 }
 
@@ -379,8 +412,8 @@
 }
 
 .ui-escaparate__editorial,
-.ui-escaparate__atributos article,
-.ui-escaparate__atributos-enlace,
+.ui-escaparate__tarjeta-beneficio,
+.ui-escaparate__envio-gratis,
 .ui-escaparate__tarjeta {
   overflow: hidden;
   padding: var(--espacio-5);
@@ -551,5 +584,5 @@
 }
 
 @media (max-width: 30rem) {
-  .ui-escaparate__atributos article { min-block-size: var(--espacio-24); }
+  .ui-escaparate__tarjeta-beneficio { min-block-size: var(--espacio-24); }
 }

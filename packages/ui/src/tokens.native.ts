@@ -36,6 +36,7 @@ export const tokensNativos = {
     "agotado": "#B92A1F",
     "favorito": "#EF7A1E",
     "calificacion": "#F2A93B",
+    "envioGratis": "#0F9D70",
     "fondo": "#FFFFFF",
     "fondoSutil": "#ECECED",
     "superficie": "#F6F6F7",

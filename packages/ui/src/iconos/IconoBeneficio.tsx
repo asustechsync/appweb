@@ -28,10 +28,18 @@ const trazos: Record<NombreIconoBeneficio, React.ReactNode> = {
   ),
 };
 
-export function IconoBeneficio({ nombre }: { nombre: NombreIconoBeneficio }) {
+export function IconoBeneficio({ nombre, fino = false }: { nombre: NombreIconoBeneficio; fino?: boolean }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" focusable="false">
-      {trazos[nombre]}
+      {fino && (
+        <defs>
+          <filter id="icono-beneficio-fino">
+            <feMorphology in="SourceAlpha" operator="erode" radius="0.12" result="silueta-fina" />
+            <feComposite in="SourceGraphic" in2="silueta-fina" operator="in" />
+          </filter>
+        </defs>
+      )}
+      <g filter={fino ? "url(#icono-beneficio-fino)" : undefined}>{trazos[nombre]}</g>
     </svg>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconoBeneficio } from "../iconos/IconoBeneficio";
 
 import "./estilos/escaparate-portada.css";
 
@@ -49,6 +50,60 @@ export interface PropsEscaparatePortada {
   precio: string;
 }
 
+interface BeneficioCompra {
+  titulo: string;
+  principal: string;
+  detalle: string;
+}
+
+const beneficiosCompra: BeneficioCompra[] = [
+  { titulo: "Seguridad", principal: "Protección", detalle: "En cada compra" },
+  { titulo: "Envíos", principal: "Nacionales", detalle: "A todo el Perú" },
+  { titulo: "Garantía", principal: "Respaldo", detalle: "En cada pedido" },
+  { titulo: "Soporte", principal: "Atención", detalle: "A tus consultas" },
+];
+
+function TarjetaBeneficio({ titulo, principal, detalle }: BeneficioCompra) {
+  return (
+    <article className="ui-escaparate__tarjeta-beneficio">
+      <span>{titulo}</span>
+      <strong>{principal}</strong>
+      <small>{detalle}</small>
+    </article>
+  );
+}
+
+function AvisoEnvioGratis() {
+  return (
+    <div className="ui-escaparate__envio-gratis">
+      <span className="ui-escaparate__envio-icono" aria-hidden="true"><IconoBeneficio nombre="box-time" fino /></span>
+      <span className="ui-escaparate__envio-texto">
+        <strong>Envío gratis</strong>
+        <small>En compras desde <b>S/ 99</b></small>
+      </span>
+    </div>
+  );
+}
+
+function SeccionBeneficios({ categoria, imagen }: { categoria: string; imagen: string }) {
+  return (
+    <section className="ui-escaparate__asistente" aria-label="Beneficios de compra">
+      <article className="ui-escaparate__editorial">
+        <span className="ui-escaparate__editorial-etiqueta">{categoria}</span>
+        <img src={imagen} alt="" />
+        <div className="ui-escaparate__editorial-texto">
+          <span>Para tu día a día</span>
+          <h2>Comodidad con personalidad.</h2>
+        </div>
+      </article>
+      <div className="ui-escaparate__atributos">
+        {beneficiosCompra.map((beneficio) => <TarjetaBeneficio key={beneficio.titulo} {...beneficio} />)}
+      </div>
+      <AvisoEnvioGratis />
+    </section>
+  );
+}
+
 const tallas = ["S", "M", "L", "XL"];
 
 export function EscaparatePortada({ nombre, subtitulo, imagen, categoria, precio }: PropsEscaparatePortada) {
@@ -84,25 +139,7 @@ export function EscaparatePortada({ nombre, subtitulo, imagen, categoria, precio
           </div>
 
           <div className="ui-escaparate__promocion-asistente">
-            <section className="ui-escaparate__asistente" aria-label="Beneficios de compra">
-              <article className="ui-escaparate__editorial">
-                <span className="ui-escaparate__editorial-etiqueta">{categoria}</span>
-                <img src={imagen} alt="" />
-                <div className="ui-escaparate__editorial-texto">
-                  <span>Para tu día a día</span>
-                  <h2>Comodidad con personalidad.</h2>
-                </div>
-              </article>
-              <div className="ui-escaparate__atributos">
-                <article><span>Seguridad</span><strong>Protección</strong><small>Compra con confianza</small></article>
-                <article><span>Envíos</span><strong>Nacionales</strong><small>Llegamos a todo el Perú</small></article>
-                <article><span>Garantía</span><strong>Cobertura</strong><small>Para tu compra</small></article>
-                <article><span>Soporte</span><strong>Atención</strong><small>Para tus consultas</small></article>
-              </div>
-              <Link className="ui-escaparate__atributos-enlace" href="/categorias/hombres">
-                Ver la colección <span aria-hidden="true">↗</span>
-              </Link>
-            </section>
+            <SeccionBeneficios categoria={categoria} imagen={imagen} />
           </div>
         </div>
 
