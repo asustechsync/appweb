@@ -306,7 +306,7 @@
 
 .ui-escaparate__tarjeta-beneficio {
   min-inline-size: 0;
-  min-block-size: calc(var(--espacio-24) + var(--espacio-6));
+  min-block-size: calc(var(--espacio-24) + var(--espacio-10));
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -330,49 +330,6 @@
 .ui-escaparate__tarjeta-beneficio small {
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
-}
-
-.ui-escaparate__asistente > .ui-escaparate__envio-gratis {
-  min-block-size: var(--espacio-20);
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-4);
-  padding: var(--espacio-4) var(--espacio-5);
-  border-color: color-mix(in srgb, var(--color-envioGratis) 28%, var(--color-borde));
-  background: color-mix(in srgb, var(--color-envioGratis) 9%, var(--color-superficie));
-}
-
-.ui-escaparate__envio-icono {
-  inline-size: var(--espacio-12);
-  block-size: var(--espacio-12);
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  color: var(--color-envioGratis);
-}
-
-.ui-escaparate__envio-icono svg { inline-size: var(--espacio-12); block-size: var(--espacio-12); }
-
-.ui-escaparate__envio-texto {
-  display: grid;
-  gap: var(--espacio-1);
-  min-inline-size: 0;
-}
-
-.ui-escaparate__envio-texto strong {
-  font-size: var(--tipo-tamano-lg);
-  font-weight: var(--tipo-peso-fuerte);
-  line-height: var(--tipo-altura-apretada);
-}
-
-.ui-escaparate__envio-texto small {
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-sm);
-}
-
-.ui-escaparate__envio-texto b {
-  color: color-mix(in srgb, var(--color-envioGratis) 70%, var(--color-texto));
-  font-weight: var(--tipo-peso-fuerte);
 }
 
 .ui-escaparate__consulta {
@@ -413,7 +370,6 @@
 
 .ui-escaparate__editorial,
 .ui-escaparate__tarjeta-beneficio,
-.ui-escaparate__envio-gratis,
 .ui-escaparate__tarjeta {
   overflow: hidden;
   padding: var(--espacio-5);
@@ -575,7 +531,7 @@
     gap: var(--espacio-3);
     padding-inline: var(--espacio-4);
   }
-  .ui-escaparate__asistente { inline-size: 100%; margin-block-end: var(--espacio-4); }
+  .ui-escaparate__asistente { inline-size: 100%; margin-block-end: var(--espacio-1); }
   .ui-escaparate__tarjetas { grid-template-columns: 1fr; padding: 0 var(--espacio-4) var(--espacio-6); }
   .ui-escaparate__tarjeta { min-block-size: auto; }
   .ui-escaparate__tarjeta--entrega { order: 2; }

@@ -73,18 +73,6 @@ function TarjetaBeneficio({ titulo, principal, detalle }: BeneficioCompra) {
   );
 }
 
-function AvisoEnvioGratis() {
-  return (
-    <div className="ui-escaparate__envio-gratis">
-      <span className="ui-escaparate__envio-icono" aria-hidden="true"><IconoBeneficio nombre="box-time" fino /></span>
-      <span className="ui-escaparate__envio-texto">
-        <strong>Envío gratis</strong>
-        <small>En compras desde <b>S/ 99</b></small>
-      </span>
-    </div>
-  );
-}
-
 function SeccionBeneficios({ categoria, imagen }: { categoria: string; imagen: string }) {
   return (
     <section className="ui-escaparate__asistente" aria-label="Beneficios de compra">
@@ -99,7 +87,6 @@ function SeccionBeneficios({ categoria, imagen }: { categoria: string; imagen: s
       <div className="ui-escaparate__atributos">
         {beneficiosCompra.map((beneficio) => <TarjetaBeneficio key={beneficio.titulo} {...beneficio} />)}
       </div>
-      <AvisoEnvioGratis />
     </section>
   );
 }
