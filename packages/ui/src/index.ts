@@ -29,6 +29,7 @@ export {
   EscaparatePortada,
   type PropsEscaparatePortada,
 } from "./componentes/EscaparatePortada";
+export { Beneficio, type PropsBeneficio } from "./componentes/Beneficio";
 export {
   NavegacionSecciones,
   type PropsNavegacionSecciones,

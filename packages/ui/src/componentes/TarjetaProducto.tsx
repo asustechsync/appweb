@@ -19,6 +19,8 @@ export interface PropsTarjetaProducto {
   marca?: string | null;
   /** Ya calculado por `resolverDisponibilidad` de @appweb/core. */
   disponible: boolean;
+  orientacion?: "vertical" | "horizontal";
+  tituloComo?: "h2";
   /**
    * Donde se pinta la tarjeta. No cambia nada visual: decide que ancho de
    * imagen pide el navegador, y los dos contextos difieren mucho.
@@ -56,10 +58,12 @@ export function TarjetaProducto({
   etiqueta,
   marca,
   disponible,
+  orientacion = "vertical",
+  tituloComo,
   contexto = "rejilla",
 }: PropsTarjetaProducto) {
   return (
-    <Link className="ui-tarjeta-producto" href={`/productos/${slug}`}>
+    <Link className={`ui-tarjeta-producto ui-tarjeta-producto--${orientacion}`} href={`/productos/${slug}`}>
       <span className="ui-tarjeta-producto__imagen">
         {/* Sin imagen queda el fondo del recuadro: `next/image` con src vacio
             lanza en tiempo de ejecucion, y un producto sin foto no puede
@@ -80,23 +84,25 @@ export function TarjetaProducto({
         {etiqueta ? <span className="ui-tarjeta-producto__etiqueta">{etiqueta}</span> : null}
       </span>
 
-      {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
-      <span className="ui-tarjeta-producto__nombre">{nombre}</span>
+      <span className="ui-tarjeta-producto__contenido">
+        {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
+        {tituloComo === "h2" ? <h2 className="ui-tarjeta-producto__nombre">{nombre}</h2> : <span className="ui-tarjeta-producto__nombre">{nombre}</span>}
+        <span
+          className={
+            disponible
+              ? "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--disponible"
+              : "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado"
+          }
+        >
+          {disponible ? "Disponible" : "Agotado"}
+        </span>
 
-      <span
-        className={
-          disponible
-            ? "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--disponible"
-            : "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado"
-        }
-      >
-        {disponible ? "Disponible" : "Agotado"}
+        {/* `?? null`: precioLista opcional puede llegar como `undefined`, y
+            exactOptionalPropertyTypes distingue "prop omitida" de "prop en
+            undefined". Precio si acepta null. */}
+        <Precio valor={precio} antes={precioLista ?? null} tamano="md" />
+        {orientacion === "horizontal" ? <span className="ui-tarjeta-producto__flecha" aria-hidden="true">→</span> : null}
       </span>
-
-      {/* `?? null`: precioLista opcional puede llegar como `undefined`, y
-          exactOptionalPropertyTypes distingue "prop omitida" de "prop en
-          undefined". Precio si acepta null. */}
-      <Precio valor={precio} antes={precioLista ?? null} tamano="md" />
     </Link>
   );
 }

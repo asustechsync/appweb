@@ -4,6 +4,56 @@
   gap: 0.25rem;
   color: inherit;
 }
+.ui-tarjeta-producto__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+.ui-tarjeta-producto--horizontal {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: var(--espacio-4);
+  min-block-size: calc(var(--espacio-24) * 2.5);
+  padding: var(--espacio-5);
+  border: 1px solid var(--color-neutro-700);
+  border-radius: var(--radio-xl);
+  background: var(--color-neutro-900);
+  color: var(--color-neutro-0);
+}
+.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__imagen {
+  grid-column: 2;
+  grid-row: 1;
+  aspect-ratio: 1.2;
+  padding: 0;
+  background: transparent;
+}
+.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__contenido {
+  grid-column: 1;
+  grid-row: 1;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+}
+.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__nombre {
+  color: inherit;
+  font-size: var(--tipo-tamano-xl);
+  text-transform: none;
+}
+.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__estado--disponible {
+  background: color-mix(in srgb, var(--color-exito) 22%, var(--color-neutro-900));
+  color: var(--color-exito);
+}
+.ui-tarjeta-producto--horizontal .ui-precio__actual {
+  color: var(--color-neutro-0);
+}
+.ui-tarjeta-producto__contenido h2 { margin: 0; }
+.ui-tarjeta-producto__flecha {
+  position: absolute;
+  inset-inline-end: var(--espacio-5);
+  inset-block-end: var(--espacio-5);
+  font-size: var(--tipo-tamano-2xl);
+}
 .ui-tarjeta-producto__imagen {
   position: relative;
   display: block;
