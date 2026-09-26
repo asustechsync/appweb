@@ -1,3 +1,4 @@
+import { networkInterfaces } from "node:os";
 import { config as cargarEnv } from "dotenv";
 import type { NextConfig } from "next";
 
@@ -6,6 +7,15 @@ import type { NextConfig } from "next";
 // falta durante `next build` (que ya consulta la base para pre-renderizar
 // la portada) y cualquier `npm run dev` corrido fuera de la raiz.
 cargarEnv({ path: "../../.env.local" });
+
+const origenesLocales = [
+  ...new Set(
+    Object.values(networkInterfaces())
+      .flatMap((interfaces) => interfaces ?? [])
+      .filter((interfaz) => interfaz.family === "IPv4" && !interfaz.internal)
+      .map((interfaz) => interfaz.address),
+  ),
+];
 
 const config: NextConfig = {
   reactStrictMode: true,
@@ -19,11 +29,9 @@ const config: NextConfig = {
   // venir de un origen distinto a localhost: la pagina nunca hidrata y
   // ningun boton responde. Solo aplica en dev, next build lo ignora.
   //
-  // No admite rangos CIDR, solo hosts exactos o comodin de subdominio
-  // (`*.ejemplo.com`) — hay que listar cada IP de LAN que se vaya a usar.
-  // Esta es la que "npm run dev" imprime como "Network:" al arrancar; si
-  // cambia (otra red, otra maquina), hay que actualizarla aqui.
-  allowedDevOrigins: ["172.25.64.1", "192.168.18.211"],
+  // La IP de LAN cambia al conectarse a otra red; se toma de las interfaces
+  // activas al iniciar el servidor para que el celular pueda cargar /_next/*.
+  allowedDevOrigins: origenesLocales,
 };
 
 export default config;

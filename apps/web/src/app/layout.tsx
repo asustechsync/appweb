@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bai_Jamjuree, Urbanist } from "next/font/google";
 
-import { GUION_TEMA } from "@appweb/ui";
+import { GuionTemaInicial } from "@appweb/ui";
 import { tokens, tokensOscuro } from "@appweb/ui/tokens";
 
 import "./globals.css";
@@ -65,7 +65,7 @@ export default function LayoutRaiz({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es-PE" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: GUION_TEMA }} />
+        <GuionTemaInicial />
       </head>
       <body className={`${baiJamjuree.variable} ${urbanist.variable}`}>{children}</body>
     </html>

@@ -7,6 +7,7 @@ import { DisposicionPanel, EstadoVacio } from "@appweb/ui";
 
 import { Resumen } from "./Resumen";
 import { Usuarios } from "./Usuarios";
+import { ColeccionPortada } from "./ColeccionPortada";
 
 const ETIQUETAS: Record<string, string> = {
   resumen: "Resumen",
@@ -71,6 +72,8 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         <Resumen />
       ) : activa === "usuarios" ? (
         <Usuarios usuarioIdActual={usuarioId} />
+      ) : activa === "ajustes" ? (
+        <ColeccionPortada />
       ) : (
         <EstadoVacio
           titulo={ETIQUETAS[activa] ?? activa}

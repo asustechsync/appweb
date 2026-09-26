@@ -1,0 +1,68 @@
+/* Variante vertical (por defecto): columna junto al producto. Se estira
+   dentro de .ui-escaparate__marcas, que le da el ancho y el alto. */
+.ui-carrusel-marcas {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-carrusel-marcas__pista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-inline: var(--espacio-1);
+}
+
+.ui-carrusel-marcas__pista::-webkit-scrollbar {
+  display: none;
+}
+
+/* Seis marcas exactas en el alto disponible: el alto de la pista menos
+   los cinco huecos entre ellas, repartido entre seis. */
+/* La copia del giro infinito no crea caja: sus marcas son hijas directas
+   de la pista a efectos de maquetacion y miden igual que las originales. */
+.ui-carrusel-marcas__copia {
+  display: contents;
+}
+
+/* Este aplastamiento de alto es solo para la variante vertical (el
+   :not evita que tambien lo herede la horizontal, que necesita su alto
+   natural para igualar a las tarjetas de al lado). */
+.ui-carrusel-marcas:not(.ui-carrusel-marcas--horizontal) .ui-carrusel-marcas__pista > *,
+.ui-carrusel-marcas:not(.ui-carrusel-marcas--horizontal) .ui-carrusel-marcas__copia > * {
+  flex: 0 0 calc((100% - 5 * var(--espacio-2)) / 6);
+  min-block-size: 0;
+  min-height: 0;
+  padding-block: 0;
+}
+
+/* Variante horizontal: franja debajo de las tarjetas informativas.
+   En flujo normal (no absoluta) y con la pista en fila, no en columna. */
+.ui-carrusel-marcas--horizontal {
+  position: static;
+  inset: auto;
+}
+
+.ui-carrusel-marcas--horizontal .ui-carrusel-marcas__pista {
+  flex-direction: row;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-inline: 0;
+  padding-block: var(--espacio-1);
+}
+
+/* Seis marcas exactas en el ancho disponible. Alto propio, mas bajo que
+   las tarjetas de al lado: son solo un nombre, no necesitan tanta caja. */
+.ui-carrusel-marcas--horizontal .ui-carrusel-marcas__pista > *,
+.ui-carrusel-marcas--horizontal .ui-carrusel-marcas__copia > * {
+  flex: 0 0 calc((100% - 5 * var(--espacio-2)) / 6);
+  min-inline-size: 0;
+  min-block-size: 5.5rem;
+}

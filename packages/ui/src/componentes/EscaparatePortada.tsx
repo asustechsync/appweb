@@ -1,57 +1,31 @@
 import Link from "next/link";
 import { Beneficio, type PropsBeneficio } from "./Beneficio";
-import { TarjetaProducto, type PropsTarjetaProducto } from "./TarjetaProducto";
+import { BloqueColeccion, type PropsBloqueColeccion } from "./BloqueColeccion";
+import { CarruselPortada } from "./CarruselPortada";
+import { CarruselMarcas } from "./CarruselMarcas";
+import type { PropsTarjetaMarca } from "./TarjetaMarca";
+import type { PropsTarjetaProducto } from "./TarjetaProducto";
 
 import "./estilos/escaparate-portada.css";
 
 export interface PropsEscaparatePortada {
-  nombre: string;
-  subtitulo: string;
-  imagen: string;
-  categoria: string;
-  precio: string;
+  productos: PropsTarjetaProducto[];
   beneficios: PropsBeneficio[];
-  productoColeccion?: PropsTarjetaProducto | undefined;
+  coleccion: PropsBloqueColeccion;
+  marcas?: PropsTarjetaMarca[];
 }
 
-export function EscaparatePortada({ nombre, subtitulo, imagen, categoria, precio, beneficios, productoColeccion }: PropsEscaparatePortada) {
+export function EscaparatePortada({ productos, beneficios, coleccion, marcas }: PropsEscaparatePortada) {
   return (
     <main className="ui-escaparate">
-      <section className="ui-escaparate__panel" aria-label="Producto y beneficios destacados">
+      <section className="ui-escaparate__panel" aria-label="Portada y beneficios destacados">
         <div className="ui-escaparate__cuerpo">
           <section className="ui-escaparate__producto" aria-label="Producto destacado">
-            <div className="ui-escaparate__intro">
-              <div>
-                <p className="ui-escaparate__ceja">{categoria}</p>
-                <h1 id="producto-destacado">{nombre}</h1>
-                <p>{subtitulo}</p>
-                <p className="ui-escaparate__precio">{precio}</p>
-                <Link className="ui-escaparate__enlace-catalogo" href="/categorias/hombres">
-                  Explorar boxers
-                </Link>
-              </div>
-            </div>
-
-            <div className="ui-escaparate__foto">
-              <div className="ui-escaparate__halo" />
-              <img src={imagen} alt={nombre} fetchPriority="high" />
-              <span className="ui-escaparate__sombra-producto" />
-            </div>
+            <CarruselPortada productos={productos} />
           </section>
 
-          <section className="ui-escaparate__asistente" aria-label="Producto destacado y beneficios de compra">
-            {productoColeccion ? (
-              <TarjetaProducto {...productoColeccion} etiqueta={productoColeccion.etiqueta ?? categoria} orientacion="horizontal" tituloComo="h2" />
-            ) : (
-              <article className="ui-escaparate__editorial">
-                <span className="ui-escaparate__editorial-etiqueta">{categoria}</span>
-                <img src={imagen} alt="" />
-                <div className="ui-escaparate__editorial-texto">
-                  <span>Para tu día a día</span>
-                  <h2 id="titulo-beneficios">Comodidad con personalidad.</h2>
-                </div>
-              </article>
-            )}
+          <section className="ui-escaparate__asistente" aria-label="Colección destacada y beneficios de compra">
+            <BloqueColeccion {...coleccion} />
             <ul className="ui-escaparate__atributos" aria-label="Ventajas de compra">
               {beneficios.map(({ etiqueta, titulo, detalle }) => (
                 <li key={titulo}>
@@ -61,6 +35,12 @@ export function EscaparatePortada({ nombre, subtitulo, imagen, categoria, precio
             </ul>
           </section>
         </div>
+
+        {marcas && marcas.length > 0 ? (
+          <section className="ui-escaparate__marcas" aria-label="Marcas destacadas">
+            <CarruselMarcas marcas={marcas} orientacion="horizontal" />
+          </section>
+        ) : null}
 
         <section className="ui-escaparate__tarjetas" aria-label="Información para comprar">
           <article className="ui-escaparate__tarjeta ui-escaparate__tarjeta--entrega">

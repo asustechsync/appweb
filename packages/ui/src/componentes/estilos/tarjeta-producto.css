@@ -9,50 +9,171 @@
   flex-direction: column;
   gap: var(--espacio-1);
 }
-.ui-tarjeta-producto--horizontal {
+.ui-tarjeta-producto__volver,
+.ui-tarjeta-producto__tallas {
+  display: none;
+}
+.ui-tarjeta-producto--portada {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
-  gap: var(--espacio-4);
-  min-block-size: calc(var(--espacio-24) * 2.5);
-  padding: var(--espacio-5);
-  border: 1px solid var(--color-neutro-700);
-  border-radius: var(--radio-xl);
-  background: var(--color-neutro-900);
-  color: var(--color-neutro-0);
+  gap: var(--espacio-6);
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: calc(var(--espacio-24) * 5.2);
+  padding: var(--espacio-8);
+  color: var(--color-texto);
+  text-decoration: none;
 }
-.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__imagen {
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen {
   grid-column: 2;
   grid-row: 1;
-  aspect-ratio: 1.2;
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: calc(var(--espacio-24) * 4.7);
+  aspect-ratio: auto;
   padding: 0;
+  overflow: visible;
   background: transparent;
+  transform: translateX(-20%);
 }
-.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__contenido {
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen img {
+  inline-size: 84%;
+  block-size: 84%;
+  margin: auto;
+  object-position: center;
+}
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__contenido {
   grid-column: 1;
   grid-row: 1;
+  align-self: start;
   align-items: flex-start;
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
 }
-.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__nombre {
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__etiqueta {
+  position: static;
+  inline-size: fit-content;
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__marca {
+  order: 2;
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__nombre {
+  order: 1;
+  overflow: visible;
+  display: block;
+  font-size: clamp(var(--tipo-tamano-2xl), 2.5vw, var(--tipo-tamano-3xl));
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-apretada);
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.ui-tarjeta-producto__nombre-enlace {
   color: inherit;
-  font-size: var(--tipo-tamano-xl);
-  text-transform: none;
+  text-decoration: none;
 }
-.ui-tarjeta-producto--horizontal .ui-tarjeta-producto__estado--disponible {
-  background: color-mix(in srgb, var(--color-exito) 22%, var(--color-neutro-900));
-  color: var(--color-exito);
+.ui-tarjeta-producto__nombre-enlace:focus-visible {
+  border-radius: var(--radio-sm);
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
 }
-.ui-tarjeta-producto--horizontal .ui-precio__actual {
-  color: var(--color-neutro-0);
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__descripcion {
+  order: 3;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-md);
 }
-.ui-tarjeta-producto__contenido h2 { margin: 0; }
-.ui-tarjeta-producto__flecha {
-  position: absolute;
-  inset-inline-end: var(--espacio-5);
-  inset-block-end: var(--espacio-5);
-  font-size: var(--tipo-tamano-2xl);
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__precio-fila {
+  order: 4;
+  margin-block-start: var(--espacio-4);
+}
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__precio-fila .ui-precio__actual {
+  font-family: var(--tipo-familia-base);
+}
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__estado {
+  display: none;
+}
+.ui-tarjeta-producto--portada .ui-tarjeta-producto__insignia {
+  inset-block-start: var(--espacio-4);
+  inset-inline-start: var(--espacio-4);
+}
+
+@media (max-width: 48rem) {
+  .ui-tarjeta-producto--portada {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto var(--alto-imagen-portada-movil);
+    gap: 0;
+    block-size: auto;
+    min-block-size: 0;
+    padding: var(--espacio-1) var(--espacio-4) var(--espacio-2);
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__volver {
+    display: none;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__volver:focus-visible {
+    outline: 2px solid var(--color-marca-500);
+    outline-offset: var(--espacio-1);
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen {
+    grid-column: 1;
+    grid-row: 2;
+    min-block-size: 0;
+    transform: none;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen img {
+    inline-size: min(90%, 20rem);
+    block-size: var(--alto-imagen-portada-movil);
+    min-block-size: 0;
+    object-fit: contain;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__contenido {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: center;
+    gap: 0.25rem;
+    padding-inline-start: 0;
+    text-align: center;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__etiqueta {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    letter-spacing: 0.12em;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__marca {
+    display: none;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__nombre {
+    font-size: clamp(var(--tipo-tamano-xl), 5vw, var(--tipo-tamano-2xl));
+    max-width: 15rem;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__descripcion {
+    font-size: var(--tipo-tamano-sm);
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__tallas {
+    display: none;
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__tallas > span {
+    display: grid;
+    place-items: center;
+    min-inline-size: var(--espacio-8);
+    block-size: var(--espacio-8);
+    padding-inline: var(--espacio-1);
+  }
+  .ui-tarjeta-producto--portada .ui-tarjeta-producto__precio-fila {
+    display: none;
+  }
 }
 .ui-tarjeta-producto__imagen {
   position: relative;
@@ -71,7 +192,7 @@
   object-position: center bottom;
   transition: transform var(--transicion-normal);
 }
-.ui-tarjeta-producto:hover .ui-tarjeta-producto__imagen img {
+.ui-tarjeta-producto--vertical:hover .ui-tarjeta-producto__imagen img {
   transform: scale(1.04);
 }
 .ui-tarjeta-producto__insignia {

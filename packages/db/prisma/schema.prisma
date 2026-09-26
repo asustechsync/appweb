@@ -100,6 +100,11 @@ model Categoria {
   destacada      Boolean @default(false)
   tituloSeo      String?
   descripcionSeo String?
+  portadaEtiqueta String?
+  portadaTitulo   String?
+  portadaTexto    String?
+  portadaImagen   String?
+  portadaHref     String?
   orden          Int     @default(0)
   activa         Boolean @default(true)
   padreId        String?

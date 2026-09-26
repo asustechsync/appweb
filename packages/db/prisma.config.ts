@@ -11,7 +11,8 @@ export default defineConfig({
     seed: "tsx prisma/semilla.ts",
   },
   datasource: {
-    // Las migraciones necesitan conexion directa, sin pooler.
+    // Las migraciones usan conexion directa o session pooler (5432),
+    // nunca el transaction pooler (6543) de la aplicacion.
     url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
   },
 });

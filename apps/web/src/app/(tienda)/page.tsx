@@ -1,7 +1,7 @@
 import { EscaparatePortada, Header, type PropsBeneficio } from "@appweb/ui";
 import type { Metadata } from "next";
 
-import { productosNuevos } from "@/lib/consultas";
+import { contenidoColeccionPortada, productosNuevos, marcas } from "@/lib/consultas";
 
 
 export const metadata: Metadata = {
@@ -11,27 +11,28 @@ export const metadata: Metadata = {
 };
 
 const beneficios: PropsBeneficio[] = [
-  { etiqueta: "Seguridad", titulo: "Compra segura", detalle: "Pago protegido" },
-  { etiqueta: "Envíos", titulo: "Envíos nacionales", detalle: "A todo el Perú" },
+  { etiqueta: "Seguridad", titulo: "Protección", detalle: "En cada compra" },
+  { etiqueta: "Envíos", titulo: "Nacionales", detalle: "A todo el Perú" },
   { etiqueta: "Garantía", titulo: "Respaldo", detalle: "En cada pedido" },
-  { etiqueta: "Soporte", titulo: "Atención", detalle: "Resolvemos tus consultas" },
+  { etiqueta: "Soporte", titulo: "Atención", detalle: "A tus consultas" },
 ];
 
 /** CLASE A — portada. Layout con estructura de producto. */
 export default async function PaginaPortada() {
-  const [productoColeccion] = await productosNuevos(1);
+  const [productos, coleccion, listaMarcas] = await Promise.all([
+    productosNuevos(5),
+    contenidoColeccionPortada(),
+    marcas(8),
+  ]);
 
   return (
     <>
       <Header />
       <EscaparatePortada
-        nombre="Boxer Botánico"
-        subtitulo="Comodidad premium para todos los días"
-        imagen="/producto.webp"
-        categoria="Nueva colección"
-        precio="S/ 39.90"
+        productos={productos}
         beneficios={beneficios}
-        productoColeccion={productoColeccion}
+        coleccion={coleccion}
+        marcas={listaMarcas}
       />
     </>
   );

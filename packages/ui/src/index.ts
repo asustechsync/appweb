@@ -1,5 +1,6 @@
 export { tokens, tokensOscuro, type Tokens } from "./tokens";
 export { GUION_TEMA, TEMA_LLAVE, type Tema } from "./tema";
+export { GuionTemaInicial } from "./GuionTemaInicial";
 
 // Iconos que las paginas necesitan pasar como prop (ej. NavegacionSecciones).
 // El resto de los iconos son detalle interno de cada primitivo y no hace
@@ -29,6 +30,9 @@ export {
   EscaparatePortada,
   type PropsEscaparatePortada,
 } from "./componentes/EscaparatePortada";
+export { BloqueColeccion, type PropsBloqueColeccion } from "./componentes/BloqueColeccion";
+export { CarruselPortada, type PropsCarruselPortada } from "./componentes/CarruselPortada";
+export { CarruselMarcas, type PropsCarruselMarcas } from "./componentes/CarruselMarcas";
 export { Beneficio, type PropsBeneficio } from "./componentes/Beneficio";
 export {
   NavegacionSecciones,

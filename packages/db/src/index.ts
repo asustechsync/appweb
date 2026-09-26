@@ -1,6 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+import { cadenaConexion } from "./conexion";
+
 /**
  * Cliente unico de Prisma.
  *
@@ -13,7 +15,7 @@ import { PrismaClient } from "@prisma/client";
 const globalParaPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function crearCliente(): PrismaClient {
-  const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"] });
+  const adapter = new PrismaPg({ connectionString: cadenaConexion() });
   return new PrismaClient({
     adapter,
     log: process.env["NODE_ENV"] === "development" ? ["warn", "error"] : ["error"],

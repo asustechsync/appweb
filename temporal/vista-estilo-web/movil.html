@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vista móvil del primer estilo temporal</title>
+  <style>/* GENERADO POR generar-theme.ts — NO EDITAR A MANO.
+   Cambia packages/ui/src/tokens.ts y corre: npm run ui:tokens */
+
+:root {
+  --color-marca-50: #F6F6F7;
+  --color-marca-100: #EEEEEF;
+  --color-marca-200: #D8D8DA;
+  --color-marca-300: #AAAAB0;
+  --color-marca-400: #6B6B70;
+  --color-marca-500: #171717;
+  --color-marca-600: #141414;
+  --color-marca-700: #101010;
+  --color-marca-800: #0C0C0C;
+  --color-marca-900: #080808;
+  --color-neutro-0: #FFFFFF;
+  --color-neutro-50: #F6F6F7;
+  --color-neutro-100: #F2F2F2;
+  --color-neutro-200: #E3E3E6;
+  --color-neutro-300: #D4D4D8;
+  --color-neutro-400: #A1A1AA;
+  --color-neutro-500: #6B6B70;
+  --color-neutro-600: #52525B;
+  --color-neutro-700: #3F3F46;
+  --color-neutro-800: #1C1C1F;
+  --color-neutro-900: #171717;
+  --color-exito: #17803D;
+  --color-alerta: #B54708;
+  --color-error: #D92D20;
+  --color-info: #2F7DB8;
+  --color-oferta: #E63945;
+  --color-agotado: #B92A1F;
+  --color-favorito: #EF7A1E;
+  --color-calificacion: #F2A93B;
+  --color-envioGratis: #0F9D70;
+  --color-fondo: #FFFFFF;
+  --color-fondoSutil: #ECECED;
+  --color-superficie: #F6F6F7;
+  --color-borde: #E3E3E6;
+  --color-bordeFuerte: #D4D4D8;
+  --color-texto: #171717;
+  --color-textoSuave: #52525B;
+  --color-textoTenue: #6B6B70;
+  --color-textoInverso: #FFFFFF;
+  --espacio-0: 0;
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 20px;
+  --espacio-6: 24px;
+  --espacio-8: 32px;
+  --espacio-10: 40px;
+  --espacio-12: 48px;
+  --espacio-16: 64px;
+  --espacio-20: 80px;
+  --espacio-24: 96px;
+  --radio-ninguno: 0;
+  --radio-sm: 4px;
+  --radio-md: 8px;
+  --radio-lg: 12px;
+  --radio-xl: 18px;
+  --radio-completo: 9999px;
+  --tipo-familia-base: 'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tipo-familia-numeros: 'Urbanist', system-ui, -apple-system, sans-serif;
+  --tipo-familia-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --tipo-tamano-xs: 12px;
+  --tipo-tamano-sm: 14px;
+  --tipo-tamano-base: 16px;
+  --tipo-tamano-lg: 18px;
+  --tipo-tamano-xl: 20px;
+  --tipo-tamano-2xl: 24px;
+  --tipo-tamano-3xl: 30px;
+  --tipo-tamano-4xl: 38px;
+  --tipo-tamano-5xl: 48px;
+  --tipo-peso-ligero: 300;
+  --tipo-peso-normal: 400;
+  --tipo-peso-medio: 500;
+  --tipo-peso-fuerte: 600;
+  --tipo-peso-negrita: 700;
+  --tipo-altura-apretada: 1.2;
+  --tipo-altura-normal: 1.5;
+  --tipo-altura-suelta: 1.7;
+  --sombra-ninguna: none;
+  --sombra-sm: 0 1px 2px rgb(24 24 27 / 0.04);
+  --sombra-md: 0 2px 10px rgb(24 24 27 / 0.06);
+  --sombra-lg: 0 10px 30px -8px rgb(24 24 27 / 0.10);
+  --control-alto: 40px;
+  --control-altoSm: 32px;
+  --control-paddingX: 12px;
+  --contenedor-sm: 640px;
+  --contenedor-md: 768px;
+  --contenedor-lg: 1024px;
+  --contenedor-xl: 1280px;
+  --contenedor-ancho: 1400px;
+  --quiebre-sm: 640px;
+  --quiebre-md: 768px;
+  --quiebre-lg: 1024px;
+  --quiebre-xl: 1280px;
+  --transicion-rapida: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transicion-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transicion-lenta: 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  --z-base: 0;
+  --z-cabecera: 100;
+  --z-desplegable: 200;
+  --z-superposicion: 300;
+  --z-modal: 400;
+  --z-aviso: 500;
+}
+
+/* El sistema decide, salvo que el usuario haya elegido. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    --color-marca-50: #1C1C1F;
+    --color-marca-100: #242428;
+    --color-marca-200: #303035;
+    --color-marca-300: #52525B;
+    --color-marca-400: #A1A1AA;
+    --color-marca-500: #F2F2F2;
+    --color-marca-600: #DEDEDE;
+    --color-marca-700: #F7F7F7;
+    --color-marca-800: #FAFAFA;
+    --color-marca-900: #FFFFFF;
+    --color-fondo: #121212;
+    --color-fondoSutil: #1C1C1F;
+    --color-superficie: #1E1E22;
+    --color-borde: #303035;
+    --color-bordeFuerte: #414148;
+    --color-texto: #F2F2F2;
+    --color-textoSuave: #A1A1AA;
+    --color-textoTenue: #73737D;
+    --color-textoInverso: #171717;
+    --color-oferta: #F07C81;
+    --color-agotado: #6B6B74;
+    --color-favorito: #F79544;
+    --color-calificacion: #F4BB5C;
+    --color-exito: #3ED68C;
+    --color-alerta: #EAB143;
+    --color-error: #F07C81;
+    --color-info: #4FA6E0;
+    --sombra-ninguna: none;
+    --sombra-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --sombra-md: 0 2px 10px rgb(0 0 0 / 0.5);
+    --sombra-lg: 0 12px 34px -8px rgb(0 0 0 / 0.65);
+  }
+}
+
+/* La eleccion explicita gana en ambos sentidos. */
+:root[data-tema="oscuro"] {
+  --color-marca-50: #1C1C1F;
+  --color-marca-100: #242428;
+  --color-marca-200: #303035;
+  --color-marca-300: #52525B;
+  --color-marca-400: #A1A1AA;
+  --color-marca-500: #F2F2F2;
+  --color-marca-600: #DEDEDE;
+  --color-marca-700: #F7F7F7;
+  --color-marca-800: #FAFAFA;
+  --color-marca-900: #FFFFFF;
+  --color-fondo: #121212;
+  --color-fondoSutil: #1C1C1F;
+  --color-superficie: #1E1E22;
+  --color-borde: #303035;
+  --color-bordeFuerte: #414148;
+  --color-texto: #F2F2F2;
+  --color-textoSuave: #A1A1AA;
+  --color-textoTenue: #73737D;
+  --color-textoInverso: #171717;
+  --color-oferta: #F07C81;
+  --color-agotado: #6B6B74;
+  --color-favorito: #F79544;
+  --color-calificacion: #F4BB5C;
+  --color-exito: #3ED68C;
+  --color-alerta: #EAB143;
+  --color-error: #F07C81;
+  --color-info: #4FA6E0;
+  --sombra-ninguna: none;
+  --sombra-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --sombra-md: 0 2px 10px rgb(0 0 0 / 0.5);
+  --sombra-lg: 0 12px 34px -8px rgb(0 0 0 / 0.65);
+}
+
+/* Los tokens vienen generados desde packages/ui/src/tokens.ts.
+   Este archivo NO define colores ni medidas: solo el reset y las reglas base.
+   Para cambiar la identidad visual se edita tokens.ts y se corre:
+       npm run ui:tokens                                                     */
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* FIRST MOBILE: la base es movil; los quiebres solo añaden desde arriba. */
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  --tipo-familia-base: var(--fuente-base), "Bai Jamjuree", system-ui, sans-serif;
+  --tipo-familia-numeros: var(--fuente-numeros), "Urbanist", system-ui, sans-serif;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-base);
+  font-size: var(--tipo-tamano-base);
+  line-height: var(--tipo-altura-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}
+
+/* `.ui-solo-lectores` vive en @appweb/ui/componentes/estilos/base.css: la
+   trae cualquier primitivo que la necesite, no hace falta repetirla aqui. */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.ui-escaparate {
+  --color-fondo: var(--color-neutro-0);
+  --color-fondoSutil: var(--color-neutro-200);
+  --color-superficie: var(--color-neutro-50);
+  --color-borde: var(--color-neutro-200);
+  --color-bordeFuerte: var(--color-neutro-300);
+  --color-texto: var(--color-neutro-900);
+  --color-textoSuave: var(--color-neutro-600);
+  --color-textoTenue: var(--color-neutro-500);
+  --color-textoInverso: var(--color-neutro-0);
+  --color-marca-500: var(--color-neutro-900);
+  min-block-size: 100svh;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-neutro-300);
+  color: var(--color-texto);
+}
+
+.ui-escaparate__panel {
+  inline-size: 100%;
+  min-block-size: 100svh;
+  max-block-size: 100svh;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--color-borde);
+  background: var(--color-fondoSutil);
+}
+
+.ui-escaparate__cabecera {
+  min-block-size: var(--espacio-24);
+  padding-inline: var(--espacio-6);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--espacio-6);
+}
+
+.ui-escaparate__pestanas {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1);
+  border-radius: var(--radio-xl);
+  background: color-mix(in srgb, var(--color-superficie), transparent 35%);
+}
+
+.ui-escaparate__pestana {
+  min-inline-size: var(--espacio-20);
+  padding: var(--espacio-3) var(--espacio-4);
+  text-align: center;
+  border-radius: var(--radio-lg);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__pestana--activa {
+  background: var(--color-bordeFuerte);
+}
+
+.ui-escaparate__cabecera-acciones {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.ui-escaparate__ubicacion,
+.ui-escaparate__boton-icono,
+.ui-escaparate__asistente-opciones button,
+.ui-escaparate__consulta button,
+.ui-escaparate__selector-grande button {
+  border: 0;
+  cursor: pointer;
+}
+
+.ui-escaparate__ubicacion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-4) var(--espacio-5);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__ubicacion svg,
+.ui-escaparate__boton-icono svg,
+.ui-escaparate__resumen svg,
+.ui-escaparate__mapa svg {
+  inline-size: var(--espacio-5);
+  block-size: var(--espacio-5);
+}
+
+.ui-escaparate__asistente svg {
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
+  flex: 0 0 auto;
+}
+
+.ui-escaparate__boton-icono {
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  transition: transform var(--transicion-rapida), background var(--transicion-rapida);
+}
+
+.ui-escaparate__boton-icono:hover {
+  transform: translateY(calc(var(--espacio-1) * -1));
+  background: var(--color-neutro-0);
+}
+
+.ui-escaparate__cuerpo {
+  min-block-size: calc(var(--espacio-24) * 5.3);
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--espacio-20) minmax(0, 1fr) var(--espacio-20);
+  align-items: center;
+}
+
+.ui-escaparate__rail {
+  z-index: 4;
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-3);
+}
+
+.ui-escaparate__producto {
+  align-self: stretch;
+  position: relative;
+  min-inline-size: 0;
+}
+
+.ui-escaparate__intro {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: var(--espacio-3);
+  inset-inline-start: var(--espacio-2);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+}
+
+.ui-escaparate__intro .ui-escaparate__boton-icono {
+  margin-block-start: var(--espacio-1);
+}
+
+.ui-escaparate__ceja {
+  margin-block-end: var(--espacio-1);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ui-escaparate__intro h1 {
+  font-size: clamp(var(--tipo-tamano-3xl), 4vw, var(--tipo-tamano-5xl));
+  font-weight: var(--tipo-peso-medio);
+  letter-spacing: -0.04em;
+}
+
+.ui-escaparate__intro p:last-child {
+  color: var(--color-textoSuave);
+}
+
+.ui-escaparate__tallas {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: calc(var(--espacio-24) * 1.5);
+  inset-inline-start: calc(var(--espacio-12) + var(--espacio-10));
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-1);
+  border-radius: var(--radio-completo);
+  background: color-mix(in srgb, var(--color-superficie), transparent 22%);
+}
+
+.ui-escaparate__talla {
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-completo);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}
+
+.ui-escaparate__talla--activa {
+  background: var(--color-exito);
+  color: var(--color-neutro-0);
+}
+
+.ui-escaparate__foto {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.ui-escaparate__foto img {
+  z-index: 2;
+  inline-size: min(64%, calc(var(--espacio-24) * 6));
+  max-block-size: 80%;
+  object-fit: contain;
+  filter: saturate(0.55) contrast(0.95);
+  transform: translateY(var(--espacio-6));
+}
+
+.ui-escaparate__halo {
+  position: absolute;
+  inline-size: calc(var(--espacio-24) * 5);
+  block-size: calc(var(--espacio-24) * 3);
+  border-radius: var(--radio-completo);
+  background: radial-gradient(circle, var(--color-neutro-100), transparent 68%);
+}
+
+.ui-escaparate__sombra-producto {
+  position: absolute;
+  z-index: 1;
+  inset-block-end: var(--espacio-8);
+  inline-size: 55%;
+  block-size: var(--espacio-5);
+  border-radius: var(--radio-completo);
+  background: color-mix(in srgb, var(--color-texto), transparent 72%);
+  filter: blur(var(--espacio-3));
+}
+
+.ui-escaparate__promocion-asistente {
+  position: absolute;
+  z-index: 4;
+  inset-block-start: var(--espacio-4);
+  inset-inline-end: var(--espacio-4);
+  display: flex;
+  align-items: stretch;
+  gap: var(--espacio-8);
+}
+
+.ui-escaparate__banner {
+  position: relative;
+  inline-size: min(28vw, calc(var(--espacio-24) * 3));
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--espacio-3);
+  overflow: hidden;
+  padding: var(--espacio-5);
+  border: 1px solid color-mix(in srgb, var(--color-borde), transparent 35%);
+  border-radius: var(--radio-xl);
+  background: color-mix(in srgb, var(--color-superficie), transparent 10%);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-lg);
+  backdrop-filter: blur(var(--espacio-4));
+}
+
+.ui-escaparate__banner::before {
+  position: absolute;
+  inset-block-start: calc(var(--espacio-8) * -1);
+  inset-inline-end: calc(var(--espacio-8) * -1);
+  inline-size: calc(var(--espacio-24) * 1.5);
+  block-size: calc(var(--espacio-24) * 1.5);
+  border: 1px solid color-mix(in srgb, var(--color-bordeFuerte), transparent 35%);
+  border-radius: var(--radio-completo);
+  content: "";
+}
+
+.ui-escaparate__banner-ceja {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ui-escaparate__banner h2 {
+  max-inline-size: 12ch;
+  font-size: var(--tipo-tamano-xl);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__banner p {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__banner-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-block-start: var(--espacio-2);
+  padding-block-end: var(--espacio-1);
+  border-bottom: 1px solid var(--color-bordeFuerte);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}
+
+.ui-escaparate__asistente {
+  position: relative;
+  inline-size: min(42vw, calc(var(--espacio-24) * 5));
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.ui-escaparate__asistente-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.ui-escaparate__asistente-cabecera div,
+.ui-escaparate__asistente-opciones span,
+.ui-escaparate__resumen div {
+  display: grid;
+}
+
+.ui-escaparate__asistente-cabecera span,
+.ui-escaparate__asistente-opciones small,
+.ui-escaparate__resumen span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__asistente-opciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  column-gap: var(--espacio-2);
+  row-gap: var(--espacio-3);
+  padding: var(--espacio-2);
+}
+
+.ui-escaparate__asistente-opciones > div {
+  min-inline-size: 0;
+  min-block-size: calc(var(--espacio-24) + var(--espacio-4));
+  display: grid;
+  grid-template-columns: var(--espacio-20) minmax(0, 1fr);
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-1);
+  padding: var(--espacio-3);
+  border-radius: var(--radio-lg);
+  text-align: start;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+}
+
+.ui-escaparate__asistente-opciones span {
+  min-inline-size: 0;
+  row-gap: var(--espacio-1);
+}
+
+.ui-escaparate__asistente-opciones .ui-escaparate__asistente-icono {
+  inline-size: var(--espacio-20);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-md);
+  background: color-mix(in srgb, var(--color-marca-500), transparent 92%);
+  color: var(--color-marca-500);
+}
+
+.ui-escaparate__asistente-opciones strong {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ui-escaparate__asistente-opciones small {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-base);
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.ui-escaparate__asistente-icono > svg {
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+}
+
+.ui-escaparate__consulta {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin: 0 var(--espacio-4) var(--espacio-4);
+  padding: var(--espacio-2) var(--espacio-2) var(--espacio-2) var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-neutro-0);
+}
+
+.ui-escaparate__consulta > span {
+  flex: 1;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__consulta button {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-md);
+  background: var(--color-exito);
+  color: var(--color-neutro-0);
+}
+
+.ui-escaparate__tarjetas {
+  position: relative;
+  z-index: 6;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--espacio-4);
+  padding: 0 var(--espacio-10) var(--espacio-8);
+}
+
+.ui-escaparate__tarjeta {
+  min-block-size: calc(var(--espacio-24) * 2.1);
+  overflow: hidden;
+  padding: var(--espacio-5);
+  border: 1px solid color-mix(in srgb, var(--color-borde), transparent 35%);
+  border-radius: var(--radio-xl);
+  background: color-mix(in srgb, var(--color-superficie), transparent 8%);
+  box-shadow: var(--sombra-sm);
+}
+
+.ui-escaparate__tarjeta-cabecera {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  padding-block-end: var(--espacio-4);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.ui-escaparate__tarjeta h2 {
+  font-size: var(--tipo-tamano-lg);
+}
+
+.ui-escaparate__tarjeta p {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__mapa {
+  position: relative;
+  block-size: calc(var(--espacio-24) * 1.2);
+  margin: 0 calc(var(--espacio-5) * -1) calc(var(--espacio-5) * -1);
+  overflow: hidden;
+  background: var(--color-neutro-100);
+}
+
+.ui-escaparate__mapa i {
+  position: absolute;
+  display: block;
+  inline-size: 130%;
+  block-size: var(--espacio-6);
+  background: var(--color-neutro-0);
+  transform: rotate(-7deg);
+}
+
+.ui-escaparate__mapa i:nth-child(1) { inset-block-start: var(--espacio-4); inset-inline-start: calc(var(--espacio-6) * -1); }
+.ui-escaparate__mapa i:nth-child(2) { inset-block-start: var(--espacio-16); inset-inline-start: calc(var(--espacio-6) * -1); }
+.ui-escaparate__mapa i:nth-child(3) { inline-size: var(--espacio-6); block-size: 140%; inset-block-start: calc(var(--espacio-4) * -1); inset-inline-start: 25%; transform: rotate(12deg); }
+.ui-escaparate__mapa i:nth-child(4) { inline-size: var(--espacio-8); block-size: 140%; inset-block-start: calc(var(--espacio-4) * -1); inset-inline-start: 66%; transform: rotate(-12deg); }
+.ui-escaparate__mapa i:nth-child(5) { inline-size: 55%; inset-block-start: var(--espacio-10); inset-inline-start: 46%; transform: rotate(16deg); }
+
+.ui-escaparate__mapa span {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 45%;
+  inset-inline-start: 53%;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-completo);
+  background: var(--color-exito);
+  color: var(--color-neutro-0);
+}
+
+.ui-escaparate__selector-grande {
+  min-block-size: calc(var(--espacio-24) * 1.2);
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: 1fr auto;
+  place-content: center;
+  align-items: center;
+  gap: 0 var(--espacio-8);
+}
+
+.ui-escaparate__selector-grande strong {
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-5xl);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__selector-grande button {
+  background: transparent;
+  color: var(--color-exito);
+  font-size: var(--tipo-tamano-3xl);
+}
+
+.ui-escaparate__selector-grande span {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__resumen {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--espacio-4);
+  margin-block-start: var(--espacio-5);
+  padding: var(--espacio-4);
+  border-radius: var(--radio-lg);
+  background: var(--color-neutro-0);
+}
+
+.ui-escaparate__resumen > svg {
+  inline-size: var(--espacio-6);
+  block-size: var(--espacio-6);
+}
+
+.ui-escaparate__resumen a {
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-md);
+  background: var(--color-marca-500);
+  color: var(--color-textoInverso);
+  font-size: var(--tipo-tamano-sm);
+}
+
+@media (max-width: 64rem) {
+  .ui-escaparate__panel { max-block-size: none; }
+  .ui-escaparate__cabecera { grid-template-columns: auto 1fr auto; }
+  .ui-escaparate__ubicacion span { display: none; }
+  .ui-escaparate__ubicacion { padding: var(--espacio-4); }
+  .ui-escaparate__cuerpo { min-block-size: calc(var(--espacio-24) * 5.8); }
+  .ui-escaparate__asistente { inline-size: min(42vw, calc(var(--espacio-24) * 4)); }
+  .ui-escaparate__tarjetas { padding-inline: var(--espacio-6); }
+}
+
+@media (max-width: 48rem) {
+  .ui-escaparate { display: block; min-block-size: 100svh; padding: 0; background: var(--color-fondoSutil); }
+  .ui-escaparate__panel { min-block-size: 100svh; max-block-size: none; border: 0; }
+  .ui-escaparate__cabecera { min-block-size: auto; grid-template-columns: auto 1fr auto; padding: var(--espacio-4); }
+  .ui-escaparate__pestanas { grid-row: 2; grid-column: 1 / -1; justify-self: stretch; }
+  .ui-escaparate__pestana { min-inline-size: 0; flex: 1; padding-inline: var(--espacio-2); }
+  .ui-escaparate__cabecera-acciones .ui-escaparate__ubicacion { display: none; }
+  .ui-escaparate__cuerpo { min-block-size: auto; display: block; }
+  .ui-escaparate__rail { display: none; }
+  .ui-escaparate__producto { min-block-size: calc(var(--espacio-24) * 4.4); }
+  .ui-escaparate__intro { inset-block-start: var(--espacio-4); inset-inline: var(--espacio-4); gap: var(--espacio-3); }
+  .ui-escaparate__intro h1 { font-size: var(--tipo-tamano-3xl); }
+  .ui-escaparate__tallas { inset-block-start: calc(var(--espacio-24) * 1.35); inset-inline-start: var(--espacio-20); }
+  .ui-escaparate__foto img { inline-size: 85%; max-block-size: 66%; transform: translateY(var(--espacio-12)); }
+  .ui-escaparate__sombra-producto { inset-block-end: var(--espacio-10); inline-size: 72%; }
+  .ui-escaparate__promocion-asistente {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-3);
+    padding-inline: var(--espacio-4);
+  }
+  .ui-escaparate__banner {
+    inline-size: 100%;
+    min-block-size: calc(var(--espacio-24) * 2);
+  }
+  .ui-escaparate__asistente { inline-size: 100%; margin-block-end: var(--espacio-4); }
+  .ui-escaparate__tarjetas { grid-template-columns: 1fr; padding: 0 var(--espacio-4) var(--espacio-6); }
+  .ui-escaparate__tarjeta { min-block-size: auto; }
+  .ui-escaparate__tarjeta--entrega { order: 2; }
+  .ui-escaparate__tarjeta--tallas { order: 1; }
+  .ui-escaparate__tarjeta--pago { order: 3; }
+}
+
+@media (max-width: 30rem) {
+  .ui-escaparate__asistente-opciones {
+    column-gap: var(--espacio-2);
+    row-gap: var(--espacio-3);
+    padding: var(--espacio-1);
+  }
+  .ui-escaparate__asistente-opciones > div {
+    grid-template-columns: var(--espacio-12) minmax(0, 1fr);
+    gap: var(--espacio-2);
+    padding: var(--espacio-2);
+  }
+  .ui-escaparate__asistente-opciones .ui-escaparate__asistente-icono {
+    inline-size: var(--espacio-12);
+  }
+  .ui-escaparate__asistente-icono > svg {
+    inline-size: var(--espacio-10);
+    block-size: var(--espacio-10);
+  }
+}
+</style>
+</head>
+<body><link rel="preload" as="image" href="../../apps/web/public/producto.webp"/><main class="ui-escaparate"><section class="ui-escaparate__panel" aria-labelledby="producto-destacado"><div class="ui-escaparate__cuerpo"><aside class="ui-escaparate__rail" aria-label="Acciones rápidas"><a class="ui-escaparate__boton-icono" href="#" aria-label="Catálogo"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></a><a class="ui-escaparate__boton-icono" href="#" aria-label="Filtros"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"></path><circle cx="16" cy="7" r="2"></circle><circle cx="8" cy="17" r="2"></circle></svg></a><a class="ui-escaparate__boton-icono" href="#" aria-label="Carrito"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h2l2 10h10l2-7H6"></path><circle cx="9" cy="19" r="1"></circle><circle cx="17" cy="19" r="1"></circle></svg></a></aside><div class="ui-escaparate__producto"><div class="ui-escaparate__intro"><a class="ui-escaparate__boton-icono" href="#" aria-label="Volver al catálogo"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m10 7-5 5 5 5"></path></svg></a><div><p class="ui-escaparate__ceja">Nueva colección</p><h1 id="producto-destacado">Boxer Botánico</h1><p>Comodidad premium para todos los días</p></div></div><div class="ui-escaparate__tallas" aria-label="Tallas disponibles"><span class="ui-escaparate__talla">S</span><span class="ui-escaparate__talla">M</span><span class="ui-escaparate__talla ui-escaparate__talla--activa">L</span><span class="ui-escaparate__talla">XL</span></div><div class="ui-escaparate__foto"><div class="ui-escaparate__halo"></div><img src="../../apps/web/public/producto.webp" alt="Boxer Botánico"/><span class="ui-escaparate__sombra-producto"></span></div></div><div class="ui-escaparate__promocion-asistente"><article class="ui-escaparate__banner" aria-label="Promoción destacada"><span class="ui-escaparate__banner-ceja">Edición especial</span><h2>Renueva tus básicos</h2><p>Comodidad que te acompaña todos los días.</p><a href="#" class="ui-escaparate__banner-enlace">Descubre la colección <span aria-hidden="true">→</span></a></article><section class="ui-escaparate__asistente" aria-label="Beneficios de compra"><div class="ui-escaparate__asistente-opciones"><div><span class="ui-escaparate__asistente-icono"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" focusable="false"><g><path d="M11.9998 22.7508C11.7598 22.7508 11.5199 22.7208 11.2899 22.6508C6.09986 21.2208 2.33984 16.3708 2.33984 11.1108V6.72076C2.33984 5.60076 3.14985 4.39081 4.18985 3.96081L9.75986 1.68078C11.2099 1.09078 12.7998 1.09078 14.2398 1.68078L19.8098 3.96081C20.8498 4.39081 21.6599 5.60076 21.6599 6.72076V11.1108C21.6599 16.3608 17.8898 21.2108 12.7098 22.6508C12.4798 22.7208 12.2398 22.7508 11.9998 22.7508ZM11.9998 2.75079C11.4298 2.75079 10.8698 2.86081 10.3298 3.08081L4.75986 5.36077C4.27986 5.56077 3.83984 6.21077 3.83984 6.73077V11.1208C3.83984 15.7108 7.13985 19.9508 11.6898 21.2108C11.8898 21.2708 12.1098 21.2708 12.3098 21.2108C16.8598 19.9508 20.1599 15.7108 20.1599 11.1208V6.73077C20.1599 6.21077 19.7198 5.56077 19.2398 5.36077L13.6699 3.08081C13.1299 2.86081 12.5698 2.75079 11.9998 2.75079Z"></path></g></svg></span><span><strong>Seguridad</strong><small>Compra segura y protegida.</small></span></div><div><span class="ui-escaparate__asistente-icono"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" focusable="false"><g><path d="M11.9998 13.3008C11.8698 13.3008 11.7398 13.2709 11.6198 13.2009L2.78985 8.09088C2.42985 7.88088 2.30983 7.42085 2.51983 7.06085C2.72983 6.70085 3.17983 6.58083 3.54983 6.79083L11.9998 11.6808L20.3998 6.82086C20.7598 6.61086 21.2198 6.74088 21.4298 7.09088C21.6398 7.45088 21.5198 7.91085 21.1598 8.12085L12.3899 13.2009C12.2599 13.2609 12.1298 13.3008 11.9998 13.3008Z"></path><path d="M12 22.3591C11.59 22.3591 11.25 22.0191 11.25 21.6091V12.5391C11.25 12.1291 11.59 11.7891 12 11.7891C12.41 11.7891 12.75 12.1291 12.75 12.5391V21.6091C12.75 22.0191 12.41 22.3591 12 22.3591Z"></path><path d="M11.9999 22.7502C11.1199 22.7502 10.2399 22.5602 9.55988 22.1702L4.21988 19.2103C2.76988 18.4103 1.62988 16.4802 1.62988 14.8202V9.16021C1.62988 7.50021 2.76988 5.58026 4.21988 4.77026L9.55988 1.81023C10.9199 1.05023 13.0599 1.05023 14.4299 1.81023L19.7699 4.77026C21.2199 5.57021 22.3599 7.50021 22.3599 9.16021V14.8202C22.3599 14.8902 22.3599 14.9902 22.3299 15.1202C22.2699 15.3802 22.0799 15.5902 21.8299 15.6702C21.5799 15.7502 21.2999 15.7003 21.0999 15.5203C19.9599 14.5203 18.1799 14.4802 16.9599 15.4502C16.1899 16.0602 15.7399 16.9902 15.7399 17.9802C15.7399 18.5702 15.8999 19.1503 16.2099 19.6503C16.2899 19.7902 16.3699 19.9002 16.4599 20.0002C16.6099 20.1702 16.6699 20.4002 16.6299 20.6202C16.5899 20.8402 16.4499 21.0403 16.2499 21.1403L14.4199 22.1503C13.7499 22.5602 12.8799 22.7502 11.9999 22.7502ZM11.9999 2.75024C11.3799 2.75024 10.7499 2.88024 10.2999 3.13024L4.95987 6.09026C3.98987 6.63024 3.14987 8.06021 3.14987 9.16021V14.8202C3.14987 15.9202 3.99987 17.3603 4.95987 17.8903L10.2999 20.8502C11.2099 21.3602 12.7999 21.3602 13.7099 20.8502L14.8299 20.2302C14.4599 19.5602 14.2599 18.7802 14.2599 17.9802C14.2599 16.5202 14.9099 15.1703 16.0399 14.2703C17.4099 13.1802 19.3499 12.9502 20.8699 13.6102V9.15021C20.8699 8.05021 20.0199 6.61025 19.0599 6.08025L13.7199 3.12023C13.2499 2.88024 12.6199 2.75024 11.9999 2.75024Z"></path><path d="M19 22.75C16.38 22.75 14.25 20.62 14.25 18C14.25 16.54 14.9 15.19 16.03 14.29C16.87 13.62 17.93 13.25 19 13.25C21.62 13.25 23.75 15.38 23.75 18C23.75 19.36 23.16 20.66 22.13 21.56C21.26 22.33 20.15 22.75 19 22.75ZM19 14.75C18.26 14.75 17.56 15 16.97 15.47C16.2 16.08 15.75 17.01 15.75 18C15.75 19.79 17.21 21.25 19 21.25C19.78 21.25 20.54 20.96 21.15 20.44C21.85 19.82 22.25 18.94 22.25 18C22.25 16.21 20.79 14.75 19 14.75Z"></path><path d="M17.9999 19.75C17.7499 19.75 17.4999 19.62 17.3599 19.39C17.1499 19.03 17.2599 18.57 17.6199 18.36L18.5099 17.83V16.75C18.5099 16.34 18.8499 16 19.2599 16C19.6699 16 20.0099 16.34 20.0099 16.75V18.25C20.0099 18.51 19.8699 18.76 19.6499 18.89L18.3999 19.64C18.2599 19.72 18.1299 19.75 17.9999 19.75Z"></path></g></svg></span><span><strong>Envíos</strong><small>Recibe tus pedidos rápido.</small></span></div><div><span class="ui-escaparate__asistente-icono"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" focusable="false"><g><path d="M10.7901 15.1693C10.5901 15.1693 10.4001 15.0893 10.2601 14.9493L7.84006 12.5293C7.55006 12.2393 7.55006 11.7593 7.84006 11.4693C8.13006 11.1793 8.61006 11.1793 8.90006 11.4693L10.7901 13.3593L15.0901 9.0593C15.3801 8.7693 15.8601 8.7693 16.1501 9.0593C16.4401 9.3493 16.4401 9.8293 16.1501 10.1193L11.3201 14.9493C11.1801 15.0893 10.9901 15.1693 10.7901 15.1693Z"></path><path d="M11.9999 22.75C11.3699 22.75 10.7399 22.54 10.2499 22.12L8.66988 20.76C8.50988 20.62 8.10988 20.48 7.89988 20.48H6.17988C4.69988 20.48 3.49988 19.28 3.49988 17.8V16.09C3.49988 15.88 3.35988 15.49 3.21988 15.33L1.86988 13.74C1.04988 12.77 1.04988 11.24 1.86988 10.27L3.21988 8.68C3.35988 8.52 3.49988 8.13 3.49988 7.92V6.2C3.49988 4.72 4.69988 3.52 6.17988 3.52H7.90988C8.11988 3.52 8.51988 3.37 8.67988 3.24L10.2599 1.88C11.2399 1.04 12.7699 1.04 13.7499 1.88L15.3299 3.24C15.4899 3.38 15.8899 3.52 16.0999 3.52H17.7999C19.2799 3.52 20.4799 4.72 20.4799 6.2V7.9C20.4799 8.11 20.6299 8.51 20.7699 8.67L22.1299 10.25C22.9699 11.23 22.9699 12.76 22.1299 13.74L20.7699 15.32C20.6299 15.48 20.4799 15.88 20.4799 16.09V17.79C20.4799 19.27 19.2799 20.47 17.7999 20.47H16.0999C15.8899 20.47 15.4899 20.62 15.3299 20.75L13.7499 22.11C13.2599 22.54 12.6299 22.75 11.9999 22.75ZM6.17988 5.02C5.52988 5.02 4.99988 5.55 4.99988 6.2V7.91C4.99988 8.48 4.72988 9.21 4.35988 9.64L3.00988 11.23C2.65988 11.64 2.65988 12.35 3.00988 12.76L4.35988 14.35C4.72988 14.79 4.99988 15.51 4.99988 16.08V17.79C4.99988 18.44 5.52988 18.97 6.17988 18.97H7.90988C8.48988 18.97 9.21988 19.24 9.65988 19.62L11.2399 20.98C11.6499 21.33 12.3699 21.33 12.7799 20.98L14.3599 19.62C14.7999 19.25 15.5299 18.97 16.1099 18.97H17.8099C18.4599 18.97 18.9899 18.44 18.9899 17.79V16.09C18.9899 15.51 19.2599 14.78 19.6399 14.34L20.9999 12.76C21.3499 12.35 21.3499 11.63 20.9999 11.22L19.6399 9.64C19.2599 9.2 18.9899 8.47 18.9899 7.89V6.2C18.9899 5.55 18.4599 5.02 17.8099 5.02H16.1099C15.5299 5.02 14.7999 4.75 14.3599 4.37L12.7799 3.01C12.3699 2.66 11.6499 2.66 11.2399 3.01L9.65988 4.38C9.21988 4.75 8.47988 5.02 7.90988 5.02H6.17988Z"></path></g></svg></span><span><strong>Garantía</strong><small>Productos respaldados por nosotros.</small></span></div><div><span class="ui-escaparate__asistente-icono"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" focusable="false"><g><path d="M12 22.81C11.31 22.81 10.66 22.46 10.2 21.85L8.7 19.85C8.67 19.81 8.55 19.76 8.5 19.75H8C3.83 19.75 1.25 18.62 1.25 13V8C1.25 3.58 3.58 1.25 8 1.25H16C20.42 1.25 22.75 3.58 22.75 8V13C22.75 17.42 20.42 19.75 16 19.75H15.5C15.42 19.75 15.35 19.79 15.3 19.85L13.8 21.85C13.34 22.46 12.69 22.81 12 22.81ZM8 2.75C4.42 2.75 2.75 4.42 2.75 8V13C2.75 17.52 4.3 18.25 8 18.25H8.5C9.01 18.25 9.59 18.54 9.9 18.95L11.4 20.95C11.75 21.41 12.25 21.41 12.6 20.95L14.1 18.95C14.43 18.51 14.95 18.25 15.5 18.25H16C19.58 18.25 21.25 16.58 21.25 13V8C21.25 4.42 19.58 2.75 16 2.75H8Z"></path><path d="M17 8.75H7C6.59 8.75 6.25 8.41 6.25 8C6.25 7.59 6.59 7.25 7 7.25H17C17.41 7.25 17.75 7.59 17.75 8C17.75 8.41 17.41 8.75 17 8.75Z"></path><path d="M13 13.75H7C6.59 13.75 6.25 13.41 6.25 13C6.25 12.59 6.59 12.25 7 12.25H13C13.41 12.25 13.75 12.59 13.75 13C13.75 13.41 13.41 13.75 13 13.75Z"></path></g></svg></span><span><strong>Soporte</strong><small>Estamos aquí para ayudarte.</small></span></div></div></section></div></div><div class="ui-escaparate__tarjetas"><article class="ui-escaparate__tarjeta ui-escaparate__tarjeta--entrega"><div class="ui-escaparate__tarjeta-cabecera"><div><h2>Tu entrega</h2><p>Lima Metropolitana</p></div><button class="ui-escaparate__boton-icono" type="button" aria-label="Ampliar entrega"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H4v4M16 20h4v-4M4 8l5-5M20 16l-5 5"></path></svg></button></div><div class="ui-escaparate__mapa"><i></i><i></i><i></i><i></i><i></i><span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-5.2 6-11a6 6 0 0 0-12 0c0 5.8 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg></span></div></article><article class="ui-escaparate__tarjeta ui-escaparate__tarjeta--tallas"><div class="ui-escaparate__tarjeta-cabecera"><div><h2>Elige tu talla</h2><p>Calce preciso y cómodo</p></div><button class="ui-escaparate__boton-icono" type="button" aria-label="Abrir guía de tallas"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H4v4M16 20h4v-4M4 8l5-5M20 16l-5 5"></path></svg></button></div><div class="ui-escaparate__selector-grande"><button type="button" aria-label="Talla anterior">‹</button><strong>L</strong><button type="button" aria-label="Talla siguiente">›</button><span>Recomendada</span></div></article><article class="ui-escaparate__tarjeta ui-escaparate__tarjeta--pago"><div class="ui-escaparate__tarjeta-cabecera"><div><h2>Completa tu compra</h2><p>Pago seguro y protegido</p></div><button class="ui-escaparate__boton-icono" type="button" aria-label="Ampliar pago"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H4v4M16 20h4v-4M4 8l5-5M20 16l-5 5"></path></svg></button></div><div class="ui-escaparate__resumen"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h2l2 10h10l2-7H6"></path><circle cx="9" cy="19" r="1"></circle><circle cx="17" cy="19" r="1"></circle></svg><div><strong>Boxer individual</strong><span>S/ 39.90</span></div><a href="#">Agregar</a></div></article></div></section></main></body>
+</html>

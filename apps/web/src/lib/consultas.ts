@@ -9,6 +9,10 @@ import { etiquetas } from "./cache";
 export interface ProductoDeRejilla {
   slug: string;
   nombre: string;
+  descripcionCorta: string | null;
+  categoria: string;
+  categoriaSlug?: string;
+  tallas?: string[];
   marca: string | null;
   imagenUrl: string;
   precio: number;
@@ -22,6 +26,39 @@ export interface MarcaDeFicha {
   slug: string;
   nombre: string;
   logo?: string | null;
+}
+
+export interface ContenidoColeccionPortada {
+  etiqueta: string;
+  titulo: string;
+  texto: string;
+  imagen: string;
+  href: string;
+}
+
+export async function contenidoColeccionPortada(): Promise<ContenidoColeccionPortada> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.portada());
+
+  const categoria = await prisma.categoria.findUnique({
+    where: { slug: "hombres" },
+    select: {
+      portadaEtiqueta: true,
+      portadaTitulo: true,
+      portadaTexto: true,
+      portadaImagen: true,
+      portadaHref: true,
+    },
+  });
+
+  return {
+    etiqueta: categoria?.portadaEtiqueta ?? "Nueva colección",
+    titulo: categoria?.portadaTitulo ?? "Comodidad con personalidad",
+    texto: categoria?.portadaTexto ?? "Básicos cómodos para acompañarte todos los días.",
+    imagen: categoria?.portadaImagen ?? "/producto.webp",
+    href: categoria?.portadaHref ?? "/categorias/hombres",
+  };
 }
 
 /**
@@ -44,6 +81,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
       variantes: { select: { stock: true, activa: true, talla: true, color: true } },
+      categoria: { select: { nombre: true } },
     },
   });
 
@@ -60,6 +98,8 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     return {
       slug: p.slug,
       nombre: p.nombre,
+      descripcionCorta: p.descripcionCorta,
+      categoria: p.categoria.nombre,
       marca: p.marca,
       imagenUrl: p.imagenes[0]?.url ?? "",
       precio: precio.precio,
@@ -73,7 +113,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
   return resueltos.filter((p): p is ProductoDeRejilla => p !== null);
 }
 
-export async function productosNuevos(limite = 10): Promise<ProductoDeRejilla[]> {
+export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> {
   "use cache";
   cacheLife("hours");
   cacheTag(etiquetas.portada());
@@ -85,31 +125,33 @@ export async function productosNuevos(limite = 10): Promise<ProductoDeRejilla[]>
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
       variantes: { select: { stock: true, activa: true, talla: true, color: true } },
+      categoria: { select: { nombre: true, slug: true } },
     },
   });
 
-  const resueltos = productos.map((p): ProductoDeRejilla => {
+  return productos.map((producto): ProductoDeRejilla => {
     const precio = resolverPrecio({
-      precio: Number(p.precio),
-      precioLista: p.precioLista !== null ? Number(p.precioLista) : null,
+      precio: Number(producto.precio),
+      precioLista: producto.precioLista !== null ? Number(producto.precioLista) : null,
     });
-
-    const disponibilidad = resolverDisponibilidad(p.variantes);
+    const disponibilidad = resolverDisponibilidad(producto.variantes);
 
     return {
-      slug: p.slug,
-      nombre: p.nombre,
-      marca: p.marca,
-      imagenUrl: p.imagenes[0]?.url ?? "",
+      slug: producto.slug,
+      nombre: producto.nombre,
+      descripcionCorta: producto.descripcionCorta,
+      categoria: producto.categoria.nombre,
+      categoriaSlug: producto.categoria.slug,
+      tallas: disponibilidad.tallas,
+      marca: producto.marca,
+      imagenUrl: producto.imagenes[0]?.url ?? "",
       precio: precio.precio,
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
-      etiqueta: p.etiqueta,
+      etiqueta: producto.etiqueta,
       disponible: disponibilidad.hayStock,
     };
   });
-
-  return resueltos;
 }
 
 export interface ProductoDeFicha {

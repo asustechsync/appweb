@@ -1,6 +1,7 @@
 import { cuenta } from "./rutas/cuenta";
 import { resumen } from "./rutas/panel/resumen";
 import { usuarios } from "./rutas/panel/usuarios";
+import { coleccionPortada } from "./rutas/panel/coleccion-portada";
 import { router } from "./trpc";
 
 export { crearContexto, type Contexto, type Sesion } from "./trpc";
@@ -20,6 +21,7 @@ export const enrutador = router({
   panel: router({
     resumen,
     usuarios,
+    coleccionPortada,
   }),
 });
 

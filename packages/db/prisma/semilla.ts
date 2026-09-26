@@ -12,9 +12,11 @@ import { config } from "dotenv";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+import { cadenaConexion } from "../src/conexion";
+
 config({ path: "../../.env.local" });
 
-const adapter = new PrismaPg({ connectionString: process.env["DATABASE_URL"] });
+const adapter = new PrismaPg({ connectionString: cadenaConexion() });
 const prisma = new PrismaClient({ adapter });
 
 // ── Categorias raiz ──────────────────────────────────────────────────────
@@ -28,6 +30,11 @@ const categorias = [
     destacada: true,
     tituloSeo: "Ropa básica para hombre | Tienda",
     descripcionSeo: "Boxers, medias y polos básicos para hombre. Envío a todo el Perú.",
+    portadaEtiqueta: "Nueva colección",
+    portadaTitulo: "Comodidad con personalidad",
+    portadaTexto: "Básicos cómodos para acompañarte todos los días.",
+    portadaImagen: "/producto.webp",
+    portadaHref: "/categorias/hombres",
     orden: 1,
   },
   {
@@ -759,8 +766,8 @@ const productos: ProductoSeed[] = [
     slug: "medias-sport-galufei-joven",
     nombre: "Medias Sport Galufei Joven",
     descripcion: "Medias deportivas Galufei con compresión y ventilación.",
-    descripcionCorta: "Sport, compresión y ventilación.",
-    etiqueta: "Nuevo",
+    descripcionCorta: "Compresión transpirable",
+    etiqueta: "Tendencia",
     destacada: false,
     tituloSeo: "Medias Sport Galufei Joven | Tienda",
     descripcionSeo: "Medias sport Galufei para jóvenes. Compresión y ventilación.",

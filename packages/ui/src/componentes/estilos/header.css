@@ -1,15 +1,23 @@
+/* El fondo ocupa todo el ancho de la pantalla; el grid de adentro
+   (.ui-header__interior) es lo unico que se limita a 1400px. Asi no
+   aparece una franja de otro color a los costados. */
 .ui-header {
   --color-fondoSutil: var(--color-neutro-200);
   --color-texto: var(--color-neutro-900);
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+
+.ui-header__interior {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(16rem, 1fr) auto auto;
   align-items: center;
   gap: var(--espacio-6);
   min-block-size: var(--espacio-24);
+  max-inline-size: var(--contenedor-ancho);
+  margin-inline: auto;
   padding-inline: var(--espacio-6);
-  background: var(--color-fondoSutil);
-  color: var(--color-texto);
 }
 
 .ui-header__marca {
@@ -78,7 +86,7 @@
 }
 
 @media (max-width: 48rem) {
-  .ui-header {
+  .ui-header__interior {
     grid-template-columns: 1fr auto;
     gap: var(--espacio-3);
     padding: var(--espacio-4);

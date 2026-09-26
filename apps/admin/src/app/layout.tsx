@@ -1,4 +1,4 @@
-import { GUION_TEMA } from "@appweb/ui";
+import { GuionTemaInicial } from "@appweb/ui";
 
 import "./globals.css";
 
@@ -23,7 +23,7 @@ export default function LayoutPanel({ children }: { children: React.ReactNode })
   return (
     <html lang="es-PE" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: GUION_TEMA }} />
+        <GuionTemaInicial />
       </head>
       <body>{children}</body>
     </html>
