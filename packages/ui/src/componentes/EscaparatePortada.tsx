@@ -2,8 +2,6 @@ import Link from "next/link";
 import { Beneficio, type PropsBeneficio } from "./Beneficio";
 import { BloqueColeccion, type PropsBloqueColeccion } from "./BloqueColeccion";
 import { CarruselPortada } from "./CarruselPortada";
-import { CarruselMarcas } from "./CarruselMarcas";
-import type { PropsTarjetaMarca } from "./TarjetaMarca";
 import type { PropsTarjetaProducto } from "./TarjetaProducto";
 
 import "./estilos/escaparate-portada.css";
@@ -12,10 +10,9 @@ export interface PropsEscaparatePortada {
   productos: PropsTarjetaProducto[];
   beneficios: PropsBeneficio[];
   coleccion: PropsBloqueColeccion;
-  marcas?: PropsTarjetaMarca[];
 }
 
-export function EscaparatePortada({ productos, beneficios, coleccion, marcas }: PropsEscaparatePortada) {
+export function EscaparatePortada({ productos, beneficios, coleccion }: PropsEscaparatePortada) {
   return (
     <main className="ui-escaparate">
       <section className="ui-escaparate__panel" aria-label="Portada y beneficios destacados">
@@ -35,12 +32,6 @@ export function EscaparatePortada({ productos, beneficios, coleccion, marcas }: 
             </ul>
           </section>
         </div>
-
-        {marcas && marcas.length > 0 ? (
-          <section className="ui-escaparate__marcas" aria-label="Marcas destacadas">
-            <CarruselMarcas marcas={marcas} orientacion="horizontal" />
-          </section>
-        ) : null}
 
         <section className="ui-escaparate__tarjetas" aria-label="Información para comprar">
           <article className="ui-escaparate__tarjeta ui-escaparate__tarjeta--entrega">

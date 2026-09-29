@@ -90,6 +90,7 @@ export const tokens = {
     familia: {
       base: "'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif",
       numeros: "'Urbanist', system-ui, -apple-system, sans-serif",
+      acceso: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
       mono: "'IBM Plex Mono', ui-monospace, Consolas, monospace",
     },
     tamano: {
@@ -120,8 +121,25 @@ export const tokens = {
 
   contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1400 },
 
+  // Monitores grandes: el ancho maximo crece para sumar columnas, nunca para
+  // agrandar texto ni tarjetas. Se aplica en theme.css desde su quiebre.
+  // FHD (1920) se queda en 1400; el ancho extra empieza en 2K (2560).
+  contenedorAmplio: { "4xl": 1760 },
+
   // FIRST MOBILE: la base es movil y estos solo añaden desde arriba.
-  quiebre: { sm: 640, md: 768, lg: 1024, xl: 1280 },
+  // Son px CSS, no fisicos: un monitor escalado reporta resolucion / escala.
+  // CSS no acepta var() en @media: se escriben en rem (valor / 16) y
+  // `npm run ui:quiebres` falla si algun @media se sale de esta escala.
+  quiebre: {
+    xs: 480, //    movil grande, movil horizontal
+    sm: 640, //    phablet
+    md: 768, //    tablet vertical
+    lg: 1024, //   tablet horizontal, laptop 11-13"
+    xl: 1280, //   laptop HD
+    "2xl": 1536, // FHD al 125% (laptop Windows tipica)
+    "3xl": 1920, // FHD al 100%, 2K al 133%, 4K al 200%
+    "4xl": 2560, // 2K al 100%, 4K al 150%
+  },
 
   transicion: {
     rapida: "120ms cubic-bezier(0.4, 0, 0.2, 1)",

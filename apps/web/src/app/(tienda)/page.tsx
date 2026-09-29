@@ -1,7 +1,7 @@
 import { EscaparatePortada, Header, type PropsBeneficio } from "@appweb/ui";
 import type { Metadata } from "next";
 
-import { contenidoColeccionPortada, productosNuevos, marcas } from "@/lib/consultas";
+import { contenidoColeccionPortada, productosNuevos } from "@/lib/consultas";
 
 
 export const metadata: Metadata = {
@@ -19,10 +19,9 @@ const beneficios: PropsBeneficio[] = [
 
 /** CLASE A — portada. Layout con estructura de producto. */
 export default async function PaginaPortada() {
-  const [productos, coleccion, listaMarcas] = await Promise.all([
+  const [productos, coleccion] = await Promise.all([
     productosNuevos(5),
     contenidoColeccionPortada(),
-    marcas(8),
   ]);
 
   return (
@@ -32,7 +31,6 @@ export default async function PaginaPortada() {
         productos={productos}
         beneficios={beneficios}
         coleccion={coleccion}
-        marcas={listaMarcas}
       />
     </>
   );

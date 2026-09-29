@@ -12,7 +12,8 @@
     "./theme.css": "./src/theme.css"
   },
   "scripts": {
-    "tokens": "tsx src/generar-theme.ts",
+    "tokens": "tsx src/generar-theme.ts && tsx src/verificar-quiebres.ts",
+    "quiebres": "tsx src/verificar-quiebres.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

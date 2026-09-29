@@ -42,12 +42,33 @@ function bloque(objeto: Arbol, sangria = "  "): string {
     .join("\n");
 }
 
+const rem = (px: number) => `${px / 16}rem`;
+
+const escalaQuiebres = Object.entries(tokens.quiebre)
+  .map(([nombre, px]) => `${nombre} ${rem(px)}`)
+  .join(" · ");
+
+const contenedoresAmplios = (
+  Object.keys(tokens.contenedorAmplio) as Array<keyof typeof tokens.contenedorAmplio>
+)
+  .map(
+    (quiebre) => `@media (min-width: ${rem(tokens.quiebre[quiebre])}) {
+  :root { --contenedor-ancho: ${tokens.contenedorAmplio[quiebre]}px; }
+}`,
+  )
+  .join("\n");
+
 const css = `/* GENERADO POR generar-theme.ts — NO EDITAR A MANO.
    Cambia packages/ui/src/tokens.ts y corre: npm run ui:tokens */
 
 :root {
 ${bloque(tokens as unknown as Arbol)}
 }
+
+/* Quiebres (min-width). CSS no acepta var() en @media; usa estos rem:
+   ${escalaQuiebres} */
+
+${contenedoresAmplios}
 
 /* El sistema decide, salvo que el usuario haya elegido. */
 @media (prefers-color-scheme: dark) {

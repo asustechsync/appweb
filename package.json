@@ -20,7 +20,8 @@
     "db:migrar": "npm run migrar -w @appweb/db",
     "db:semilla": "npm run semilla -w @appweb/db",
     "db:studio": "npm run studio -w @appweb/db",
-    "ui:tokens": "npm run tokens -w @appweb/ui"
+    "ui:tokens": "npm run tokens -w @appweb/ui",
+    "ui:quiebres": "npm run quiebres -w @appweb/ui"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

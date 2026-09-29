@@ -1,6 +1,11 @@
 export type { PropsIcono } from "./tipos";
 export { IconoBeneficio } from "./IconoBeneficio";
+export { IconoHome } from "./IconoHome";
 export { IconoUsuario } from "./IconoUsuario";
+export { IconoOjo } from "./IconoOjo";
+export { IconoOjoTachado } from "./IconoOjoTachado";
+export { IconoGoogle } from "./IconoGoogle";
+export { IconoFacebook } from "./IconoFacebook";
 export { IconoCarrito } from "./IconoCarrito";
 export { IconoMenu } from "./IconoMenu";
 export { IconoPedidos } from "./IconoPedidos";

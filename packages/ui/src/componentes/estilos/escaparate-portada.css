@@ -127,12 +127,6 @@
   align-items: center;
 }
 
-.ui-escaparate__marcas {
-  max-inline-size: var(--contenedor-ancho);
-  margin-inline: auto;
-  padding: 0 var(--espacio-6) var(--espacio-8);
-}
-
 .ui-escaparate__rail {
   z-index: 4;
   display: grid;
@@ -420,7 +414,6 @@
     background: transparent;
   }
   .ui-escaparate__asistente { inline-size: 100%; margin-block-end: var(--espacio-1); }
-  .ui-escaparate__marcas { display: none; }
   .ui-escaparate__tarjetas { grid-template-columns: 1fr; padding: 0 var(--espacio-4) var(--espacio-6); }
   .ui-escaparate__tarjeta { min-block-size: auto; }
   .ui-escaparate__tarjeta--entrega { order: 2; }

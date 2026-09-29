@@ -74,6 +74,7 @@ export const tokensNativos = {
     "familia": {
       "base": "'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif",
       "numeros": "'Urbanist', system-ui, -apple-system, sans-serif",
+      "acceso": "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
       "mono": "'IBM Plex Mono', ui-monospace, Consolas, monospace"
     },
     "tamano": {
@@ -118,11 +119,18 @@ export const tokensNativos = {
     "xl": 1280,
     "ancho": 1400
   },
+  "contenedorAmplio": {
+    "4xl": 1760
+  },
   "quiebre": {
+    "xs": 480,
     "sm": 640,
     "md": 768,
     "lg": 1024,
-    "xl": 1280
+    "xl": 1280,
+    "2xl": 1536,
+    "3xl": 1920,
+    "4xl": 2560
   },
   "transicion": {
     "rapida": "120ms cubic-bezier(0.4, 0, 0.2, 1)",

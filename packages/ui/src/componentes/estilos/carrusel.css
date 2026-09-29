@@ -82,7 +82,7 @@
     display: inline-flex;
   }
 }
-@media (min-width: 52rem) {
+@media (min-width: 48rem) {
   .ui-carrusel {
     --visibles: 6;
   }
@@ -91,5 +91,16 @@
   .ui-carrusel {
     /* fijo (1) + 6 tarjetas visibles en la pista */
     --visibles: 7;
+  }
+}
+/* Con el contenedor amplio, sumar tarjetas mantiene su ancho (~185px). */
+@media (min-width: 120rem) {
+  .ui-carrusel {
+    --visibles: 9;
+  }
+}
+@media (min-width: 160rem) {
+  .ui-carrusel {
+    --visibles: 12;
   }
 }
