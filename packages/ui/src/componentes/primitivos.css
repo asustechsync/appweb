@@ -35,7 +35,9 @@
 @import "./estilos/estado-vacio.css";
 @import "./estilos/cargando.css";
 @import "./estilos/formulario.css";
+@import "./estilos/disposicion-acceso.css";
 @import "./estilos/campo.css";
+@import "./estilos/casilla.css";
 @import "./estilos/boton.css";
 @import "./estilos/alerta.css";
 @import "./estilos/tarjeta-seleccionable.css";

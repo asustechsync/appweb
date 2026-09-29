@@ -90,6 +90,7 @@ export {
 } from "./usuarios/administracion";
 
 export { hashClave, verificarClave } from "./usuarios/credenciales";
+export { nombreDesdeCorreo } from "./usuarios/nombre";
 
 export {
   crearTokenSesion,

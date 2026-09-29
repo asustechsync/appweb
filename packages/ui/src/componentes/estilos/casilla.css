@@ -1,0 +1,23 @@
+.ui-casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  inline-size: fit-content;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  cursor: pointer;
+}
+.ui-casilla input {
+  inline-size: var(--espacio-4);
+  block-size: var(--espacio-4);
+  margin: 0;
+  accent-color: var(--color-texto);
+  cursor: pointer;
+}
+.ui-casilla input:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}
+.ui-casilla input:disabled {
+  cursor: not-allowed;
+}

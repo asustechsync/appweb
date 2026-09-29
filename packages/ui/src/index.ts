@@ -98,7 +98,13 @@ export {
 export { EstadoVacio, type PropsEstadoVacio } from "./componentes/EstadoVacio";
 export { Cargando, type PropsCargando } from "./componentes/Cargando";
 export { Formulario, type PropsFormulario } from "./componentes/Formulario";
+export {
+  DisposicionAcceso,
+  type PropsDisposicionAcceso,
+} from "./componentes/DisposicionAcceso";
 export { Campo, type PropsCampo } from "./componentes/Campo";
+export { Casilla, type PropsCasilla } from "./componentes/Casilla";
+export { AccesoSocial } from "./componentes/AccesoSocial";
 export { FilaCampos, type PropsFilaCampos } from "./componentes/FilaCampos";
 export { SelectorPais, type PropsSelectorPais } from "./componentes/SelectorPais";
 export { SelectorFecha, type PropsSelectorFecha } from "./componentes/SelectorFecha";

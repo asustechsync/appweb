@@ -16,6 +16,7 @@ import { crearTokenSesion, verificarTokenSesion, type CargaSesion, type Rol } fr
  */
 
 const DURACION_MS = 1000 * 60 * 60 * 24 * 30; // 30 dias
+const DURACION_SIN_RECORDAR_MS = 1000 * 60 * 60 * 24; // 1 dia, y la cookie muere al cerrar el navegador
 
 function secreto(): string {
   const valor = process.env["AUTH_SECRETO"];
@@ -31,15 +32,16 @@ export interface Sesion {
   nombre: string;
 }
 
-export async function crearCookieSesion(carga: CargaSesion): Promise<void> {
-  const token = crearTokenSesion(carga, secreto(), DURACION_MS);
+export async function crearCookieSesion(carga: CargaSesion, recordar = true): Promise<void> {
+  const token = crearTokenSesion(carga, secreto(), recordar ? DURACION_MS : DURACION_SIN_RECORDAR_MS);
   const almacen = await cookies();
   almacen.set(COOKIE_SESION, token, {
     httpOnly: true,
     secure: process.env["NODE_ENV"] === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: DURACION_MS / 1000,
+    // Sin maxAge la cookie es de sesion: se borra al cerrar el navegador.
+    ...(recordar ? { maxAge: DURACION_MS / 1000 } : {}),
   });
 }
 

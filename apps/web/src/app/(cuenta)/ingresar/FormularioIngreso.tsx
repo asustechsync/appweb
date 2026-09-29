@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { Alerta, Boton, Campo, Formulario, PaginaInformativa } from "@appweb/ui";
+import { AccesoSocial, Alerta, Boton, Campo, Casilla, DisposicionAcceso, Formulario } from "@appweb/ui";
 
 import { ingresar } from "./acciones";
 
@@ -17,6 +17,7 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [clave, setClave] = useState("");
+  const [recordar, setRecordar] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -25,7 +26,7 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
     setError(null);
     setEnviando(true);
 
-    const resultado = await ingresar({ email, clave });
+    const resultado = await ingresar({ email, clave, recordar });
 
     if (!resultado.ok) {
       setError(resultado.error ?? "No se pudo ingresar.");
@@ -38,15 +39,12 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
   }
 
   return (
-    <PaginaInformativa titulo="Ingresar">
-      <Formulario
-        onSubmit={enviar}
-        pie={
-          <>
-            ¿No tienes cuenta? <Link href="/registro">Crea una</Link>
-          </>
-        }
-      >
+    <DisposicionAcceso
+      activa="ingresar"
+      titulo="Entra a tu cuenta para continuar"
+      alternativas={<AccesoSocial />}
+    >
+      <Formulario onSubmit={enviar}>
         {error ? <Alerta tono="error">{error}</Alerta> : null}
 
         <Campo
@@ -60,18 +58,20 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
         />
         <Campo
           id="clave"
-          etiqueta="Clave"
+          etiqueta="Contraseña"
           tipo="password"
           valor={clave}
           onCambio={setClave}
           autoComplete="current-password"
+          enlaceEtiqueta={<Link href="/ayuda/contacto">¿Olvidaste tu contraseña?</Link>}
           requerido
         />
+        <Casilla id="recordar" etiqueta="Recordarme" marcada={recordar} onCambio={setRecordar} />
 
         <Boton tipo="submit" disabled={enviando} anchoCompleto>
           {enviando ? "Ingresando…" : "Ingresar"}
         </Boton>
       </Formulario>
-    </PaginaInformativa>
+    </DisposicionAcceso>
   );
 }

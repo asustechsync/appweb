@@ -24,9 +24,15 @@ export const esquemaRegistro = z.object({
     .optional(),
 });
 
+/** Autorregistro publico: solo correo y contraseña (y telefono si lo da). El
+    nombre sale del correo; el panel si lo pide, por eso no se quita arriba. */
+export const esquemaAutorregistro = esquemaRegistro.omit({ nombre: true });
+
 export const esquemaIngreso = z.object({
   email: z.email("Revisa el correo").toLowerCase(),
-  clave: z.string().min(1, "Escribe tu clave"),
+  clave: z.string().min(1, "Escribe tu contraseña"),
+  /** Marcada: la sesion dura 30 dias. Sin marcar: hasta cerrar el navegador. */
+  recordar: z.boolean().default(false),
 });
 
 /** Actualizacion del perfil desde /mi-cuenta. El tipo y numero de documento
@@ -125,6 +131,7 @@ export const esquemaCheckout = z.object({
 });
 
 export type DatosRegistro = z.infer<typeof esquemaRegistro>;
+export type DatosAutorregistro = z.infer<typeof esquemaAutorregistro>;
 export type DatosIngreso = z.infer<typeof esquemaIngreso>;
 export type DatosPerfil = z.infer<typeof esquemaPerfil>;
 export type DatosUsuarioPanel = z.infer<typeof esquemaUsuarioPanel>;

@@ -14,10 +14,10 @@ export interface ResultadoIngreso {
 export async function ingresar(datos: unknown): Promise<ResultadoIngreso> {
   const analizado = esquemaIngreso.safeParse(datos);
   if (!analizado.success) {
-    return { ok: false, error: "Revisa el correo y la clave." };
+    return { ok: false, error: "Revisa el correo y la contraseña." };
   }
 
-  const { email, clave } = analizado.data;
+  const { email, clave, recordar } = analizado.data;
 
   const usuario = await prisma.usuario.findUnique({ where: { email } });
 
@@ -25,10 +25,10 @@ export async function ingresar(datos: unknown): Promise<ResultadoIngreso> {
   // cual de las dos fallo es regalarle a quien prueba correos al azar cuales
   // si estan registrados.
   if (usuario === null || !usuario.activo || !verificarClave(clave, usuario.clave)) {
-    return { ok: false, error: "Correo o clave incorrectos." };
+    return { ok: false, error: "Correo o contraseña incorrectos." };
   }
 
-  await crearCookieSesion({ usuarioId: usuario.id, rol: usuario.rol, nombre: usuario.nombre });
+  await crearCookieSesion({ usuarioId: usuario.id, rol: usuario.rol, nombre: usuario.nombre }, recordar);
 
   return { ok: true };
 }

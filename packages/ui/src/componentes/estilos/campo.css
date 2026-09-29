@@ -32,6 +32,17 @@
   background: var(--color-fondoSutil);
   cursor: not-allowed;
 }
+/* El navegador pinta los campos autocompletados de celeste. No se puede
+   cambiar su fondo directamente: se tapa con una sombra interior del color de
+   la web y se fija el color del texto. */
+.ui-campo__input:-webkit-autofill,
+.ui-campo__input:-webkit-autofill:hover,
+.ui-campo__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-texto);
+  caret-color: var(--color-texto);
+  box-shadow: 0 0 0 100rem var(--color-fondo) inset;
+  transition: background-color 9999s ease-out;
+}
 .ui-campo__input--error {
   border-color: var(--color-error);
 }
@@ -96,4 +107,48 @@
 .ui-campo__error {
   color: var(--color-error);
   font-size: var(--tipo-tamano-xs);
+}
+
+.ui-campo__clave {
+  position: relative;
+  display: flex;
+}
+.ui-campo__clave > .ui-campo__input {
+  flex: 1;
+  min-inline-size: 0;
+  padding-inline-end: var(--espacio-12);
+}
+.ui-campo__mostrar {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-12);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-textoSuave);
+  cursor: pointer;
+}
+.ui-campo__mostrar:hover,
+.ui-campo__mostrar:focus-visible {
+  outline: 0;
+  color: var(--color-texto);
+}
+
+.ui-campo__etiqueta-fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+.ui-campo__etiqueta-fila a {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  text-decoration: none;
+}
+.ui-campo__etiqueta-fila a:hover,
+.ui-campo__etiqueta-fila a:focus-visible {
+  color: var(--color-texto);
 }

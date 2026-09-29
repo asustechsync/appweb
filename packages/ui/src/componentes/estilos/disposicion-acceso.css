@@ -1,0 +1,146 @@
+.ui-acceso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 100svh;
+  padding: var(--espacio-8) var(--espacio-4);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-acceso);
+  /* Controles mas grandes que el resto del sitio: es la unica pantalla donde
+     el formulario es lo unico que hay. */
+  --control-alto: 3rem;
+}
+.ui-acceso button,
+.ui-acceso input {
+  font-family: inherit;
+}
+/* El logo conserva la fuente de la marca. */
+.ui-acceso .ui-logo {
+  font-family: var(--tipo-familia-base);
+}
+.ui-acceso__columna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  inline-size: 100%;
+  max-inline-size: 26rem;
+  /* Alto de la pantalla mas larga (crear cuenta). Con el mismo alto las dos
+     se centran igual y las pestañas y el logo no saltan al cambiar de una a
+     otra; lo que sobra en ingresar queda abajo. */
+  min-block-size: 42rem;
+}
+.ui-acceso__pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
+}
+.ui-acceso__pestana {
+  display: grid;
+  place-items: center;
+  block-size: 2.5rem;
+  border-radius: var(--radio-md);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: none;
+  transition: background-color var(--transicion-rapida), color var(--transicion-rapida);
+}
+.ui-acceso__pestana:hover,
+.ui-acceso__pestana:focus-visible {
+  outline: 0;
+  color: var(--color-texto);
+}
+.ui-acceso__pestana[aria-current="page"] {
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+.ui-acceso__logo {
+  display: flex;
+  justify-content: center;
+}
+.ui-acceso__titulo {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-normal);
+  line-height: var(--tipo-altura-normal);
+  text-align: center;
+}
+.ui-acceso .ui-campo label,
+.ui-acceso .ui-campo__etiqueta-fila a,
+.ui-acceso .ui-casilla,
+.ui-acceso__separador,
+.ui-acceso__pie {
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-acceso .ui-campo__input,
+.ui-acceso .ui-boton {
+  font-size: var(--tipo-tamano-base);
+}
+.ui-acceso__columna .ui-formulario {
+  max-inline-size: none;
+}
+.ui-acceso__separador {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-acceso__separador::before,
+.ui-acceso__separador::after {
+  content: "";
+  flex: 1;
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-acceso__alternativas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+.ui-acceso__alternativas .ui-boton {
+  gap: var(--espacio-2);
+}
+.ui-acceso__pie {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-align: center;
+}
+.ui-acceso__pie a {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: none;
+}
+
+
+/* Los botones de otras cuentas van mas livianos que el "Ingresar" principal. */
+.ui-acceso__alternativas .ui-boton {
+  color: var(--color-textoSuave);
+  font-weight: var(--tipo-peso-medio);
+}
+
+/* Campos con fondo suave, sin depender solo del borde para leerse como campo. */
+.ui-acceso .ui-campo__input,
+.ui-acceso .ui-selector-pais__disparador {
+  background: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
+}
+.ui-acceso .ui-campo__input:-webkit-autofill,
+.ui-acceso .ui-campo__input:-webkit-autofill:hover,
+.ui-acceso .ui-campo__input:-webkit-autofill:focus {
+  box-shadow: 0 0 0 100rem color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo)) inset;
+}
+
+/* El logo pesa mas aqui que en la cabecera: es lo unico de marca en pantalla. */
+.ui-acceso .ui-logo {
+  gap: var(--espacio-5);
+  font-size: var(--tipo-tamano-4xl);
+}
+.ui-acceso .ui-logo__simbolo {
+  inline-size: var(--espacio-16);
+  block-size: auto;
+  aspect-ratio: 4 / 3;
+}

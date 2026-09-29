@@ -1,8 +1,11 @@
 "use client";
 
+import { useState, type ReactNode } from "react";
+
 import "flag-icons/css/flag-icons.min.css";
 import "./primitivos.css";
 
+import { IconoOjo, IconoOjoTachado } from "../iconos";
 import { SelectorPais } from "./SelectorPais";
 
 export interface PropsCampo {
@@ -26,6 +29,8 @@ export interface PropsCampo {
   pais?: string;
   onCambioPais?: (iso2: string) => void;
   disabled?: boolean;
+  /** Enlace a la derecha de la etiqueta: "¿Olvidaste tu contraseña?". */
+  enlaceEtiqueta?: ReactNode;
 }
 
 /**
@@ -49,15 +54,18 @@ export function Campo({
   pais,
   onCambioPais,
   disabled,
+  enlaceEtiqueta,
 }: PropsCampo) {
   const prefijoSeleccionable = pais !== undefined && onCambioPais !== undefined;
   const conPrefijoFijo = !prefijoSeleccionable && Boolean(prefijo);
+  const [claveVisible, setClaveVisible] = useState(false);
+  const esClave = tipo === "password";
 
   const input = (
     <input
       id={id}
       name={id}
-      type={tipo}
+      type={esClave && claveVisible ? "text" : tipo}
       value={valor}
       onChange={(evento) => onCambio(evento.target.value)}
       required={requerido}
@@ -78,7 +86,14 @@ export function Campo({
 
   return (
     <div className="ui-campo">
-      <label htmlFor={id}>{etiqueta}</label>
+      {enlaceEtiqueta ? (
+        <div className="ui-campo__etiqueta-fila">
+          <label htmlFor={id}>{etiqueta}</label>
+          {enlaceEtiqueta}
+        </div>
+      ) : (
+        <label htmlFor={id}>{etiqueta}</label>
+      )}
       {prefijoSeleccionable ? (
         <div className="ui-campo__separado">
           <SelectorPais id={`${id}-pais`} valor={pais} onCambio={onCambioPais} />
@@ -91,6 +106,20 @@ export function Campo({
             {prefijo}
           </span>
           {input}
+        </div>
+      ) : esClave ? (
+        <div className="ui-campo__clave">
+          {input}
+          <button
+            type="button"
+            className="ui-campo__mostrar"
+            aria-label={claveVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+            title={claveVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-pressed={claveVisible}
+            onClick={() => setClaveVisible((visible) => !visible)}
+          >
+            {claveVisible ? <IconoOjoTachado /> : <IconoOjo />}
+          </button>
         </div>
       ) : (
         input
