@@ -4,7 +4,8 @@
   justify-content: center;
   min-block-size: 100svh;
   padding: var(--espacio-8) var(--espacio-4);
-  background: var(--color-fondo);
+  /* Mismo plomo que el fondo del escaparate. */
+  background: var(--color-neutro-200);
   color: var(--color-texto);
   font-family: var(--tipo-familia-acceso);
   /* Controles mas grandes que el resto del sitio: es la unica pantalla donde
@@ -26,37 +27,22 @@
   inline-size: 100%;
   max-inline-size: 26rem;
   /* Alto de la pantalla mas larga (crear cuenta). Con el mismo alto las dos
-     se centran igual y las pestañas y el logo no saltan al cambiar de una a
-     otra; lo que sobra en ingresar queda abajo. */
+     se centran igual y el logo no salta al cambiar de una a otra; lo que
+     sobra en ingresar queda abajo. */
   min-block-size: 42rem;
 }
-.ui-acceso__pestanas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Salida a la portada: pequena y discreta, arriba a la izquierda. */
+.ui-acceso__volver {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
   gap: var(--espacio-1);
-  padding: var(--espacio-1);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
-  background: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
-}
-.ui-acceso__pestana {
-  display: grid;
-  place-items: center;
-  block-size: 2.5rem;
-  border-radius: var(--radio-md);
   color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-sm);
-  font-weight: var(--tipo-peso-medio);
   text-decoration: none;
-  transition: background-color var(--transicion-rapida), color var(--transicion-rapida);
 }
-.ui-acceso__pestana:hover,
-.ui-acceso__pestana:focus-visible {
-  outline: 0;
-  color: var(--color-texto);
-}
-.ui-acceso__pestana[aria-current="page"] {
-  background: var(--color-fondoSutil);
+.ui-acceso__volver:hover,
+.ui-acceso__volver:focus-visible {
   color: var(--color-texto);
 }
 .ui-acceso__logo {
@@ -71,7 +57,7 @@
   text-align: center;
 }
 .ui-acceso .ui-campo label,
-.ui-acceso .ui-campo__etiqueta-fila a,
+.ui-acceso .ui-fila-opciones a,
 .ui-acceso .ui-casilla,
 .ui-acceso__separador,
 .ui-acceso__pie {
@@ -97,10 +83,30 @@
   flex: 1;
   border-block-start: 1px solid var(--color-borde);
 }
+/* Movil: los botones van lado a lado, con solo logo y nombre. */
 .ui-acceso__alternativas {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--espacio-2);
+}
+.ui-acceso__alternativas .ui-boton {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ui-acceso__continuar {
+  display: none;
+}
+@media (min-width: 30rem) {
+  .ui-acceso__alternativas {
+    flex-direction: column;
+  }
+  /* En columna, `flex: 1` encogeria el alto del boton. */
+  .ui-acceso__alternativas .ui-boton {
+    flex: none;
+  }
+  .ui-acceso__continuar {
+    display: inline;
+  }
 }
 .ui-acceso__alternativas .ui-boton {
   gap: var(--espacio-2);
@@ -121,17 +127,6 @@
 .ui-acceso__alternativas .ui-boton {
   color: var(--color-textoSuave);
   font-weight: var(--tipo-peso-medio);
-}
-
-/* Campos con fondo suave, sin depender solo del borde para leerse como campo. */
-.ui-acceso .ui-campo__input,
-.ui-acceso .ui-selector-pais__disparador {
-  background: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
-}
-.ui-acceso .ui-campo__input:-webkit-autofill,
-.ui-acceso .ui-campo__input:-webkit-autofill:hover,
-.ui-acceso .ui-campo__input:-webkit-autofill:focus {
-  box-shadow: 0 0 0 100rem color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo)) inset;
 }
 
 /* El logo pesa mas aqui que en la cabecera: es lo unico de marca en pantalla. */

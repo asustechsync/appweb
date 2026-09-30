@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-1);
+  /* Fondo plomo suave: el campo se lee como campo sin depender solo del borde. */
+  --campo-fondo: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
+  /* Foco en plomo, no en negro: el borde oscuro es muy duro. */
+  --campo-borde-foco: color-mix(in srgb, var(--color-texto) 25%, var(--color-borde));
 }
 .ui-campo label {
   color: var(--color-textoSuave);
@@ -13,19 +17,19 @@
   padding-inline: var(--control-paddingX);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-md);
-  background: var(--color-fondo);
+  background: var(--campo-fondo);
   color: var(--color-texto);
   font: inherit;
   font-size: var(--tipo-tamano-sm);
   transition: border-color var(--transicion-rapida);
 }
 .ui-campo__input::placeholder {
-  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+  color: color-mix(in srgb, var(--color-textoSuave) 55%, transparent);
   opacity: 1;
 }
 .ui-campo__input:focus {
   outline: 0;
-  border-color: var(--color-texto);
+  border-color: var(--campo-borde-foco);
 }
 .ui-campo__input:disabled {
   color: var(--color-textoTenue);
@@ -40,7 +44,7 @@
 .ui-campo__input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--color-texto);
   caret-color: var(--color-texto);
-  box-shadow: 0 0 0 100rem var(--color-fondo) inset;
+  box-shadow: 0 0 0 100rem var(--campo-fondo) inset;
   transition: background-color 9999s ease-out;
 }
 .ui-campo__input--error {
@@ -61,11 +65,11 @@
   block-size: var(--control-alto);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-md);
-  background: var(--color-fondo);
+  background: var(--campo-fondo);
   transition: border-color var(--transicion-rapida);
 }
 .ui-campo__grupo:focus-within {
-  border-color: var(--color-texto);
+  border-color: var(--campo-borde-foco);
 }
 .ui-campo__grupo--error {
   border-color: var(--color-error);
@@ -128,13 +132,41 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-textoSuave);
+  color: color-mix(in srgb, var(--color-textoSuave) 65%, transparent);
   cursor: pointer;
 }
 .ui-campo__mostrar:hover,
 .ui-campo__mostrar:focus-visible {
   outline: 0;
-  color: var(--color-texto);
+  /* `textoSuave` (#52525B) ya se lee casi negro, por eso se usa `textoTenue`. */
+  color: var(--color-textoTenue);
+}
+
+.ui-campo__clave--flexible {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ui-campo__icono {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-12);
+  /* Mas claro que el texto guia: el icono acompaña, no compite con el campo. */
+  color: color-mix(in srgb, var(--color-textoSuave) 65%, transparent);
+  pointer-events: none;
+}
+.ui-campo__clave > .ui-campo__input--con-icono {
+  padding-inline-start: var(--espacio-12);
+}
+.ui-campo label.ui-campo__etiqueta--oculta {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .ui-campo__etiqueta-fila {

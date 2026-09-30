@@ -1,46 +1,42 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { IconoFlechaIzquierda } from "../iconos";
 import { Logo } from "./Logo";
 
 import "./primitivos.css";
 
-const PESTANAS = [
-  { clave: "ingresar", etiqueta: "Conectar", href: "/ingresar" },
-  { clave: "registro", etiqueta: "Crear cuenta", href: "/registro" },
-] as const;
+const CAMINO_CONTRARIO = {
+  ingresar: { pregunta: "¿Nuevo aquí?", etiqueta: "Crear cuenta", href: "/registro" },
+  registro: { pregunta: "¿Ya tienes cuenta?", etiqueta: "Conectar", href: "/ingresar" },
+} as const;
 
 export interface PropsDisposicionAcceso {
-  /** Cual de las dos pestañas (ingresar / crear cuenta) es esta pantalla. */
-  activa: (typeof PESTANAS)[number]["clave"];
+  /** Cual de las dos pantallas (ingresar / crear cuenta) es esta; decide el
+      enlace al camino contrario que va al final. Sin valor no hay enlace y
+      manda `pie` (recuperar contraseña). */
+  activa?: keyof typeof CAMINO_CONTRARIO;
   titulo: string;
   children: ReactNode;
   /** Otras formas de entrar (Google, Apple...). Van tras un separador "o". */
   alternativas?: ReactNode;
-  /** Linea final: "¿Nuevo aquí? Crea una cuenta". */
+  /** Linea final propia; solo se usa cuando no hay `activa`. */
   pie?: ReactNode;
 }
 
 /**
- * Pantalla de ingresar/crear cuenta: una columna centrada con pestañas, logo, titulo,
+ * Pantalla de ingresar/crear cuenta: una columna centrada con logo, titulo,
  * formulario, otras opciones y el enlace al camino contrario.
  */
 export function DisposicionAcceso({ activa, titulo, children, alternativas, pie }: PropsDisposicionAcceso) {
+  const contrario = activa ? CAMINO_CONTRARIO[activa] : null;
   return (
     <main className="ui-acceso">
       <div className="ui-acceso__columna">
-        <nav className="ui-acceso__pestanas" aria-label="Ingresar o crear cuenta">
-          {PESTANAS.map(({ clave, etiqueta, href }) => (
-            <Link
-              key={clave}
-              href={href}
-              className="ui-acceso__pestana"
-              aria-current={clave === activa ? "page" : undefined}
-            >
-              {etiqueta}
-            </Link>
-          ))}
-        </nav>
+        <Link href="/" className="ui-acceso__volver">
+          <IconoFlechaIzquierda tamano={16} />
+          Volver
+        </Link>
         <div className="ui-acceso__logo">
           <Logo />
         </div>
@@ -54,7 +50,13 @@ export function DisposicionAcceso({ activa, titulo, children, alternativas, pie 
             <div className="ui-acceso__alternativas">{alternativas}</div>
           </>
         ) : null}
-        {pie ? <p className="ui-acceso__pie">{pie}</p> : null}
+        {contrario ? (
+          <p className="ui-acceso__pie">
+            {contrario.pregunta} <Link href={contrario.href}>{contrario.etiqueta}</Link>
+          </p>
+        ) : pie ? (
+          <p className="ui-acceso__pie">{pie}</p>
+        ) : null}
       </div>
     </main>
   );

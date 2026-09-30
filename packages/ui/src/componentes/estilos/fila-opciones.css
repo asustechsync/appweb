@@ -1,0 +1,16 @@
+.ui-fila-opciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+.ui-fila-opciones a {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-decoration: none;
+}
+.ui-fila-opciones a:hover,
+.ui-fila-opciones a:focus-visible {
+  color: var(--color-texto);
+}

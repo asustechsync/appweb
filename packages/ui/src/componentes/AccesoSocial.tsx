@@ -1,4 +1,4 @@
-import { IconoFacebook, IconoGoogle } from "../iconos";
+import { IconoApple, IconoGoogle } from "../iconos";
 import { Boton } from "./Boton";
 
 /**
@@ -9,10 +9,16 @@ export function AccesoSocial() {
   return (
     <>
       <Boton variante="secundario" anchoCompleto>
-        <IconoGoogle /> Continuar con Google
+        <IconoGoogle />
+        <span>
+          <span className="ui-acceso__continuar">Continuar con </span>Google
+        </span>
       </Boton>
       <Boton variante="secundario" anchoCompleto>
-        <IconoFacebook /> Continuar con Facebook
+        <IconoApple />
+        <span>
+          <span className="ui-acceso__continuar">Continuar con </span>Apple
+        </span>
       </Boton>
     </>
   );

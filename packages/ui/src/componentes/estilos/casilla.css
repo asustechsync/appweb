@@ -21,3 +21,9 @@
 .ui-casilla input:disabled {
   cursor: not-allowed;
 }
+/* Enlaces dentro de la etiqueta: discretos, subrayados. */
+.ui-casilla a {
+  color: var(--color-texto);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

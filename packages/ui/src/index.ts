@@ -14,12 +14,16 @@ export {
   IconoTicket,
   IconoCarrito,
   IconoMenu,
+  IconoCorreo,
+  IconoCandado,
+  IconoTelefono,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
 // Se van añadiendo conforme hagan falta; cada uno con su CSS en
 // src/componentes/estilos/, que consume las variables de theme.css.
 export { Contenedor, type PropsContenedor } from "./componentes/Contenedor";
+export { PaginaTienda, type PropsPaginaTienda } from "./componentes/PaginaTienda";
 export { Logo, type PropsLogo } from "./componentes/Logo";
 export { Header, type PropsHeader } from "./componentes/Header";
 export { Ubicacion, type PropsUbicacion } from "./componentes/Ubicacion";
@@ -106,6 +110,7 @@ export { Campo, type PropsCampo } from "./componentes/Campo";
 export { Casilla, type PropsCasilla } from "./componentes/Casilla";
 export { AccesoSocial } from "./componentes/AccesoSocial";
 export { FilaCampos, type PropsFilaCampos } from "./componentes/FilaCampos";
+export { FilaOpciones, type PropsFilaOpciones } from "./componentes/FilaOpciones";
 export { SelectorPais, type PropsSelectorPais } from "./componentes/SelectorPais";
 export { SelectorFecha, type PropsSelectorFecha } from "./componentes/SelectorFecha";
 export { PAISES, type Pais } from "./datos/paises";

@@ -48,25 +48,27 @@ export default async function PaginaProducto({ params }: Props) {
   if (producto === null) notFound();
 
   return (
-    <main>
-      <Contenedor>
-        <FichaProductoCliente
-          nombre={producto.nombre}
-          marca={producto.marca}
-          descripcion={producto.descripcion}
-          descripcionCorta={producto.descripcionCorta}
-          etiqueta={producto.etiqueta}
-          imagenes={producto.imagenes}
-          precio={producto.precio}
-          precioLista={producto.precioLista}
-          descuentoPct={producto.descuentoPct}
-          disponible={producto.disponible}
-          stockBajo={producto.stockBajo}
-          stockTotal={producto.stockTotal}
-          opciones={producto.opciones}
-          categoria={producto.categoria}
-        />
-      </Contenedor>
-    </main>
+    <>
+      <main>
+        <Contenedor>
+          <FichaProductoCliente
+            nombre={producto.nombre}
+            marca={producto.marca}
+            descripcion={producto.descripcion}
+            descripcionCorta={producto.descripcionCorta}
+            etiqueta={producto.etiqueta}
+            imagenes={producto.imagenes}
+            precio={producto.precio}
+            precioLista={producto.precioLista}
+            descuentoPct={producto.descuentoPct}
+            disponible={producto.disponible}
+            stockBajo={producto.stockBajo}
+            stockTotal={producto.stockTotal}
+            opciones={producto.opciones}
+            categoria={producto.categoria}
+          />
+        </Contenedor>
+      </main>
+    </>
   );
 }

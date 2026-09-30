@@ -4,7 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { AccesoSocial, Alerta, Boton, Campo, Casilla, DisposicionAcceso, Formulario } from "@appweb/ui";
+import {
+  AccesoSocial,
+  Alerta,
+  Boton,
+  Campo,
+  Casilla,
+  DisposicionAcceso,
+  FilaOpciones,
+  Formulario,
+  IconoCandado,
+  IconoCorreo,
+} from "@appweb/ui";
 
 import { ingresar } from "./acciones";
 
@@ -41,7 +52,7 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
   return (
     <DisposicionAcceso
       activa="ingresar"
-      titulo="Entra a tu cuenta para continuar"
+      titulo="Bienvenido"
       alternativas={<AccesoSocial />}
     >
       <Formulario onSubmit={enviar}>
@@ -54,6 +65,9 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
           valor={email}
           onCambio={setEmail}
           autoComplete="email"
+          placeholder="Correo electrónico"
+          icono={<IconoCorreo />}
+          etiquetaOculta
           requerido
         />
         <Campo
@@ -63,10 +77,15 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
           valor={clave}
           onCambio={setClave}
           autoComplete="current-password"
-          enlaceEtiqueta={<Link href="/ayuda/contacto">¿Olvidaste tu contraseña?</Link>}
+          placeholder="Contraseña"
+          icono={<IconoCandado />}
+          etiquetaOculta
           requerido
         />
-        <Casilla id="recordar" etiqueta="Recordarme" marcada={recordar} onCambio={setRecordar} />
+        <FilaOpciones>
+          <Casilla id="recordar" etiqueta="Recordarme" marcada={recordar} onCambio={setRecordar} />
+          <Link href="/recuperar-clave">¿Olvidaste tu contraseña?</Link>
+        </FilaOpciones>
 
         <Boton tipo="submit" disabled={enviando} anchoCompleto>
           {enviando ? "Ingresando…" : "Ingresar"}

@@ -1,4 +1,4 @@
-import { EscaparatePortada, Header, type PropsBeneficio } from "@appweb/ui";
+import { EscaparatePortada, type PropsBeneficio } from "@appweb/ui";
 import type { Metadata } from "next";
 
 import { contenidoColeccionPortada, productosNuevos } from "@/lib/consultas";
@@ -26,7 +26,6 @@ export default async function PaginaPortada() {
 
   return (
     <>
-      <Header />
       <EscaparatePortada
         productos={productos}
         beneficios={beneficios}

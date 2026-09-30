@@ -1,0 +1,4 @@
+.ui-pagina-tienda {
+  min-block-size: 100svh;
+  background: var(--color-neutro-200);
+}

@@ -10,7 +10,7 @@
   padding-inline: var(--control-paddingX);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-md);
-  background: var(--color-fondo);
+  background: var(--campo-fondo, var(--color-fondo));
   color: var(--color-textoSuave);
   font: inherit;
   font-size: var(--tipo-tamano-sm);
@@ -20,7 +20,7 @@
 }
 .ui-selector-pais__disparador:focus {
   outline: 0;
-  border-color: var(--color-texto);
+  border-color: var(--campo-borde-foco, var(--color-texto));
 }
 .ui-selector-pais__bandera {
   border-radius: var(--radio-sm);

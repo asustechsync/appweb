@@ -1,17 +1,22 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import "./primitivos.css";
 
 export interface PropsCasilla {
   id: string;
-  etiqueta: string;
+  /** Texto, o texto con enlaces (Acepto los Terminos...). */
+  etiqueta: ReactNode;
   marcada: boolean;
   onCambio: (marcada: boolean) => void;
   disabled?: boolean;
+  /** El formulario no se envia sin marcarla. */
+  requerida?: boolean;
 }
 
 /** Casilla de verificacion con su etiqueta: "Recordarme", "Acepto los terminos". */
-export function Casilla({ id, etiqueta, marcada, onCambio, disabled }: PropsCasilla) {
+export function Casilla({ id, etiqueta, marcada, onCambio, disabled, requerida }: PropsCasilla) {
   return (
     <label className="ui-casilla" htmlFor={id}>
       <input
@@ -21,6 +26,7 @@ export function Casilla({ id, etiqueta, marcada, onCambio, disabled }: PropsCasi
         checked={marcada}
         onChange={(evento) => onCambio(evento.target.checked)}
         disabled={disabled}
+        required={requerida}
       />
       <span>{etiqueta}</span>
     </label>

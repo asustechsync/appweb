@@ -31,6 +31,11 @@ export interface PropsCampo {
   disabled?: boolean;
   /** Enlace a la derecha de la etiqueta: "¿Olvidaste tu contraseña?". */
   enlaceEtiqueta?: ReactNode;
+  /** Icono dentro del campo, a la izquierda del texto. */
+  icono?: ReactNode;
+  /** Oculta la etiqueta a la vista; sigue leyendola el lector de pantalla.
+      Solo tiene sentido con `placeholder`. */
+  etiquetaOculta?: boolean;
 }
 
 /**
@@ -55,6 +60,8 @@ export function Campo({
   onCambioPais,
   disabled,
   enlaceEtiqueta,
+  icono,
+  etiquetaOculta,
 }: PropsCampo) {
   const prefijoSeleccionable = pais !== undefined && onCambioPais !== undefined;
   const conPrefijoFijo = !prefijoSeleccionable && Boolean(prefijo);
@@ -77,27 +84,49 @@ export function Campo({
       className={
         conPrefijoFijo
           ? "ui-campo__input ui-campo__input--con-prefijo"
-          : error
-            ? "ui-campo__input ui-campo__input--error"
-            : "ui-campo__input"
+          : [
+              "ui-campo__input",
+              error ? "ui-campo__input--error" : "",
+              icono ? "ui-campo__input--con-icono" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")
       }
     />
   );
+
+  const claseEtiqueta = etiquetaOculta ? "ui-campo__etiqueta--oculta" : undefined;
+  const marcaIcono = icono ? (
+    <span className="ui-campo__icono" aria-hidden="true">
+      {icono}
+    </span>
+  ) : null;
 
   return (
     <div className="ui-campo">
       {enlaceEtiqueta ? (
         <div className="ui-campo__etiqueta-fila">
-          <label htmlFor={id}>{etiqueta}</label>
+          <label htmlFor={id} className={claseEtiqueta}>
+            {etiqueta}
+          </label>
           {enlaceEtiqueta}
         </div>
       ) : (
-        <label htmlFor={id}>{etiqueta}</label>
+        <label htmlFor={id} className={claseEtiqueta}>
+          {etiqueta}
+        </label>
       )}
       {prefijoSeleccionable ? (
         <div className="ui-campo__separado">
           <SelectorPais id={`${id}-pais`} valor={pais} onCambio={onCambioPais} />
-          {input}
+          {icono ? (
+            <div className="ui-campo__clave ui-campo__clave--flexible">
+              {marcaIcono}
+              {input}
+            </div>
+          ) : (
+            input
+          )}
         </div>
       ) : conPrefijoFijo ? (
         <div className={error ? "ui-campo__grupo ui-campo__grupo--error" : "ui-campo__grupo"}>
@@ -109,6 +138,7 @@ export function Campo({
         </div>
       ) : esClave ? (
         <div className="ui-campo__clave">
+          {marcaIcono}
           {input}
           <button
             type="button"
@@ -120,6 +150,11 @@ export function Campo({
           >
             {claveVisible ? <IconoOjoTachado /> : <IconoOjo />}
           </button>
+        </div>
+      ) : icono ? (
+        <div className="ui-campo__clave">
+          {marcaIcono}
+          {input}
         </div>
       ) : (
         input
