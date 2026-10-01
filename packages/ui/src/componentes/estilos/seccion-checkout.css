@@ -1,33 +1,83 @@
 .ui-seccion-checkout {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
+  gap: var(--espacio-5);
   padding: var(--espacio-5);
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
 }
-.ui-seccion-checkout__titulo {
+.ui-seccion-checkout__cabecera {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--espacio-3);
-  font-size: var(--tipo-tamano-base);
-  font-weight: var(--tipo-peso-fuerte);
 }
 .ui-seccion-checkout__numero {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   inline-size: var(--espacio-6);
   block-size: var(--espacio-6);
   border-radius: var(--radio-completo);
   background: var(--color-texto);
   color: var(--color-textoInverso);
+  font-family: var(--tipo-familia-numeros);
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-fuerte);
-  flex: 0 0 auto;
 }
+.ui-seccion-checkout__textos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+}
+.ui-seccion-checkout__titulo {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--espacio-6);
+}
+.ui-seccion-checkout__descripcion {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-seccion-checkout__accion {
+  flex: 0 0 auto;
+  line-height: var(--espacio-6);
+}
+.ui-seccion-checkout__accion a,
+.ui-seccion-checkout__accion button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Datos de solo lectura dentro de un paso (contacto). */
+.ui-seccion-checkout__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  margin: 0;
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-seccion-checkout__datos span {
+  color: var(--color-textoTenue);
+}
+
 .ui-seccion-checkout__contenido {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
+  gap: var(--espacio-4);
+}
+@media (min-width: 48rem) {
+  .ui-seccion-checkout {
+    padding: var(--espacio-6);
+  }
 }

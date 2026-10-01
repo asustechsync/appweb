@@ -53,3 +53,34 @@ export function afectaStock(
   if (hacia === "CANCELADO" && desde !== "PENDIENTE_PAGO") return "devolver";
   return null;
 }
+
+export type SituacionPaso = "hecho" | "actual" | "pendiente";
+
+export interface PasoPedido {
+  estado: EstadoPedido;
+  etiqueta: string;
+  situacion: SituacionPaso;
+}
+
+/** El camino feliz de un pedido, en orden, con el texto que ve el cliente. */
+const CAMINO: { estado: EstadoPedido; etiqueta: string }[] = [
+  { estado: "PENDIENTE_PAGO", etiqueta: "Pedido recibido" },
+  { estado: "PAGADO", etiqueta: "Pago confirmado" },
+  { estado: "PREPARANDO", etiqueta: "Preparando" },
+  { estado: "ENVIADO", etiqueta: "En camino" },
+  { estado: "ENTREGADO", etiqueta: "Entregado" },
+];
+
+/**
+ * Pasos para la linea de seguimiento: los ya cumplidos, el que se espera
+ * ahora y los que faltan. Un pedido cancelado no tiene camino: lista vacia.
+ */
+export function pasosDelPedido(estado: EstadoPedido): PasoPedido[] {
+  const indice = CAMINO.findIndex((paso) => paso.estado === estado);
+  if (indice === -1) return [];
+
+  return CAMINO.map((paso, i) => ({
+    ...paso,
+    situacion: i <= indice ? "hecho" : i === indice + 1 ? "actual" : "pendiente",
+  }));
+}

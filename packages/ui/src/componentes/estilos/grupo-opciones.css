@@ -1,0 +1,11 @@
+/* FIRST MOBILE: una columna. La variante de dos solo se abre desde 40rem. */
+.ui-grupo-opciones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-3);
+}
+@media (min-width: 40rem) {
+  .ui-grupo-opciones--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

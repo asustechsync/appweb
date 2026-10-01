@@ -6,30 +6,60 @@
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
 }
+.ui-tarjeta-pedido__titulo {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+}
 .ui-tarjeta-pedido__items {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
+  gap: var(--espacio-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .ui-tarjeta-pedido__item {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   gap: var(--espacio-3);
+}
+.ui-tarjeta-pedido__imagen {
+  flex: 0 0 auto;
+  inline-size: 3.5rem;
+  overflow: hidden;
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+}
+.ui-tarjeta-pedido__imagen img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+.ui-tarjeta-pedido__datos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
 }
 .ui-tarjeta-pedido__nombre {
   font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-medio);
 }
 .ui-tarjeta-pedido__variante {
-  color: var(--color-textoSuave);
+  color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
+}
+.ui-tarjeta-pedido__item .ui-precio {
+  align-self: flex-start;
+  flex: 0 0 auto;
 }
 
 .ui-tarjeta-pedido__cifras {
   display: flex;
   flex-direction: column;
   gap: var(--espacio-2);
+  margin: 0;
   padding-block-start: var(--espacio-4);
   border-block-start: 1px solid var(--color-borde);
 }
@@ -45,6 +75,7 @@
 }
 .ui-tarjeta-pedido__cifras dd {
   margin: 0;
+  font-family: var(--tipo-familia-numeros);
   font-size: var(--tipo-tamano-sm);
   font-variant-numeric: tabular-nums;
 }

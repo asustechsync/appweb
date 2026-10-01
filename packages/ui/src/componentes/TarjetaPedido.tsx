@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
@@ -8,6 +10,8 @@ export interface ItemDePedido {
   color: string;
   precioUnitario: number;
   cantidad: number;
+  /** Miniatura del producto. Sin ella la linea se pinta solo con texto. */
+  imagenUrl?: string | null;
 }
 
 export interface PropsTarjetaPedido {
@@ -16,6 +20,8 @@ export interface PropsTarjetaPedido {
   descuento: number;
   costoEnvio: number;
   total: number;
+  /** Titulo sobre la lista: "Resumen del pedido". */
+  titulo?: string;
 }
 
 const FORMATO = new Intl.NumberFormat("es-PE", {
@@ -25,16 +31,33 @@ const FORMATO = new Intl.NumberFormat("es-PE", {
 });
 
 /** Recibo de un pedido ya cerrado: solo lectura, sin controles. */
-export function TarjetaPedido({ items, subtotal, descuento, costoEnvio, total }: PropsTarjetaPedido) {
+export function TarjetaPedido({
+  items,
+  subtotal,
+  descuento,
+  costoEnvio,
+  total,
+  titulo,
+}: PropsTarjetaPedido) {
   return (
     <div className="ui-tarjeta-pedido">
+      {titulo ? <h2 className="ui-tarjeta-pedido__titulo">{titulo}</h2> : null}
+
       <ul className="ui-tarjeta-pedido__items">
         {items.map((item, indice) => (
           <li key={indice} className="ui-tarjeta-pedido__item">
-            <div>
+            {item.imagenUrl ? (
+              <span className="ui-tarjeta-pedido__imagen">
+                <Image src={item.imagenUrl} alt="" width={112} height={112} sizes="56px" />
+              </span>
+            ) : null}
+            <div className="ui-tarjeta-pedido__datos">
               <p className="ui-tarjeta-pedido__nombre">{item.nombreProducto}</p>
               <p className="ui-tarjeta-pedido__variante">
-                Talla {item.talla} · {item.color} · x{item.cantidad}
+                {item.color} · Talla {item.talla}
+              </p>
+              <p className="ui-tarjeta-pedido__variante">
+                {item.cantidad} × {FORMATO.format(item.precioUnitario)}
               </p>
             </div>
             <Precio valor={item.precioUnitario * item.cantidad} tamano="sm" />

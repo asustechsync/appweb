@@ -11,14 +11,16 @@ export interface PropsTarjetaSeleccionable {
   onChange: () => void;
   children: ReactNode;
   disabled?: boolean;
+  /** Icono a la izquierda del texto: una ubicacion, un medio de pago. */
+  icono?: ReactNode;
+  /** Dato a la derecha: el costo de un envio, una insignia. */
+  extra?: ReactNode;
 }
 
 /**
  * Tarjeta con radio nativo: una direccion, un medio de pago, un tipo de
  * comprobante — cualquier "elige uno de varios" donde cada opcion necesita
- * mas de una linea de texto. El envio del carrito usa su propio radio dentro
- * de ResumenCompra porque es mas simple; este es el mismo patron para cuando
- * el contenido no cabe en una sola linea.
+ * mas de una linea de texto. Se agrupan con `GrupoOpciones`.
  */
 export function TarjetaSeleccionable({
   name,
@@ -27,6 +29,8 @@ export function TarjetaSeleccionable({
   onChange,
   children,
   disabled,
+  icono,
+  extra,
 }: PropsTarjetaSeleccionable) {
   return (
     <label
@@ -44,7 +48,13 @@ export function TarjetaSeleccionable({
         onChange={onChange}
         disabled={disabled}
       />
+      {icono ? (
+        <span className="ui-tarjeta-seleccionable__icono" aria-hidden="true">
+          {icono}
+        </span>
+      ) : null}
       <div className="ui-tarjeta-seleccionable__contenido">{children}</div>
+      {extra ? <div className="ui-tarjeta-seleccionable__extra">{extra}</div> : null}
     </label>
   );
 }

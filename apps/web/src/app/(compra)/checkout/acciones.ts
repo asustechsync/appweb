@@ -2,7 +2,14 @@
 
 import { z } from "zod";
 
-import { calcularTotales, generarCodigoPedido, hayStock, resolverPrecio } from "@appweb/core";
+import {
+  buscarCupon,
+  calcularTotales,
+  errorDocumentoComprobante,
+  generarCodigoPedido,
+  hayStock,
+  resolverPrecio,
+} from "@appweb/core";
 import { esquemaCheckout, esquemaDireccion, esquemaLineaCarrito } from "@appweb/core/tipos";
 import { prisma } from "@appweb/db";
 
@@ -23,8 +30,14 @@ const MEDIO_A_ENUM = {
 
 // ── Sesion y direcciones del comprador ──────────────────────────────────────
 
+export interface ContactoCheckout {
+  nombre: string;
+  email: string;
+  telefono: string | null;
+}
+
 export interface SesionCheckout {
-  sesion: { nombre: string } | null;
+  sesion: ContactoCheckout | null;
   direcciones: DireccionDeUsuario[];
 }
 
@@ -32,8 +45,19 @@ export async function sesionYDireccionesCheckout(): Promise<SesionCheckout> {
   const sesion = await leerSesion();
   if (!sesion) return { sesion: null, direcciones: [] };
 
-  const direcciones = await direccionesDelUsuario(sesion.usuarioId);
-  return { sesion: { nombre: sesion.nombre }, direcciones };
+  const [usuario, direcciones] = await Promise.all([
+    prisma.usuario.findUnique({
+      where: { id: sesion.usuarioId },
+      select: { email: true, telefono: true },
+    }),
+    direccionesDelUsuario(sesion.usuarioId),
+  ]);
+  if (!usuario) return { sesion: null, direcciones: [] };
+
+  return {
+    sesion: { nombre: sesion.nombre, email: usuario.email, telefono: usuario.telefono },
+    direcciones,
+  };
 }
 
 // ── Nueva direccion ──────────────────────────────────────────────────────
@@ -97,8 +121,22 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     };
   }
 
-  const { direccionId, metodoEnvioId, medioPago, comprobante, documento, razonSocial, lineas } =
-    analizado.data;
+  const {
+    direccionId,
+    metodoEnvioId,
+    medioPago,
+    comprobante,
+    documento,
+    razonSocial,
+    lineas,
+    cupon,
+  } = analizado.data;
+
+  const errorDocumento = errorDocumentoComprobante(comprobante, documento);
+  if (errorDocumento) return { ok: false, error: errorDocumento };
+  if (comprobante === "factura" && !razonSocial) {
+    return { ok: false, error: "Escribe la razón social para la factura." };
+  }
 
   const [usuario, direccion, metodoEnvio] = await Promise.all([
     prisma.usuario.findUnique({ where: { id: sesion.usuarioId } }),
@@ -161,7 +199,14 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     });
   }
 
+  // El descuento se recalcula aqui: el navegador solo manda el codigo.
+  const cuponValido = buscarCupon(cupon);
+  if (cupon && !cuponValido) {
+    return { ok: false, error: "El código promocional no es válido. Quítalo para continuar." };
+  }
+
   const totales = calcularTotales(itemsPedido, {
+    cupon: cuponValido,
     metodoEnvio: {
       costo: Number(metodoEnvio.costo),
       gratisDesde: metodoEnvio.gratisDesde !== null ? Number(metodoEnvio.gratisDesde) : null,

@@ -1,8 +1,16 @@
+/* Cada linea es su propia tarjeta; el bloque solo las apila. */
 .ui-bloque-lineas {
-  padding: 0 var(--espacio-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+.ui-bloque-lineas .ui-linea-carrito,
+.ui-bloque-lineas .ui-cabecera-lineas {
+  padding-inline: var(--espacio-5);
+  border: 0;
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
 }
-.ui-bloque-lineas .ui-linea-carrito:last-child {
-  border-block-end: 0;
+.ui-bloque-lineas .ui-cabecera-lineas {
+  padding-block: var(--espacio-3);
 }

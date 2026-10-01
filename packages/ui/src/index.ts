@@ -18,6 +18,9 @@ export {
   IconoCorreo,
   IconoCandado,
   IconoTelefono,
+  IconoFlechaIzquierda,
+  IconoPedidos,
+  IconoUbicacion,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -31,8 +34,8 @@ export { Ubicacion, type PropsUbicacion } from "./componentes/Ubicacion";
 export { Buscador, type PropsBuscador } from "./componentes/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
 export { CodigoPromocional, type PropsCodigoPromocional } from "./componentes/CodigoPromocional";
-export { BloqueLineas } from "./componentes/BloqueLineas";
 export { CabeceraLineas } from "./componentes/CabeceraLineas";
+export { BloqueLineas } from "./componentes/BloqueLineas";
 export { AlternarTema } from "./componentes/AlternarTema";
 export { IndicadorClave, type PropsIndicadorClave } from "./componentes/IndicadorClave";
 export {
@@ -102,8 +105,19 @@ export { LineaDeCarrito, type PropsLineaDeCarrito } from "./componentes/LineaDeC
 export {
   ResumenCompra,
   type PropsResumenCompra,
-  type MetodoEnvioElegible,
 } from "./componentes/ResumenCompra";
+export {
+  ArticulosResumen,
+  type ArticuloResumen,
+  type PropsArticulosResumen,
+} from "./componentes/ArticulosResumen";
+export { GrupoOpciones, type PropsGrupoOpciones } from "./componentes/GrupoOpciones";
+export {
+  DisposicionConfirmacion,
+  type PropsDisposicionConfirmacion,
+} from "./componentes/DisposicionConfirmacion";
+export { LineaEstados, type PasoDeLinea, type PropsLineaEstados } from "./componentes/LineaEstados";
+export { BloqueDetalle, FilaDetalles, type PropsBloqueDetalle } from "./componentes/BloqueDetalle";
 export { EstadoVacio, type PropsEstadoVacio } from "./componentes/EstadoVacio";
 export { Cargando, type PropsCargando } from "./componentes/Cargando";
 export { Formulario, type PropsFormulario } from "./componentes/Formulario";

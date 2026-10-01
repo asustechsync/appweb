@@ -9,6 +9,8 @@
  * cifras. Por eso la app movil la usara sin cambiar una linea.
  */
 
+import { descuentoDeCupon, type Cupon } from "./cupones";
+
 export interface LineaCarrito {
   varianteId: string;
   precioUnitario: number;
@@ -44,16 +46,19 @@ export function redondear(valor: number): number {
 export function calcularTotales(
   lineas: LineaCarrito[],
   opciones: {
-    descuento?: number;
+    /** Cupon aplicado: su descuento se calcula sobre el subtotal. */
+    cupon?: Cupon | null;
     metodoEnvio?: MetodoEnvioCalculo | null;
   } = {},
 ): TotalesCompra {
-  const { descuento = 0, metodoEnvio = null } = opciones;
+  const { cupon = null, metodoEnvio = null } = opciones;
 
   const unidades = lineas.reduce((suma, linea) => suma + linea.cantidad, 0);
   const subtotal = redondear(
     lineas.reduce((suma, linea) => suma + linea.precioUnitario * linea.cantidad, 0),
   );
+
+  const descuento = descuentoDeCupon(subtotal, cupon);
 
   // El descuento nunca puede dejar el subtotal en negativo.
   const descuentoAplicado = redondear(Math.min(Math.max(descuento, 0), subtotal));

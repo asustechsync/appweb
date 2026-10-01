@@ -1,18 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
 
+import { Boton } from "./Boton";
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
-
-export interface MetodoEnvioElegible {
-  id: string;
-  nombre: string;
-  costo: number;
-  gratisDesde: number | null;
-}
 
 /** Estructuralmente igual a `TotalesCompra` de @appweb/core, que es quien lo
     calcula. Se declara aqui porque el paquete visual no depende de core. */
@@ -25,12 +18,10 @@ export interface PropsResumenCompra {
   total: number;
   /** Cuanto falta para el envio gratis. `null` si ya lo tiene o no aplica. */
   faltaEnvioGratis: number | null;
-  /** Sin metodos no se pinta el selector: el carrito lo deja para el checkout. */
-  metodos?: MetodoEnvioElegible[];
-  metodoElegidoId?: string | null;
-  onMetodo?: (id: string) => void;
-  /** Lo que muestra la fila de envio mientras no haya metodo elegido. */
-  textoEnvioPendiente?: string;
+  /** Ranura bajo el titulo para la lista de productos (checkout). */
+  articulos?: ReactNode;
+  /** Texto bajo los botones. */
+  nota?: ReactNode;
   /** Segundo boton, bajo el principal: "Seguir comprando". */
   hrefSeguir?: string;
   textoSeguir?: string;
@@ -67,10 +58,8 @@ export function ResumenCompra({
   costoEnvio,
   total,
   faltaEnvioGratis,
-  metodos = [],
-  metodoElegidoId = null,
-  onMetodo,
-  textoEnvioPendiente = "Elige un método",
+  articulos,
+  nota = "El costo final y la dirección se confirman en el siguiente paso.",
   hrefSeguir,
   textoSeguir = "Seguir comprando",
   codigo,
@@ -86,6 +75,8 @@ export function ResumenCompra({
     <aside className="ui-resumen-compra" aria-label="Resumen de la compra">
       <h2 className="ui-resumen-compra__titulo">Resumen del pedido</h2>
 
+      {articulos}
+
       {codigo}
 
       {faltaEnvioGratis !== null ? (
@@ -96,27 +87,6 @@ export function ResumenCompra({
         <p className="ui-resumen-compra__envio-gratis ui-resumen-compra__envio-gratis--logrado">
           ¡Tienes envío gratis!
         </p>
-      ) : null}
-
-      {metodos.length > 0 ? (
-        <fieldset className="ui-resumen-compra__envios">
-          <legend>Envío</legend>
-          {metodos.map((metodo) => (
-            <label key={metodo.id} className="ui-resumen-compra__envio">
-              <input
-                type="radio"
-                name="metodo-envio"
-                value={metodo.id}
-                checked={metodo.id === metodoElegidoId}
-                onChange={() => onMetodo?.(metodo.id)}
-              />
-              <span className="ui-resumen-compra__envio-nombre">{metodo.nombre}</span>
-              <span className="ui-resumen-compra__envio-costo">
-                {metodo.costo === 0 ? "Gratis" : FORMATO.format(metodo.costo)}
-              </span>
-            </label>
-          ))}
-        </fieldset>
       ) : null}
 
       <dl className="ui-resumen-compra__cifras">
@@ -134,53 +104,42 @@ export function ResumenCompra({
           </div>
         ) : null}
 
-        <div>
-          <dt>Envío</dt>
-          <dd>
-            {costoEnvio === null
-              ? textoEnvioPendiente
-              : costoEnvio === 0
-                ? "Gratis"
-                : FORMATO.format(costoEnvio)}
-          </dd>
-        </div>
+        {costoEnvio !== null ? (
+          <div>
+            <dt>Envío</dt>
+            <dd>{costoEnvio === 0 ? "Gratis" : FORMATO.format(costoEnvio)}</dd>
+          </div>
+        ) : null}
       </dl>
 
       <div className="ui-resumen-compra__total">
         <span>Total</span>
         <Precio valor={total} tamano="lg" />
       </div>
-
-      {bloqueado ? (
-        <>
-          <span className="ui-resumen-compra__continuar ui-resumen-compra__continuar--bloqueado">
-            {confirmando ? "Confirmando…" : textoContinuar}
-          </span>
-          {motivoBloqueo ? <p className="ui-resumen-compra__bloqueo">{motivoBloqueo}</p> : null}
-        </>
-      ) : onConfirmar ? (
-        <button
-          type="button"
-          className="ui-resumen-compra__continuar"
-          onClick={onConfirmar}
-        >
-          {textoContinuar}
-        </button>
-      ) : hrefContinuar ? (
-        <Link className="ui-resumen-compra__continuar" href={hrefContinuar}>
-          {textoContinuar}
-        </Link>
+      {descuento > 0 ? (
+        <p className="ui-resumen-compra__ahorro">
+          Ahorras <strong>{FORMATO.format(descuento)}</strong> en este pedido
+        </p>
       ) : null}
+
+      {hrefContinuar || onConfirmar ? (
+        <Boton
+          disabled={Boolean(bloqueado)}
+          {...(onConfirmar ? { onClick: onConfirmar } : hrefContinuar ? { href: hrefContinuar } : {})}
+          anchoCompleto
+        >
+          {confirmando ? "Confirmando…" : textoContinuar}
+        </Boton>
+      ) : null}
+      {motivoBloqueo ? <p className="ui-resumen-compra__bloqueo">{motivoBloqueo}</p> : null}
 
       {hrefSeguir ? (
-        <Link className="ui-resumen-compra__seguir" href={hrefSeguir}>
+        <Boton variante="secundario" href={hrefSeguir} anchoCompleto>
           {textoSeguir}
-        </Link>
+        </Boton>
       ) : null}
 
-      <p className="ui-resumen-compra__nota">
-        El costo final y la dirección se confirman en el siguiente paso.
-      </p>
+      {nota ? <p className="ui-resumen-compra__nota">{nota}</p> : null}
     </aside>
   );
 }

@@ -1,0 +1,56 @@
+.ui-bloque-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-5);
+  border: 1px solid transparent;
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+}
+.ui-bloque-detalle--destacado {
+  border-color: var(--color-texto);
+}
+.ui-bloque-detalle__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-bloque-detalle__icono {
+  display: inline-flex;
+  color: var(--color-textoSuave);
+}
+.ui-bloque-detalle__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  line-height: var(--tipo-altura-normal);
+}
+.ui-bloque-detalle__cuerpo strong {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+}
+
+/* Monto a pagar, grande, dentro del bloque de pago. */
+.ui-bloque-detalle__monto {
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-2xl);
+  font-weight: var(--tipo-peso-fuerte);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dos bloques lado a lado desde 48rem (envio y comprobante). */
+.ui-bloque-detalle-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-4);
+}
+@media (min-width: 48rem) {
+  .ui-bloque-detalle-fila {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

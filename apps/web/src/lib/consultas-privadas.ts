@@ -61,6 +61,8 @@ export interface PedidoDelUsuario {
     color: string;
     precioUnitario: number;
     cantidad: number;
+    /** Imagen actual del producto: solo adorna, lo facturado sale de lo congelado. */
+    imagenUrl: string | null;
   }[];
 }
 
@@ -75,7 +77,19 @@ export async function pedidoDelUsuario(
 ): Promise<PedidoDelUsuario | null> {
   const pedido = await prisma.pedido.findFirst({
     where: { codigo, usuarioId },
-    include: { items: true },
+    include: {
+      items: {
+        include: {
+          variante: {
+            select: {
+              producto: {
+                select: { imagenes: { orderBy: { orden: "asc" }, take: 1, select: { url: true } } },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   if (pedido === null) return null;
@@ -104,6 +118,7 @@ export async function pedidoDelUsuario(
       color: item.color,
       precioUnitario: Number(item.precioUnitario),
       cantidad: item.cantidad,
+      imagenUrl: item.variante.producto.imagenes[0]?.url ?? null,
     })),
   };
 }

@@ -6,7 +6,6 @@ import {
   calcularTotales,
   cambiarCantidad,
   quitarDelCarrito,
-  quitarVariosDelCarrito,
   redondear,
   type LineaGuardada,
 } from "@appweb/core";
@@ -18,7 +17,6 @@ import {
   DisposicionCompra,
   EstadoVacio,
   IconoCarrito,
-  IconoPapelera,
   LineaDeCarrito,
   ResumenCompra,
 } from "@appweb/ui";
@@ -29,6 +27,7 @@ import {
   CARRITO_EVENTO,
 } from "@/lib/carrito-local";
 import type { VarianteDeCarrito } from "@/lib/consultas";
+import { usarCupon } from "@/lib/usar-cupon";
 
 import { resolverLineasDelCarrito } from "./acciones";
 
@@ -47,9 +46,7 @@ export function CarritoCliente() {
   const [guardadas, setGuardadas] = useState<LineaGuardada[]>([]);
   const [variantes, setVariantes] = useState<VarianteDeCarrito[]>([]);
   const [cargando, setCargando] = useState(true);
-  const [codigo, setCodigo] = useState("");
-  const [seleccion, setSeleccion] = useState<Set<string>>(new Set());
-  const [avisoCodigo, setAvisoCodigo] = useState<string | null>(null);
+  const cupon = usarCupon();
 
   useEffect(() => {
     let vigente = true;
@@ -119,28 +116,14 @@ export function CarritoCliente() {
           stock: linea.stock,
         })),
         // Sin metodo de envio: el costo y la direccion se eligen en el checkout.
-        {},
+        { cupon: cupon.aplicado },
       ),
-    [lineas],
+    [lineas, cupon.aplicado],
   );
 
   function aplicar(siguientes: LineaGuardada[]) {
     setGuardadas(siguientes);
     guardarCarrito(siguientes);
-    // Lo que ya no esta en el carrito deja de estar seleccionado.
-    const vivas = new Set(siguientes.map((linea) => linea.varianteId));
-    setSeleccion(
-      (actual) => new Set([...actual].filter((id) => vivas.has(id))),
-    );
-  }
-
-  function seleccionar(varianteId: string, marcar: boolean) {
-    setSeleccion((actual) => {
-      const siguiente = new Set(actual);
-      if (marcar) siguiente.add(varianteId);
-      else siguiente.delete(varianteId);
-      return siguiente;
-    });
   }
 
   if (cargando) {
@@ -174,18 +157,6 @@ export function CarritoCliente() {
     <DisposicionCompra
       titulo="Mi carrito"
       fuente="acceso"
-      accion={
-        <button
-          type="button"
-          disabled={seleccion.size === 0}
-          onClick={() =>
-            aplicar(quitarVariosDelCarrito(guardadas, [...seleccion]))
-          }
-        >
-          <IconoPapelera tamano={16} />
-          Quitar{seleccion.size > 0 ? ` (${seleccion.size})` : ""}
-        </button>
-      }
       subtitulo={`${totales.unidades} ${totales.unidades === 1 ? "unidad" : "unidades"} · ${lineas.length} ${lineas.length === 1 ? "producto" : "productos"}`}
       lateral={
         <ResumenCompra
@@ -197,21 +168,15 @@ export function CarritoCliente() {
           faltaEnvioGratis={totales.faltaEnvioGratis}
           codigo={
             <CodigoPromocional
-              valor={codigo}
-              onCambio={(valor) => {
-                setCodigo(valor);
-                setAvisoCodigo(null);
-              }}
-              // Aun no hay codigos en la tienda: se avisa en vez de aparentar que se aplico.
-              onAplicar={() =>
-                setAvisoCodigo(
-                  "Los códigos promocionales aún no están disponibles.",
-                )
-              }
-              mensaje={avisoCodigo}
+              valor={cupon.texto}
+              onCambio={cupon.cambiar}
+              onAplicar={cupon.aplicar}
+              aplicado={cupon.aplicado?.codigo ?? null}
+              onQuitar={cupon.quitar}
+              mensaje={cupon.aviso}
+              tonoMensaje="error"
             />
           }
-          textoEnvioPendiente="Se calcula al pagar"
           motivoBloqueo={bloqueo}
           hrefContinuar="/checkout"
           textoContinuar="Continuar al pago"
@@ -220,17 +185,7 @@ export function CarritoCliente() {
       }
     >
       <BloqueLineas>
-        <CabeceraLineas
-          todas={seleccion.size === lineas.length}
-          algunas={seleccion.size > 0}
-          onTodas={(marcar) =>
-            setSeleccion(
-              marcar
-                ? new Set(lineas.map((linea) => linea.varianteId))
-                : new Set(),
-            )
-          }
-        />
+        <CabeceraLineas />
         {lineas.map((linea) => (
           <LineaDeCarrito
             key={linea.varianteId}
@@ -250,8 +205,6 @@ export function CarritoCliente() {
             onQuitar={() =>
               aplicar(quitarDelCarrito(guardadas, linea.varianteId))
             }
-            seleccionada={seleccion.has(linea.varianteId)}
-            onSeleccionar={(marcar) => seleccionar(linea.varianteId, marcar)}
           />
         ))}
       </BloqueLineas>

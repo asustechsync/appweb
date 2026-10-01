@@ -1,11 +1,23 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { pasosDelPedido, type EstadoPedido } from "@appweb/core";
 import { prisma } from "@appweb/db";
-import { Alerta, PaginaInformativa, SeccionCheckout, TarjetaPedido } from "@appweb/ui";
+import {
+  BloqueDetalle,
+  Boton,
+  Contenedor,
+  DisposicionConfirmacion,
+  FilaDetalles,
+  IconoMoneda,
+  IconoPedidos,
+  IconoTicket,
+  IconoUbicacion,
+  LineaEstados,
+  TarjetaPedido,
+} from "@appweb/ui";
 
 import { pedidoDelUsuario } from "@/lib/consultas-privadas";
-import { medioPagoDesdeEnum, pasarela } from "@/lib/pago";
+import { ETIQUETAS_MEDIO, medioPagoDesdeEnum, pasarela } from "@/lib/pago";
 import { leerSesion } from "@/lib/sesion";
 
 /**
@@ -19,6 +31,18 @@ export const metadata = { title: "Pedido confirmado" };
 interface Props {
   params: Promise<{ codigo: string }>;
 }
+
+const FECHA = new Intl.DateTimeFormat("es-PE", {
+  dateStyle: "long",
+  timeStyle: "short",
+  timeZone: "America/Lima",
+});
+
+const MONEDA = new Intl.NumberFormat("es-PE", {
+  style: "currency",
+  currency: "PEN",
+  minimumFractionDigits: 2,
+});
 
 export default async function PaginaPedido({ params }: Props) {
   const { codigo } = await params;
@@ -37,38 +61,90 @@ export default async function PaginaPedido({ params }: Props) {
   // Las instrucciones de PagoManual no dependen de nada que cambie entre
   // visitas (mismo monto, mismo medio, mismos datos de la tienda): se
   // recalculan aqui en vez de guardarse, igual que el checkout las pidio.
+  const medio = medioPagoDesdeEnum(pedido.medioPago);
   const resultado = await pasarela.cobrar({
     pedidoId: pedido.codigo,
     codigoPedido: pedido.codigo,
     monto: pedido.total,
-    medio: medioPagoDesdeEnum(pedido.medioPago),
+    medio,
     emailCliente: usuario?.email ?? "",
   });
-  const instrucciones = resultado.estado === "pendiente" ? resultado.instrucciones : null;
+  const instrucciones =
+    pedido.estado === "PENDIENTE_PAGO" && resultado.estado === "pendiente"
+      ? resultado.instrucciones
+      : null;
+
+  const pasos = pasosDelPedido(pedido.estado as EstadoPedido);
+  const cancelado = pasos.length === 0;
+  const primerNombre = sesion.nombre.split(" ")[0] ?? sesion.nombre;
+  const esFactura = pedido.comprobante === "FACTURA";
 
   return (
-    <PaginaInformativa titulo={`Pedido ${pedido.codigo}`}>
-      {instrucciones ? <Alerta tono="info">{instrucciones}</Alerta> : null}
+    <main>
+      <Contenedor>
+        <DisposicionConfirmacion
+          titulo={cancelado ? "Pedido cancelado" : `¡Gracias, ${primerNombre}!`}
+          texto={
+            cancelado
+              ? "Este pedido ya no está activo. Si tienes dudas, escríbenos."
+              : "Recibimos tu pedido. Apenas confirmemos el pago lo preparamos; puedes seguirlo desde Mi cuenta."
+          }
+          codigo={pedido.codigo}
+          fecha={FECHA.format(pedido.creadoEn)}
+          lateral={
+            <TarjetaPedido
+              titulo="Resumen del pedido"
+              items={pedido.items}
+              subtotal={pedido.subtotal}
+              descuento={pedido.descuento}
+              costoEnvio={pedido.costoEnvio}
+              total={pedido.total}
+            />
+          }
+          acciones={
+            <>
+              <Boton href="/mi-cuenta/pedidos">Ver mis pedidos</Boton>
+              <Boton variante="secundario" href="/">
+                Seguir comprando
+              </Boton>
+            </>
+          }
+        >
+          {!cancelado ? (
+            <BloqueDetalle titulo="Seguimiento" icono={<IconoPedidos tamano={20} />}>
+              <LineaEstados pasos={pasos} />
+            </BloqueDetalle>
+          ) : null}
 
-      <TarjetaPedido
-        items={pedido.items}
-        subtotal={pedido.subtotal}
-        descuento={pedido.descuento}
-        costoEnvio={pedido.costoEnvio}
-        total={pedido.total}
-      />
+          {instrucciones ? (
+            <BloqueDetalle titulo="Cómo pagar" icono={<IconoMoneda tamano={20} />} destacado>
+              <span>{ETIQUETAS_MEDIO[medio]?.etiqueta ?? "Pago"}</span>
+              <span className="ui-bloque-detalle__monto">{MONEDA.format(pedido.total)}</span>
+              <p>{instrucciones}</p>
+            </BloqueDetalle>
+          ) : null}
 
-      <SeccionCheckout numero={1} titulo="Envío">
-        <p>{pedido.envioCalle}</p>
-        <p>
-          {pedido.envioDistrito}, {pedido.envioProvincia}, {pedido.envioDepartamento}
-        </p>
-        <p>{pedido.envioMetodo}</p>
-      </SeccionCheckout>
+          <FilaDetalles>
+            <BloqueDetalle titulo="Envío" icono={<IconoUbicacion tamano={20} />}>
+              <strong>{pedido.envioCalle}</strong>
+              <span>
+                {pedido.envioDistrito}, {pedido.envioProvincia}, {pedido.envioDepartamento}
+              </span>
+              {pedido.envioReferencia ? <span>Ref.: {pedido.envioReferencia}</span> : null}
+              <span>{pedido.envioMetodo}</span>
+            </BloqueDetalle>
 
-      <Link className="ui-pagina-informativa__cta" href="/">
-        Seguir comprando
-      </Link>
-    </PaginaInformativa>
+            <BloqueDetalle titulo="Comprobante" icono={<IconoTicket tamano={20} />}>
+              <strong>{esFactura ? "Factura" : "Boleta"}</strong>
+              <span>
+                {esFactura ? "RUC" : "DNI"} {pedido.documento}
+              </span>
+              {pedido.razonSocial ? <span>{pedido.razonSocial}</span> : null}
+              <span>Pago: {ETIQUETAS_MEDIO[medio]?.etiqueta ?? "—"}</span>
+            </BloqueDetalle>
+          </FilaDetalles>
+        </DisposicionConfirmacion>
+      </Contenedor>
+    </main>
   );
 }

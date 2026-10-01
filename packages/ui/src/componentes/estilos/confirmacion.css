@@ -1,0 +1,155 @@
+/* FIRST MOBILE: todo en una columna. Desde 64rem el recibo pasa al lado,
+   como en el carrito y el checkout. Usa la fuente de compra (Poppins). */
+
+.ui-confirmacion {
+  --confirmacion-exito-suave: color-mix(in srgb, var(--color-exito) 14%, transparent);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-5);
+  padding-block: var(--espacio-8) var(--espacio-16);
+  font-family: var(--tipo-familia-acceso);
+}
+.ui-confirmacion button,
+.ui-confirmacion input {
+  font-family: inherit;
+}
+
+/* ── Cabecera ─────────────────────────────────────────────────────────── */
+
+.ui-confirmacion__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding-block-end: var(--espacio-4);
+  text-align: center;
+}
+.ui-confirmacion__titulo {
+  font-size: var(--tipo-tamano-2xl);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-confirmacion__texto {
+  max-inline-size: 32rem;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  line-height: var(--tipo-altura-normal);
+}
+.ui-confirmacion__codigo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  margin-block-start: var(--espacio-1);
+  padding: var(--espacio-2) var(--espacio-4);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-confirmacion__codigo strong {
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-numeros);
+  font-weight: var(--tipo-peso-fuerte);
+  letter-spacing: 0.02em;
+}
+
+/* ── Ilustracion de aprobacion ────────────────────────────────────────── */
+
+.ui-confirmacion__ilustracion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 6rem;
+  block-size: 6rem;
+  margin-block-end: var(--espacio-2);
+}
+.ui-confirmacion__anillo {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radio-completo);
+  background: var(--confirmacion-exito-suave);
+  animation: ui-confirmacion-anillo 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ui-confirmacion__anillo--2 {
+  inset: var(--espacio-3);
+  animation-delay: 120ms;
+}
+.ui-confirmacion__check {
+  position: relative;
+  inline-size: 3.5rem;
+  block-size: 3.5rem;
+}
+.ui-confirmacion__check circle {
+  fill: var(--color-exito);
+}
+.ui-confirmacion__check path {
+  fill: none;
+  stroke: var(--color-textoInverso);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: ui-confirmacion-trazo 420ms 320ms ease-out forwards;
+}
+@keyframes ui-confirmacion-anillo {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes ui-confirmacion-trazo {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-confirmacion__anillo,
+  .ui-confirmacion__check path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── Columnas ─────────────────────────────────────────────────────────── */
+
+.ui-confirmacion__principal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  min-inline-size: 0;
+}
+.ui-confirmacion__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+@media (min-width: 40rem) {
+  .ui-confirmacion__acciones {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 64rem) {
+  .ui-confirmacion {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    column-gap: var(--espacio-8);
+    align-items: start;
+  }
+  .ui-confirmacion__hero,
+  .ui-confirmacion__acciones {
+    grid-column: 1 / -1;
+  }
+  .ui-confirmacion__lateral {
+    position: sticky;
+    inset-block-start: var(--espacio-20);
+  }
+}

@@ -25,3 +25,14 @@ const ENUM_A_MEDIO: Record<string, MedioPago> = {
 export function medioPagoDesdeEnum(valor: string): MedioPago {
   return ENUM_A_MEDIO[valor] ?? "transferencia";
 }
+
+/** Como se nombra y explica cada medio al cliente (checkout y confirmacion). */
+export const ETIQUETAS_MEDIO: Partial<Record<MedioPago, { etiqueta: string; descripcion: string }>> = {
+  yape: { etiqueta: "Yape", descripcion: "Yapea el total y sube tu captura." },
+  plin: { etiqueta: "Plin", descripcion: "Envía el total por Plin y sube tu captura." },
+  transferencia: {
+    etiqueta: "Transferencia bancaria",
+    descripcion: "Transfiere el total y sube tu constancia.",
+  },
+  contra_entrega: { etiqueta: "Contra entrega", descripcion: "Pagas al recibir tu pedido." },
+};

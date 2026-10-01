@@ -1,8 +1,7 @@
-import type { MedioPago } from "@appweb/core/puertos";
 import { Contenedor } from "@appweb/ui";
 
 import { metodosDeEnvio } from "@/lib/consultas";
-import { pasarela } from "@/lib/pago";
+import { ETIQUETAS_MEDIO, pasarela } from "@/lib/pago";
 
 import { CheckoutCliente } from "./CheckoutCliente";
 
@@ -24,16 +23,6 @@ import { CheckoutCliente } from "./CheckoutCliente";
  */
 
 export const metadata = { title: "Finalizar compra" };
-
-const ETIQUETAS_MEDIO: Partial<Record<MedioPago, { etiqueta: string; descripcion: string }>> = {
-  yape: { etiqueta: "Yape", descripcion: "Yapea el total y sube tu captura." },
-  plin: { etiqueta: "Plin", descripcion: "Envía el total por Plin y sube tu captura." },
-  transferencia: {
-    etiqueta: "Transferencia bancaria",
-    descripcion: "Transfiere el total y sube tu constancia.",
-  },
-  contra_entrega: { etiqueta: "Contra entrega", descripcion: "Pagas al recibir tu pedido." },
-};
 
 export default async function PaginaCheckout() {
   const metodos = await metodosDeEnvio();

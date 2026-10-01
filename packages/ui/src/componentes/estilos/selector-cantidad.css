@@ -2,19 +2,22 @@
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
+  /* Mismo alto, radio y fondo que los inputs (Campo). */
+  inline-size: 8rem;
+  block-size: var(--control-alto);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-completo);
-  background: var(--color-fondo);
+  border-radius: var(--radio-md);
+  background: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
 }
 .ui-selector-cantidad button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--control-altoSm);
-  block-size: var(--control-altoSm);
+  inline-size: var(--control-alto);
+  block-size: 100%;
   padding: 0;
   border: 0;
-  border-radius: var(--radio-completo);
+  border-radius: var(--radio-md);
   background: none;
   color: var(--color-texto);
   font-size: var(--tipo-tamano-base);
@@ -30,9 +33,11 @@
   cursor: not-allowed;
 }
 .ui-selector-cantidad__valor {
-  min-inline-size: var(--espacio-6);
+  flex: 1;
+  min-inline-size: 0;
   text-align: center;
   font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-medio);
+  font-family: var(--tipo-familia-numeros);
   font-variant-numeric: tabular-nums;
 }

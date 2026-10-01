@@ -25,9 +25,6 @@ export interface PropsLineaDeCarrito {
   total: number;
   onCantidad: (cantidad: number) => void;
   onQuitar: () => void;
-  /** Casilla para quitar varias a la vez desde la cabecera. */
-  seleccionada: boolean;
-  onSeleccionar: (seleccionada: boolean) => void;
 }
 
 /**
@@ -50,8 +47,6 @@ export function LineaDeCarrito({
   total,
   onCantidad,
   onQuitar,
-  seleccionada,
-  onSeleccionar,
 }: PropsLineaDeCarrito) {
   const sinStock = stock === 0;
   const excedeStock = !sinStock && cantidad > stock;
@@ -66,14 +61,6 @@ export function LineaDeCarrito({
 
   return (
     <article className="ui-linea-carrito">
-      <input
-        type="checkbox"
-        className="ui-linea-carrito__casilla"
-        checked={seleccionada}
-        onChange={(evento) => onSeleccionar(evento.target.checked)}
-        aria-label={`Seleccionar ${nombre}`}
-      />
-
       <div className="ui-linea-carrito__producto">
         <Link className="ui-linea-carrito__imagen" href={href} tabIndex={-1} aria-hidden="true">
           <Image
@@ -81,7 +68,7 @@ export function LineaDeCarrito({
             alt=""
             width={200}
             height={200}
-            sizes="96px"
+            sizes="112px"
             loading="lazy"
           />
         </Link>

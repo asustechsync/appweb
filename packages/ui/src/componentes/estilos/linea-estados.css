@@ -1,0 +1,97 @@
+/* FIRST MOBILE: pasos en columna con la linea a la izquierda. Desde 40rem,
+   en fila con la linea por debajo de los puntos. */
+
+.ui-linea-estados {
+  --linea-estados-punto: var(--espacio-6);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-linea-estados__paso {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+/* Tramo que une este punto con el siguiente. */
+.ui-linea-estados__paso:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-block-start: var(--linea-estados-punto);
+  inset-inline-start: calc(var(--linea-estados-punto) / 2 - 1px);
+  inline-size: 2px;
+  block-size: var(--espacio-4);
+  background: var(--color-borde);
+}
+.ui-linea-estados__paso--hecho:not(:last-child)::after {
+  background: var(--color-texto);
+}
+
+.ui-linea-estados__punto {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: var(--linea-estados-punto);
+  block-size: var(--linea-estados-punto);
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo);
+}
+.ui-linea-estados__punto svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  fill: none;
+  stroke: var(--color-textoInverso);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ui-linea-estados__paso--hecho .ui-linea-estados__punto {
+  border-color: var(--color-texto);
+  background: var(--color-texto);
+}
+.ui-linea-estados__paso--actual .ui-linea-estados__punto {
+  border-color: var(--color-texto);
+  box-shadow: inset 0 0 0 4px var(--color-fondo);
+  background: var(--color-texto);
+}
+
+.ui-linea-estados__etiqueta {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-linea-estados__paso--hecho .ui-linea-estados__etiqueta {
+  color: var(--color-texto);
+}
+.ui-linea-estados__paso--actual .ui-linea-estados__etiqueta {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-fuerte);
+}
+
+@media (min-width: 40rem) {
+  .ui-linea-estados {
+    flex-direction: row;
+    gap: 0;
+  }
+  .ui-linea-estados__paso {
+    flex: 1;
+    flex-direction: column;
+    gap: var(--espacio-2);
+    text-align: center;
+  }
+  .ui-linea-estados__paso:not(:last-child)::after {
+    inset-block-start: calc(var(--linea-estados-punto) / 2 - 1px);
+    inset-inline-start: calc(50% + var(--linea-estados-punto) / 2);
+    inline-size: calc(100% - var(--linea-estados-punto));
+    block-size: 2px;
+  }
+  .ui-linea-estados__etiqueta {
+    font-size: var(--tipo-tamano-xs);
+  }
+}

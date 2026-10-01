@@ -12,6 +12,7 @@
   border-radius: var(--radio-md);
   font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-fuerte);
+  text-decoration: none;
   cursor: pointer;
   transition:
     opacity var(--transicion-rapida),

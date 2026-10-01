@@ -27,6 +27,8 @@ export {
   type TotalesCompra,
 } from "./carrito/totales";
 
+export { buscarCupon, descuentoDeCupon, type Cupon } from "./carrito/cupones";
+
 export {
   agregarAlCarrito,
   cambiarCantidad,
@@ -56,8 +58,11 @@ export {
   siguientesEstados,
   esFinal,
   afectaStock,
+  pasosDelPedido,
   ETIQUETAS,
   type EstadoPedido,
+  type PasoPedido,
+  type SituacionPaso,
 } from "./pedidos/estados";
 
 export { generarCodigoPedido } from "./pedidos/codigo";
@@ -103,6 +108,8 @@ export {
 export {
   TIPOS_DOCUMENTO,
   ETIQUETA_TIPO_DOCUMENTO,
+  errorDocumentoComprobante,
+  type TipoComprobante,
   type TipoDocumento,
 } from "./usuarios/documento";
 

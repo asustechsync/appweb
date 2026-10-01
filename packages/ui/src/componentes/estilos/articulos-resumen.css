@@ -1,0 +1,70 @@
+.ui-articulos-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding: var(--espacio-2) 0 var(--espacio-4);
+  border-block-end: 1px solid var(--color-borde);
+  list-style: none;
+}
+.ui-articulos-resumen__item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+/* La cantidad va como globo sobre la imagen: ahorra una columna. */
+.ui-articulos-resumen__imagen {
+  position: relative;
+  flex: 0 0 auto;
+  inline-size: 3.5rem;
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+}
+.ui-articulos-resumen__imagen img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border-radius: var(--radio-md);
+}
+.ui-articulos-resumen__cantidad {
+  position: absolute;
+  inset-block-start: calc(-1 * var(--espacio-2));
+  inset-inline-end: calc(-1 * var(--espacio-2));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--espacio-5);
+  block-size: var(--espacio-5);
+  padding-inline: var(--espacio-1);
+  border-radius: var(--radio-completo);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-articulos-resumen__datos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+.ui-articulos-resumen__nombre {
+  overflow: hidden;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-articulos-resumen__variante {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-articulos-resumen__total {
+  flex: 0 0 auto;
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+}

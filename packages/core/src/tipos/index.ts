@@ -143,6 +143,7 @@ export const esquemaCheckout = z.object({
   comprobante: z.enum(["boleta", "factura"]).default("boleta"),
   documento: z.string().trim().min(8).max(11),
   razonSocial: z.string().trim().max(200).optional(),
+  cupon: z.string().trim().max(30).optional(),
 });
 
 export type DatosRegistro = z.infer<typeof esquemaRegistro>;

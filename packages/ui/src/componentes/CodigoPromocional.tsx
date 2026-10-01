@@ -1,6 +1,7 @@
 "use client";
 
-import { IconoEtiqueta } from "../iconos";
+import { Boton } from "./Boton";
+import { Campo } from "./Campo";
 
 import "./primitivos.css";
 
@@ -11,6 +12,9 @@ export interface PropsCodigoPromocional {
   /** Respuesta bajo el campo: codigo invalido, aplicado, no disponible. */
   mensaje?: string | null;
   tonoMensaje?: "error" | "exito" | "info";
+  /** Codigo ya aplicado: en vez del campo se muestra con un boton para quitarlo. */
+  aplicado?: string | null;
+  onQuitar?: () => void;
 }
 
 /**
@@ -25,32 +29,44 @@ export function CodigoPromocional({
   onAplicar,
   mensaje,
   tonoMensaje = "info",
+  aplicado = null,
+  onQuitar,
 }: PropsCodigoPromocional) {
   return (
     <div className="ui-codigo-promocional">
-      <form
-        className="ui-codigo-promocional__form"
-        onSubmit={(evento) => {
-          evento.preventDefault();
-          onAplicar();
-        }}
-      >
-        <label className="ui-codigo-promocional__campo">
-          <IconoEtiqueta tamano={16} />
-          <input
-            type="text"
-            value={valor}
-            onChange={(evento) => onCambio(evento.target.value)}
-            placeholder="Código promocional"
-            aria-label="Código promocional"
-            autoComplete="off"
-            autoCapitalize="characters"
-          />
-        </label>
-        <button type="submit" disabled={valor.trim() === ""}>
-          Aplicar
-        </button>
-      </form>
+      {aplicado ? (
+        <div className="ui-codigo-promocional__form">
+          <p className="ui-codigo-promocional__aplicado">
+            Cupón <strong>{aplicado}</strong> aplicado
+          </p>
+          <Boton variante="secundario" {...(onQuitar ? { onClick: onQuitar } : {})}>
+            Quitar
+          </Boton>
+        </div>
+      ) : (
+        <form
+          className="ui-codigo-promocional__form"
+          onSubmit={(evento) => {
+            evento.preventDefault();
+            onAplicar();
+          }}
+        >
+          <div className="ui-codigo-promocional__campo">
+            <Campo
+              id="codigo-promocional"
+              etiqueta="Código promocional"
+              valor={valor}
+              onCambio={onCambio}
+              placeholder="Código promocional"
+              autoComplete="off"
+              etiquetaOculta
+            />
+          </div>
+          <Boton tipo="submit" disabled={valor.trim() === ""}>
+            Aplicar
+          </Boton>
+        </form>
+      )}
 
       {mensaje ? (
         <p className={`ui-codigo-promocional__mensaje ui-codigo-promocional__mensaje--${tonoMensaje}`}>

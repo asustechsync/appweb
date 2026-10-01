@@ -28,50 +28,6 @@
   font-weight: var(--tipo-peso-medio);
 }
 
-.ui-resumen-compra__envios {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-2);
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.ui-resumen-compra__envios legend {
-  padding: 0;
-  margin-block-end: var(--espacio-2);
-  color: var(--color-textoTenue);
-  font-size: var(--tipo-tamano-xs);
-  font-weight: var(--tipo-peso-medio);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.ui-resumen-compra__envio {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-2);
-  padding: var(--espacio-2) var(--espacio-3);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
-  background: var(--color-fondo);
-  font-size: var(--tipo-tamano-sm);
-  cursor: pointer;
-  transition: border-color var(--transicion-rapida);
-}
-.ui-resumen-compra__envio:hover {
-  border-color: var(--color-bordeFuerte);
-}
-.ui-resumen-compra__envio:has(input:checked) {
-  border-color: var(--color-texto);
-}
-.ui-resumen-compra__envio-nombre {
-  flex: 1;
-}
-.ui-resumen-compra__envio-costo {
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
-  font-weight: var(--tipo-peso-medio);
-}
-
 .ui-resumen-compra__cifras {
   display: flex;
   flex-direction: column;
@@ -95,10 +51,20 @@
 .ui-resumen-compra__cifras dd {
   margin: 0;
   font-size: var(--tipo-tamano-sm);
+  font-family: var(--tipo-familia-numeros);
   font-variant-numeric: tabular-nums;
 }
 .ui-resumen-compra__descuento dd {
   color: var(--color-exito);
+}
+.ui-resumen-compra__ahorro {
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  text-align: right;
+}
+.ui-resumen-compra__ahorro strong {
+  color: var(--color-texto);
 }
 
 .ui-resumen-compra__total {
@@ -111,50 +77,6 @@
   font-weight: var(--tipo-peso-fuerte);
 }
 
-.ui-resumen-compra__continuar {
-  display: block;
-  inline-size: 100%;
-  padding: var(--espacio-3) var(--espacio-5);
-  border: 0;
-  border-radius: var(--radio-completo);
-  background: var(--color-texto);
-  color: var(--color-textoInverso);
-  font: inherit;
-  font-size: var(--tipo-tamano-sm);
-  font-weight: var(--tipo-peso-fuerte);
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity var(--transicion-rapida);
-}
-.ui-resumen-compra__continuar:hover {
-  opacity: 0.88;
-}
-.ui-resumen-compra__continuar--bloqueado {
-  background: var(--color-bordeFuerte);
-  color: var(--color-textoTenue);
-  cursor: not-allowed;
-}
-.ui-resumen-compra__continuar--bloqueado:hover {
-  opacity: 1;
-}
-.ui-resumen-compra__seguir {
-  display: block;
-  inline-size: 100%;
-  padding: var(--espacio-3) var(--espacio-5);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-completo);
-  background: var(--color-fondo);
-  color: var(--color-texto);
-  font-size: var(--tipo-tamano-sm);
-  font-weight: var(--tipo-peso-medio);
-  text-align: center;
-  text-decoration: none;
-  transition: border-color var(--transicion-rapida);
-}
-.ui-resumen-compra__seguir:hover {
-  border-color: var(--color-bordeFuerte);
-}
 .ui-resumen-compra__bloqueo {
   color: var(--color-error);
   font-size: var(--tipo-tamano-xs);

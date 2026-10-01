@@ -37,3 +37,23 @@ export function guardarCarrito(lineas: LineaGuardada[]): void {
     /* almacenamiento no disponible: el carrito dura lo que dure la pestaña */
   }
 }
+
+export const CUPON_LLAVE = "appweb:cupon";
+
+/** El cupon aplicado en el carrito, para que el checkout lo recuerde. */
+export function leerCupon(): string | null {
+  try {
+    return localStorage.getItem(CUPON_LLAVE);
+  } catch {
+    return null;
+  }
+}
+
+export function guardarCupon(codigo: string | null): void {
+  try {
+    if (codigo === null) localStorage.removeItem(CUPON_LLAVE);
+    else localStorage.setItem(CUPON_LLAVE, codigo);
+  } catch {
+    /* almacenamiento no disponible: el cupon dura lo que dure la pestaña */
+  }
+}
