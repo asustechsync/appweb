@@ -1,0 +1,8 @@
+.ui-bloque-lineas {
+  padding: 0 var(--espacio-5);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+}
+.ui-bloque-lineas .ui-linea-carrito:last-child {
+  border-block-end: 0;
+}

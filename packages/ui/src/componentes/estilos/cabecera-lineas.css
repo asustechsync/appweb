@@ -1,0 +1,33 @@
+/* FIRST MOBILE: casilla y "Producto"; las columnas de cantidad y precio solo
+   existen desde 40rem, cuando las lineas pasan a una fila. */
+
+.ui-cabecera-lineas {
+  display: grid;
+  grid-template-columns: var(--columnas-linea-carrito);
+  column-gap: var(--espacio-4);
+  align-items: center;
+  padding-block: var(--espacio-3);
+  border-block-end: 1px solid var(--color-borde);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ui-cabecera-lineas .ui-linea-carrito__casilla {
+  /* La casilla comparte clase con la de cada linea, pero aqui no hay areas. */
+  grid-area: auto;
+}
+.ui-cabecera-lineas__columna {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  .ui-cabecera-lineas__columna {
+    display: block;
+    text-align: center;
+  }
+  .ui-cabecera-lineas__columna--fin {
+    text-align: end;
+  }
+}

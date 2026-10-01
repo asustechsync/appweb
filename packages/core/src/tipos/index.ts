@@ -10,26 +10,41 @@ import { z } from "zod";
 import { TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
 import { ROLES } from "../usuarios/permisos";
+import { REQUISITOS_CLAVE } from "../usuarios/requisitos-clave";
 
 // ── Cuenta ─────────────────────────────────────────────────────────────────
 
 export const esquemaRegistro = z.object({
   nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
-  email: z.email("Revisa el correo").toLowerCase(),
-  clave: z.string().min(8, "Minimo 8 caracteres").max(72),
+  email: z.email("Escribe un correo válido").toLowerCase(),
+  clave: z
+    .string()
+    .max(72)
+    .refine((c) => REQUISITOS_CLAVE.every((r) => r.cumple(c)), "La contraseña no cumple los requisitos"),
   telefono: z
     .string()
     .trim()
-    .regex(/^9\d{8}$/, "Numero de 9 digitos que empieza en 9")
+    .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos")
     .optional(),
 });
 
-/** Autorregistro publico: solo correo y contraseña (y telefono si lo da). El
+/** Recuperacion de clave: solo pide el correo. */
+export const esquemaRecuperacion = z.object({
+  email: z.email("Escribe un correo válido").toLowerCase(),
+});
+
+/** Autorregistro publico: correo, contraseña y telefono (obligatorio). El
     nombre sale del correo; el panel si lo pide, por eso no se quita arriba. */
-export const esquemaAutorregistro = esquemaRegistro.omit({ nombre: true });
+export const esquemaAutorregistro = esquemaRegistro.omit({ nombre: true }).extend({
+  telefono: z
+    .string()
+    .trim()
+    .min(1, "Ingresa tu número de celular")
+    .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos"),
+});
 
 export const esquemaIngreso = z.object({
-  email: z.email("Revisa el correo").toLowerCase(),
+  email: z.email("Escribe un correo válido").toLowerCase(),
   clave: z.string().min(1, "Escribe tu contraseña"),
   /** Marcada: la sesion dura 30 dias. Sin marcar: hasta cerrar el navegador. */
   recordar: z.boolean().default(false),
@@ -44,7 +59,7 @@ export const esquemaPerfil = z.object({
   telefono: z
     .string()
     .trim()
-    .regex(/^9\d{8}$/, "Numero de 9 digitos que empieza en 9")
+    .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos")
     .optional(),
   tipoDocumento: z.enum(TIPOS_DOCUMENTO).optional(),
   numeroDocumento: z.string().trim().min(6).max(20).optional(),

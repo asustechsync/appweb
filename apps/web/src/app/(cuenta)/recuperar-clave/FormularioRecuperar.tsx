@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { esquemaRecuperacion } from "@appweb/core/tipos";
 import { Alerta, Boton, Campo, DisposicionAcceso, Formulario, IconoCorreo } from "@appweb/ui";
 
 /**
@@ -16,20 +17,27 @@ import { Alerta, Boton, Campo, DisposicionAcceso, Formulario, IconoCorreo } from
 export function FormularioRecuperar() {
   const [email, setEmail] = useState("");
   const [enviado, setEnviado] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function enviar(evento: React.FormEvent) {
     evento.preventDefault();
+    const analizado = esquemaRecuperacion.safeParse({ email });
+    if (!analizado.success) {
+      setError(analizado.error.issues[0]?.message ?? "Escribe un correo válido");
+      return;
+    }
+    setError(null);
     setEnviado(true);
   }
 
   return (
     <DisposicionAcceso
-      titulo="Te enviaremos un enlace para crear una nueva contraseña"
+      titulo="Recupera tu contraseña"
       pie={<Link href="/ingresar">Volver a ingresar</Link>}
     >
       {enviado ? (
-        <Alerta tono="exito">
-          Si {email} tiene una cuenta, te enviaremos un enlace para recuperar tu contraseña.
+        <Alerta tono="exito" centrada>
+          <strong>Revisa tu correo.</strong> Si {email} está registrado, te enviamos un enlace.
         </Alerta>
       ) : (
         <Formulario onSubmit={enviar}>
@@ -39,6 +47,7 @@ export function FormularioRecuperar() {
             tipo="email"
             valor={email}
             onCambio={setEmail}
+            error={error}
             autoComplete="email"
             placeholder="Correo electrónico"
             icono={<IconoCorreo />}

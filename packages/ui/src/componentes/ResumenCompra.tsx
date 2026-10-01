@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { Precio } from "./Precio";
@@ -24,9 +25,17 @@ export interface PropsResumenCompra {
   total: number;
   /** Cuanto falta para el envio gratis. `null` si ya lo tiene o no aplica. */
   faltaEnvioGratis: number | null;
-  metodos: MetodoEnvioElegible[];
-  metodoElegidoId: string | null;
-  onMetodo: (id: string) => void;
+  /** Sin metodos no se pinta el selector: el carrito lo deja para el checkout. */
+  metodos?: MetodoEnvioElegible[];
+  metodoElegidoId?: string | null;
+  onMetodo?: (id: string) => void;
+  /** Lo que muestra la fila de envio mientras no haya metodo elegido. */
+  textoEnvioPendiente?: string;
+  /** Segundo boton, bajo el principal: "Seguir comprando". */
+  hrefSeguir?: string;
+  textoSeguir?: string;
+  /** Ranura bajo el titulo para el codigo promocional. */
+  codigo?: ReactNode;
   /** Bloquea el paso a pagar (lineas sin stock, por ejemplo). */
   motivoBloqueo?: string | null;
   /** Carrito -> navega al checkout. */
@@ -58,9 +67,13 @@ export function ResumenCompra({
   costoEnvio,
   total,
   faltaEnvioGratis,
-  metodos,
-  metodoElegidoId,
+  metodos = [],
+  metodoElegidoId = null,
   onMetodo,
+  textoEnvioPendiente = "Elige un método",
+  hrefSeguir,
+  textoSeguir = "Seguir comprando",
+  codigo,
   motivoBloqueo,
   hrefContinuar,
   onConfirmar,
@@ -71,7 +84,9 @@ export function ResumenCompra({
 
   return (
     <aside className="ui-resumen-compra" aria-label="Resumen de la compra">
-      <h2 className="ui-resumen-compra__titulo">Resumen</h2>
+      <h2 className="ui-resumen-compra__titulo">Resumen del pedido</h2>
+
+      {codigo}
 
       {faltaEnvioGratis !== null ? (
         <p className="ui-resumen-compra__envio-gratis">
@@ -93,7 +108,7 @@ export function ResumenCompra({
                 name="metodo-envio"
                 value={metodo.id}
                 checked={metodo.id === metodoElegidoId}
-                onChange={() => onMetodo(metodo.id)}
+                onChange={() => onMetodo?.(metodo.id)}
               />
               <span className="ui-resumen-compra__envio-nombre">{metodo.nombre}</span>
               <span className="ui-resumen-compra__envio-costo">
@@ -123,7 +138,7 @@ export function ResumenCompra({
           <dt>Envío</dt>
           <dd>
             {costoEnvio === null
-              ? "Elige un método"
+              ? textoEnvioPendiente
               : costoEnvio === 0
                 ? "Gratis"
                 : FORMATO.format(costoEnvio)}
@@ -154,6 +169,12 @@ export function ResumenCompra({
       ) : hrefContinuar ? (
         <Link className="ui-resumen-compra__continuar" href={hrefContinuar}>
           {textoContinuar}
+        </Link>
+      ) : null}
+
+      {hrefSeguir ? (
+        <Link className="ui-resumen-compra__seguir" href={hrefSeguir}>
+          {textoSeguir}
         </Link>
       ) : null}
 

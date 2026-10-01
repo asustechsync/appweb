@@ -1,0 +1,66 @@
+.ui-codigo-promocional {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.ui-codigo-promocional__form {
+  display: flex;
+  gap: var(--espacio-2);
+}
+.ui-codigo-promocional__campo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+  padding-inline: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-textoTenue);
+}
+.ui-codigo-promocional__campo:focus-within {
+  border-color: var(--color-texto);
+}
+.ui-codigo-promocional__campo input {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: var(--control-altoSm);
+  border: 0;
+  background: none;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  text-transform: uppercase;
+}
+.ui-codigo-promocional__campo input::placeholder {
+  text-transform: none;
+}
+.ui-codigo-promocional__campo input:focus {
+  outline: none;
+}
+.ui-codigo-promocional__form button {
+  padding-inline: var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  cursor: pointer;
+  transition: opacity var(--transicion-rapida);
+}
+.ui-codigo-promocional__form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-codigo-promocional__mensaje {
+  margin: 0;
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-codigo-promocional__mensaje--error { color: var(--color-error); }
+.ui-codigo-promocional__mensaje--exito { color: var(--color-exito); }
+.ui-codigo-promocional__mensaje--info { color: var(--color-textoTenue); }

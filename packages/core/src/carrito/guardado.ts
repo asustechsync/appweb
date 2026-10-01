@@ -66,6 +66,15 @@ export function quitarDelCarrito(
   return lineas.filter((linea) => linea.varianteId !== varianteId);
 }
 
+/** Quita de una vez las lineas seleccionadas ("Quitar" de la cabecera). */
+export function quitarVariosDelCarrito(
+  lineas: LineaGuardada[],
+  varianteIds: readonly string[],
+): LineaGuardada[] {
+  const quitar = new Set(varianteIds);
+  return lineas.filter((linea) => !quitar.has(linea.varianteId));
+}
+
 /** Unidades totales. Es lo que muestra el globo del icono del carrito. */
 export function unidadesEn(lineas: LineaGuardada[]): number {
   return lineas.reduce((suma, linea) => suma + linea.cantidad, 0);

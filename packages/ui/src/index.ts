@@ -13,6 +13,7 @@ export {
   IconoMarca,
   IconoTicket,
   IconoCarrito,
+  IconoPapelera,
   IconoMenu,
   IconoCorreo,
   IconoCandado,
@@ -29,7 +30,11 @@ export { Header, type PropsHeader } from "./componentes/Header";
 export { Ubicacion, type PropsUbicacion } from "./componentes/Ubicacion";
 export { Buscador, type PropsBuscador } from "./componentes/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
+export { CodigoPromocional, type PropsCodigoPromocional } from "./componentes/CodigoPromocional";
+export { BloqueLineas } from "./componentes/BloqueLineas";
+export { CabeceraLineas } from "./componentes/CabeceraLineas";
 export { AlternarTema } from "./componentes/AlternarTema";
+export { IndicadorClave, type PropsIndicadorClave } from "./componentes/IndicadorClave";
 export {
   EscaparatePortada,
   type PropsEscaparatePortada,

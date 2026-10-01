@@ -25,3 +25,4 @@ export { IconoPregunta } from "./IconoPregunta";
 export { IconoMoneda } from "./IconoMoneda";
 export { IconoMarca } from "./IconoMarca";
 export { IconoTicket } from "./IconoTicket";
+export { IconoPapelera } from "./IconoPapelera";

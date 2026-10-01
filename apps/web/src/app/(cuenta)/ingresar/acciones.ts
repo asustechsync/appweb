@@ -14,7 +14,7 @@ export interface ResultadoIngreso {
 export async function ingresar(datos: unknown): Promise<ResultadoIngreso> {
   const analizado = esquemaIngreso.safeParse(datos);
   if (!analizado.success) {
-    return { ok: false, error: "Revisa el correo y la contraseña." };
+    return { ok: false, error: "Correo o contraseña incorrectos" };
   }
 
   const { email, clave, recordar } = analizado.data;
@@ -25,7 +25,7 @@ export async function ingresar(datos: unknown): Promise<ResultadoIngreso> {
   // cual de las dos fallo es regalarle a quien prueba correos al azar cuales
   // si estan registrados.
   if (usuario === null || !usuario.activo || !verificarClave(clave, usuario.clave)) {
-    return { ok: false, error: "Correo o contraseña incorrectos." };
+    return { ok: false, error: "Correo o contraseña incorrectos" };
   }
 
   await crearCookieSesion({ usuarioId: usuario.id, rol: usuario.rol, nombre: usuario.nombre }, recordar);

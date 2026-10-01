@@ -9,13 +9,46 @@
 }
 .ui-disposicion-compra__cabecera {
   display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+}
+.ui-disposicion-compra__titulo {
+  display: flex;
   flex-direction: column;
   gap: var(--espacio-1);
+}
+.ui-disposicion-compra__accion a,
+.ui-disposicion-compra__accion button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+.ui-disposicion-compra__accion button:disabled {
+  color: var(--color-textoTenue);
+  cursor: not-allowed;
+}
+.ui-disposicion-compra__accion a,
+.ui-disposicion-compra__accion button {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: none;
+}
+.ui-disposicion-compra__accion a:hover,
+.ui-disposicion-compra__accion button:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .ui-disposicion-compra__cabecera h1 {
   font-size: var(--tipo-tamano-2xl);
 }
-.ui-disposicion-compra__cabecera p {
+.ui-disposicion-compra__titulo p {
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-sm);
 }
@@ -39,4 +72,14 @@
        metería debajo de ella al hacer scroll. */
     inset-block-start: var(--espacio-20);
   }
+}
+
+/* Fuente propia de la pantalla (Poppins en el carrito). Botones e inputs no
+   heredan la fuente por defecto, asi que se les pide. */
+.ui-disposicion-compra--acceso {
+  font-family: var(--tipo-familia-acceso);
+}
+.ui-disposicion-compra--acceso button,
+.ui-disposicion-compra--acceso input {
+  font-family: inherit;
 }

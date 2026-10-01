@@ -17,3 +17,6 @@
   background: var(--color-superficie);
   color: var(--color-textoSuave);
 }
+.ui-alerta--centrada {
+  text-align: center;
+}

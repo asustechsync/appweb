@@ -6,27 +6,31 @@ import {
   calcularTotales,
   cambiarCantidad,
   quitarDelCarrito,
+  quitarVariosDelCarrito,
   redondear,
   type LineaGuardada,
 } from "@appweb/core";
 import {
+  BloqueLineas,
+  CabeceraLineas,
   Cargando,
+  CodigoPromocional,
   DisposicionCompra,
   EstadoVacio,
   IconoCarrito,
+  IconoPapelera,
   LineaDeCarrito,
   ResumenCompra,
 } from "@appweb/ui";
 
-import { guardarCarrito, leerCarrito, CARRITO_EVENTO } from "@/lib/carrito-local";
-import type { MetodoDeEnvio, VarianteDeCarrito } from "@/lib/consultas";
+import {
+  guardarCarrito,
+  leerCarrito,
+  CARRITO_EVENTO,
+} from "@/lib/carrito-local";
+import type { VarianteDeCarrito } from "@/lib/consultas";
 
 import { resolverLineasDelCarrito } from "./acciones";
-
-export interface PropsCarritoCliente {
-  /** Llegan del servidor ya cacheados: no dependen de que hay en el carrito. */
-  metodos: MetodoDeEnvio[];
-}
 
 /**
  * Isla cliente del carrito.
@@ -39,11 +43,13 @@ export interface PropsCarritoCliente {
  * Los totales salen de `calcularTotales` de @appweb/core, la misma funcion que
  * cerrara el pedido: el total que se ve aqui es el que se cobrara.
  */
-export function CarritoCliente({ metodos }: PropsCarritoCliente) {
+export function CarritoCliente() {
   const [guardadas, setGuardadas] = useState<LineaGuardada[]>([]);
   const [variantes, setVariantes] = useState<VarianteDeCarrito[]>([]);
   const [cargando, setCargando] = useState(true);
-  const [metodoId, setMetodoId] = useState<string | null>(metodos[0]?.id ?? null);
+  const [codigo, setCodigo] = useState("");
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set());
+  const [avisoCodigo, setAvisoCodigo] = useState<string | null>(null);
 
   useEffect(() => {
     let vigente = true;
@@ -60,7 +66,9 @@ export function CarritoCliente({ metodos }: PropsCarritoCliente) {
         return;
       }
 
-      const resueltas = await resolverLineasDelCarrito(lineas.map((l) => l.varianteId));
+      const resueltas = await resolverLineasDelCarrito(
+        lineas.map((l) => l.varianteId),
+      );
       if (!vigente) return;
 
       // Lo que el servidor no devolvio ya no se vende: se cae del carrito
@@ -92,14 +100,14 @@ export function CarritoCliente({ metodos }: PropsCarritoCliente) {
   const lineas = useMemo(
     () =>
       guardadas.flatMap((linea) => {
-        const variante = variantes.find((v) => v.varianteId === linea.varianteId);
+        const variante = variantes.find(
+          (v) => v.varianteId === linea.varianteId,
+        );
         if (variante === undefined) return [];
         return [{ ...variante, cantidad: linea.cantidad }];
       }),
     [guardadas, variantes],
   );
-
-  const metodoElegido = metodos.find((metodo) => metodo.id === metodoId) ?? null;
 
   const totales = useMemo(
     () =>
@@ -110,26 +118,34 @@ export function CarritoCliente({ metodos }: PropsCarritoCliente) {
           cantidad: linea.cantidad,
           stock: linea.stock,
         })),
-        metodoElegido
-          ? {
-              metodoEnvio: {
-                costo: metodoElegido.costo,
-                gratisDesde: metodoElegido.gratisDesde,
-              },
-            }
-          : {},
+        // Sin metodo de envio: el costo y la direccion se eligen en el checkout.
+        {},
       ),
-    [lineas, metodoElegido],
+    [lineas],
   );
 
   function aplicar(siguientes: LineaGuardada[]) {
     setGuardadas(siguientes);
     guardarCarrito(siguientes);
+    // Lo que ya no esta en el carrito deja de estar seleccionado.
+    const vivas = new Set(siguientes.map((linea) => linea.varianteId));
+    setSeleccion(
+      (actual) => new Set([...actual].filter((id) => vivas.has(id))),
+    );
+  }
+
+  function seleccionar(varianteId: string, marcar: boolean) {
+    setSeleccion((actual) => {
+      const siguiente = new Set(actual);
+      if (marcar) siguiente.add(varianteId);
+      else siguiente.delete(varianteId);
+      return siguiente;
+    });
   }
 
   if (cargando) {
     return (
-      <DisposicionCompra titulo="Carrito">
+      <DisposicionCompra titulo="Mi carrito" fuente="acceso">
         <Cargando texto="Cargando tu carrito…" />
       </DisposicionCompra>
     );
@@ -137,7 +153,7 @@ export function CarritoCliente({ metodos }: PropsCarritoCliente) {
 
   if (lineas.length === 0) {
     return (
-      <DisposicionCompra titulo="Carrito">
+      <DisposicionCompra titulo="Mi carrito" fuente="acceso">
         <EstadoVacio
           icono={<IconoCarrito tamano={28} />}
           titulo="Tu carrito está vacío"
@@ -156,7 +172,20 @@ export function CarritoCliente({ metodos }: PropsCarritoCliente) {
 
   return (
     <DisposicionCompra
-      titulo="Carrito"
+      titulo="Mi carrito"
+      fuente="acceso"
+      accion={
+        <button
+          type="button"
+          disabled={seleccion.size === 0}
+          onClick={() =>
+            aplicar(quitarVariosDelCarrito(guardadas, [...seleccion]))
+          }
+        >
+          <IconoPapelera tamano={16} />
+          Quitar{seleccion.size > 0 ? ` (${seleccion.size})` : ""}
+        </button>
+      }
       subtitulo={`${totales.unidades} ${totales.unidades === 1 ? "unidad" : "unidades"} · ${lineas.length} ${lineas.length === 1 ? "producto" : "productos"}`}
       lateral={
         <ResumenCompra
@@ -166,33 +195,66 @@ export function CarritoCliente({ metodos }: PropsCarritoCliente) {
           costoEnvio={totales.costoEnvio}
           total={totales.total}
           faltaEnvioGratis={totales.faltaEnvioGratis}
-          metodos={metodos}
-          metodoElegidoId={metodoId}
-          onMetodo={setMetodoId}
+          codigo={
+            <CodigoPromocional
+              valor={codigo}
+              onCambio={(valor) => {
+                setCodigo(valor);
+                setAvisoCodigo(null);
+              }}
+              // Aun no hay codigos en la tienda: se avisa en vez de aparentar que se aplico.
+              onAplicar={() =>
+                setAvisoCodigo(
+                  "Los códigos promocionales aún no están disponibles.",
+                )
+              }
+              mensaje={avisoCodigo}
+            />
+          }
+          textoEnvioPendiente="Se calcula al pagar"
           motivoBloqueo={bloqueo}
           hrefContinuar="/checkout"
+          textoContinuar="Continuar al pago"
+          hrefSeguir="/"
         />
       }
     >
-      {lineas.map((linea) => (
-        <LineaDeCarrito
-          key={linea.varianteId}
-          nombre={linea.nombre}
-          href={`/productos/${linea.slug}`}
-          imagenUrl={linea.imagenUrl}
-          talla={linea.talla}
-          color={linea.color}
-          precioUnitario={linea.precio}
-          precioLista={linea.precioLista}
-          cantidad={linea.cantidad}
-          stock={linea.stock}
-          total={redondear(linea.precio * linea.cantidad)}
-          onCantidad={(cantidad) =>
-            aplicar(cambiarCantidad(guardadas, linea.varianteId, cantidad))
+      <BloqueLineas>
+        <CabeceraLineas
+          todas={seleccion.size === lineas.length}
+          algunas={seleccion.size > 0}
+          onTodas={(marcar) =>
+            setSeleccion(
+              marcar
+                ? new Set(lineas.map((linea) => linea.varianteId))
+                : new Set(),
+            )
           }
-          onQuitar={() => aplicar(quitarDelCarrito(guardadas, linea.varianteId))}
         />
-      ))}
+        {lineas.map((linea) => (
+          <LineaDeCarrito
+            key={linea.varianteId}
+            nombre={linea.nombre}
+            href={`/productos/${linea.slug}`}
+            imagenUrl={linea.imagenUrl}
+            talla={linea.talla}
+            color={linea.color}
+            precioUnitario={linea.precio}
+            precioLista={linea.precioLista}
+            cantidad={linea.cantidad}
+            stock={linea.stock}
+            total={redondear(linea.precio * linea.cantidad)}
+            onCantidad={(cantidad) =>
+              aplicar(cambiarCantidad(guardadas, linea.varianteId, cantidad))
+            }
+            onQuitar={() =>
+              aplicar(quitarDelCarrito(guardadas, linea.varianteId))
+            }
+            seleccionada={seleccion.has(linea.varianteId)}
+            onSeleccionar={(marcar) => seleccionar(linea.varianteId, marcar)}
+          />
+        ))}
+      </BloqueLineas>
     </DisposicionCompra>
   );
 }

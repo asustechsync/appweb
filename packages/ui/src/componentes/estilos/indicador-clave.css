@@ -1,0 +1,28 @@
+.ui-indicador-clave {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+.ui-indicador-clave__barra {
+  display: flex;
+  gap: var(--espacio-1);
+}
+.ui-indicador-clave__tramo {
+  flex: 1;
+  block-size: var(--espacio-1);
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+  transition: background-color var(--transicion-rapida);
+}
+.ui-indicador-clave__texto {
+  margin: 0;
+  font-size: var(--tipo-tamano-xs);
+  color: var(--color-textoSuave);
+}
+.ui-indicador-clave--uno .ui-indicador-clave__tramo--activo { background: var(--color-error); }
+.ui-indicador-clave--dos .ui-indicador-clave__tramo--activo { background: var(--color-alerta); }
+.ui-indicador-clave--tres .ui-indicador-clave__tramo--activo { background: var(--color-calificacion); }
+.ui-indicador-clave--cuatro .ui-indicador-clave__tramo--activo { background: var(--color-exitoClaro); }
+.ui-indicador-clave--cinco .ui-indicador-clave__tramo--activo { background: var(--color-exito); }
+.ui-indicador-clave--cuatro .ui-indicador-clave__texto,
+.ui-indicador-clave--cinco .ui-indicador-clave__texto { color: var(--color-exito); }

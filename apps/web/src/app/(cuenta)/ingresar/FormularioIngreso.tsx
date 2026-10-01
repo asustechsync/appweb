@@ -16,6 +16,7 @@ import {
   IconoCandado,
   IconoCorreo,
 } from "@appweb/ui";
+import { esquemaIngreso } from "@appweb/core/tipos";
 
 import { ingresar } from "./acciones";
 
@@ -31,13 +32,25 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
   const [recordar, setRecordar] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [errores, setErrores] = useState<Record<string, string>>({});
 
   async function enviar(evento: React.FormEvent) {
     evento.preventDefault();
     setError(null);
-    setEnviando(true);
 
-    const resultado = await ingresar({ email, clave, recordar });
+    const datos = { email, clave, recordar };
+    const analizado = esquemaIngreso.safeParse(datos);
+    const nuevos: Record<string, string> = {};
+    if (!analizado.success) {
+      for (const problema of analizado.error.issues) {
+        nuevos[String(problema.path[0])] ??= problema.message;
+      }
+    }
+    setErrores(nuevos);
+    if (Object.keys(nuevos).length > 0) return;
+
+    setEnviando(true);
+    const resultado = await ingresar(datos);
 
     if (!resultado.ok) {
       setError(resultado.error ?? "No se pudo ingresar.");
@@ -64,6 +77,7 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
           tipo="email"
           valor={email}
           onCambio={setEmail}
+          error={errores["email"] ?? null}
           autoComplete="email"
           placeholder="Correo electrónico"
           icono={<IconoCorreo />}
@@ -76,6 +90,7 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
           tipo="password"
           valor={clave}
           onCambio={setClave}
+          error={errores["clave"] ?? null}
           autoComplete="current-password"
           placeholder="Contraseña"
           icono={<IconoCandado />}

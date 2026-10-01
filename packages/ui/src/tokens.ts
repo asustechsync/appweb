@@ -49,6 +49,7 @@ export const tokens = {
 
     // Estado, no marca. Nunca como color decorativo.
     exito: "#17803D",
+    exitoClaro: "#62B846",
     alerta: "#B54708",
     error: "#D92D20",
     info: "#2F7DB8",
@@ -180,6 +181,7 @@ export const tokensOscuro = {
     calificacion: "#F4BB5C",
 
     exito: "#3ED68C",
+    exitoClaro: "#8FE388",
     alerta: "#EAB143",
     error: "#F07C81",
     info: "#4FA6E0",

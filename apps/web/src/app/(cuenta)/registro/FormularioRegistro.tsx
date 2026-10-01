@@ -15,7 +15,10 @@ import {
   IconoCandado,
   IconoCorreo,
   IconoTelefono,
+  IndicadorClave,
 } from "@appweb/ui";
+import { evaluarClave } from "@appweb/core";
+import { esquemaAutorregistro } from "@appweb/core/tipos";
 
 import { registrar } from "./acciones";
 
@@ -28,17 +31,30 @@ export function FormularioRegistro() {
   const [paisTelefono, setPaisTelefono] = useState("pe");
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [errores, setErrores] = useState<Record<string, string>>({});
 
   async function enviar(evento: React.FormEvent) {
     evento.preventDefault();
     setError(null);
-    setEnviando(true);
 
-    const resultado = await registrar({
+    const datos = {
       email,
       clave,
-      telefono: telefono.trim() === "" ? undefined : telefono,
-    });
+      telefono,
+    };
+    const analizado = esquemaAutorregistro.safeParse(datos);
+    const nuevos: Record<string, string> = {};
+    if (!analizado.success) {
+      for (const problema of analizado.error.issues) {
+        const campo = String(problema.path[0]);
+        nuevos[campo] ??= problema.message;
+      }
+    }
+    setErrores(nuevos);
+    if (!acepta || Object.keys(nuevos).length > 0) return;
+
+    setEnviando(true);
+    const resultado = await registrar(datos);
 
     if (!resultado.ok) {
       setError(resultado.error ?? "No se pudo crear la cuenta.");
@@ -65,6 +81,7 @@ export function FormularioRegistro() {
           tipo="email"
           valor={email}
           onCambio={setEmail}
+          error={errores["email"] ?? null}
           autoComplete="email"
           placeholder="Correo electrónico"
           icono={<IconoCorreo />}
@@ -77,12 +94,14 @@ export function FormularioRegistro() {
           tipo="password"
           valor={clave}
           onCambio={setClave}
+          error={errores["clave"] ?? null}
           autoComplete="new-password"
           placeholder="Contraseña"
           icono={<IconoCandado />}
           etiquetaOculta
           requerido
         />
+        <IndicadorClave requisitos={evaluarClave(clave)} vacia={clave === ""} />
         <Campo
           id="telefono"
           etiqueta="Teléfono"
@@ -94,7 +113,9 @@ export function FormularioRegistro() {
           onCambioPais={setPaisTelefono}
           valor={telefono}
           onCambio={setTelefono}
+          error={/\D/.test(telefono) ? "Solo se permiten números" : (errores["telefono"] ?? null)}
           autoComplete="tel"
+          requerido
         />
 
         <Casilla
@@ -109,7 +130,7 @@ export function FormularioRegistro() {
           requerida
         />
 
-        <Boton tipo="submit" disabled={enviando} anchoCompleto>
+        <Boton tipo="submit" disabled={enviando || !acepta} anchoCompleto>
           {enviando ? "Creando cuenta…" : "Crear cuenta"}
         </Boton>
       </Formulario>

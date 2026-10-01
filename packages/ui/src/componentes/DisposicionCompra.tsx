@@ -10,6 +10,10 @@ export interface PropsDisposicionCompra {
   children: ReactNode;
   /** Columna lateral pegajosa: normalmente ResumenCompra. */
   lateral?: ReactNode;
+  /** A la derecha del titulo: "Seguir comprando". */
+  accion?: ReactNode;
+  /** "acceso": usa la fuente que el layout haya definido en --tipo-familia-acceso. */
+  fuente?: "acceso";
 }
 
 /**
@@ -25,12 +29,17 @@ export function DisposicionCompra({
   subtitulo,
   children,
   lateral,
+  accion,
+  fuente,
 }: PropsDisposicionCompra) {
   return (
-    <div className="ui-disposicion-compra">
+    <div className={fuente === "acceso" ? "ui-disposicion-compra ui-disposicion-compra--acceso" : "ui-disposicion-compra"}>
       <header className="ui-disposicion-compra__cabecera">
-        <h1>{titulo}</h1>
-        {subtitulo ? <p>{subtitulo}</p> : null}
+        <div className="ui-disposicion-compra__titulo">
+          <h1>{titulo}</h1>
+          {subtitulo ? <p>{subtitulo}</p> : null}
+        </div>
+        {accion ? <div className="ui-disposicion-compra__accion">{accion}</div> : null}
       </header>
 
       <div className="ui-disposicion-compra__principal">{children}</div>

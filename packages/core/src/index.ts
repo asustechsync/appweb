@@ -31,6 +31,7 @@ export {
   agregarAlCarrito,
   cambiarCantidad,
   quitarDelCarrito,
+  quitarVariosDelCarrito,
   unidadesEn,
   normalizarCarrito,
   MAX_POR_LINEA,
@@ -91,6 +92,7 @@ export {
 
 export { hashClave, verificarClave } from "./usuarios/credenciales";
 export { nombreDesdeCorreo } from "./usuarios/nombre";
+export { REQUISITOS_CLAVE, evaluarClave } from "./usuarios/requisitos-clave";
 
 export {
   crearTokenSesion,

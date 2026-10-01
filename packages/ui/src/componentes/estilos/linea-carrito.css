@@ -1,25 +1,44 @@
-/* FIRST MOBILE: imagen + datos arriba, acciones y total debajo. Desde 40rem
-   pasa a una sola fila con el total alineado a la derecha. */
+/* FIRST MOBILE: casilla y producto arriba; cantidad y precio debajo, bajo el
+   producto. Desde 40rem es una fila: casilla | producto | cantidad | precio,
+   las mismas columnas que titula CabeceraLineas. */
+
+.ui-linea-carrito,
+.ui-cabecera-lineas {
+  --columnas-linea-carrito: auto minmax(0, 1fr);
+}
 
 .ui-linea-carrito {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: var(--columnas-linea-carrito);
   grid-template-areas:
-    "imagen datos"
-    "acciones total";
+    "casilla producto"
+    ". acciones";
   gap: var(--espacio-3) var(--espacio-4);
-  align-items: start;
-  padding-block: var(--espacio-4);
+  align-items: center;
+  padding-block: var(--espacio-5);
   border-block-end: 1px solid var(--color-borde);
 }
-.ui-linea-carrito:last-child {
-  border-block-end: 0;
+
+.ui-linea-carrito__casilla {
+  grid-area: casilla;
+  inline-size: var(--espacio-4);
+  block-size: var(--espacio-4);
+  margin: 0;
+  accent-color: var(--color-texto);
+  cursor: pointer;
 }
 
+.ui-linea-carrito__producto {
+  grid-area: producto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+  min-inline-size: 0;
+}
 .ui-linea-carrito__imagen {
-  grid-area: imagen;
   display: block;
-  inline-size: 5rem;
+  flex: 0 0 auto;
+  inline-size: 4.5rem;
   overflow: hidden;
   border-radius: var(--radio-md);
   background: var(--color-superficie);
@@ -32,12 +51,12 @@
 }
 
 .ui-linea-carrito__datos {
-  grid-area: datos;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--espacio-1);
+  gap: var(--espacio-2);
   min-inline-size: 0;
+  padding-block-start: var(--espacio-1);
 }
 .ui-linea-carrito__nombre {
   color: var(--color-texto);
@@ -51,33 +70,66 @@
   text-underline-offset: 2px;
 }
 .ui-linea-carrito__variante {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
 }
+.ui-linea-carrito__separador {
+  inline-size: 1px;
+  block-size: var(--espacio-3);
+  background: var(--color-borde);
+}
+
 .ui-linea-carrito__aviso {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: color-mix(in srgb, var(--color-alerta) 10%, var(--color-fondo));
   color: var(--color-alerta);
   font-size: var(--tipo-tamano-xs);
 }
 .ui-linea-carrito__aviso--error {
+  background: color-mix(in srgb, var(--color-error) 10%, var(--color-fondo));
   color: var(--color-error);
   font-weight: var(--tipo-peso-medio);
 }
 
-.ui-linea-carrito__acciones {
+/* En movil cantidad y precio comparten la segunda fila. */
+.ui-linea-carrito__cantidad,
+.ui-linea-carrito__precio {
   grid-area: acciones;
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-3);
 }
+.ui-linea-carrito__cantidad {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  justify-self: start;
+}
+.ui-linea-carrito__precio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--espacio-1);
+  justify-self: end;
+  align-self: start;
+}
+.ui-linea-carrito__unitario {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
 .ui-linea-carrito__quitar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-textoTenue);
+  color: var(--color-textoSuave);
   font: inherit;
   font-size: var(--tipo-tamano-xs);
-  text-decoration: underline;
-  text-underline-offset: 2px;
   cursor: pointer;
   transition: color var(--transicion-rapida);
 }
@@ -85,24 +137,28 @@
   color: var(--color-error);
 }
 
-.ui-linea-carrito__total {
-  grid-area: total;
-  justify-self: end;
-  align-self: center;
-}
-
 @media (min-width: 40rem) {
+  .ui-linea-carrito,
+  .ui-cabecera-lineas {
+    --columnas-linea-carrito: auto minmax(0, 1fr) 8rem 7rem;
+  }
   .ui-linea-carrito {
-    grid-template-columns: auto 1fr auto auto;
-    grid-template-areas: "imagen datos acciones total";
-    align-items: center;
-    gap: var(--espacio-5);
+    grid-template-areas: "casilla producto cantidad precio";
+    align-items: start;
+  }
+  .ui-linea-carrito__casilla {
+    align-self: center;
   }
   .ui-linea-carrito__imagen {
-    inline-size: 6rem;
+    inline-size: 5.5rem;
   }
-  .ui-linea-carrito__total {
-    min-inline-size: 6rem;
-    text-align: end;
+  .ui-linea-carrito__cantidad {
+    grid-area: cantidad;
+    align-items: center;
+    justify-self: center;
+  }
+  .ui-linea-carrito__precio {
+    grid-area: precio;
+    padding-block-start: var(--espacio-1);
   }
 }
