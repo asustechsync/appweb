@@ -14,7 +14,7 @@ export {
   IconoTicket,
   IconoCarrito,
   IconoPapelera,
-  IconoMenu,
+  IconoOpciones,
   IconoCorreo,
   IconoCandado,
   IconoTelefono,
@@ -23,7 +23,12 @@ export {
   IconoUbicacion,
   IconoUsuario,
   IconoTarjetaPersonal,
-} from "./iconos";
+  IconoLuna,
+  IconoSoporte,
+  IconoGlobo,
+  IconoPerfil,
+  IconoEscudo,
+  IconoConfiguracion,} from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
 // Se van añadiendo conforme hagan falta; cada uno con su CSS en
@@ -159,6 +164,12 @@ export {
   type PropsDisposicionCuenta,
   type SeccionDeCuenta,
 } from "./componentes/DisposicionCuenta";
+export {
+  MenuCuenta,
+  type GrupoMenuCuenta,
+  type OpcionMenuCuenta,
+  type PropsMenuCuenta,
+} from "./componentes/MenuCuenta";
 export {
   DisposicionPanel,
   type PropsDisposicionPanel,

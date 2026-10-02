@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 
+import { IconoFlechaDerecha, IconoFlechaIzquierda } from "../iconos";
 import { TarjetaProducto, type PropsTarjetaProducto } from "./TarjetaProducto";
 import "./estilos/carrusel-portada.css";
 
@@ -67,10 +68,10 @@ export function CarruselPortada({ productos }: PropsCarruselPortada) {
       {productos.length > 1 ? (
         <>
           <button className="ui-carrusel-portada__flecha ui-carrusel-portada__flecha--anterior" type="button" aria-label="Ver producto anterior" onClick={() => mover(-1)}>
-            <span aria-hidden="true">←</span>
+            <IconoFlechaIzquierda tamano={18} />
           </button>
           <button className="ui-carrusel-portada__flecha ui-carrusel-portada__flecha--siguiente" type="button" aria-label="Ver producto siguiente" onClick={() => mover(1)}>
-            <span aria-hidden="true">→</span>
+            <IconoFlechaDerecha tamano={18} />
           </button>
         </>
       ) : null}

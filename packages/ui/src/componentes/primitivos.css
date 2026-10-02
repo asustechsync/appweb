@@ -55,6 +55,7 @@
 
 /* Cuenta y panel (Clase C). */
 @import "./estilos/disposicion-cuenta.css";
+@import "./estilos/menu-cuenta.css";
 @import "./estilos/disposicion-panel.css";
 @import "./estilos/tarjeta.css";
 @import "./estilos/fila-lista.css";

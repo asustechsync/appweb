@@ -2,7 +2,7 @@ import { AccionesCuenta } from "./AccionesCuenta";
 import { Buscador } from "./Buscador";
 import { Logo } from "./Logo";
 import { Ubicacion } from "./Ubicacion";
-import { IconoMenu } from "../iconos";
+import { IconoOpciones } from "../iconos";
 import "./estilos/header.css";
 
 export type PropsHeader = Record<string, never>;
@@ -18,7 +18,7 @@ export function Header() {
           <Buscador id="busqueda-header" textoBuscar="Buscar productos" />
         </div>
         <button className="ui-header__menu" type="button" aria-label="Menú" title="Menú">
-          <IconoMenu />
+          <IconoOpciones />
         </button>
         <div className="ui-header__ubicacion"><Ubicacion /></div>
         <div className="ui-header__acciones">

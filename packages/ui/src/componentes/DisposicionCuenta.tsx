@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { IconoFlechaDerecha, IconoFlechaIzquierda } from "../iconos";
 import { Contenedor } from "./Contenedor";
 import { Insignia } from "./Insignia";
 
@@ -22,6 +23,20 @@ export interface PropsDisposicionCuenta {
   onSeccion: (id: string) => void;
   onSalir?: () => void;
   hrefPanel?: string;
+  /**
+   * Menu de ajustes para movil (normalmente un `MenuCuenta`). Con el, en movil
+   * la cuenta es de dos pantallas: el menu, o una seccion con flecha de volver.
+   * Desde `lg` no se usa y queda el lateral de siempre.
+   */
+  menuMovil?: ReactNode;
+  /** En movil, mostrar el menu en vez de la seccion. */
+  enMenu?: boolean;
+  /** Titulo de la barra movil cuando se ve una seccion. */
+  tituloSeccion?: string;
+  /** Flecha de la barra movil en una seccion: vuelve al menu. */
+  onVolver?: () => void;
+  /** Flecha de la barra movil en el menu: sale de la cuenta. */
+  hrefSalirMenu?: string;
   children: ReactNode;
 }
 
@@ -43,11 +58,41 @@ export function DisposicionCuenta({
   onSeccion,
   onSalir,
   hrefPanel,
+  menuMovil,
+  enMenu = false,
+  tituloSeccion,
+  onVolver,
+  hrefSalirMenu = "/",
   children,
 }: PropsDisposicionCuenta) {
+  const clase = menuMovil
+    ? `ui-disposicion-cuenta ui-disposicion-cuenta--con-menu ${enMenu ? "ui-disposicion-cuenta--en-menu" : ""}`
+    : "ui-disposicion-cuenta";
+
   return (
     <Contenedor>
-      <div className="ui-disposicion-cuenta">
+      <div className={clase}>
+        {menuMovil ? (
+          <div className="ui-disposicion-cuenta__barra-movil">
+            {enMenu ? (
+              <a href={hrefSalirMenu} className="ui-disposicion-cuenta__volver" aria-label="Volver a la tienda">
+                <IconoFlechaIzquierda />
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="ui-disposicion-cuenta__volver"
+                onClick={onVolver}
+                aria-label="Volver a mi cuenta"
+              >
+                <IconoFlechaIzquierda />
+              </button>
+            )}
+            <h1>{enMenu ? titulo : (tituloSeccion ?? titulo)}</h1>
+          </div>
+        ) : null}
+        {menuMovil ? <div className="ui-disposicion-cuenta__menu-movil">{menuMovil}</div> : null}
+
         <header className="ui-disposicion-cuenta__cabecera">
           <h1>{titulo}</h1>
           {subtitulo ? <p>{subtitulo}</p> : null}
@@ -103,7 +148,8 @@ export function DisposicionCuenta({
 
             {hrefPanel ? (
               <a href={hrefPanel} className="ui-disposicion-cuenta__ir-panel">
-                Panel de administracion →
+                Panel de administracion
+                <IconoFlechaDerecha tamano={16} />
               </a>
             ) : null}
           </aside>

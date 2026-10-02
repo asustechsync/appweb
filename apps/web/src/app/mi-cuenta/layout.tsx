@@ -20,7 +20,7 @@ const poppins = Poppins({
 export default function LayoutMiCuenta({ children }: { children: React.ReactNode }) {
   const estilo = { "--tipo-familia-acceso": `${poppins.style.fontFamily}, system-ui, sans-serif` };
   return (
-    <PaginaTienda>
+    <PaginaTienda cabecera="solo-escritorio">
       <div style={estilo as React.CSSProperties}>{children}</div>
     </PaginaTienda>
   );

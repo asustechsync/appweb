@@ -41,7 +41,11 @@ import { useTRPC } from "@/lib/trpc";
 
 const OPCIONES_DOCUMENTO = [
   { valor: "", etiqueta: "Selecciona…" },
-  ...TIPOS_DOCUMENTO.map((tipo) => ({ valor: tipo, etiqueta: ABREVIATURA_TIPO_DOCUMENTO[tipo] })),
+  // El RUC es de la empresa: no se ofrece en los datos personales.
+  ...TIPOS_DOCUMENTO.filter((tipo) => tipo !== "RUC").map((tipo) => ({
+    valor: tipo,
+    etiqueta: ABREVIATURA_TIPO_DOCUMENTO[tipo],
+  })),
 ];
 
 const OPCIONES_GENERO = [
@@ -64,6 +68,12 @@ export function Perfil() {
   const [telefono, setTelefono] = useState("");
   const [paisTelefono, setPaisTelefono] = useState("pe");
   const [tipoDocumento, setTipoDocumento] = useState("");
+  const [empresaRuc, setEmpresaRuc] = useState("");
+  const [empresaRazonSocial, setEmpresaRazonSocial] = useState("");
+  const [empresaNombreComercial, setEmpresaNombreComercial] = useState("");
+  const [empresaTelefonoEmpresa, setEmpresaTelefonoEmpresa] = useState("");
+  const [empresaDireccionFiscal, setEmpresaDireccionFiscal] = useState("");
+  const [empresaCorreoFacturacion, setEmpresaCorreoFacturacion] = useState("");
   const [numeroDocumento, setNumeroDocumento] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [genero, setGenero] = useState("");
@@ -275,68 +285,62 @@ export function Perfil() {
               <Campo
                 id="empresa-ruc"
                 etiqueta="RUC"
-                valor=""
-                onCambio={() => {}}
+                valor={empresaRuc}
+                onCambio={setEmpresaRuc}
                 placeholder="RUC"
                 icono={<IconoTarjetaPersonal />}
                 etiquetaOculta
-                disabled
               />
               <Campo
                 id="empresa-razon-social"
                 etiqueta="Razón social"
-                valor=""
-                onCambio={() => {}}
+                valor={empresaRazonSocial}
+                onCambio={setEmpresaRazonSocial}
                 placeholder="Razón social"
                 icono={<IconoMarca />}
                 etiquetaOculta
-                disabled
               />
             </FilaCampos>
             <FilaCampos>
               <Campo
                 id="empresa-nombre-comercial"
                 etiqueta="Nombre comercial"
-                valor=""
-                onCambio={() => {}}
+                valor={empresaNombreComercial}
+                onCambio={setEmpresaNombreComercial}
                 placeholder="Nombre comercial"
                 icono={<IconoEtiqueta />}
                 etiquetaOculta
-                disabled
               />
               <Campo
                 id="empresa-telefono"
                 etiqueta="Teléfono de la empresa"
                 tipo="tel"
-                valor=""
-                onCambio={() => {}}
+                valor={empresaTelefonoEmpresa}
+                onCambio={setEmpresaTelefonoEmpresa}
                 placeholder="Teléfono de la empresa"
                 icono={<IconoTelefono />}
                 etiquetaOculta
-                disabled
               />
             </FilaCampos>
             <FilaCampos>
               <Campo
                 id="empresa-direccion-fiscal"
                 etiqueta="Dirección fiscal"
-                valor=""
-                onCambio={() => {}}
+                valor={empresaDireccionFiscal}
+                onCambio={setEmpresaDireccionFiscal}
                 placeholder="Dirección fiscal"
                 icono={<IconoUbicacion />}
                 etiquetaOculta
-                disabled
               />
               <Campo
                 id="empresa-correo-facturacion"
                 etiqueta="Correo de facturación"
                 tipo="email"
-                valor=""
-                onCambio={() => {}}
+                valor={empresaCorreoFacturacion}
+                onCambio={setEmpresaCorreoFacturacion}
                 placeholder="Correo de facturación"
                 icono={<IconoCorreo />}
                 etiquetaOculta
-                disabled
               />
             </FilaCampos>
             <Boton tipo="submit" disabled>

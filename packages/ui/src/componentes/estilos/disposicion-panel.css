@@ -21,6 +21,9 @@
 }
 
 .ui-disposicion-panel__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
   font-size: var(--tipo-tamano-xs);
   color: var(--color-textoSuave);
   text-decoration: underline;

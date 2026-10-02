@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
+import { IconoFlechaDerecha, IconoFlechaIzquierda } from "../iconos";
+
 import "./primitivos.css";
 
 export interface DiapositivaHero {
@@ -104,7 +106,7 @@ export function Hero({ diapositivas, panelLateral, etiqueta = "Destacados" }: Pr
               aria-label="Diapositiva anterior"
               onClick={() => ir(activa - 1)}
             >
-              <Chevron sentido="izquierda" />
+              <IconoFlechaIzquierda />
             </button>
             <button
               type="button"
@@ -112,7 +114,7 @@ export function Hero({ diapositivas, panelLateral, etiqueta = "Destacados" }: Pr
               aria-label="Diapositiva siguiente"
               onClick={() => ir(activa + 1)}
             >
-              <Chevron sentido="derecha" />
+              <IconoFlechaDerecha />
             </button>
 
             <div className="ui-hero__puntos">
@@ -133,23 +135,5 @@ export function Hero({ diapositivas, panelLateral, etiqueta = "Destacados" }: Pr
 
       {panelLateral ? <div className="ui-hero__panel">{panelLateral}</div> : null}
     </div>
-  );
-}
-
-function Chevron({ sentido }: { sentido: "izquierda" | "derecha" }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {sentido === "izquierda" ? <path d="m15 18-6-6 6-6" /> : <path d="m9 18 6-6-6-6" />}
-    </svg>
   );
 }

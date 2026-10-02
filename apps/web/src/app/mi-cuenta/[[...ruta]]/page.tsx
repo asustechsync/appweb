@@ -20,7 +20,7 @@ export const instant = false;
 
 export const metadata = { title: "Mi cuenta" };
 
-const SECCIONES = ["perfil", "direcciones", "pedidos", "seguridad"];
+const SECCIONES = ["perfil", "direcciones", "pedidos", "seguridad", "configuracion"];
 
 interface Props {
   params: Promise<{ ruta?: string[] }>;
@@ -36,7 +36,8 @@ export default async function PaginaMiCuenta({ params }: Props) {
   }
 
   const pedida = ruta?.[0];
-  const inicial = pedida && SECCIONES.includes(pedida) ? pedida : "perfil";
+  // Sin seccion: en movil se ve el menu; en escritorio, el perfil.
+  const inicial = pedida && SECCIONES.includes(pedida) ? pedida : "";
 
   return (
     <Proveedores>

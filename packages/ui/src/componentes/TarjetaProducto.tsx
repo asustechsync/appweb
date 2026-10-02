@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { IconoFlechaIzquierda } from "../iconos";
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
@@ -76,7 +77,7 @@ export function TarjetaProducto({
     <>
       {portada && categoriaSlug ? (
         <Link className="ui-tarjeta-producto__volver" href={`/categorias/${categoriaSlug}`} aria-label={`Ver categoría ${categoria ?? ""}`}>
-          <span aria-hidden="true">←</span>
+          <IconoFlechaIzquierda tamano={16} />
         </Link>
       ) : null}
       <span className="ui-tarjeta-producto__imagen">

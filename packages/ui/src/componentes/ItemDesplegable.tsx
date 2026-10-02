@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { IconoChevronAbajo } from "../iconos";
+import { IconoFlechaAbajo } from "../iconos";
 
 import "./primitivos.css";
 
@@ -76,7 +76,7 @@ export function ItemDesplegable({ etiqueta, items, icono }: PropsItemDesplegable
       >
         {icono}
         <span>{etiqueta}</span>
-        <IconoChevronAbajo tamano={14} />
+        <IconoFlechaAbajo tamano={14} />
       </button>
       {abierto ? (
         <ul

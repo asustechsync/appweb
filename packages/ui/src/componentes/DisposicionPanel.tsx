@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { IconoFlechaIzquierda } from "../iconos";
 import { AlternarTema } from "./AlternarTema";
 import { Insignia } from "./Insignia";
 import "./primitivos.css";
@@ -47,7 +48,8 @@ export function DisposicionPanel({
 
         {hrefTienda ? (
           <a href={hrefTienda} className="ui-disposicion-panel__volver">
-            ← Volver a la tienda
+            <IconoFlechaIzquierda tamano={16} />
+            Volver a la tienda
           </a>
         ) : null}
 

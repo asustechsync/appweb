@@ -1,0 +1,145 @@
+.ui-menu-cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+/* Tarjeta del usuario. */
+.ui-menu-cuenta__usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  text-align: start;
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
+}
+.ui-menu-cuenta__avatar {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  inline-size: 3.25rem;
+  block-size: 3.25rem;
+  border-radius: var(--radio-completo);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-menu-cuenta__usuario-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+}
+.ui-menu-cuenta__nombre {
+  overflow: hidden;
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-menu-cuenta__descripcion {
+  overflow: hidden;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Grupos de filas. */
+.ui-menu-cuenta__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+.ui-menu-cuenta__titulo {
+  padding-inline: var(--espacio-1);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-menu-cuenta__lista {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-sm);
+  list-style: none;
+}
+.ui-menu-cuenta__lista li + li {
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-menu-cuenta__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  inline-size: 100%;
+  min-block-size: 3.25rem;
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 0;
+  background: none;
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  text-align: start;
+  text-decoration: none;
+}
+button.ui-menu-cuenta__fila,
+a.ui-menu-cuenta__fila {
+  cursor: pointer;
+}
+button.ui-menu-cuenta__fila:active,
+a.ui-menu-cuenta__fila:active,
+.ui-menu-cuenta__usuario:active {
+  background: var(--color-fondoSutil);
+}
+.ui-menu-cuenta__icono {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--color-textoSuave);
+}
+/* Mismo tamaño para todos: cada icono trae su propio tamaño por defecto. */
+.ui-menu-cuenta__icono svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.ui-menu-cuenta__etiqueta {
+  flex: 1;
+}
+.ui-menu-cuenta__valor {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-menu-cuenta__chevron {
+  flex: 0 0 auto;
+  color: var(--color-textoSuave);
+}
+
+/* Cerrar sesion: tarjeta propia, separada del resto. */
+.ui-menu-cuenta__salir {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-block-size: 3.25rem;
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+  color: var(--color-error);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-align: start;
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
+}
+.ui-menu-cuenta__salir .ui-menu-cuenta__icono {
+  color: inherit;
+}

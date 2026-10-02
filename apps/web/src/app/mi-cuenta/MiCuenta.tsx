@@ -3,8 +3,19 @@
 import { useEffect, useState } from "react";
 
 import { puede, type Rol } from "@appweb/core";
-import { DisposicionCuenta } from "@appweb/ui";
+import {
+  DisposicionCuenta,
+  IconoEscudo,
+  IconoConfiguracion,
+  IconoPedidos,
+  IconoSoporte,
+  IconoUbicacion,
+  IconoPerfil,
+  MenuCuenta,
+  type GrupoMenuCuenta,
+} from "@appweb/ui";
 
+import { Configuracion } from "./secciones/Configuracion";
 import { Direcciones } from "./secciones/Direcciones";
 import { Pedidos } from "./secciones/Pedidos";
 import { Perfil } from "./secciones/Perfil";
@@ -15,13 +26,33 @@ const SECCIONES = [
   { id: "direcciones", etiqueta: "Direcciones" },
   { id: "pedidos", etiqueta: "Pedidos" },
   { id: "seguridad", etiqueta: "Seguridad" },
+  { id: "configuracion", etiqueta: "Configuración" },
 ];
 
 const IDS = SECCIONES.map((seccion) => seccion.id);
 
+/** Menu de ajustes en movil. Las secciones abren dentro de la cuenta. */
+const GRUPOS_MENU: GrupoMenuCuenta[] = [
+  {
+    opciones: [
+      { id: "perfil", etiqueta: "Perfil", icono: <IconoPerfil />, seccion: "perfil" },
+      { id: "direcciones", etiqueta: "Direcciones", icono: <IconoUbicacion />, seccion: "direcciones" },
+      { id: "pedidos", etiqueta: "Mis pedidos", icono: <IconoPedidos />, seccion: "pedidos" },
+      { id: "seguridad", etiqueta: "Seguridad", icono: <IconoEscudo />, seccion: "seguridad" },
+    ],
+  },
+  {
+    opciones: [
+      { id: "soporte", etiqueta: "Soporte", icono: <IconoSoporte />, href: "/ayuda/contacto" },
+      { id: "configuracion", etiqueta: "Configuración", icono: <IconoConfiguracion />, seccion: "configuracion" },
+    ],
+  },
+];
+
 export interface PropsMiCuenta {
   nombre: string;
   rol: Rol;
+  /** "" = sin seccion en la URL: en movil se ve el menu. */
   seccionInicial: string;
 }
 
@@ -39,22 +70,27 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
   useEffect(() => {
     function alNavegar() {
       const desdeUrl = window.location.pathname.split("/")[2] ?? "";
-      setActiva(IDS.includes(desdeUrl) ? desdeUrl : seccionInicial);
+      setActiva(IDS.includes(desdeUrl) ? desdeUrl : "");
     }
 
     window.addEventListener("popstate", alNavegar);
     return () => window.removeEventListener("popstate", alNavegar);
-  }, [seccionInicial]);
+  }, []);
 
   function ir(id: string) {
     setActiva(id);
-    window.history.pushState(null, "", `/mi-cuenta/${id}`);
+    window.history.pushState(null, "", id ? `/mi-cuenta/${id}` : "/mi-cuenta");
+    window.scrollTo(0, 0);
   }
 
   async function salir() {
     await fetch("/api/sesion", { method: "DELETE" });
     window.location.href = "/";
   }
+
+  // En escritorio no hay pantalla de menu: sin seccion se ve el perfil.
+  const visible = activa || "perfil";
+  const tituloSeccion = GRUPOS_MENU[0]?.opciones.find((opcion) => opcion.id === visible)?.etiqueta ?? "Mi cuenta";
 
   return (
     <DisposicionCuenta
@@ -63,17 +99,32 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
       nombreUsuario={nombre}
       rolUsuario={rol}
       secciones={SECCIONES}
-      seccionActiva={activa}
+      seccionActiva={visible}
       onSeccion={ir}
       onSalir={salir}
       hrefPanel={hrefPanel}
+      enMenu={activa === ""}
+      tituloSeccion={tituloSeccion}
+      onVolver={() => ir("")}
+      menuMovil={
+        <MenuCuenta
+          nombreUsuario={nombre}
+          descripcionUsuario="Ver mis datos personales"
+          seccionUsuario="perfil"
+          grupos={GRUPOS_MENU}
+          onSeccion={ir}
+          onSalir={salir}
+        />
+      }
     >
-      {activa === "direcciones" ? (
+      {visible === "direcciones" ? (
         <Direcciones />
-      ) : activa === "pedidos" ? (
+      ) : visible === "pedidos" ? (
         <Pedidos />
-      ) : activa === "seguridad" ? (
+      ) : visible === "seguridad" ? (
         <Seguridad />
+      ) : visible === "configuracion" ? (
+        <Configuracion />
       ) : (
         <Perfil />
       )}

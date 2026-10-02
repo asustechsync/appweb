@@ -15,3 +15,34 @@
 .ui-alternar-tema:hover {
   background: var(--color-fondoSutil);
 }
+
+/* Switch encendido/apagado. */
+.ui-interruptor {
+  position: relative;
+  flex: 0 0 auto;
+  inline-size: 2.75rem;
+  block-size: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+.ui-interruptor[aria-checked="true"] {
+  background: var(--color-texto);
+}
+.ui-interruptor__perilla {
+  position: absolute;
+  inset-block-start: 0.1875rem;
+  inset-inline-start: 0.1875rem;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-sm);
+  transition: transform var(--transicion-rapida);
+}
+.ui-interruptor[aria-checked="true"] .ui-interruptor__perilla {
+  transform: translateX(1.25rem);
+}

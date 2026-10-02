@@ -2,3 +2,11 @@
   min-block-size: 100svh;
   background: var(--color-neutro-200);
 }
+.ui-pagina-tienda--sin-cabecera-movil > .ui-header {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .ui-pagina-tienda--sin-cabecera-movil > .ui-header {
+    display: block;
+  }
+}

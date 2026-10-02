@@ -130,6 +130,9 @@
 }
 
 .ui-disposicion-cuenta__ir-panel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
   padding: var(--espacio-2) var(--espacio-3);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-lg);
@@ -214,7 +217,47 @@
   max-inline-size: 36rem;
 }
 
+/* Movil con menu: dos pantallas. El menu (--en-menu) o la seccion sola, ambas
+   bajo una barra con flecha de volver. El lateral y la cabecera de escritorio
+   no se ven. */
+.ui-disposicion-cuenta__barra-movil {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+.ui-disposicion-cuenta__barra-movil h1 {
+  font-size: var(--tipo-tamano-2xl);
+}
+.ui-disposicion-cuenta__volver {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
+}
+.ui-disposicion-cuenta--con-menu .ui-disposicion-cuenta__cabecera,
+.ui-disposicion-cuenta--con-menu .ui-disposicion-cuenta__lateral,
+.ui-disposicion-cuenta--en-menu .ui-disposicion-cuenta__principal,
+.ui-disposicion-cuenta--con-menu:not(.ui-disposicion-cuenta--en-menu) .ui-disposicion-cuenta__menu-movil {
+  display: none;
+}
+
 @media (min-width: 64rem) {
+  .ui-disposicion-cuenta__barra-movil,
+  .ui-disposicion-cuenta--con-menu .ui-disposicion-cuenta__menu-movil {
+    display: none;
+  }
+  .ui-disposicion-cuenta--con-menu .ui-disposicion-cuenta__cabecera,
+  .ui-disposicion-cuenta--con-menu .ui-disposicion-cuenta__lateral,
+  .ui-disposicion-cuenta--en-menu .ui-disposicion-cuenta__principal {
+    display: flex;
+  }
   .ui-disposicion-cuenta__cuerpo {
     flex-direction: row;
     align-items: flex-start;

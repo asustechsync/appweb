@@ -23,7 +23,12 @@ function temaVigente(): Tema {
  * `null` hasta montar: el servidor y el primer render del cliente coinciden
  * (icono vacio) y no hay aviso de hidratacion.
  */
-export function AlternarTema() {
+export interface PropsAlternarTema {
+  /** `interruptor`: switch de encendido para filas de ajustes ("Modo oscuro"). */
+  variante?: "boton" | "interruptor";
+}
+
+export function AlternarTema({ variante = "boton" }: PropsAlternarTema) {
   const [tema, setTema] = useState<Tema | null>(null);
 
   useEffect(() => {
@@ -42,6 +47,21 @@ export function AlternarTema() {
   }
 
   const esOscuro = tema === "oscuro";
+
+  if (variante === "interruptor") {
+    return (
+      <button
+        type="button"
+        role="switch"
+        className="ui-interruptor"
+        onClick={alternar}
+        aria-checked={esOscuro}
+        aria-label="Modo oscuro"
+      >
+        <span className="ui-interruptor__perilla" aria-hidden="true" />
+      </button>
+    );
+  }
 
   return (
     <button
