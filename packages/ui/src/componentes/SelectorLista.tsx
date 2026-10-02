@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 
 import { IconoFlechaAbajo } from "../iconos";
+import { ListaOpciones, type OpcionDeLista } from "./ListaOpciones";
+import { navegarOpciones } from "./navegarOpciones";
+import { usarCierreDesplegable } from "./usarCierreDesplegable";
 
+import "./primitivos.css";
 import "./estilos/selector-lista.css";
 
-export interface OpcionDeSelectorLista {
-  valor: string;
-  etiqueta: string;
-}
+export type OpcionDeSelectorLista = OpcionDeLista;
 
 export interface PropsSelectorLista {
   id?: string;
@@ -36,25 +37,18 @@ export function SelectorLista({
   placeholder,
 }: PropsSelectorLista) {
   const [abierto, setAbierto] = useState(false);
+  const [indiceActivo, setIndiceActivo] = useState(0);
   const contenedorRef = useRef<HTMLDivElement>(null);
+  const listaId = `${useId()}-opciones`;
 
-  useEffect(() => {
-    if (!abierto) return;
-    function alHacerClicFuera(evento: MouseEvent) {
-      if (!contenedorRef.current?.contains(evento.target as Node)) setAbierto(false);
-    }
-    function alPresionarTecla(evento: KeyboardEvent) {
-      if (evento.key === "Escape") setAbierto(false);
-    }
-    document.addEventListener("mousedown", alHacerClicFuera);
-    document.addEventListener("keydown", alPresionarTecla);
-    return () => {
-      document.removeEventListener("mousedown", alHacerClicFuera);
-      document.removeEventListener("keydown", alPresionarTecla);
-    };
-  }, [abierto]);
+  usarCierreDesplegable(abierto, contenedorRef, setAbierto);
 
   const elegida = opciones.find((opcion) => opcion.valor === valor);
+
+  function abrir() {
+    setIndiceActivo(Math.max(0, opciones.findIndex((opcion) => opcion.valor === valor)));
+    setAbierto(true);
+  }
 
   function elegir(opcion: OpcionDeSelectorLista) {
     onCambio(opcion.valor);
@@ -68,8 +62,25 @@ export function SelectorLista({
         id={id}
         className="ui-selector-lista__disparador"
         disabled={disabled}
+        role="combobox"
+        aria-haspopup="listbox"
         aria-expanded={abierto}
-        onClick={() => setAbierto((valorPrevio) => !valorPrevio)}
+        aria-controls={abierto ? listaId : undefined}
+        aria-activedescendant={abierto ? `${listaId}-opcion-${indiceActivo}` : undefined}
+        onClick={() => (abierto ? setAbierto(false) : abrir())}
+        onKeyDown={(evento) =>
+          navegarOpciones({
+            evento,
+            abierto,
+            cantidad: opciones.length,
+            indiceActivo,
+            abrir,
+            activar: setIndiceActivo,
+            elegir: (indice) => {
+              if (opciones[indice]) elegir(opciones[indice]);
+            },
+          })
+        }
       >
         <span className={elegida ? undefined : "ui-selector-lista__vacio"}>
           {elegida?.etiqueta ?? (placeholder ?? etiqueta)}
@@ -78,29 +89,17 @@ export function SelectorLista({
       </button>
 
       {abierto ? (
-        <ul
-          className={
-            opciones.length > 4
-              ? "ui-selector-lista__lista ui-selector-lista__lista--con-scroll"
-              : "ui-selector-lista__lista"
-          }
-          role="listbox"
-          aria-label={etiqueta}
-        >
-          {opciones.map((opcion) => (
-            <li key={opcion.valor}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={opcion.valor === valor}
-                className="ui-selector-lista__opcion"
-                onClick={() => elegir(opcion)}
-              >
-                {opcion.etiqueta}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <ListaOpciones
+          id={listaId}
+          etiqueta={etiqueta}
+          opciones={opciones}
+          valor={valor}
+          indiceActivo={indiceActivo}
+          onActivar={setIndiceActivo}
+          onElegir={elegir}
+          claseLista="ui-selector-lista__lista"
+          claseOpcion="ui-selector-lista__opcion"
+        />
       ) : null}
     </div>
   );

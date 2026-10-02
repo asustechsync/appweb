@@ -12,6 +12,7 @@ import {
   EstadoVacio,
   FilaLista,
   Formulario,
+  IconoUbicacion,
   Insignia,
   Tarjeta,
 } from "@appweb/ui";
@@ -84,6 +85,7 @@ export function Direcciones() {
       {error ? <Alerta tono="error">{error}</Alerta> : null}
 
       <Tarjeta
+        sinMarco
         titulo="Mis direcciones"
         acciones={
           <Boton variante="secundario" onClick={() => setAgregando((valor) => !valor)}>
@@ -107,35 +109,50 @@ export function Direcciones() {
           >
             <Campo
               id="dir-departamento"
+              icono={<IconoUbicacion />}
               etiqueta="Departamento"
+              placeholder="Departamento"
+              etiquetaOculta
               valor={departamento}
               onCambio={setDepartamento}
               requerido
             />
             <Campo
               id="dir-provincia"
+              icono={<IconoUbicacion />}
               etiqueta="Provincia"
+              placeholder="Provincia"
+              etiquetaOculta
               valor={provincia}
               onCambio={setProvincia}
               requerido
             />
             <Campo
               id="dir-distrito"
+              icono={<IconoUbicacion />}
               etiqueta="Distrito"
+              placeholder="Distrito"
+              etiquetaOculta
               valor={distrito}
               onCambio={setDistrito}
               requerido
             />
             <Campo
               id="dir-calle"
+              icono={<IconoUbicacion />}
               etiqueta="Dirección completa"
+              placeholder="Dirección completa"
+              etiquetaOculta
               valor={calle}
               onCambio={setCalle}
               requerido
             />
             <Campo
               id="dir-referencia"
+              icono={<IconoUbicacion />}
               etiqueta="Referencia (opcional)"
+              placeholder="Referencia (opcional)"
+              etiquetaOculta
               valor={referencia}
               onCambio={setReferencia}
             />

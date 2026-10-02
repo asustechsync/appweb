@@ -94,7 +94,7 @@
   --contenedor-lg: 1024px;
   --contenedor-xl: 1280px;
   --contenedor-ancho: 1400px;
-  --contenedorAmplio-4xl: 1760px;
+  --contenedorAmplio-4xl: 1600px;
   --quiebre-xs: 480px;
   --quiebre-sm: 640px;
   --quiebre-md: 768px;
@@ -118,7 +118,7 @@
    xs 30rem · sm 40rem · md 48rem · lg 64rem · xl 80rem · 2xl 96rem · 3xl 120rem · 4xl 160rem */
 
 @media (min-width: 160rem) {
-  :root { --contenedor-ancho: 1760px; }
+  :root { --contenedor-ancho: 1600px; }
 }
 
 /* El sistema decide, salvo que el usuario haya elegido. */

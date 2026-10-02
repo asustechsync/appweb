@@ -1,0 +1,52 @@
+/* Superficie y estados compartidos por campos y selectores. */
+.ui-campo {
+  --campo-fondo: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
+  --campo-borde-foco: color-mix(in srgb, var(--color-texto) 25%, var(--color-borde));
+}
+
+:is(
+  .ui-campo__input,
+  .ui-campo__grupo,
+  .ui-selector-lista__disparador,
+  .ui-selector-buscable__disparador,
+  .ui-selector-pais__disparador
+) {
+  block-size: var(--control-alto);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--campo-fondo, var(--color-fondo));
+  transition: border-color var(--transicion-rapida);
+}
+
+:is(
+  .ui-campo__input,
+  .ui-selector-lista__disparador,
+  .ui-selector-buscable__disparador,
+  .ui-selector-pais__disparador
+) {
+  padding-inline: var(--control-paddingX);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+}
+
+:is(
+  .ui-campo__input,
+  .ui-selector-lista__disparador,
+  .ui-selector-buscable__disparador,
+  .ui-selector-pais__disparador
+):focus {
+  outline: 0;
+  border-color: var(--campo-borde-foco, var(--color-texto));
+}
+
+:is(
+  .ui-campo__input,
+  .ui-selector-lista__disparador,
+  .ui-selector-buscable__disparador,
+  .ui-selector-pais__disparador
+):disabled {
+  color: var(--color-textoTenue);
+  background: var(--color-fondoSutil);
+  cursor: not-allowed;
+}

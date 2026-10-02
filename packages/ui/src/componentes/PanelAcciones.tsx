@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import "./estilos/panel-acciones.css";
+import "./primitivos.css";
 
 export interface PropsPanelAcciones {
   titulo?: string;

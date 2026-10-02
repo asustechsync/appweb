@@ -2,39 +2,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-1);
-  /* Fondo plomo suave: el campo se lee como campo sin depender solo del borde. */
-  --campo-fondo: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
-  /* Foco en plomo, no en negro: el borde oscuro es muy duro. */
-  --campo-borde-foco: color-mix(in srgb, var(--color-texto) 25%, var(--color-borde));
 }
 .ui-campo label {
   color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-medio);
 }
-.ui-campo__input {
-  block-size: var(--control-alto);
-  padding-inline: var(--control-paddingX);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
-  background: var(--campo-fondo);
-  color: var(--color-texto);
-  font: inherit;
-  font-size: var(--tipo-tamano-sm);
-  transition: border-color var(--transicion-rapida);
-}
 .ui-campo__input::placeholder {
   color: color-mix(in srgb, var(--color-textoSuave) 55%, transparent);
   opacity: 1;
-}
-.ui-campo__input:focus {
-  outline: 0;
-  border-color: var(--campo-borde-foco);
-}
-.ui-campo__input:disabled {
-  color: var(--color-textoTenue);
-  background: var(--color-fondoSutil);
-  cursor: not-allowed;
 }
 /* El navegador pinta los campos autocompletados de celeste. No se puede
    cambiar su fondo directamente: se tapa con una sombra interior del color de
@@ -62,11 +38,6 @@
 .ui-campo__grupo {
   display: flex;
   align-items: stretch;
-  block-size: var(--control-alto);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
-  background: var(--campo-fondo);
-  transition: border-color var(--transicion-rapida);
 }
 .ui-campo__grupo:focus-within {
   border-color: var(--campo-borde-foco);
@@ -160,15 +131,6 @@
 .ui-campo__clave > .ui-campo__input--con-icono {
   padding-inline-start: var(--espacio-12);
 }
-.ui-campo label.ui-campo__etiqueta--oculta {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 .ui-campo__etiqueta-fila {
   display: flex;
   align-items: baseline;

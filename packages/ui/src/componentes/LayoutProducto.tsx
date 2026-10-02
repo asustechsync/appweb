@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import "./estilos/layout-producto.css";
+import "./primitivos.css";
 
 export interface PropsLayoutProducto {
   izquierda?: ReactNode;

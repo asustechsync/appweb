@@ -1,0 +1,18 @@
+.ui-fila-unida {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+}
+.ui-fila-unida > * {
+  min-inline-size: 0;
+}
+.ui-fila-unida > :first-child {
+  flex: 0 0 6rem; /* igual que el selector de prefijo telefonico */
+}
+.ui-fila-unida > :last-child {
+  flex: 1;
+}
+.ui-fila-unida--iguales > :first-child,
+.ui-fila-unida--iguales > :last-child {
+  flex: 1;
+}

@@ -6,6 +6,25 @@
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
 }
+.ui-tarjeta-info--ilustrada {
+  flex-direction: column;
+  gap: var(--espacio-3);
+  background: color-mix(in srgb, var(--color-info) 7%, var(--color-superficie));
+}
+.ui-tarjeta-info__ilustracion {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radio-md);
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-fondo));
+}
+.ui-tarjeta-info__imagen {
+  inline-size: min(100%, 16rem);
+  block-size: auto;
+  object-fit: contain;
+}
 .ui-tarjeta-info__icono {
   flex-shrink: 0;
   color: var(--color-info);

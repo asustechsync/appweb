@@ -57,6 +57,7 @@ model Usuario {
   clave            String
   nombre           String
   apellido         String?
+  apodo            String?
   telefono         String?
   tipoDocumento    TipoDocumento?
   numeroDocumento  String?

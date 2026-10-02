@@ -22,7 +22,9 @@ export function AccionesCuenta({
       <Link href={hrefCarrito} aria-label="Carrito" title="Carrito">
         <IconoCarrito />
       </Link>
-      <Link href="/ingresar" aria-label="Mi cuenta" title="Mi cuenta">
+      {/* Siempre a /mi-cuenta: esa hoja lee la cookie y, sin sesion, redirige
+          a /ingresar. Asi la cabecera sigue estatica y no necesita saber nada. */}
+      <Link href="/mi-cuenta" aria-label="Mi cuenta" title="Mi cuenta">
         <IconoUsuario />
       </Link>
     </div>

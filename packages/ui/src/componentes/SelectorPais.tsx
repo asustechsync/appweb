@@ -1,11 +1,15 @@
 "use client";
 
 import "flag-icons/css/flag-icons.min.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { PAISES } from "../datos/paises";
 import { IconoFlechaAbajo } from "../iconos";
+import { navegarOpciones } from "./navegarOpciones";
+import { usarCierreDesplegable } from "./usarCierreDesplegable";
+import { usarOpcionVisible } from "./usarOpcionVisible";
 
+import "./primitivos.css";
 import "./estilos/selector-pais.css";
 
 export interface PropsSelectorPais {
@@ -28,8 +32,11 @@ const SIN_TILDES = (texto: string) => texto.normalize("NFD").replace(/[̀-ͯ]/g,
 export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: PropsSelectorPais) {
   const [abierto, setAbierto] = useState(false);
   const [busqueda, setBusqueda] = useState("");
+  const [indiceActivo, setIndiceActivo] = useState(0);
   const contenedorRef = useRef<HTMLDivElement>(null);
   const buscadorRef = useRef<HTMLInputElement>(null);
+  const listaRef = useRef<HTMLUListElement>(null);
+  const listaId = `${useId()}-opciones`;
 
   const elegido = PAISES.find((pais) => pais.iso2 === valor) ?? PAISES[0]!;
 
@@ -42,23 +49,12 @@ export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: Props
   }, [busqueda, cantidadInicial]);
 
   useEffect(() => {
-    if (!abierto) return;
-    buscadorRef.current?.focus();
-
-    function alHacerClicFuera(evento: MouseEvent) {
-      if (!contenedorRef.current?.contains(evento.target as Node)) cerrar();
-    }
-    function alPresionarTecla(evento: KeyboardEvent) {
-      if (evento.key === "Escape") cerrar();
-    }
-    document.addEventListener("mousedown", alHacerClicFuera);
-    document.addEventListener("keydown", alPresionarTecla);
-    return () => {
-      document.removeEventListener("mousedown", alHacerClicFuera);
-      document.removeEventListener("keydown", alPresionarTecla);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (abierto) buscadorRef.current?.focus();
+    else setBusqueda("");
   }, [abierto]);
+
+  usarCierreDesplegable(abierto, contenedorRef, setAbierto);
+  usarOpcionVisible(listaRef, indiceActivo, `${busqueda}:${visibles.length}`);
 
   function cerrar() {
     setAbierto(false);
@@ -76,8 +72,18 @@ export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: Props
         type="button"
         id={id}
         className="ui-selector-pais__disparador"
+        aria-label={`Prefijo telefónico: +${elegido.prefijo}, ${elegido.nombre}`}
+        aria-haspopup="listbox"
         aria-expanded={abierto}
+        aria-controls={abierto ? listaId : undefined}
         onClick={() => setAbierto((valorPrevio) => !valorPrevio)}
+        onKeyDown={(evento) => {
+          if (evento.key === "ArrowDown" || evento.key === "ArrowUp") {
+            evento.preventDefault();
+            setIndiceActivo(0);
+            setAbierto(true);
+          }
+        }}
       >
         <span className={`fi fi-${elegido.iso2} ui-selector-pais__bandera`} aria-hidden="true" />
         <span>+{elegido.prefijo}</span>
@@ -85,18 +91,43 @@ export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: Props
       </button>
 
       {abierto ? (
-        <div className="ui-selector-pais__panel" role="listbox">
+        <div className="ui-selector-pais__panel">
           <input
             ref={buscadorRef}
             type="text"
             className="ui-selector-pais__buscador"
             placeholder="Buscar"
             aria-label="Buscar país o prefijo"
+            role="combobox"
+            aria-expanded={abierto}
+            aria-controls={listaId}
+            aria-autocomplete="list"
+            aria-activedescendant={visibles.length > 0 ? `${listaId}-opcion-${indiceActivo}` : undefined}
             inputMode="tel"
             value={busqueda}
-            onChange={(evento) => setBusqueda(evento.target.value)}
+            onChange={(evento) => {
+              setBusqueda(evento.target.value);
+              setIndiceActivo(0);
+            }}
+            onKeyDown={(evento) =>
+              navegarOpciones({
+                evento,
+                abierto,
+                cantidad: visibles.length,
+                indiceActivo,
+                abrir: () => setAbierto(true),
+                activar: setIndiceActivo,
+                elegir: (indice) => {
+                  if (visibles[indice]) elegir(visibles[indice].iso2);
+                },
+              })
+            }
           />
           <ul
+            ref={listaRef}
+            id={listaId}
+            role="listbox"
+            aria-label="Países"
             className={
               visibles.length > 3
                 ? "ui-selector-pais__lista ui-selector-pais__lista--con-scroll"
@@ -104,21 +135,23 @@ export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: Props
             }
           >
             {visibles.length === 0 ? (
-              <li className="ui-selector-pais__vacio">Sin resultados</li>
+              <li className="ui-opciones__vacio">Sin resultados</li>
             ) : (
-              visibles.map((pais) => (
-                <li key={pais.iso2}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={pais.iso2 === elegido.iso2}
-                    className="ui-selector-pais__opcion"
-                    title={pais.nombre}
-                    onClick={() => elegir(pais.iso2)}
-                  >
-                    <span className={`fi fi-${pais.iso2} ui-selector-pais__bandera`} aria-hidden="true" />
-                    <span className="ui-selector-pais__prefijo">+{pais.prefijo}</span>
-                  </button>
+              visibles.map((pais, indice) => (
+                <li
+                  key={pais.iso2}
+                  id={`${listaId}-opcion-${indice}`}
+                  role="option"
+                  aria-selected={pais.iso2 === elegido.iso2}
+                  aria-label={`${pais.nombre}, +${pais.prefijo}`}
+                  data-activa={indice === indiceActivo || undefined}
+                  className="ui-selector-pais__opcion"
+                  title={pais.nombre}
+                  onMouseEnter={() => setIndiceActivo(indice)}
+                  onClick={() => elegir(pais.iso2)}
+                >
+                  <span className={`fi fi-${pais.iso2} ui-selector-pais__bandera`} aria-hidden="true" />
+                  <span className="ui-selector-pais__prefijo">+{pais.prefijo}</span>
                 </li>
               ))
             )}

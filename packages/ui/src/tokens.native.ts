@@ -121,7 +121,7 @@ export const tokensNativos = {
     "ancho": 1400
   },
   "contenedorAmplio": {
-    "4xl": 1760
+    "4xl": 1600
   },
   "quiebre": {
     "xs": 480,

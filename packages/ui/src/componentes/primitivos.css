@@ -5,6 +5,8 @@
    variables de ../theme.css, generado desde ../tokens.ts. */
 
 @import "./estilos/base.css";
+@import "./estilos/control-base.css";
+@import "./estilos/opciones-desplegables.css";
 @import "./estilos/contenedor.css";
 @import "./estilos/logo.css";
 @import "./estilos/buscador.css";

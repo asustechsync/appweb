@@ -122,10 +122,10 @@ export const tokens = {
 
   contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1400 },
 
-  // Monitores grandes: el ancho maximo crece para sumar columnas, nunca para
-  // agrandar texto ni tarjetas. Se aplica en theme.css desde su quiebre.
+  // Monitores grandes: el ancho maximo crece un poco para sumar columnas, nunca
+  // para agrandar texto ni tarjetas. Se aplica en theme.css desde su quiebre.
   // FHD (1920) se queda en 1400; el ancho extra empieza en 2K (2560).
-  contenedorAmplio: { "4xl": 1760 },
+  contenedorAmplio: { "4xl": 1600 },
 
   // FIRST MOBILE: la base es movil y estos solo añaden desde arriba.
   // Son px CSS, no fisicos: un monitor escalado reporta resolucion / escala.

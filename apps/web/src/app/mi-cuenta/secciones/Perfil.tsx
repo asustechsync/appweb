@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   ETIQUETA_GENERO,
-  ETIQUETA_TIPO_DOCUMENTO,
+  ABREVIATURA_TIPO_DOCUMENTO,
   GENEROS,
   TIPOS_DOCUMENTO,
   type Genero,
@@ -19,22 +19,33 @@ import {
   CampoSelectorLista,
   Cargando,
   FilaCampos,
+  FilaUnida,
   FilaTarjetas,
+  IconoEtiqueta,
   Formulario,
+  IconoCorreo,
+  IconoMarca,
+  IconoTarjetaPersonal,
+  IconoTelefono,
+  IconoUbicacion,
+  IconoUsuario,
   SelectorFecha,
   Tarjeta,
+  Pestanas,
   TarjetaInfo,
 } from "@appweb/ui";
+
+import { esquemaPerfil } from "@appweb/core/tipos";
 
 import { useTRPC } from "@/lib/trpc";
 
 const OPCIONES_DOCUMENTO = [
   { valor: "", etiqueta: "Selecciona…" },
-  ...TIPOS_DOCUMENTO.map((tipo) => ({ valor: tipo, etiqueta: ETIQUETA_TIPO_DOCUMENTO[tipo] })),
+  ...TIPOS_DOCUMENTO.map((tipo) => ({ valor: tipo, etiqueta: ABREVIATURA_TIPO_DOCUMENTO[tipo] })),
 ];
 
 const OPCIONES_GENERO = [
-  { valor: "", etiqueta: "Prefiero no decir" },
+  { valor: "", etiqueta: "Género" },
   ...GENEROS.filter((genero) => genero !== "PREFIERO_NO_DECIR").map((genero) => ({
     valor: genero,
     etiqueta: ETIQUETA_GENERO[genero],
@@ -49,6 +60,7 @@ export function Perfil() {
 
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
+  const [apodo, setApodo] = useState("");
   const [telefono, setTelefono] = useState("");
   const [paisTelefono, setPaisTelefono] = useState("pe");
   const [tipoDocumento, setTipoDocumento] = useState("");
@@ -56,6 +68,8 @@ export function Perfil() {
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [genero, setGenero] = useState("");
 
+  const [errores, setErrores] = useState<Record<string, string>>({});
+  const [pestana, setPestana] = useState("personal");
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
@@ -65,6 +79,7 @@ export function Perfil() {
     if (perfil.data === undefined) return;
     setNombre(perfil.data.nombre);
     setApellido(perfil.data.apellido ?? "");
+    setApodo(perfil.data.apodo ?? "");
     setTelefono(perfil.data.telefono ?? "");
     setTipoDocumento(perfil.data.tipoDocumento ?? "");
     setNumeroDocumento(perfil.data.numeroDocumento ?? "");
@@ -91,110 +106,254 @@ export function Perfil() {
 
   return (
     <FilaTarjetas>
-      <Tarjeta>
+      <Tarjeta sinMarco>
+        <Pestanas
+          etiqueta="Tipo de perfil"
+          opciones={[
+            { id: "personal", etiqueta: "Personal" },
+            { id: "empresa", etiqueta: "Empresa" },
+          ]}
+          activa={pestana}
+          onCambio={setPestana}
+        />
         {error ? <Alerta tono="error">{error}</Alerta> : null}
         {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
 
-        <Formulario
-          ancho="completo"
-          onSubmit={(evento) => {
-            evento.preventDefault();
-            guardar.mutate({
-              nombre,
-              ...(apellido.trim() === "" ? {} : { apellido }),
-              ...(telefono.trim() === "" ? {} : { telefono }),
-              ...(tipoDocumento === ""
-                ? {}
-                : { tipoDocumento: tipoDocumento as TipoDocumento, numeroDocumento }),
-              ...(fechaNacimiento === "" ? {} : { fechaNacimiento }),
-              ...(genero === "" ? {} : { genero: genero as Genero }),
-            });
-          }}
-        >
-          <FilaCampos>
-            <Campo
-              id="datos-nombre"
-              etiqueta="Nombre"
-              valor={nombre}
-              onCambio={setNombre}
-              requerido
-            />
-            <Campo
-              id="datos-apellido"
-              etiqueta="Apellido"
-              valor={apellido}
-              onCambio={setApellido}
-            />
-          </FilaCampos>
-
-          <FilaCampos>
-            <Campo
-              id="datos-telefono"
-              etiqueta="Teléfono (opcional)"
-              tipo="tel"
-              pais={paisTelefono}
-              onCambioPais={setPaisTelefono}
-              valor={telefono}
-              onCambio={setTelefono}
-              placeholder="9XXXXXXXX"
-            />
-            <CampoSelectorLista
-              id="datos-genero"
-              etiqueta="Género"
-              valor={genero}
-              opciones={OPCIONES_GENERO.filter((opcion) => opcion.valor !== "")}
-              onCambio={setGenero}
-              placeholder="Elige una opción"
-            />
-          </FilaCampos>
-
-          <FilaCampos>
-            <CampoSelectorLista
-              id="datos-tipo-documento"
-              etiqueta="Tipo de documento"
-              valor={tipoDocumento}
-              opciones={OPCIONES_DOCUMENTO.filter((opcion) => opcion.valor !== "")}
-              onCambio={setTipoDocumento}
-              placeholder="Elige una opción"
-            />
-            <Campo
-              id="datos-numero-documento"
-              etiqueta="Número de documento"
-              valor={numeroDocumento}
-              onCambio={setNumeroDocumento}
-              disabled={tipoDocumento === ""}
-              requerido={tipoDocumento !== ""}
-            />
-          </FilaCampos>
-
-          <FilaCampos>
-            <SelectorFecha
-              id="datos-fecha-nacimiento"
-              etiqueta="Fecha de nacimiento"
-              valor={fechaNacimiento}
-              onCambio={setFechaNacimiento}
-            />
-            {/* El correo identifica la cuenta y es la llave para entrar: cambiarlo
-                necesita verificarlo antes, y eso llega con las notificaciones. */}
-            <Campo
-              id="datos-correo"
-              etiqueta="Correo electrónico"
-              tipo="email"
-              valor={perfil.data.email}
-              onCambio={() => {}}
-              disabled
-            />
-          </FilaCampos>
-          <Boton tipo="submit" disabled={guardar.isPending}>
-            {guardar.isPending ? "Guardando…" : "Guardar datos"}
-          </Boton>
-        </Formulario>
+        <div hidden={pestana !== "personal"}>
+          <Formulario
+            ancho="completo"
+            onSubmit={(evento) => {
+              evento.preventDefault();
+              const datos = {
+                nombre,
+                ...(apellido.trim() === "" ? {} : { apellido }),
+                ...(apodo.trim() === "" ? {} : { apodo }),
+                ...(telefono.trim() === "" ? {} : { telefono }),
+                ...(tipoDocumento === ""
+                  ? {}
+                  : { tipoDocumento: tipoDocumento as TipoDocumento, numeroDocumento }),
+                ...(fechaNacimiento === "" ? {} : { fechaNacimiento }),
+                ...(genero === "" ? {} : { genero: genero as Genero }),
+              };
+  
+              // Mismo esquema que valida el servidor: el error aparece junto al
+              // campo que falla, sin esperar la respuesta.
+              const analizado = esquemaPerfil.safeParse(datos);
+              const nuevos: Record<string, string> = {};
+              if (!analizado.success) {
+                for (const problema of analizado.error.issues) {
+                  nuevos[String(problema.path[0])] ??= problema.message;
+                }
+              }
+              setErrores(nuevos);
+              if (Object.keys(nuevos).length > 0) {
+                setAviso(null);
+                return;
+              }
+              guardar.mutate(datos);
+            }}
+          >
+            <FilaCampos>
+              <FilaUnida iguales>
+                <Campo
+                  id="datos-nombre"
+                  etiqueta="Nombre"
+                  valor={nombre}
+                  onCambio={setNombre}
+                  error={errores["nombre"] ?? null}
+                  placeholder="Nombre"
+                  icono={<IconoUsuario />}
+                  etiquetaOculta
+                  requerido
+                />
+                <Campo
+                  id="datos-apellido"
+                  etiqueta="Apellido"
+                  valor={apellido}
+                  onCambio={setApellido}
+                  error={errores["apellido"] ?? null}
+                  placeholder="Apellido"
+                  icono={<IconoUsuario />}
+                  etiquetaOculta
+                />
+              </FilaUnida>
+              <Campo
+                id="datos-telefono"
+                etiqueta="Teléfono (opcional)"
+                tipo="tel"
+                pais={paisTelefono}
+                onCambioPais={setPaisTelefono}
+                valor={telefono}
+                onCambio={setTelefono}
+                error={errores["telefono"] ?? null}
+                placeholder="Teléfono"
+                icono={<IconoTelefono />}
+                etiquetaOculta
+              />
+            </FilaCampos>
+  
+            <FilaCampos>
+              <FilaUnida iguales>
+                <CampoSelectorLista
+                  id="datos-genero"
+                  etiqueta="Género"
+                  valor={genero}
+                  opciones={OPCIONES_GENERO}
+                  onCambio={setGenero}
+                  placeholder="Género (opcional)"
+                  etiquetaOculta
+                />
+                <Campo
+                  id="datos-apodo"
+                  etiqueta="Apodo (opcional)"
+                  valor={apodo}
+                  onCambio={setApodo}
+                  error={errores["apodo"] ?? null}
+                  placeholder="Apodo"
+                  icono={<IconoUsuario />}
+                  etiquetaOculta
+                />
+              </FilaUnida>
+              <FilaUnida>
+                <CampoSelectorLista
+                  id="datos-tipo-documento"
+                  etiqueta="Tipo de documento"
+                  valor={tipoDocumento}
+                  opciones={OPCIONES_DOCUMENTO.filter((opcion) => opcion.valor !== "")}
+                  onCambio={setTipoDocumento}
+                  placeholder="Tipo"
+                  etiquetaOculta
+                />
+                <Campo
+                  id="datos-numero-documento"
+                  etiqueta="Número de documento"
+                  valor={numeroDocumento}
+                  onCambio={setNumeroDocumento}
+                  error={errores["numeroDocumento"] ?? null}
+                  placeholder="N° de documento"
+                  icono={<IconoTarjetaPersonal />}
+                  etiquetaOculta
+                  disabled={tipoDocumento === ""}
+                  requerido={tipoDocumento !== ""}
+                />
+              </FilaUnida>
+            </FilaCampos>
+  
+            <FilaCampos>
+              <SelectorFecha
+                id="datos-fecha-nacimiento"
+                etiqueta="Fecha de nacimiento"
+                valor={fechaNacimiento}
+                onCambio={setFechaNacimiento}
+                etiquetaOculta
+              />
+              {/* El correo identifica la cuenta y es la llave para entrar: cambiarlo
+                  necesita verificarlo antes, y eso llega con las notificaciones. */}
+              <Campo
+                id="datos-correo"
+                etiqueta="Correo electrónico"
+                tipo="email"
+                valor={perfil.data.email}
+                onCambio={() => {}}
+                placeholder="Correo electrónico"
+                icono={<IconoCorreo />}
+                etiquetaOculta
+                disabled
+              />
+            </FilaCampos>
+            <Boton tipo="submit" disabled={guardar.isPending}>
+              {guardar.isPending ? "Guardando…" : "Guardar datos"}
+            </Boton>
+          </Formulario>
+        </div>
+        {pestana === "empresa" ? (
+          // Campos de maqueta: todavia no se guardan. Quedan deshabilitados y
+          // vacios hasta definir las columnas de la empresa en la base de datos.
+          <Formulario ancho="completo" onSubmit={(evento) => evento.preventDefault()}>
+            <Alerta>Muy pronto podrás guardar aquí los datos de tu empresa para tus facturas.</Alerta>
+            <FilaCampos>
+              <Campo
+                id="empresa-ruc"
+                etiqueta="RUC"
+                valor=""
+                onCambio={() => {}}
+                placeholder="RUC"
+                icono={<IconoTarjetaPersonal />}
+                etiquetaOculta
+                disabled
+              />
+              <Campo
+                id="empresa-razon-social"
+                etiqueta="Razón social"
+                valor=""
+                onCambio={() => {}}
+                placeholder="Razón social"
+                icono={<IconoMarca />}
+                etiquetaOculta
+                disabled
+              />
+            </FilaCampos>
+            <FilaCampos>
+              <Campo
+                id="empresa-nombre-comercial"
+                etiqueta="Nombre comercial"
+                valor=""
+                onCambio={() => {}}
+                placeholder="Nombre comercial"
+                icono={<IconoEtiqueta />}
+                etiquetaOculta
+                disabled
+              />
+              <Campo
+                id="empresa-telefono"
+                etiqueta="Teléfono de la empresa"
+                tipo="tel"
+                valor=""
+                onCambio={() => {}}
+                placeholder="Teléfono de la empresa"
+                icono={<IconoTelefono />}
+                etiquetaOculta
+                disabled
+              />
+            </FilaCampos>
+            <FilaCampos>
+              <Campo
+                id="empresa-direccion-fiscal"
+                etiqueta="Dirección fiscal"
+                valor=""
+                onCambio={() => {}}
+                placeholder="Dirección fiscal"
+                icono={<IconoUbicacion />}
+                etiquetaOculta
+                disabled
+              />
+              <Campo
+                id="empresa-correo-facturacion"
+                etiqueta="Correo de facturación"
+                tipo="email"
+                valor=""
+                onCambio={() => {}}
+                placeholder="Correo de facturación"
+                icono={<IconoCorreo />}
+                etiquetaOculta
+                disabled
+              />
+            </FilaCampos>
+            <Boton tipo="submit" disabled>
+              Guardar datos
+            </Boton>
+          </Formulario>
+        ) : null}
       </Tarjeta>
 
-      <TarjetaInfo titulo="Para qué usamos estos datos">
-        <p>Tu teléfono es para coordinar la entrega si el repartidor no te ubica.</p>
-        <p>El tipo y número de documento van en tu boleta o factura.</p>
-        <p>Fecha de nacimiento y género son opcionales — no afectan tus compras.</p>
+      <TarjetaInfo
+        titulo="Completa tu perfil"
+        imagen={{
+          src: "/ilustraciones/perfil-cuenta-v2.webp",
+          alt: "Ilustración de un perfil con avatar, ficha personal y verificación.",
+        }}
+      >
+        <p>Agrega tus datos para personalizar tu cuenta.</p>
       </TarjetaInfo>
     </FilaTarjetas>
   );

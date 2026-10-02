@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import "./estilos/informacion-grid.css";
+import "./primitivos.css";
 
 export interface Dato {
   titulo: string;

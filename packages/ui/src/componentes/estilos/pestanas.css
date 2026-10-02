@@ -1,0 +1,32 @@
+/* Mismo estilo que las pestañas del menu de la cuenta (disposicion-cuenta.css):
+   botones redondeados, y la activa en oscuro con texto claro. */
+.ui-pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-1);
+}
+.ui-pestanas__pestana {
+  /* Mismo alto que los campos (3rem en la zona de cuenta). */
+  block-size: var(--control-alto);
+  padding-inline: var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: none;
+  color: var(--color-textoSuave);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  cursor: pointer;
+  transition:
+    background var(--transicion-rapida),
+    color var(--transicion-rapida);
+}
+.ui-pestanas__pestana:hover {
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+.ui-pestanas__pestana--activa,
+.ui-pestanas__pestana--activa:hover {
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+}

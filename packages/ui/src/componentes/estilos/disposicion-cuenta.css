@@ -3,6 +3,12 @@
   flex-direction: column;
   gap: var(--espacio-5);
   padding-block: var(--espacio-6) var(--espacio-16);
+  /* Misma fuente que ingresar/registro. */
+  font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
+}
+.ui-disposicion-cuenta button,
+.ui-disposicion-cuenta input {
+  font-family: inherit;
 }
 .ui-disposicion-cuenta__cabecera {
   display: flex;
@@ -189,6 +195,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-4);
+  /* Mismos controles que ingresar/registro (DisposicionAcceso). */
+  --control-alto: 3rem;
+}
+.ui-disposicion-cuenta__contenido .ui-campo__input {
+  font-size: var(--tipo-tamano-base);
+}
+/* Sin tope a la derecha: el texto y el placeholder llegan casi al borde. La
+   clave conserva el suyo por el boton del ojo. */
+.ui-disposicion-cuenta__contenido .ui-campo__input:not([type="password"]) {
+  padding-inline-end: var(--espacio-2);
 }
 /* Mas ancho que el formulario angosto de login/registro: aqui hay una
    columna entera disponible, no una tarjeta centrada sobre fondo vacio.

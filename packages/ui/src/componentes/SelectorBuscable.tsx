@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { IconoFlechaAbajo } from "../iconos";
+import { ListaOpciones, type OpcionDeLista } from "./ListaOpciones";
+import { navegarOpciones } from "./navegarOpciones";
+import { usarCierreDesplegable } from "./usarCierreDesplegable";
 
+import "./primitivos.css";
 import "./estilos/selector-buscable.css";
 
-export interface OpcionDeSelectorBuscable {
-  valor: string;
-  etiqueta: string;
-}
+export type OpcionDeSelectorBuscable = OpcionDeLista;
 
 export interface PropsSelectorBuscable {
   id?: string;
@@ -38,7 +39,9 @@ export function SelectorBuscable({
 }: PropsSelectorBuscable) {
   const [abierto, setAbierto] = useState(false);
   const [texto, setTexto] = useState("");
+  const [indiceActivo, setIndiceActivo] = useState(0);
   const contenedorRef = useRef<HTMLDivElement>(null);
+  const listaId = `${useId()}-opciones`;
 
   const elegida = opciones.find((opcion) => opcion.valor === valor);
 
@@ -48,21 +51,7 @@ export function SelectorBuscable({
     if (!abierto) setTexto("");
   }, [abierto]);
 
-  useEffect(() => {
-    if (!abierto) return;
-    function alHacerClicFuera(evento: MouseEvent) {
-      if (!contenedorRef.current?.contains(evento.target as Node)) setAbierto(false);
-    }
-    function alPresionarTecla(evento: KeyboardEvent) {
-      if (evento.key === "Escape") setAbierto(false);
-    }
-    document.addEventListener("mousedown", alHacerClicFuera);
-    document.addEventListener("keydown", alPresionarTecla);
-    return () => {
-      document.removeEventListener("mousedown", alHacerClicFuera);
-      document.removeEventListener("keydown", alPresionarTecla);
-    };
-  }, [abierto]);
+  usarCierreDesplegable(abierto, contenedorRef, setAbierto);
 
   const termino = texto.trim().toLowerCase();
   const visibles =
@@ -72,6 +61,11 @@ export function SelectorBuscable({
           (opcion) =>
             opcion.etiqueta.toLowerCase().includes(termino) || opcion.valor.startsWith(termino),
         );
+
+  function abrir() {
+    setIndiceActivo(Math.max(0, visibles.findIndex((opcion) => opcion.valor === valor)));
+    setAbierto(true);
+  }
 
   function elegir(opcion: OpcionDeSelectorBuscable) {
     onCambio(opcion.valor);
@@ -87,51 +81,47 @@ export function SelectorBuscable({
         disabled={disabled}
         placeholder={placeholder ?? etiqueta}
         role="combobox"
+        aria-label={etiqueta}
         aria-expanded={abierto}
+        aria-controls={abierto ? listaId : undefined}
+        aria-autocomplete="list"
+        aria-activedescendant={abierto && visibles.length > 0 ? `${listaId}-opcion-${indiceActivo}` : undefined}
         autoComplete="off"
         value={abierto ? texto : (elegida?.etiqueta ?? "")}
-        onFocus={() => setAbierto(true)}
+        onFocus={abrir}
         onChange={(evento) => {
           setTexto(evento.target.value);
+          setIndiceActivo(0);
           setAbierto(true);
         }}
-        onKeyDown={(evento) => {
-          if (evento.key === "Enter" && visibles[0]) {
-            evento.preventDefault();
-            elegir(visibles[0]);
-          }
-        }}
+        onKeyDown={(evento) =>
+          navegarOpciones({
+            evento,
+            abierto,
+            cantidad: visibles.length,
+            indiceActivo,
+            abrir,
+            activar: setIndiceActivo,
+            elegir: (indice) => {
+              if (visibles[indice]) elegir(visibles[indice]);
+            },
+          })
+        }
       />
       <IconoFlechaAbajo tamano={12} className="ui-selector-buscable__flecha" />
 
       {abierto ? (
-        <ul
-          className={
-            visibles.length > 4
-              ? "ui-selector-buscable__lista ui-selector-buscable__lista--con-scroll"
-              : "ui-selector-buscable__lista"
-          }
-          role="listbox"
-          aria-label={etiqueta}
-        >
-          {visibles.length === 0 ? (
-            <li className="ui-selector-buscable__vacio-lista">Sin resultados</li>
-          ) : (
-            visibles.map((opcion) => (
-              <li key={opcion.valor}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={opcion.valor === valor}
-                  className="ui-selector-buscable__opcion"
-                  onClick={() => elegir(opcion)}
-                >
-                  {opcion.etiqueta}
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
+        <ListaOpciones
+          id={listaId}
+          etiqueta={etiqueta}
+          opciones={visibles}
+          valor={valor}
+          indiceActivo={indiceActivo}
+          onActivar={setIndiceActivo}
+          onElegir={elegir}
+          claseLista="ui-selector-buscable__lista"
+          claseOpcion="ui-selector-buscable__opcion"
+        />
       ) : null}
     </div>
   );

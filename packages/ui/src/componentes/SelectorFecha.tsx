@@ -6,6 +6,7 @@ import { diasDelMes, MESES } from "../datos/fechas";
 
 import { SelectorBuscable } from "./SelectorBuscable";
 
+import "./primitivos.css";
 import "./estilos/selector-fecha.css";
 
 export interface PropsSelectorFecha {
@@ -19,6 +20,8 @@ export interface PropsSelectorFecha {
   /** Año mas reciente seleccionable. Por defecto, el año actual. */
   anioMaximo?: number;
   disabled?: boolean;
+  /** Oculta la etiqueta a la vista; los combos ya se llaman Día, Mes y Año. */
+  etiquetaOculta?: boolean;
 }
 
 const AHORA = new Date().getFullYear();
@@ -52,6 +55,7 @@ export function SelectorFecha({
   anioMinimo = AHORA - 100,
   anioMaximo = AHORA,
   disabled,
+  etiquetaOculta,
 }: PropsSelectorFecha) {
   const [{ dia, mes, anio }, setPartes] = useState(() => desdeIso(valor));
 
@@ -90,31 +94,46 @@ export function SelectorFecha({
     );
   }
 
+  // La primera opcion de cada combo (Día, Mes, Año) es "sin fecha": al elegirla
+  // se borra la fecha entera, no solo esa parte, para no guardar una fecha a medias.
+  function limpiar() {
+    setPartes({ dia: "", mes: "", anio: "" });
+    onCambio("");
+  }
+
   return (
     <div className="ui-campo">
-      <label id={`${id}-etiqueta`}>{etiqueta}</label>
+      <label id={`${id}-etiqueta`} className={etiquetaOculta ? "ui-solo-lectores" : undefined}>
+        {etiqueta}
+      </label>
       <div className="ui-selector-fecha" role="group" aria-labelledby={`${id}-etiqueta`}>
         <SelectorBuscable
           id={id}
           etiqueta="Día"
           valor={dia}
-          opciones={dias.map((numero) => ({ valor: numero, etiqueta: alPadEnDos(Number(numero)) }))}
+          opciones={[
+            { valor: "", etiqueta: "Día" },
+            ...dias.map((numero) => ({ valor: numero, etiqueta: alPadEnDos(Number(numero)) })),
+          ]}
           disabled={disabled}
-          onCambio={(valorDia) => actualizar(valorDia, mes, anio)}
+          onCambio={(valorDia) => (valorDia === "" ? limpiar() : actualizar(valorDia, mes, anio))}
         />
         <SelectorBuscable
           etiqueta="Mes"
           valor={mes}
-          opciones={MESES.map((nombre, indice) => ({ valor: String(indice + 1), etiqueta: nombre }))}
+          opciones={[
+            { valor: "", etiqueta: "Mes" },
+            ...MESES.map((nombre, indice) => ({ valor: String(indice + 1), etiqueta: nombre })),
+          ]}
           disabled={disabled}
-          onCambio={(valorMes) => actualizar(dia, valorMes, anio)}
+          onCambio={(valorMes) => (valorMes === "" ? limpiar() : actualizar(dia, valorMes, anio))}
         />
         <SelectorBuscable
           etiqueta="Año"
           valor={anio}
-          opciones={anios.map((numero) => ({ valor: numero, etiqueta: numero }))}
+          opciones={[{ valor: "", etiqueta: "Año" }, ...anios.map((numero) => ({ valor: numero, etiqueta: numero }))]}
           disabled={disabled}
-          onCambio={(valorAnio) => actualizar(dia, mes, valorAnio)}
+          onCambio={(valorAnio) => (valorAnio === "" ? limpiar() : actualizar(dia, mes, valorAnio))}
         />
       </div>
     </div>

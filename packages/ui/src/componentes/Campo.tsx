@@ -95,7 +95,7 @@ export function Campo({
     />
   );
 
-  const claseEtiqueta = etiquetaOculta ? "ui-campo__etiqueta--oculta" : undefined;
+  const claseEtiqueta = etiquetaOculta ? "ui-solo-lectores" : undefined;
   const marcaIcono = icono ? (
     <span className="ui-campo__icono" aria-hidden="true">
       {icono}

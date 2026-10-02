@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens": "./src/tokens.ts",
+    "./base-web.css": "./src/base-web.css",
     "./theme.css": "./src/theme.css"
   },
   "scripts": {

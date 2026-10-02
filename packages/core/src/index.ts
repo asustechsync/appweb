@@ -107,8 +107,11 @@ export {
 
 export {
   TIPOS_DOCUMENTO,
+  ABREVIATURA_TIPO_DOCUMENTO,
   ETIQUETA_TIPO_DOCUMENTO,
   errorDocumentoComprobante,
+  errorNumeroDocumento,
+  AYUDA_NUMERO_DOCUMENTO,
   type TipoComprobante,
   type TipoDocumento,
 } from "./usuarios/documento";

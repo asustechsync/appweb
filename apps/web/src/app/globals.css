@@ -3,13 +3,7 @@
    Para cambiar la identidad visual se edita tokens.ts y se corre:
        npm run ui:tokens                                                     */
 
-@import "@appweb/ui/theme.css";
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@import "@appweb/ui/base-web.css";
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -18,31 +12,17 @@ html {
 }
 
 body {
-  margin: 0;
   --tipo-familia-base: var(--fuente-base), "Bai Jamjuree", system-ui, sans-serif;
   --tipo-familia-numeros: var(--fuente-numeros), "Urbanist", system-ui, sans-serif;
-  background: var(--color-fondo);
-  color: var(--color-texto);
   font-family: var(--tipo-familia-base);
   font-size: var(--tipo-tamano-base);
   line-height: var(--tipo-altura-normal);
-  -webkit-font-smoothing: antialiased;
 }
 
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
   height: auto;
-}
-
-button, input, select, textarea {
-  font: inherit;
-  color: inherit;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -58,11 +38,6 @@ ul, ol {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-marca-500);
-  outline-offset: 2px;
 }
 
 /* `.ui-solo-lectores` vive en @appweb/ui/componentes/estilos/base.css: la

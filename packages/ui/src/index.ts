@@ -21,6 +21,8 @@ export {
   IconoFlechaIzquierda,
   IconoPedidos,
   IconoUbicacion,
+  IconoUsuario,
+  IconoTarjetaPersonal,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -129,6 +131,8 @@ export { Campo, type PropsCampo } from "./componentes/Campo";
 export { Casilla, type PropsCasilla } from "./componentes/Casilla";
 export { AccesoSocial } from "./componentes/AccesoSocial";
 export { FilaCampos, type PropsFilaCampos } from "./componentes/FilaCampos";
+export { FilaUnida, type PropsFilaUnida } from "./componentes/FilaUnida";
+export { Pestanas, type OpcionDePestana, type PropsPestanas } from "./componentes/Pestanas";
 export { FilaOpciones, type PropsFilaOpciones } from "./componentes/FilaOpciones";
 export { SelectorPais, type PropsSelectorPais } from "./componentes/SelectorPais";
 export { SelectorFecha, type PropsSelectorFecha } from "./componentes/SelectorFecha";

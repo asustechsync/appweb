@@ -7,7 +7,7 @@
 
 import { z } from "zod";
 
-import { TIPOS_DOCUMENTO } from "../usuarios/documento";
+import { errorNumeroDocumento, TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
 import { ROLES } from "../usuarios/permisos";
 import { REQUISITOS_CLAVE } from "../usuarios/requisitos-clave";
@@ -55,23 +55,28 @@ export const esquemaIngreso = z.object({
     ni para identificar al cliente. */
 export const esquemaPerfil = z.object({
   nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
-  apellido: z.string().trim().min(2, "Escribe tu apellido").max(80).optional(),
+  apellido: z.string().trim().min(2, "Escribe tu apellido").max(80, "El apellido es demasiado largo").optional(),
+  apodo: z.string().trim().min(2, "El apodo debe tener al menos 2 caracteres").max(30, "El apodo es demasiado largo").optional(),
   telefono: z
     .string()
     .trim()
     .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos")
     .optional(),
   tipoDocumento: z.enum(TIPOS_DOCUMENTO).optional(),
-  numeroDocumento: z.string().trim().min(6).max(20).optional(),
+  numeroDocumento: z.string().trim().optional(),
   fechaNacimiento: z
     .string()
     .trim()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha invalida")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha de nacimiento no es válida")
     .optional(),
   genero: z.enum(GENEROS).optional(),
-}).refine((datos) => !datos.tipoDocumento === !datos.numeroDocumento, {
-  message: "Elige el tipo y escribe el numero de documento",
-  path: ["numeroDocumento"],
+}).superRefine((datos, ctx) => {
+  const mensaje = !datos.tipoDocumento
+    ? datos.numeroDocumento
+      ? "Elige el tipo de documento."
+      : null
+    : errorNumeroDocumento(datos.tipoDocumento, datos.numeroDocumento ?? "");
+  if (mensaje) ctx.addIssue({ code: "custom", message: mensaje, path: ["numeroDocumento"] });
 });
 
 // ── Usuarios (panel) ───────────────────────────────────────────────────────
@@ -98,8 +103,8 @@ export const esquemaDireccion = z.object({
   departamento: z.string().trim().min(1, "Elige el departamento"),
   provincia: z.string().trim().min(1, "Elige la provincia"),
   distrito: z.string().trim().min(1, "Elige el distrito"),
-  calle: z.string().trim().min(5, "Escribe la direccion completa").max(200),
-  referencia: z.string().trim().max(200).optional(),
+  calle: z.string().trim().min(5, "Escribe la dirección completa").max(200, "La dirección es demasiado larga"),
+  referencia: z.string().trim().max(200, "La referencia es demasiado larga").optional(),
   principal: z.boolean().default(false),
 });
 
@@ -141,7 +146,11 @@ export const esquemaCheckout = z.object({
   // Se piden DESDE AHORA aunque la boleta electronica llegue despues: si no se
   // capturan al inicio, luego no hay forma de conseguirlos.
   comprobante: z.enum(["boleta", "factura"]).default("boleta"),
-  documento: z.string().trim().min(8).max(11),
+  documento: z
+    .string()
+    .trim()
+    .min(8, "El documento debe tener 8 dígitos (DNI) u 11 (RUC)")
+    .max(11, "El documento debe tener 8 dígitos (DNI) u 11 (RUC)"),
   razonSocial: z.string().trim().max(200).optional(),
   cupon: z.string().trim().max(30).optional(),
 });

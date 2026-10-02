@@ -39,3 +39,10 @@
     justify-content: space-between;
   }
 }
+
+/* Mismo bloque, sin la caja: borde, fondo y relleno se quitan en todos los anchos. */
+.ui-tarjeta.ui-tarjeta--sin-marco {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}

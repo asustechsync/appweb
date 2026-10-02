@@ -9,14 +9,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { hashClave, verificarClave } from "@appweb/core";
+import { hashClave, REQUISITOS_CLAVE, verificarClave } from "@appweb/core";
 import { esquemaDireccion, esquemaPerfil } from "@appweb/core/tipos";
 
 import { privado, router } from "../../trpc";
 
 const esquemaClave = z.object({
   claveActual: z.string().min(1, "Escribe tu clave actual"),
-  claveNueva: z.string().min(8, "Minimo 8 caracteres").max(72),
+  claveNueva: z
+    .string()
+    .max(72, "La clave nueva es demasiado larga")
+    .refine((c) => REQUISITOS_CLAVE.every((r) => r.cumple(c)), "La clave nueva no cumple los requisitos"),
 });
 
 export const cuenta = router({
@@ -28,6 +31,7 @@ export const cuenta = router({
       select: {
         nombre: true,
         apellido: true,
+        apodo: true,
         email: true,
         telefono: true,
         tipoDocumento: true,
@@ -56,6 +60,7 @@ export const cuenta = router({
       data: {
         nombre: input.nombre,
         apellido: input.apellido ?? null,
+        apodo: input.apodo ?? null,
         telefono: input.telefono ?? null,
         tipoDocumento: input.tipoDocumento ?? null,
         numeroDocumento: input.numeroDocumento ?? null,
@@ -65,6 +70,7 @@ export const cuenta = router({
       select: {
         nombre: true,
         apellido: true,
+        apodo: true,
         email: true,
         telefono: true,
         tipoDocumento: true,

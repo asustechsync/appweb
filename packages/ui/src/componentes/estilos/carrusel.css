@@ -101,6 +101,6 @@
 }
 @media (min-width: 160rem) {
   .ui-carrusel {
-    --visibles: 12;
+    --visibles: 10;
   }
 }
