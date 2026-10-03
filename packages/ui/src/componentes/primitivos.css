@@ -39,6 +39,7 @@
 @import "./estilos/estado-vacio.css";
 @import "./estilos/cargando.css";
 @import "./estilos/formulario.css";
+@import "./estilos/bloque-formulario.css";
 @import "./estilos/disposicion-acceso.css";
 @import "./estilos/campo.css";
 @import "./estilos/casilla.css";

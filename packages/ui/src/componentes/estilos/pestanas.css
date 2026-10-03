@@ -1,11 +1,15 @@
 /* Mismo estilo que las pestañas del menu de la cuenta (disposicion-cuenta.css):
    botones redondeados, y la activa en oscuro con texto claro. */
+/* Control segmentado centrado: mismo fondo, radio y alto que los campos. */
 .ui-pestanas {
   display: flex;
-  flex-wrap: wrap;
   gap: var(--espacio-1);
+  padding: var(--espacio-1);
+  border-radius: var(--radio-md);
+  background: var(--campo-fondo, var(--color-fondo));
 }
 .ui-pestanas__pestana {
+  flex: 1;
   /* Mismo alto que los campos (3rem en la zona de cuenta). */
   block-size: var(--control-alto);
   padding-inline: var(--espacio-4);

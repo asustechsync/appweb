@@ -28,7 +28,10 @@ export {
   IconoGlobo,
   IconoPerfil,
   IconoEscudo,
-  IconoConfiguracion,} from "./iconos";
+  IconoConfiguracion,
+  IconoPremio,
+  IconoFavorito,
+} from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
 // Se van añadiendo conforme hagan falta; cada uno con su CSS en
@@ -65,6 +68,7 @@ export {
 } from "./componentes/ItemDesplegable";
 export { Hero, type PropsHero, type DiapositivaHero } from "./componentes/Hero";
 export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/CabeceraSeccion";
+export { BloqueFormulario, type PropsBloqueFormulario } from "./componentes/BloqueFormulario";
 export { Precio, type PropsPrecio } from "./componentes/Precio";
 export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/TarjetaProducto";
 export { TarjetaMarca, type PropsTarjetaMarca } from "./componentes/TarjetaMarca";

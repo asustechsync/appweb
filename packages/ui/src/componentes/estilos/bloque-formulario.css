@@ -1,0 +1,10 @@
+.ui-bloque-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+.ui-bloque-formulario__titulo {
+  padding-inline: var(--espacio-1);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}

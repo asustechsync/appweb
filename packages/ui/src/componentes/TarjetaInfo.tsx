@@ -10,11 +10,13 @@ export interface PropsTarjetaInfo {
   children: ReactNode;
   /** Ilustracion opcional para dar contexto visual al bloque informativo. */
   imagen?: { src: string; alt: string };
+  /** Oculta el bloque en movil: solo aparece desde 48rem. */
+  soloEscritorio?: boolean;
 }
 
 /** Bloque informativo (tono neutro, sin acciones): notas o contexto al lado
     de un formulario, no otro bloque de datos como `Tarjeta`. */
-export function TarjetaInfo({ titulo, children, imagen }: PropsTarjetaInfo) {
+export function TarjetaInfo({ titulo, children, imagen, soloEscritorio }: PropsTarjetaInfo) {
   const contenido = (
     <div>
       <h2 className="ui-tarjeta-info__titulo">{titulo}</h2>
@@ -22,8 +24,12 @@ export function TarjetaInfo({ titulo, children, imagen }: PropsTarjetaInfo) {
     </div>
   );
 
+  const clases = ["ui-tarjeta-info"];
+  if (imagen) clases.push("ui-tarjeta-info--ilustrada");
+  if (soloEscritorio) clases.push("ui-tarjeta-info--solo-escritorio");
+
   return (
-    <section className={imagen ? "ui-tarjeta-info ui-tarjeta-info--ilustrada" : "ui-tarjeta-info"}>
+    <section className={clases.join(" ")}>
       {imagen ? (
         <>
           <div className="ui-tarjeta-info__ilustracion">

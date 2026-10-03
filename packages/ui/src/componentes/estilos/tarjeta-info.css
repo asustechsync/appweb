@@ -11,6 +11,9 @@
   gap: var(--espacio-3);
   background: color-mix(in srgb, var(--color-info) 7%, var(--color-superficie));
 }
+.ui-tarjeta-info--solo-escritorio {
+  display: none;
+}
 .ui-tarjeta-info__ilustracion {
   display: grid;
   place-items: center;
@@ -46,5 +49,8 @@
 @media (min-width: 48rem) {
   .ui-tarjeta-info {
     padding: var(--espacio-5);
+  }
+  .ui-tarjeta-info--solo-escritorio {
+    display: flex;
   }
 }

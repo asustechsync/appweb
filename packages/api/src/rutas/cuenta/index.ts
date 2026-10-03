@@ -30,7 +30,8 @@ export const cuenta = router({
       where: { id: ctx.sesion.usuarioId },
       select: {
         nombre: true,
-        apellido: true,
+        apellidoPaterno: true,
+        apellidoMaterno: true,
         apodo: true,
         email: true,
         telefono: true,
@@ -59,7 +60,8 @@ export const cuenta = router({
       where: { id: ctx.sesion.usuarioId },
       data: {
         nombre: input.nombre,
-        apellido: input.apellido ?? null,
+        apellidoPaterno: input.apellidoPaterno ?? null,
+        apellidoMaterno: input.apellidoMaterno ?? null,
         apodo: input.apodo ?? null,
         telefono: input.telefono ?? null,
         tipoDocumento: input.tipoDocumento ?? null,
@@ -69,7 +71,8 @@ export const cuenta = router({
       },
       select: {
         nombre: true,
-        apellido: true,
+        apellidoPaterno: true,
+        apellidoMaterno: true,
         apodo: true,
         email: true,
         telefono: true,

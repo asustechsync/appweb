@@ -32,3 +32,5 @@ export { IconoPerfil } from "./cuenta/IconoPerfil";
 export { IconoEscudo } from "./cuenta/IconoEscudo";
 export { IconoConfiguracion } from "./cuenta/IconoConfiguracion";
 export { IconoNotificacion } from "./interfaz/IconoNotificacion";
+export { IconoPremio } from "./cuenta/IconoPremio";
+export { IconoFavorito } from "./comercio/IconoFavorito";

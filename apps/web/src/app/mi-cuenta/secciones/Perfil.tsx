@@ -14,6 +14,7 @@ import {
 } from "@appweb/core";
 import {
   Alerta,
+  BloqueFormulario,
   Boton,
   Campo,
   CampoSelectorLista,
@@ -63,7 +64,8 @@ export function Perfil() {
   const perfil = useQuery(trpc.cuenta.perfil.queryOptions());
 
   const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
+  const [apellidoPaterno, setApellidoPaterno] = useState("");
+  const [apellidoMaterno, setApellidoMaterno] = useState("");
   const [apodo, setApodo] = useState("");
   const [telefono, setTelefono] = useState("");
   const [paisTelefono, setPaisTelefono] = useState("pe");
@@ -88,7 +90,8 @@ export function Perfil() {
   useEffect(() => {
     if (perfil.data === undefined) return;
     setNombre(perfil.data.nombre);
-    setApellido(perfil.data.apellido ?? "");
+    setApellidoPaterno(perfil.data.apellidoPaterno ?? "");
+    setApellidoMaterno(perfil.data.apellidoMaterno ?? "");
     setApodo(perfil.data.apodo ?? "");
     setTelefono(perfil.data.telefono ?? "");
     setTipoDocumento(perfil.data.tipoDocumento ?? "");
@@ -136,7 +139,8 @@ export function Perfil() {
               evento.preventDefault();
               const datos = {
                 nombre,
-                ...(apellido.trim() === "" ? {} : { apellido }),
+                ...(apellidoPaterno.trim() === "" ? {} : { apellidoPaterno }),
+                ...(apellidoMaterno.trim() === "" ? {} : { apellidoMaterno }),
                 ...(apodo.trim() === "" ? {} : { apodo }),
                 ...(telefono.trim() === "" ? {} : { telefono }),
                 ...(tipoDocumento === ""
@@ -163,8 +167,8 @@ export function Perfil() {
               guardar.mutate(datos);
             }}
           >
-            <FilaCampos>
-              <FilaUnida iguales>
+            <BloqueFormulario titulo="Datos personales">
+              <FilaCampos>
                 <Campo
                   id="datos-nombre"
                   etiqueta="Nombre"
@@ -176,101 +180,118 @@ export function Perfil() {
                   etiquetaOculta
                   requerido
                 />
+                <FilaUnida iguales>
+                  <Campo
+                    id="datos-apellido-paterno"
+                    etiqueta="Apellido paterno"
+                    valor={apellidoPaterno}
+                    onCambio={setApellidoPaterno}
+                    error={errores["apellidoPaterno"] ?? null}
+                    placeholder="Apellidos"
+                    etiquetaOculta
+                  />
+                  <Campo
+                    id="datos-apellido-materno"
+                    etiqueta="Apellido materno"
+                    valor={apellidoMaterno}
+                    onCambio={setApellidoMaterno}
+                    error={errores["apellidoMaterno"] ?? null}
+                    placeholder="Apellidos"
+                    etiquetaOculta
+                  />
+                </FilaUnida>
+              </FilaCampos>
+              <FilaCampos>
+                <FilaUnida iguales>
+                  <Campo
+                    id="datos-apodo"
+                    etiqueta="Apodo"
+                    valor={apodo}
+                    onCambio={setApodo}
+                    error={errores["apodo"] ?? null}
+                    placeholder="Apodo"
+                    etiquetaOculta
+                  />
+                  <CampoSelectorLista
+                    id="datos-genero"
+                    etiqueta="Género"
+                    valor={genero}
+                    opciones={OPCIONES_GENERO}
+                    onCambio={setGenero}
+                    placeholder="Género"
+                    etiquetaOculta
+                  />
+                </FilaUnida>
+              </FilaCampos>
+              <FilaCampos>
+                <SelectorFecha
+                  id="datos-fecha-nacimiento"
+                  etiqueta="Fecha de nacimiento"
+                  valor={fechaNacimiento}
+                  onCambio={setFechaNacimiento}
+                  etiquetaOculta
+                />
+              </FilaCampos>
+            </BloqueFormulario>
+
+            <BloqueFormulario titulo="Identificación">
+              <FilaCampos>
+                <FilaUnida>
+                  <CampoSelectorLista
+                    id="datos-tipo-documento"
+                    etiqueta="Tipo de documento"
+                    valor={tipoDocumento}
+                    opciones={OPCIONES_DOCUMENTO.filter((opcion) => opcion.valor !== "")}
+                    onCambio={setTipoDocumento}
+                    placeholder="Tipo"
+                    etiquetaOculta
+                  />
+                  <Campo
+                    id="datos-numero-documento"
+                    etiqueta="Número de documento"
+                    valor={numeroDocumento}
+                    onCambio={setNumeroDocumento}
+                    error={errores["numeroDocumento"] ?? null}
+                    placeholder="N° de documento"
+                    icono={<IconoTarjetaPersonal />}
+                    etiquetaOculta
+                    disabled={tipoDocumento === ""}
+                    requerido={tipoDocumento !== ""}
+                  />
+                </FilaUnida>
+              </FilaCampos>
+            </BloqueFormulario>
+
+            <BloqueFormulario titulo="Contacto">
+              <FilaCampos>
                 <Campo
-                  id="datos-apellido"
-                  etiqueta="Apellido"
-                  valor={apellido}
-                  onCambio={setApellido}
-                  error={errores["apellido"] ?? null}
-                  placeholder="Apellido"
-                  icono={<IconoUsuario />}
+                  id="datos-telefono"
+                  etiqueta="Teléfono"
+                  tipo="tel"
+                  pais={paisTelefono}
+                  onCambioPais={setPaisTelefono}
+                  valor={telefono}
+                  onCambio={setTelefono}
+                  error={errores["telefono"] ?? null}
+                  placeholder="Teléfono"
+                  icono={<IconoTelefono />}
                   etiquetaOculta
                 />
-              </FilaUnida>
-              <Campo
-                id="datos-telefono"
-                etiqueta="Teléfono (opcional)"
-                tipo="tel"
-                pais={paisTelefono}
-                onCambioPais={setPaisTelefono}
-                valor={telefono}
-                onCambio={setTelefono}
-                error={errores["telefono"] ?? null}
-                placeholder="Teléfono"
-                icono={<IconoTelefono />}
-                etiquetaOculta
-              />
-            </FilaCampos>
-  
-            <FilaCampos>
-              <FilaUnida iguales>
-                <CampoSelectorLista
-                  id="datos-genero"
-                  etiqueta="Género"
-                  valor={genero}
-                  opciones={OPCIONES_GENERO}
-                  onCambio={setGenero}
-                  placeholder="Género (opcional)"
-                  etiquetaOculta
-                />
+                {/* El correo identifica la cuenta y es la llave para entrar: cambiarlo
+                    necesita verificarlo antes, y eso llega con las notificaciones. */}
                 <Campo
-                  id="datos-apodo"
-                  etiqueta="Apodo (opcional)"
-                  valor={apodo}
-                  onCambio={setApodo}
-                  error={errores["apodo"] ?? null}
-                  placeholder="Apodo"
-                  icono={<IconoUsuario />}
+                  id="datos-correo"
+                  etiqueta="Correo electrónico"
+                  tipo="email"
+                  valor={perfil.data.email}
+                  onCambio={() => {}}
+                  placeholder="Correo electrónico"
+                  icono={<IconoCorreo />}
                   etiquetaOculta
+                  disabled
                 />
-              </FilaUnida>
-              <FilaUnida>
-                <CampoSelectorLista
-                  id="datos-tipo-documento"
-                  etiqueta="Tipo de documento"
-                  valor={tipoDocumento}
-                  opciones={OPCIONES_DOCUMENTO.filter((opcion) => opcion.valor !== "")}
-                  onCambio={setTipoDocumento}
-                  placeholder="Tipo"
-                  etiquetaOculta
-                />
-                <Campo
-                  id="datos-numero-documento"
-                  etiqueta="Número de documento"
-                  valor={numeroDocumento}
-                  onCambio={setNumeroDocumento}
-                  error={errores["numeroDocumento"] ?? null}
-                  placeholder="N° de documento"
-                  icono={<IconoTarjetaPersonal />}
-                  etiquetaOculta
-                  disabled={tipoDocumento === ""}
-                  requerido={tipoDocumento !== ""}
-                />
-              </FilaUnida>
-            </FilaCampos>
-  
-            <FilaCampos>
-              <SelectorFecha
-                id="datos-fecha-nacimiento"
-                etiqueta="Fecha de nacimiento"
-                valor={fechaNacimiento}
-                onCambio={setFechaNacimiento}
-                etiquetaOculta
-              />
-              {/* El correo identifica la cuenta y es la llave para entrar: cambiarlo
-                  necesita verificarlo antes, y eso llega con las notificaciones. */}
-              <Campo
-                id="datos-correo"
-                etiqueta="Correo electrónico"
-                tipo="email"
-                valor={perfil.data.email}
-                onCambio={() => {}}
-                placeholder="Correo electrónico"
-                icono={<IconoCorreo />}
-                etiquetaOculta
-                disabled
-              />
-            </FilaCampos>
+              </FilaCampos>
+            </BloqueFormulario>
             <Boton tipo="submit" disabled={guardar.isPending}>
               {guardar.isPending ? "Guardando…" : "Guardar datos"}
             </Boton>
@@ -351,6 +372,7 @@ export function Perfil() {
       </Tarjeta>
 
       <TarjetaInfo
+        soloEscritorio
         titulo="Completa tu perfil"
         imagen={{
           src: "/ilustraciones/perfil-cuenta-v2.webp",

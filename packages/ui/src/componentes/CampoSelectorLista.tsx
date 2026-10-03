@@ -1,5 +1,6 @@
 "use client";
 
+import { claseEtiquetaOculta, type EtiquetaOculta } from "./claseEtiqueta";
 import { SelectorLista, type OpcionDeSelectorLista } from "./SelectorLista";
 
 import "./primitivos.css";
@@ -12,7 +13,7 @@ export interface PropsCampoSelectorLista {
   onCambio: (valor: string) => void;
   disabled?: boolean;
   /** Oculta la etiqueta visualmente pero la deja para lectores de pantalla. */
-  etiquetaOculta?: boolean;
+  etiquetaOculta?: EtiquetaOculta;
   /** Texto cuando no hay nada elegido. Por defecto, repite `etiqueta`. */
   placeholder?: string;
 }
@@ -34,7 +35,7 @@ export function CampoSelectorLista({
 }: PropsCampoSelectorLista) {
   return (
     <div className="ui-campo">
-      <label htmlFor={id} className={etiquetaOculta ? "ui-solo-lectores" : undefined}>
+      <label htmlFor={id} className={claseEtiquetaOculta(etiquetaOculta)}>
         {etiqueta}
       </label>
       <SelectorLista

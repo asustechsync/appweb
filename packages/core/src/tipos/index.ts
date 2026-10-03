@@ -55,7 +55,8 @@ export const esquemaIngreso = z.object({
     ni para identificar al cliente. */
 export const esquemaPerfil = z.object({
   nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
-  apellido: z.string().trim().min(2, "Escribe tu apellido").max(80, "El apellido es demasiado largo").optional(),
+  apellidoPaterno: z.string().trim().min(2, "Escribe tu apellido paterno").max(80, "El apellido es demasiado largo").optional(),
+  apellidoMaterno: z.string().trim().min(2, "Escribe tu apellido materno").max(80, "El apellido es demasiado largo").optional(),
   apodo: z.string().trim().min(2, "El apodo debe tener al menos 2 caracteres").max(30, "El apodo es demasiado largo").optional(),
   telefono: z
     .string()

@@ -1,5 +1,6 @@
 "use client";
 
+import { claseEtiquetaOculta, type EtiquetaOculta } from "./claseEtiqueta";
 import { useEffect, useState } from "react";
 
 import { diasDelMes, MESES } from "../datos/fechas";
@@ -21,7 +22,7 @@ export interface PropsSelectorFecha {
   anioMaximo?: number;
   disabled?: boolean;
   /** Oculta la etiqueta a la vista; los combos ya se llaman Día, Mes y Año. */
-  etiquetaOculta?: boolean;
+  etiquetaOculta?: EtiquetaOculta;
 }
 
 const AHORA = new Date().getFullYear();
@@ -103,7 +104,7 @@ export function SelectorFecha({
 
   return (
     <div className="ui-campo">
-      <label id={`${id}-etiqueta`} className={etiquetaOculta ? "ui-solo-lectores" : undefined}>
+      <label id={`${id}-etiqueta`} className={claseEtiquetaOculta(etiquetaOculta)}>
         {etiqueta}
       </label>
       <div className="ui-selector-fecha" role="group" aria-labelledby={`${id}-etiqueta`}>

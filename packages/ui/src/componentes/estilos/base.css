@@ -10,3 +10,17 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Primero movil: la etiqueta se ve y desde 48rem pasa a solo lectores. */
+@media (min-width: 48rem) {
+  .ui-solo-lectores-escritorio {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

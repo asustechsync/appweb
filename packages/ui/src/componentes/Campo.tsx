@@ -1,5 +1,6 @@
 "use client";
 
+import { claseEtiquetaOculta, type EtiquetaOculta } from "./claseEtiqueta";
 import { useState, type ReactNode } from "react";
 
 import "flag-icons/css/flag-icons.min.css";
@@ -35,7 +36,7 @@ export interface PropsCampo {
   icono?: ReactNode;
   /** Oculta la etiqueta a la vista; sigue leyendola el lector de pantalla.
       Solo tiene sentido con `placeholder`. */
-  etiquetaOculta?: boolean;
+  etiquetaOculta?: EtiquetaOculta;
 }
 
 /**
@@ -95,7 +96,7 @@ export function Campo({
     />
   );
 
-  const claseEtiqueta = etiquetaOculta ? "ui-solo-lectores" : undefined;
+  const claseEtiqueta = claseEtiquetaOculta(etiquetaOculta);
   const marcaIcono = icono ? (
     <span className="ui-campo__icono" aria-hidden="true">
       {icono}

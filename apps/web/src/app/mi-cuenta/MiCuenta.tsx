@@ -11,11 +11,15 @@ import {
   IconoSoporte,
   IconoUbicacion,
   IconoPerfil,
+  IconoPremio,
+  IconoFavorito,
   MenuCuenta,
   type GrupoMenuCuenta,
 } from "@appweb/ui";
 
+import { Beneficios } from "./secciones/Beneficios";
 import { Configuracion } from "./secciones/Configuracion";
+import { Favoritos } from "./secciones/Favoritos";
 import { Direcciones } from "./secciones/Direcciones";
 import { Pedidos } from "./secciones/Pedidos";
 import { Perfil } from "./secciones/Perfil";
@@ -25,6 +29,8 @@ const SECCIONES = [
   { id: "perfil", etiqueta: "Perfil" },
   { id: "direcciones", etiqueta: "Direcciones" },
   { id: "pedidos", etiqueta: "Pedidos" },
+  { id: "beneficios", etiqueta: "Beneficios" },
+  { id: "favoritos", etiqueta: "Favoritos" },
   { id: "seguridad", etiqueta: "Seguridad" },
   { id: "configuracion", etiqueta: "Configuración" },
 ];
@@ -37,8 +43,10 @@ const GRUPOS_MENU: GrupoMenuCuenta[] = [
     opciones: [
       { id: "perfil", etiqueta: "Perfil", icono: <IconoPerfil />, seccion: "perfil" },
       { id: "direcciones", etiqueta: "Direcciones", icono: <IconoUbicacion />, seccion: "direcciones" },
-      { id: "pedidos", etiqueta: "Mis pedidos", icono: <IconoPedidos />, seccion: "pedidos" },
       { id: "seguridad", etiqueta: "Seguridad", icono: <IconoEscudo />, seccion: "seguridad" },
+      { id: "pedidos", etiqueta: "Mis pedidos", icono: <IconoPedidos />, seccion: "pedidos" },
+      { id: "favoritos", etiqueta: "Favoritos", icono: <IconoFavorito />, seccion: "favoritos" },
+      { id: "beneficios", etiqueta: "Beneficios", icono: <IconoPremio />, seccion: "beneficios" },
     ],
   },
   {
@@ -90,7 +98,7 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
 
   // En escritorio no hay pantalla de menu: sin seccion se ve el perfil.
   const visible = activa || "perfil";
-  const tituloSeccion = GRUPOS_MENU[0]?.opciones.find((opcion) => opcion.id === visible)?.etiqueta ?? "Mi cuenta";
+  const tituloSeccion = GRUPOS_MENU.flatMap((grupo) => grupo.opciones).find((opcion) => opcion.id === visible)?.etiqueta ?? "Mi cuenta";
 
   return (
     <DisposicionCuenta
@@ -121,6 +129,10 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
         <Direcciones />
       ) : visible === "pedidos" ? (
         <Pedidos />
+      ) : visible === "favoritos" ? (
+        <Favoritos />
+      ) : visible === "beneficios" ? (
+        <Beneficios />
       ) : visible === "seguridad" ? (
         <Seguridad />
       ) : visible === "configuracion" ? (

@@ -20,7 +20,7 @@ export const instant = false;
 
 export const metadata = { title: "Mi cuenta" };
 
-const SECCIONES = ["perfil", "direcciones", "pedidos", "seguridad", "configuracion"];
+const SECCIONES = ["perfil", "direcciones", "pedidos", "beneficios", "favoritos", "seguridad", "configuracion"];
 
 interface Props {
   params: Promise<{ ruta?: string[] }>;

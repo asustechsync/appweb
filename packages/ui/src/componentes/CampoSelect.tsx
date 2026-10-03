@@ -1,5 +1,6 @@
 "use client";
 
+import { claseEtiquetaOculta, type EtiquetaOculta } from "./claseEtiqueta";
 import "./primitivos.css";
 
 export interface OpcionDeSelect {
@@ -15,7 +16,7 @@ export interface PropsCampoSelect {
   onCambio: (valor: string) => void;
   disabled?: boolean;
   /** Oculta la etiqueta visualmente pero la deja para lectores de pantalla. */
-  etiquetaOculta?: boolean;
+  etiquetaOculta?: EtiquetaOculta;
 }
 
 /** Desplegable con su etiqueta. Mismo alto y borde que `Campo`. */
@@ -30,7 +31,7 @@ export function CampoSelect({
 }: PropsCampoSelect) {
   return (
     <div className="ui-campo">
-      <label htmlFor={id} className={etiquetaOculta ? "ui-solo-lectores" : undefined}>
+      <label htmlFor={id} className={claseEtiquetaOculta(etiquetaOculta)}>
         {etiqueta}
       </label>
       <select
