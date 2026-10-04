@@ -99,8 +99,3 @@
     --visibles: 9;
   }
 }
-@media (min-width: 160rem) {
-  .ui-carrusel {
-    --visibles: 10;
-  }
-}

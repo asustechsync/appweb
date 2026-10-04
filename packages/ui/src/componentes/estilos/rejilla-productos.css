@@ -24,8 +24,3 @@
     grid-template-columns: repeat(6, 1fr);
   }
 }
-@media (min-width: 160rem) {
-  .ui-rejilla-productos {
-    grid-template-columns: repeat(7, 1fr);
-  }
-}

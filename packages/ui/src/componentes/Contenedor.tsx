@@ -6,7 +6,7 @@ export interface PropsContenedor {
   children: ReactNode;
 }
 
-/** Limita el ancho de una seccion a --contenedor-ancho (1400px) y la centra. */
+/** Limita el ancho de una seccion a --contenedor-ancho (1400px; crece en monitores grandes via tokens.contenedorAmplio) y la centra. */
 export function Contenedor({ children }: PropsContenedor) {
   return <div className="ui-contenedor">{children}</div>;
 }

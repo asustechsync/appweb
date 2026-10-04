@@ -122,10 +122,13 @@ export const tokens = {
 
   contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1400 },
 
-  // Monitores grandes: el ancho maximo crece un poco para sumar columnas, nunca
-  // para agrandar texto ni tarjetas. Se aplica en theme.css desde su quiebre.
-  // FHD (1920) se queda en 1400; el ancho extra empieza en 2K (2560).
-  contenedorAmplio: { "4xl": 1600 },
+  // Monitores grandes: el ancho maximo crece escalonado desde un quiebre, mas
+  // despacio que la pantalla. Debajo de FHD se queda en `ancho` (1400).
+  contenedorAmplio: {
+    "3xl": 1760, // FHD al 100%
+    "4xl": 2000, // 2K al 100%
+    "5xl": 2400, // 4K al 100%
+  },
 
   // FIRST MOBILE: la base es movil y estos solo añaden desde arriba.
   // Son px CSS, no fisicos: un monitor escalado reporta resolucion / escala.
@@ -139,7 +142,8 @@ export const tokens = {
     xl: 1280, //   laptop HD
     "2xl": 1536, // FHD al 125% (laptop Windows tipica)
     "3xl": 1920, // FHD al 100%, 2K al 133%, 4K al 200%
-    "4xl": 2560, // 2K al 100%, 4K al 150%
+    "4xl": 2560, // 2K al 100%
+    "5xl": 3840, // 4K al 100%
   },
 
   transicion: {

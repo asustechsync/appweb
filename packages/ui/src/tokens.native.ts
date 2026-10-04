@@ -121,7 +121,9 @@ export const tokensNativos = {
     "ancho": 1400
   },
   "contenedorAmplio": {
-    "4xl": 1600
+    "3xl": 1760,
+    "4xl": 2000,
+    "5xl": 2400
   },
   "quiebre": {
     "xs": 480,
@@ -131,7 +133,8 @@ export const tokensNativos = {
     "xl": 1280,
     "2xl": 1536,
     "3xl": 1920,
-    "4xl": 2560
+    "4xl": 2560,
+    "5xl": 3840
   },
   "transicion": {
     "rapida": "120ms cubic-bezier(0.4, 0, 0.2, 1)",

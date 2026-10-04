@@ -11,6 +11,8 @@ import "./primitivos.css";
 export interface SeccionDeCuenta {
   id: string;
   etiqueta: string;
+  /** Con `href` la entrada es un enlace a otra pagina, no una seccion de la cuenta. */
+  href?: string;
 }
 
 export interface PropsDisposicionCuenta {
@@ -120,7 +122,12 @@ export function DisposicionCuenta({
             </div>
 
             <nav className="ui-disposicion-cuenta__pestanas" aria-label="Secciones de mi cuenta">
-              {secciones.map((seccion) => (
+              {secciones.map((seccion) =>
+                seccion.href ? (
+                  <a key={seccion.id} href={seccion.href} className="ui-disposicion-cuenta__pestana">
+                    {seccion.etiqueta}
+                  </a>
+                ) : (
                 <button
                   key={seccion.id}
                   type="button"
@@ -134,7 +141,8 @@ export function DisposicionCuenta({
                 >
                   {seccion.etiqueta}
                 </button>
-              ))}
+                ),
+              )}
               {onSalir ? (
                 <button
                   type="button"

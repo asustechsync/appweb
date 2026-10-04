@@ -33,9 +33,10 @@ const SECCIONES = [
   { id: "favoritos", etiqueta: "Favoritos" },
   { id: "seguridad", etiqueta: "Seguridad" },
   { id: "configuracion", etiqueta: "Configuración" },
+  { id: "soporte", etiqueta: "Soporte", href: "/ayuda/contacto" },
 ];
 
-const IDS = SECCIONES.map((seccion) => seccion.id);
+const IDS = SECCIONES.filter((seccion) => !seccion.href).map((seccion) => seccion.id);
 
 /** Menu de ajustes en movil. Las secciones abren dentro de la cuenta. */
 const GRUPOS_MENU: GrupoMenuCuenta[] = [
