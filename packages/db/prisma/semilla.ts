@@ -3,9 +3,10 @@
  *
  *     npm run db:semilla
  *
- * Idempotente: categorias y productos usan `upsert` por slug; las variantes
- * e imagenes de cada producto se borran y se vuelven a crear en cada corrida,
- * asi que correrlo varias veces no duplica nada.
+ * Idempotente: categorias y productos usan `upsert` por slug. Las variantes
+ * solo se crean si faltan (talla + color) y nunca se borran ni se les toca el
+ * stock; las imagenes se recrean en cada corrida. Correrlo varias veces no
+ * duplica nada ni choca con productos que ya tienen pedidos.
  */
 
 import { config } from "dotenv";
@@ -129,14 +130,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-deportivo-dry-fit-hombre",
-    nombre: "Polo Deportivo Dry-Fit Hombre",
+    slug: "polo-deportivo-dry-fit-para-hombre",
+    nombre: "Polo Deportivo Dry-Fit para Hombre",
     descripcion:
       "Polo deportivo con tecnología dry-fit que absorbe la humedad. Ideal para entrenar o el uso diario en climas calurosos.",
     descripcionCorta: "Tela dry-fit, transpirable.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Deportivo Dry-Fit Hombre | Tienda",
+    tituloSeo: "Polo Deportivo Dry-Fit para Hombre | Tienda",
     descripcionSeo: "Polo deportivo dry-fit para hombre. Transpirable, ideal para entrenar.",
     marca: "Amanecer",
     categoriaSlug: "hombres",
@@ -168,7 +169,7 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-deportivas-hombre",
+    slug: "medias-deportivas-antideslizantes",
     nombre: "Medias Deportivas Antideslizantes",
     descripcion:
       "Medias deportivas con banda antideslizante en la planta y compresión media en el arco. Pensadas para entrenar.",
@@ -187,8 +188,8 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-algodon-pack3-hombre",
-    nombre: "Boxer Algodón Básico Pack x3",
+    slug: "boxer-algodon-basico-pack-x3-hombre",
+    nombre: "Boxer Algodón Básico Pack x3 Hombre",
     descripcion:
       "Pack de 3 boxers de algodón con pretina elástica ancha que no se enrolla. Corte cómodo para uso diario.",
     descripcionCorta: "Pack x3, pretina elástica ancha.",
@@ -207,12 +208,12 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-microfibra-hombre",
+    slug: "boxer-microfibra-sin-costuras",
     nombre: "Boxer Microfibra Sin Costuras",
     descripcion:
       "Boxer de microfibra sin costuras laterales, invisible bajo la ropa ajustada. Secado rápido.",
     descripcionCorta: "Microfibra, sin costuras.",
-    etiqueta: "Oferta",
+    etiqueta: "Top",
     destacada: false,
     tituloSeo: "Boxer Microfibra Sin Costuras Hombre | Tienda",
     descripcionSeo: "Boxer de microfibra sin costuras para hombre. Secado rápido.",
@@ -229,14 +230,14 @@ const productos: ProductoSeed[] = [
 
   // ═══ MUJERES ═══════════════════════════════════════════════════════════
   {
-    slug: "polo-basico-algodon-mujer",
-    nombre: "Polo Básico Algodón Mujer",
+    slug: "polo-basico-de-algodon-para-mujer",
+    nombre: "Polo Básico de Algodón para Mujer",
     descripcion:
       "Polo de algodón con corte entallado y cuello redondo. Tela suave que no pierde forma con el lavado.",
     descripcionCorta: "Algodón suave, corte entallado.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Polo Básico Algodón Mujer | Tienda",
+    tituloSeo: "Polo Básico de Algodón para Mujer | Tienda",
     descripcionSeo: "Polo básico de algodón para mujer. Corte entallado, cuello redondo.",
     marca: "Fila",
     categoriaSlug: "mujeres",
@@ -249,14 +250,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-oversize-algodon-mujer",
-    nombre: "Polo Oversize Algodón Mujer",
+    slug: "polo-oversize-de-algodon-para-mujer",
+    nombre: "Polo Oversize de Algodón para Mujer",
     descripcion:
       "Polo de corte oversize en algodón grueso. Hombro caído y largo midi, ideal para combinar de varias formas.",
     descripcionCorta: "Corte oversize, algodón grueso.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Oversize Algodón Mujer | Tienda",
+    tituloSeo: "Polo Oversize de Algodón para Mujer | Tienda",
     descripcionSeo: "Polo oversize de algodón para mujer. Hombro caído, largo midi.",
     marca: "Boston",
     categoriaSlug: "mujeres",
@@ -268,14 +269,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-invisibles-pack3-mujer",
-    nombre: "Medias Invisibles Pack x3",
+    slug: "medias-invisibles-pack-x3-para-mujer",
+    nombre: "Medias Invisibles Pack x3 para Mujer",
     descripcion:
       "Pack de 3 medias invisibles con silicona antideslizante en el talón. No se ven al usar zapatillas o flats.",
     descripcionCorta: "Pack x3, invisibles.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Medias Invisibles Pack x3 Mujer | Tienda",
+    tituloSeo: "Medias Invisibles Pack x3 para Mujer | Tienda",
     descripcionSeo: "Pack de 3 medias invisibles para mujer. Silicona antideslizante.",
     marca: "Qiling",
     categoriaSlug: "mujeres",
@@ -306,8 +307,8 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "calzon-algodon-pack5-mujer",
-    nombre: "Calzón Algodón Clásico Pack x5",
+    slug: "calzon-algodon-clasico-pack-x5-mujer",
+    nombre: "Calzón Algodón Clásico Pack x5 Mujer",
     descripcion:
       "Pack de 5 calzones de algodón corte clásico, pretina suave que no aprieta. Transpirables para uso diario.",
     descripcionCorta: "Pack x5, corte clásico.",
@@ -326,12 +327,12 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "calzon-microfibra-mujer",
-    nombre: "Calzón Microfibra Invisible",
+    slug: "calzon-microfibra-invisible-mujer",
+    nombre: "Calzón Microfibra Invisible Mujer",
     descripcion:
       "Calzón de microfibra sin costuras, corte bikini. Invisible bajo prendas ajustadas.",
     descripcionCorta: "Microfibra, corte bikini.",
-    etiqueta: "Oferta",
+    etiqueta: "Top",
     destacada: false,
     tituloSeo: "Calzón Microfibra Invisible Mujer | Tienda",
     descripcionSeo: "Calzón de microfibra invisible para mujer. Corte bikini, sin costuras.",
@@ -386,14 +387,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-basicas-joven",
-    nombre: "Medias Básicas Pack x3 Joven",
+    slug: "medias-basicas-de-algodon-pack-x3-joven",
+    nombre: "Medias Básicas de Algodón Pack x3 Joven",
     descripcion:
       "Pack de 3 medias de algodón elástico, talla única. Resistentes para el uso escolar diario.",
     descripcionCorta: "Pack x3, uso diario.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Medias Básicas Pack x3 Joven | Tienda",
+    tituloSeo: "Medias Básicas de Algodón Pack x3 Joven | Tienda",
     descripcionSeo: "Pack de 3 medias básicas para jóvenes. Algodón elástico.",
     marca: "Qiling",
     categoriaSlug: "jovenes",
@@ -423,14 +424,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-basico-joven",
-    nombre: "Boxer Algodón Joven Pack x3",
+    slug: "boxer-algodon-basico-joven-pack-x3",
+    nombre: "Boxer Algodón Básico Joven Pack x3",
     descripcion:
       "Pack de 3 boxers de algodón con pretina suave, corte cómodo pensado para adolescentes.",
     descripcionCorta: "Pack x3, pretina suave.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Boxer Algodón Joven Pack x3 | Tienda",
+    tituloSeo: "Boxer Algodón Básico Joven Pack x3 | Tienda",
     descripcionSeo: "Pack de 3 boxers de algodón para jóvenes. Pretina suave.",
     marca: "Fila",
     categoriaSlug: "jovenes",
@@ -447,7 +448,7 @@ const productos: ProductoSeed[] = [
     descripcion:
       "Boxer de algodón con estampado, pretina elástica ancha. Diseño divertido para el día a día.",
     descripcionCorta: "Estampado, algodón suave.",
-    etiqueta: "Oferta",
+    etiqueta: "Top",
     destacada: false,
     tituloSeo: "Boxer Estampado Divertido Joven | Tienda",
     descripcionSeo: "Boxer estampado de algodón para jóvenes.",
@@ -463,14 +464,14 @@ const productos: ProductoSeed[] = [
 
   // ═══ NIÑOS ═════════════════════════════════════════════════════════════
   {
-    slug: "polo-basico-algodon-para-nino",
-    nombre: "Polo Básico Algodón para Niño",
+    slug: "polo-basico-de-algodon-para-nino",
+    nombre: "Polo Básico de Algodón para Niño",
     descripcion:
       "Polo de algodón suave, corte holgado pensado para el movimiento de los niños. Resistente a lavados frecuentes.",
     descripcionCorta: "Algodón suave, corte holgado.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Polo Básico Algodón para Niño | Tienda",
+    tituloSeo: "Polo Básico de Algodón para Niño | Tienda",
     descripcionSeo: "Polo básico de algodón para niño. Corte holgado, resistente.",
     marca: "San Shan",
     categoriaSlug: "ninos",
@@ -501,14 +502,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-basicas-nino",
-    nombre: "Medias Básicas Pack x3 Niño",
+    slug: "medias-basicas-de-algodon-pack-x3-nino",
+    nombre: "Medias Básicas de Algodón Pack x3 Niño",
     descripcion:
       "Pack de 3 medias de algodón, talla única. Resistentes para el uso escolar y el juego diario.",
     descripcionCorta: "Pack x3, uso escolar.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Medias Básicas Pack x3 Niño | Tienda",
+    tituloSeo: "Medias Básicas de Algodón Pack x3 Niño | Tienda",
     descripcionSeo: "Pack de 3 medias básicas para niño. Uso escolar diario.",
     marca: "Amanecer",
     categoriaSlug: "ninos",
@@ -524,7 +525,7 @@ const productos: ProductoSeed[] = [
     descripcion:
       "Medias deportivas con refuerzo en talón y punta, ideales para educación física.",
     descripcionCorta: "Refuerzo talón y punta.",
-    etiqueta: "Oferta",
+    etiqueta: "Nuevo",
     destacada: false,
     tituloSeo: "Medias Deportivas Running Niño | Tienda",
     descripcionSeo: "Medias deportivas para niño con refuerzo en talón y punta.",
@@ -538,14 +539,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-basico-nino",
-    nombre: "Boxer Algodón Niño Pack x3",
+    slug: "boxer-algodon-basico-nino-pack-x3",
+    nombre: "Boxer Algodón Básico Niño Pack x3",
     descripcion:
       "Pack de 3 boxers de algodón suave, pretina que no aprieta. Corte cómodo para el día a día.",
     descripcionCorta: "Pack x3, pretina suave.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Boxer Algodón Niño Pack x3 | Tienda",
+    tituloSeo: "Boxer Algodón Básico Niño Pack x3 | Tienda",
     descripcionSeo: "Pack de 3 boxers de algodón para niño. Pretina suave.",
     marca: "Boston",
     categoriaSlug: "ninos",
@@ -597,14 +598,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "polo-basico-de-algodon-bebe",
-    nombre: "Polo Básico de Algodón Bebé",
+    slug: "polo-basico-de-algodon-para-bebe",
+    nombre: "Polo Básico de Algodón para Bebé",
     descripcion:
       "Polo de algodón suave para bebé, cuello ancho para facilitar el vestido. Costuras planas que no irritan.",
     descripcionCorta: "Cuello ancho, costuras planas.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Polo Básico de Algodón Bebé | Tienda",
+    tituloSeo: "Polo Básico de Algodón para Bebé | Tienda",
     descripcionSeo: "Polo básico de algodón para bebé. Cuello ancho, costuras planas.",
     marca: "Amanecer",
     categoriaSlug: "bebes",
@@ -615,14 +616,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-suaves-pack3-bebe",
-    nombre: "Medias Suaves Pack x3 Bebé",
+    slug: "medias-suaves-de-algodon-pack-x3-bebe",
+    nombre: "Medias Suaves de Algodón Pack x3 Bebé",
     descripcion:
       "Pack de 3 medias de algodón extra suave, elástico delicado que no marca la piel del bebé.",
     descripcionCorta: "Pack x3, algodón extra suave.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Medias Suaves Pack x3 Bebé | Tienda",
+    tituloSeo: "Medias Suaves de Algodón Pack x3 Bebé | Tienda",
     descripcionSeo: "Pack de 3 medias suaves para bebé. Algodón extra suave.",
     marca: "Fila",
     categoriaSlug: "bebes",
@@ -633,14 +634,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-antideslizantes-bebe",
-    nombre: "Medias Antideslizantes Bebé",
+    slug: "medias-antideslizantes-para-bebe",
+    nombre: "Medias Antideslizantes para Bebé",
     descripcion:
       "Medias con puntos antideslizantes en la planta, ideales para cuando el bebé empieza a gatear o caminar.",
     descripcionCorta: "Puntos antideslizantes.",
-    etiqueta: "Oferta",
+    etiqueta: "Top",
     destacada: false,
-    tituloSeo: "Medias Antideslizantes Bebé | Tienda",
+    tituloSeo: "Medias Antideslizantes para Bebé | Tienda",
     descripcionSeo: "Medias antideslizantes para bebé. Ideales para gatear o caminar.",
     marca: "Boston",
     categoriaSlug: "bebes",
@@ -652,14 +653,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "calzon-algodon-pack3-bebe",
-    nombre: "Calzón de Algodón Bebé Pack x3",
+    slug: "calzon-de-algodon-suave-bebe-pack-x3",
+    nombre: "Calzón de Algodón Suave Bebé Pack x3",
     descripcion:
       "Pack de 3 calzones de algodón suave para bebé, pretina delicada que no marca. Ideales para debajo del pañal de tela.",
     descripcionCorta: "Pack x3, pretina delicada.",
     etiqueta: "Más vendido",
     destacada: true,
-    tituloSeo: "Calzón de Algodón Bebé Pack x3 | Tienda",
+    tituloSeo: "Calzón de Algodón Suave Bebé Pack x3 | Tienda",
     descripcionSeo: "Pack de 3 calzones de algodón para bebé. Pretina delicada.",
     marca: "San Shan",
     categoriaSlug: "bebes",
@@ -671,14 +672,14 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "body-broches-estampado-bebe",
-    nombre: "Body con Broches Estampado",
+    slug: "body-con-broches-estampado-para-bebe",
+    nombre: "Body con Broches Estampado para Bebé",
     descripcion:
       "Body de algodón estampado con broches laterales y en entrepierna. Facil de poner y quitar.",
     descripcionCorta: "Broches laterales, estampado.",
-    etiqueta: "Oferta",
+    etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Body con Broches Estampado Bebé | Tienda",
+    tituloSeo: "Body con Broches Estampado para Bebé | Tienda",
     descripcionSeo: "Body estampado con broches para bebé. Fácil de poner y quitar.",
     marca: "Qiling",
     categoriaSlug: "bebes",
@@ -693,12 +694,12 @@ const productos: ProductoSeed[] = [
   // ═══ NUEVAS MARCAS ═════════════════════════════════════════════════════════
   {
     slug: "polo-premium-algodon-pesail-hombre",
-    nombre: "Polo Premium Algodón Pesail",
+    nombre: "Polo Premium Algodón Pesail Hombre",
     descripcion: "Polo premium de algodón de alta calidad. Diseño exclusivo Pesail.",
     descripcionCorta: "Algodón premium, diseño Pesail.",
     etiqueta: "Nuevo",
     destacada: true,
-    tituloSeo: "Polo Premium Algodón Pesail | Tienda",
+    tituloSeo: "Polo Premium Algodón Pesail Hombre | Tienda",
     descripcionSeo: "Polo premium Pesail de algodón. Calidad superior.",
     marca: "Pesail",
     categoriaSlug: "hombres",
@@ -710,13 +711,13 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-premium-xy-mujer",
-    nombre: "Medias Premium X&Y Mujer",
+    slug: "medias-premium-xy-algodon-para-mujer",
+    nombre: "Medias Premium X&Y Algodón para Mujer",
     descripcion: "Medias premium con tecnología microtech X&Y. Máxima comodidad.",
     descripcionCorta: "Tecnología microtech X&Y.",
     etiqueta: "Nuevo",
     destacada: true,
-    tituloSeo: "Medias Premium X&Y Mujer | Tienda",
+    tituloSeo: "Medias Premium X&Y Algodón para Mujer | Tienda",
     descripcionSeo: "Medias premium X&Y para mujer. Tecnología microtech.",
     marca: "X&Y",
     categoriaSlug: "mujeres",
@@ -727,13 +728,13 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "calzon-americano-premium-mujer",
-    nombre: "Calzón Americano Premium",
+    slug: "calzon-americano-premium-para-mujer",
+    nombre: "Calzón Americano Premium para Mujer",
     descripcion: "Calzón premium corte americano con tela de alta densidad.",
     descripcionCorta: "Corte americano, alta densidad.",
     etiqueta: "Nuevo",
     destacada: false,
-    tituloSeo: "Calzón Americano Premium Mujer | Tienda",
+    tituloSeo: "Calzón Americano Premium para Mujer | Tienda",
     descripcionSeo: "Calzón americano premium para mujer.",
     marca: "Americano",
     categoriaSlug: "mujeres",
@@ -745,13 +746,13 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "boxer-unno-premium-hombre",
-    nombre: "Boxer Unno Premium Hombre",
+    slug: "boxer-unno-premium-microfibra-hombre",
+    nombre: "Boxer Unno Premium Microfibra Hombre",
     descripcion: "Boxer premium Unno con tecnología de microfibra avanzada.",
     descripcionCorta: "Microfibra avanzada, corte premium.",
     etiqueta: "Nuevo",
     destacada: true,
-    tituloSeo: "Boxer Unno Premium Hombre | Tienda",
+    tituloSeo: "Boxer Unno Premium Microfibra Hombre | Tienda",
     descripcionSeo: "Boxer premium Unno para hombre. Microfibra avanzada.",
     marca: "Unno",
     categoriaSlug: "hombres",
@@ -763,13 +764,13 @@ const productos: ProductoSeed[] = [
     ],
   },
   {
-    slug: "medias-sport-galufei-joven",
-    nombre: "Medias Sport Galufei Joven",
+    slug: "medias-sport-galufei-compresion-joven",
+    nombre: "Medias Sport Galufei Compresión Joven",
     descripcion: "Medias deportivas Galufei con compresión y ventilación.",
     descripcionCorta: "Compresión transpirable",
-    etiqueta: "Tendencia",
+    etiqueta: "Top",
     destacada: false,
-    tituloSeo: "Medias Sport Galufei Joven | Tienda",
+    tituloSeo: "Medias Sport Galufei Compresión Joven | Tienda",
     descripcionSeo: "Medias sport Galufei para jóvenes. Compresión y ventilación.",
     marca: "Galufei",
     categoriaSlug: "jovenes",
@@ -814,20 +815,32 @@ async function crearProductos() {
       create: { ...datosProducto, categoriaId: categoria.id },
     });
 
-    // Idempotente: se borran variantes e imagenes del producto y se recrean,
-    // asi correr el seed otra vez no choca con el @@unique([productoId, talla, color]).
-    await prisma.variante.deleteMany({ where: { productoId: producto.id } });
-    await prisma.imagenProducto.deleteMany({ where: { productoId: producto.id } });
-
-    await prisma.variante.createMany({
-      data: variantes.map((v) => ({
-        productoId: producto.id,
-        talla: v.talla,
-        color: v.color,
-        stock: v.stock,
-        sku: skuDe(p.slug, v),
-      })),
+    // Las variantes no se borran: un pedido o un movimiento de stock las
+    // referencia, y la base lo impide (items_pedido_varianteId_fkey). Solo se
+    // crean las que faltan, buscando por la clave natural talla + color. Las
+    // que ya existen se dejan intactas, con su SKU y su stock actual: la
+    // semilla no debe pisar el saldo que ya cambiaron las ventas.
+    const existentes = await prisma.variante.findMany({
+      where: { productoId: producto.id },
+      select: { talla: true, color: true },
     });
+    const yaExiste = new Set(existentes.map((e) => `${e.talla}|${e.color}`));
+
+    const nuevas = variantes.filter((v) => !yaExiste.has(`${v.talla}|${v.color}`));
+    if (nuevas.length > 0) {
+      await prisma.variante.createMany({
+        data: nuevas.map((v) => ({
+          productoId: producto.id,
+          talla: v.talla,
+          color: v.color,
+          stock: v.stock,
+          sku: skuDe(p.slug, v),
+        })),
+      });
+    }
+
+    // Las imagenes no tienen referencias externas: se recrean.
+    await prisma.imagenProducto.deleteMany({ where: { productoId: producto.id } });
 
     await prisma.imagenProducto.createMany({
       data: [
@@ -837,7 +850,9 @@ async function crearProductos() {
     });
 
     const oferta = p.precioLista ? ` (oferta desde S/ ${p.precioLista})` : "";
-    console.log(`  ✔ ${producto.nombre} — S/ ${p.precio}${oferta} — ${variantes.length} variantes`);
+    console.log(
+      `  ✔ ${producto.nombre} — S/ ${p.precio}${oferta} — ${variantes.length} variantes (${nuevas.length} nuevas)`,
+    );
   }
 }
 

@@ -1,7 +1,6 @@
 import { AccionesCuenta } from "./AccionesCuenta";
 import { Buscador } from "./Buscador";
 import { Logo } from "./Logo";
-import { Ubicacion } from "./Ubicacion";
 import { IconoOpciones } from "../iconos";
 import "./estilos/header.css";
 
@@ -20,7 +19,6 @@ export function Header() {
         <button className="ui-header__menu" type="button" aria-label="Menú" title="Menú">
           <IconoOpciones />
         </button>
-        <div className="ui-header__ubicacion"><Ubicacion /></div>
         <div className="ui-header__acciones">
           <AccionesCuenta />
         </div>

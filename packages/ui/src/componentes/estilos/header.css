@@ -11,7 +11,7 @@
 .ui-header__interior {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(16rem, 1fr) auto auto;
+  grid-template-columns: auto minmax(16rem, 1fr) auto;
   align-items: center;
   gap: var(--espacio-6);
   min-block-size: var(--espacio-24);
@@ -50,17 +50,8 @@
   box-sizing: border-box;
 }
 
-.ui-header__ubicacion .ui-ubicacion {
-  block-size: var(--espacio-12);
-  box-sizing: border-box;
-}
-
-.ui-header__ubicacion {
-  grid-column: 3;
-}
-
 .ui-header__acciones {
-  grid-column: 4;
+  grid-column: 3;
   justify-self: end;
   display: flex;
   align-items: center;
@@ -100,7 +91,6 @@
     justify-self: start;
     transform: none;
   }
-  .ui-header__ubicacion { display: none; }
   .ui-header__acciones { grid-row: 1; grid-column: 2; }
   .ui-header__acciones .ui-acciones-cuenta { gap: var(--espacio-2); }
   .ui-header__menu {

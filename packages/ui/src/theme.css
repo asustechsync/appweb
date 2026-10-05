@@ -13,6 +13,7 @@
   --color-marca-800: #0C0C0C;
   --color-marca-900: #080808;
   --color-neutro-0: #FFFFFF;
+  --color-neutro-25: #F7F7F7;
   --color-neutro-50: #F6F6F7;
   --color-neutro-100: #F2F2F2;
   --color-neutro-200: #E3E3E6;
@@ -33,8 +34,18 @@
   --color-favorito: #EF7A1E;
   --color-calificacion: #F2A93B;
   --color-envioGratis: #0F9D70;
+  --color-tendenciaFondo: #FDEBD6;
+  --color-tendenciaTexto: #B4540A;
+  --color-ofertaFondo: #FCE1E4;
+  --color-ofertaTexto: #B42336;
+  --color-nuevoFondo: #D9EEF9;
+  --color-nuevoTexto: #0B6A94;
+  --color-disponibleFondo: #D8F3E5;
+  --color-disponibleTexto: #17704A;
+  --color-fondoImagen: #FFFFFF;
   --color-fondo: #FFFFFF;
   --color-fondoSutil: #ECECED;
+  --color-fondoPortada: #F3F4FB;
   --color-superficie: #F6F6F7;
   --color-borde: #E3E3E6;
   --color-bordeFuerte: #D4D4D8;
@@ -59,12 +70,14 @@
   --radio-sm: 4px;
   --radio-md: 8px;
   --radio-lg: 12px;
+  --radio-bloque: 10px;
   --radio-xl: 18px;
   --radio-completo: 9999px;
   --tipo-familia-base: 'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --tipo-familia-numeros: 'Urbanist', system-ui, -apple-system, sans-serif;
   --tipo-familia-acceso: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --tipo-familia-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --tipo-tamano-etiqueta: 11px;
   --tipo-tamano-xs: 12px;
   --tipo-tamano-sm: 14px;
   --tipo-tamano-base: 16px;
@@ -86,6 +99,7 @@
   --sombra-sm: 0 1px 2px rgb(24 24 27 / 0.04);
   --sombra-md: 0 2px 10px rgb(24 24 27 / 0.06);
   --sombra-lg: 0 10px 30px -8px rgb(24 24 27 / 0.10);
+  --sombra-difusa: 0 0 2px rgb(24 24 27 / 0.008), 0 10px 56px -10px rgb(24 24 27 / 0.03);
   --control-alto: 40px;
   --control-altoSm: 32px;
   --control-paddingX: 12px;
@@ -155,6 +169,15 @@
     --color-oferta: #F07C81;
     --color-agotado: #6B6B74;
     --color-favorito: #F79544;
+    --color-tendenciaFondo: #4A3320;
+    --color-tendenciaTexto: #F7B77A;
+    --color-ofertaFondo: #4D2229;
+    --color-ofertaTexto: #F5A3AD;
+    --color-nuevoFondo: #1D3B4C;
+    --color-nuevoTexto: #86CDEE;
+    --color-disponibleFondo: #1E3D30;
+    --color-disponibleTexto: #7ED9A6;
+    --color-fondoImagen: #27272A;
     --color-calificacion: #F4BB5C;
     --color-exito: #3ED68C;
     --color-exitoClaro: #8FE388;
@@ -165,6 +188,7 @@
     --sombra-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --sombra-md: 0 2px 10px rgb(0 0 0 / 0.5);
     --sombra-lg: 0 12px 34px -8px rgb(0 0 0 / 0.65);
+    --sombra-difusa: 0 2px 8px rgb(0 0 0 / 0.3), 0 16px 48px -4px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -192,6 +216,15 @@
   --color-oferta: #F07C81;
   --color-agotado: #6B6B74;
   --color-favorito: #F79544;
+  --color-tendenciaFondo: #4A3320;
+  --color-tendenciaTexto: #F7B77A;
+  --color-ofertaFondo: #4D2229;
+  --color-ofertaTexto: #F5A3AD;
+  --color-nuevoFondo: #1D3B4C;
+  --color-nuevoTexto: #86CDEE;
+  --color-disponibleFondo: #1E3D30;
+  --color-disponibleTexto: #7ED9A6;
+  --color-fondoImagen: #27272A;
   --color-calificacion: #F4BB5C;
   --color-exito: #3ED68C;
   --color-exitoClaro: #8FE388;
@@ -202,4 +235,5 @@
   --sombra-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --sombra-md: 0 2px 10px rgb(0 0 0 / 0.5);
   --sombra-lg: 0 12px 34px -8px rgb(0 0 0 / 0.65);
+  --sombra-difusa: 0 2px 8px rgb(0 0 0 / 0.3), 0 16px 48px -4px rgb(0 0 0 / 0.5);
 }

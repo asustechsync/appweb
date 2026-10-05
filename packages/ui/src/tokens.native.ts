@@ -17,6 +17,7 @@ export const tokensNativos = {
     },
     "neutro": {
       "0": "#FFFFFF",
+      "25": "#F7F7F7",
       "50": "#F6F6F7",
       "100": "#F2F2F2",
       "200": "#E3E3E6",
@@ -38,8 +39,18 @@ export const tokensNativos = {
     "favorito": "#EF7A1E",
     "calificacion": "#F2A93B",
     "envioGratis": "#0F9D70",
+    "tendenciaFondo": "#FDEBD6",
+    "tendenciaTexto": "#B4540A",
+    "ofertaFondo": "#FCE1E4",
+    "ofertaTexto": "#B42336",
+    "nuevoFondo": "#D9EEF9",
+    "nuevoTexto": "#0B6A94",
+    "disponibleFondo": "#D8F3E5",
+    "disponibleTexto": "#17704A",
+    "fondoImagen": "#FFFFFF",
     "fondo": "#FFFFFF",
     "fondoSutil": "#ECECED",
+    "fondoPortada": "#F3F4FB",
     "superficie": "#F6F6F7",
     "borde": "#E3E3E6",
     "bordeFuerte": "#D4D4D8",
@@ -68,6 +79,7 @@ export const tokensNativos = {
     "sm": 4,
     "md": 8,
     "lg": 12,
+    "bloque": 10,
     "xl": 18,
     "completo": 9999
   },
@@ -79,6 +91,7 @@ export const tokensNativos = {
       "mono": "'IBM Plex Mono', ui-monospace, Consolas, monospace"
     },
     "tamano": {
+      "etiqueta": 11,
       "xs": 12,
       "sm": 14,
       "base": 16,
@@ -106,7 +119,8 @@ export const tokensNativos = {
     "ninguna": "none",
     "sm": "0 1px 2px rgb(24 24 27 / 0.04)",
     "md": "0 2px 10px rgb(24 24 27 / 0.06)",
-    "lg": "0 10px 30px -8px rgb(24 24 27 / 0.10)"
+    "lg": "0 10px 30px -8px rgb(24 24 27 / 0.10)",
+    "difusa": "0 0 2px rgb(24 24 27 / 0.008), 0 10px 56px -10px rgb(24 24 27 / 0.03)"
   },
   "control": {
     "alto": 40,
@@ -177,6 +191,15 @@ export const tokensNativosOscuro = {
     "oferta": "#F07C81",
     "agotado": "#6B6B74",
     "favorito": "#F79544",
+    "tendenciaFondo": "#4A3320",
+    "tendenciaTexto": "#F7B77A",
+    "ofertaFondo": "#4D2229",
+    "ofertaTexto": "#F5A3AD",
+    "nuevoFondo": "#1D3B4C",
+    "nuevoTexto": "#86CDEE",
+    "disponibleFondo": "#1E3D30",
+    "disponibleTexto": "#7ED9A6",
+    "fondoImagen": "#27272A",
     "calificacion": "#F4BB5C",
     "exito": "#3ED68C",
     "exitoClaro": "#8FE388",
@@ -188,6 +211,7 @@ export const tokensNativosOscuro = {
     "ninguna": "none",
     "sm": "0 1px 2px rgb(0 0 0 / 0.4)",
     "md": "0 2px 10px rgb(0 0 0 / 0.5)",
-    "lg": "0 12px 34px -8px rgb(0 0 0 / 0.65)"
+    "lg": "0 12px 34px -8px rgb(0 0 0 / 0.65)",
+    "difusa": "0 2px 8px rgb(0 0 0 / 0.3), 0 16px 48px -4px rgb(0 0 0 / 0.5)"
   }
 } as const;

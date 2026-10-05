@@ -32,7 +32,13 @@
 .ui-carrusel__pista::-webkit-scrollbar {
   display: none;
 }
-.ui-carrusel__pista > * {
+/* Modo infinito: la copia no tiene caja propia, asi sus items son hijos
+   flex de la pista como en el modo normal y comparten el mismo gap. */
+.ui-carrusel__copia {
+  display: contents;
+}
+.ui-carrusel__pista > :not(.ui-carrusel__copia),
+.ui-carrusel__copia > * {
   flex: 0 0 auto;
   scroll-snap-align: start;
   inline-size: calc((100cqw - (var(--visibles) - 1) * var(--espacio-4)) / var(--visibles));

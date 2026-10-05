@@ -206,6 +206,63 @@
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-fuerte);
 }
+/* Etiquetas de la info (tendencia). Ocultas por
+   defecto; el listado que las quiera muestra el contenedor. */
+.ui-tarjeta-producto__etiquetas {
+  display: none;
+  flex-wrap: wrap;
+  gap: var(--espacio-1);
+}
+.ui-tarjeta-producto__oferta,
+.ui-tarjeta-producto__nuevo,
+.ui-tarjeta-producto__tendencia,
+.ui-tarjeta-producto__disponible {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  font-size: var(--tipo-tamano-etiqueta);
+  font-weight: var(--tipo-peso-normal);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.ui-tarjeta-producto__oferta {
+  background: var(--color-ofertaFondo);
+  color: var(--color-ofertaTexto);
+}
+.ui-tarjeta-producto__nuevo {
+  background: var(--color-nuevoFondo);
+  color: var(--color-nuevoTexto);
+}
+/* Esquina izquierda de la imagen: Nuevo y Oferta en una misma linea, Nuevo primero.
+   Oculta salvo donde el listado la pida. */
+.ui-tarjeta-producto__esquina {
+  display: none;
+  position: absolute;
+  inset-block-start: var(--espacio-2);
+  inset-inline-start: var(--espacio-2);
+  flex-flow: row wrap;
+  align-items: center;
+  gap: var(--espacio-1);
+  /* Si la tarjeta es muy angosta, Oferta baja en vez de salirse de la imagen. */
+  max-inline-size: calc(100% - var(--espacio-4));
+}
+.ui-tarjeta-producto__tendencia {
+  background: var(--color-tendenciaFondo);
+  color: var(--color-tendenciaTexto);
+}
+.ui-tarjeta-producto__disponible {
+  background: var(--color-disponibleFondo);
+  color: var(--color-disponibleTexto);
+}
+/* El reset global de svg (max-width: 100%) lo dejaria en 0 dentro de una pastilla
+   que se ajusta a su contenido: el icono conserva su tamano. */
+.ui-tarjeta-producto__tendencia svg {
+  flex: none;
+  max-inline-size: none;
+}
 .ui-tarjeta-producto__etiqueta {
   position: absolute;
   inset-block-start: var(--espacio-2);
@@ -257,4 +314,24 @@
 .ui-tarjeta-producto__estado--agotado {
   background: color-mix(in srgb, var(--color-error) 14%, var(--color-superficie));
   color: var(--color-error);
+}
+
+/* Fila de marca: contenedor transparente (display: contents) para que el catalogo
+   se vea igual; la calificacion queda oculta salvo donde el listado la pida. */
+.ui-tarjeta-producto__marca-fila {
+  display: contents;
+}
+.ui-tarjeta-producto__calificacion {
+  display: none;
+  align-items: center;
+  gap: var(--espacio-1);
+  margin-inline-start: auto;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  line-height: 1;
+}
+.ui-tarjeta-producto__calificacion svg {
+  flex: none;
+  max-inline-size: none;
 }

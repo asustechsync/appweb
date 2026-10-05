@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { IconoFlechaIzquierda } from "../iconos";
+import { IconoEstrella, IconoFlechaIzquierda, IconoLlama } from "../iconos";
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
@@ -30,6 +30,13 @@ export interface PropsTarjetaProducto {
   contexto?: "rejilla" | "carrusel" | "portada";
   presentacion?: "catalogo" | "portada";
 }
+
+/**
+ * Calificacion provisional: aun no hay resenas en la base, asi que todas las
+ * tarjetas muestran el mismo valor. Cuando exista el dato, pasa a ser una
+ * prop calculada en packages/core, no un numero fijo aqui.
+ */
+const CALIFICACION_PROVISIONAL = "4.9";
 
 /**
  * Ancho real de la tarjeta en cada contexto, para que el navegador no baje
@@ -70,6 +77,16 @@ export function TarjetaProducto({
   presentacion = "catalogo",
 }: PropsTarjetaProducto) {
   const portada = presentacion === "portada";
+  const claveEtiqueta = etiqueta?.trim().toLowerCase();
+  // "Tendencia" era el nombre anterior de esta etiqueta: se sigue aceptando
+  // para que datos viejos (o en cache) tambien muestren la pastilla "Top".
+  const esTendencia = claveEtiqueta === "top" || claveEtiqueta === "tendencia";
+  // Oferta sale de que el producto tenga descuento real, no de la palabra guardada
+  // en su etiqueta: asi todo producto rebajado la lleva, sea "Nuevo" o "Tendencia".
+  const esOferta = Boolean(descuentoPct) || claveEtiqueta === "oferta";
+  const esNuevo = claveEtiqueta === "nuevo";
+  // Estas cuatro etiquetas tienen pastilla propia en la info.
+  const etiquetaEnInfo = esTendencia || esOferta || esNuevo;
 
   const claseTarjeta = `ui-tarjeta-producto ${portada ? "ui-tarjeta-producto--portada" : "ui-tarjeta-producto--vertical"}`;
 
@@ -95,17 +112,42 @@ export function TarjetaProducto({
             fetchPriority={portada ? "high" : undefined}
           />
         ) : null}
+        {/* Esquina izquierda: Nuevo siempre primero (arriba), luego Oferta. */}
+        {!portada && (esNuevo || esOferta) ? (
+          <span className="ui-tarjeta-producto__esquina">
+            {esNuevo ? <span className="ui-tarjeta-producto__nuevo">Nuevo</span> : null}
+            {esOferta ? <span className="ui-tarjeta-producto__oferta">Oferta</span> : null}
+          </span>
+        ) : null}
         {descuentoPct ? (
           <span className="ui-tarjeta-producto__insignia">-{descuentoPct}%</span>
         ) : null}
         {!portada && etiqueta ? (
-          <span className="ui-tarjeta-producto__etiqueta">{etiqueta}</span>
+          <span
+            className={
+              etiquetaEnInfo
+                ? "ui-tarjeta-producto__etiqueta ui-tarjeta-producto__etiqueta--info"
+                : "ui-tarjeta-producto__etiqueta"
+            }
+          >
+            {etiqueta}
+          </span>
         ) : null}
       </span>
 
       <div className="ui-tarjeta-producto__contenido">
         {portada && categoria ? <span className="ui-tarjeta-producto__etiqueta">{categoria}</span> : null}
-        {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
+        {portada ? (
+          marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null
+        ) : (
+          <span className="ui-tarjeta-producto__marca-fila">
+            {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
+            <span className="ui-tarjeta-producto__calificacion" aria-label={`Calificacion ${CALIFICACION_PROVISIONAL}`}>
+              <IconoEstrella tamano={12} relleno />
+              {CALIFICACION_PROVISIONAL}
+            </span>
+          </span>
+        )}
         {portada ? (
           <Link className="ui-tarjeta-producto__nombre-enlace" href={`/productos/${slug}`}>
             <span className="ui-tarjeta-producto__nombre">{nombre}</span>
@@ -113,6 +155,20 @@ export function TarjetaProducto({
         ) : (
           <span className="ui-tarjeta-producto__nombre">{nombre}</span>
         )}
+        {/* Etiqueta de la info: top. El hueco se reserva siempre (aunque el producto
+            no la tenga) para que todas las tarjetas de un listado midan igual. Cada
+            listado decide si lo muestra; en el catalogo queda oculto. */}
+        {!portada ? (
+          <span className="ui-tarjeta-producto__etiquetas">
+            {esTendencia ? (
+              <span className="ui-tarjeta-producto__tendencia">
+                <IconoLlama tamano={11} />
+                Top
+              </span>
+            ) : null}
+            {disponible ? <span className="ui-tarjeta-producto__disponible">Disponible</span> : null}
+          </span>
+        ) : null}
         {portada && descripcionCorta ? <span className="ui-tarjeta-producto__descripcion">{descripcionCorta}</span> : null}
         {portada && tallas && tallas.length > 0 ? (
           <span className="ui-tarjeta-producto__tallas" aria-label="Tallas disponibles">
@@ -137,6 +193,8 @@ export function TarjetaProducto({
         <span className="ui-tarjeta-producto__precio-fila">
           <Precio valor={precio} antes={precioLista ?? null} tamano={portada ? "lg" : "md"} />
         </span>
+
+
       </div>
     </>
   );
