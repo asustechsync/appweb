@@ -1,0 +1,366 @@
+/* Portada en panel. Base movil: todo apilado. Desde 48rem dos columnas;
+   desde 64rem la rejilla de cuatro columnas iguales:
+     intro   producto producto producto
+     compra  producto producto coleccion   (coleccion flota sobre el producto)
+     compra  tarjeta  tarjeta  tarjeta
+   La columna izquierda mide lo mismo que cada tarjeta inferior. */
+
+.ui-escaparate {
+  --color-fondo: var(--color-neutro-0);
+  --color-fondoSutil: var(--color-neutro-200);
+  --color-superficie: var(--color-neutro-50);
+  --color-borde: var(--color-neutro-200);
+  --color-bordeFuerte: var(--color-neutro-300);
+  --color-texto: var(--color-neutro-900);
+  --color-textoSuave: var(--color-neutro-600);
+  --color-textoTenue: var(--color-neutro-500);
+  --color-textoInverso: var(--color-neutro-0);
+  --color-marca-500: var(--color-neutro-900);
+  min-block-size: 100svh;
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+
+.ui-escaparate__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-4);
+  max-inline-size: var(--contenedor-ancho);
+  margin-inline: auto;
+  padding: var(--espacio-6) var(--espacio-4) var(--espacio-8);
+}
+
+/* Presentacion */
+
+.ui-escaparate__intro {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.ui-escaparate__titulo {
+  margin: 0;
+  font-size: var(--tipo-tamano-3xl);
+  font-weight: var(--tipo-peso-normal);
+  line-height: var(--tipo-altura-apretada);
+  letter-spacing: -0.03em;
+}
+
+.ui-escaparate__subtitulo {
+  margin: 0;
+  max-inline-size: 32ch;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+/* Producto protagonista */
+
+.ui-escaparate__producto {
+  position: relative;
+  min-inline-size: 0;
+  margin-inline: calc(var(--espacio-4) * -1);
+}
+
+/* Coleccion y tarjetas: misma piel de panel claro */
+
+.ui-escaparate__coleccion {
+  position: relative;
+  z-index: 2;
+  min-inline-size: 0;
+}
+
+.ui-escaparate__compra,
+.ui-escaparate__tarjeta,
+.ui-escaparate__coleccion .ui-bloque-coleccion {
+  border: 1px solid color-mix(in srgb, var(--color-borde), transparent 35%);
+  border-radius: var(--radio-xl);
+  background: color-mix(in srgb, var(--color-superficie), transparent 8%);
+  box-shadow: var(--sombra-sm);
+}
+
+/* Panel de compra: cabecera, rejilla 2x2 de beneficios y lista de atajos */
+
+.ui-escaparate__compra {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+}
+
+.ui-escaparate__compra-cabecera {
+  display: grid;
+  gap: var(--espacio-1);
+}
+
+.ui-escaparate__compra-cabecera h2 {
+  margin: 0;
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__compra-cabecera p {
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__atributos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-escaparate__atributos > li {
+  min-inline-size: 0;
+}
+
+.ui-escaparate__tarjeta-beneficio {
+  min-block-size: var(--espacio-24);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
+  border-radius: var(--radio-lg);
+  background: var(--color-neutro-0);
+}
+
+.ui-escaparate__tarjeta-beneficio > span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__tarjeta-beneficio h3 {
+  margin-block: auto 0;
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__tarjeta-beneficio p {
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__atajos {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-escaparate__atajos > li + li {
+  border-block-start: 1px solid var(--color-borde);
+}
+
+.ui-escaparate__atajo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding-block: var(--espacio-3);
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.ui-escaparate__atajo-icono {
+  color: var(--color-textoSuave);
+}
+
+.ui-escaparate__atajo-texto {
+  display: grid;
+}
+
+.ui-escaparate__atajo-texto strong {
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__atajo-texto span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__atajo-flecha {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-lg);
+  transition: transform var(--transicion-rapida);
+}
+
+.ui-escaparate__atajo:hover .ui-escaparate__atajo-flecha {
+  transform: translateX(var(--espacio-1));
+}
+
+.ui-escaparate__atajo:focus-visible {
+  border-radius: var(--radio-sm);
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
+}
+
+/* Tarjetas informativas del pie */
+
+.ui-escaparate__tarjeta {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+}
+
+.ui-escaparate__tarjeta-cabecera {
+  display: grid;
+  gap: var(--espacio-1);
+}
+
+.ui-escaparate__tarjeta h2 {
+  margin: 0;
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__tarjeta p {
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__enlace-informativo {
+  inline-size: fit-content;
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Orden movil: producto primero, luego lo que ayuda a decidir */
+.ui-escaparate__intro { order: 1; }
+.ui-escaparate__producto { order: 2; }
+.ui-escaparate__coleccion { order: 3; }
+.ui-escaparate__tarjeta--tallas { order: 4; }
+.ui-escaparate__compra { order: 5; }
+.ui-escaparate__tarjeta--entrega { order: 6; }
+.ui-escaparate__tarjeta--pago { order: 7; }
+
+@media (min-width: 48rem) {
+  .ui-escaparate__panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--espacio-8) var(--espacio-6);
+  }
+
+  .ui-escaparate__intro,
+  .ui-escaparate__producto {
+    grid-column: 1 / -1;
+  }
+
+  .ui-escaparate__producto {
+    margin-inline: 0;
+  }
+
+  .ui-escaparate__titulo {
+    font-size: var(--tipo-tamano-4xl);
+  }
+
+  .ui-escaparate__compra { grid-row: span 2; }
+  .ui-escaparate__tarjeta--pago { grid-column: 1 / -1; }
+}
+
+@media (min-width: 64rem) {
+  .ui-escaparate__panel {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    column-gap: var(--espacio-4);
+    row-gap: var(--espacio-4);
+  }
+
+  .ui-escaparate__intro,
+  .ui-escaparate__producto,
+  .ui-escaparate__coleccion,
+  .ui-escaparate__compra,
+  .ui-escaparate__tarjeta {
+    order: 0;
+  }
+
+  .ui-escaparate__intro {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    padding-block: var(--espacio-8);
+  }
+
+  .ui-escaparate__titulo {
+    font-size: clamp(var(--tipo-tamano-4xl), 3.4vw, var(--tipo-tamano-5xl));
+  }
+
+  .ui-escaparate__compra {
+    grid-column: 1;
+    grid-row: 2 / 4;
+  }
+
+  /* El producto ocupa las tres columnas de la derecha en las dos primeras
+     filas; la coleccion se monta encima en su esquina inferior derecha. */
+  .ui-escaparate__producto {
+    grid-column: 2 / 5;
+    grid-row: 1 / 3;
+  }
+
+  .ui-escaparate__coleccion {
+    grid-column: 4;
+    grid-row: 2;
+    align-self: end;
+  }
+
+  .ui-escaparate__tarjeta--entrega { grid-column: 2; grid-row: 3; }
+  .ui-escaparate__tarjeta--tallas { grid-column: 3; grid-row: 3; }
+  .ui-escaparate__tarjeta--pago { grid-column: 4; grid-row: 3; }
+
+  .ui-escaparate__tarjeta {
+    min-block-size: calc(var(--espacio-24) * 2);
+  }
+
+  /* Dentro del panel, la tarjeta del producto deja la imagen al centro y
+     sube sus datos a una ficha flotante, como una etiqueta sobre la foto. */
+  .ui-escaparate__producto .ui-tarjeta-producto--portada {
+    grid-template-columns: minmax(0, 1fr);
+    min-block-size: calc(var(--espacio-24) * 4.2);
+    padding: 0;
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen {
+    grid-column: 1;
+    min-block-size: calc(var(--espacio-24) * 3.8);
+    transform: none;
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen img {
+    inline-size: 58%;
+    block-size: 58%;
+    max-block-size: calc(var(--espacio-24) * 3.6);
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__contenido {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: var(--espacio-8);
+    inset-inline-end: 0;
+    inline-size: min(100%, calc(var(--espacio-24) * 2.8));
+    gap: var(--espacio-2);
+    padding: var(--espacio-4) var(--espacio-5);
+    border: 1px solid color-mix(in srgb, var(--color-borde), transparent 35%);
+    border-radius: var(--radio-xl);
+    background: color-mix(in srgb, var(--color-superficie), transparent 8%);
+    box-shadow: var(--sombra-sm);
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__nombre {
+    font-size: var(--tipo-tamano-lg);
+    letter-spacing: -0.02em;
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__precio-fila {
+    margin-block-start: var(--espacio-1);
+  }
+}

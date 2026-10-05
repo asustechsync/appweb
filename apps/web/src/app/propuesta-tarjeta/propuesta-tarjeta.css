@@ -1,0 +1,167 @@
+.propuesta {
+  color-scheme: light;
+  --color-texto: #171717;
+  --color-textoSuave: #52525b;
+  --color-textoTenue: #62626b;
+  --color-borde: #e3e3e6;
+  --color-marca-500: #171717;
+  --tipo-familia-numeros: var(--fuente-numeros), 'Urbanist', system-ui, sans-serif;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: clamp(24px, 5vw, 58px) clamp(16px, 6vw, 80px);
+  background: #f2f3fa;
+  color: #171717;
+}
+.propuesta__cabecera { max-width: 680px; margin: 0 auto 34px; text-align: center; }
+.propuesta__sobrelinea, .tarjeta__categoria { color: #62626b; font-size: 10px; font-weight: 600; letter-spacing: .12em; }
+.propuesta__cabecera h1 { margin: 9px 0; color: #171717; font-size: clamp(28px, 4vw, 40px); letter-spacing: -.04em; }
+.propuesta__cabecera p, .opcion__cabecera p { color: #52525b; }
+.propuesta__opciones { display: grid; grid-template-columns: repeat(2, minmax(0, 330px)); justify-content: center; align-items: start; gap: clamp(24px, 6vw, 76px); }
+.opcion { min-width: 0; }
+.opcion__cabecera { display: flex; align-items: center; gap: 12px; min-height: 48px; margin-bottom: 12px; }
+.opcion__numero { display: grid; flex: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #171717; color: #fff; font-family: var(--tipo-familia-numeros); font-weight: 600; }
+.opcion__cabecera h2 { color: #171717; font-size: 19px; }
+.opcion__cabecera p { margin-top: 2px; font-size: 13px; }
+.tarjeta { overflow: hidden; border: 1px solid #e3e3e6; border-radius: 13px; background: #fff; box-shadow: 0 12px 34px rgb(24 24 27 / .09); }
+.tarjeta__foto { position: relative; display: grid; place-items: center; aspect-ratio: 1.16 / 1; overflow: hidden; background: #f1f1f3; }
+.tarjeta__foto::after { position: absolute; inset: auto 0 0; height: 26px; background: linear-gradient(transparent, rgb(255 255 255 / .35)); content: ''; pointer-events: none; }
+.concepto__imagen { width: 80%; height: 92%; object-fit: contain; }
+.concepto__imagen--alternativa { width: 87%; transform: rotate(-4deg) scale(1.04); }
+.tarjeta__etiquetas { position: absolute; z-index: 1; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+.etiqueta { padding: 4px 7px; border-radius: 4px; font-size: 9px; font-weight: 600; line-height: 1; letter-spacing: .035em; }
+.etiqueta--nuevo { background: #d9eef9; color: #0b6a94; }
+.etiqueta--oferta { background: #fce1e4; color: #a52134; }
+.tarjeta__favorito { position: absolute; z-index: 1; top: 9px; right: 9px; display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #e3e3e6; border-radius: 50%; background: white; color: #171717; font-size: 21px; line-height: 1; }
+.tarjeta__datos { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 14px 14px 15px; }
+.tarjeta__marca { color: #62626b; font-size: 11px; font-weight: 500; letter-spacing: .04em; }
+.tarjeta__categoria { font-size: 9px; }
+.tarjeta__datos h3 { min-height: 2.35em; color: #171717; font-size: 15px; font-weight: 600; line-height: 1.2; text-transform: uppercase; }
+.tarjeta__descripcion { margin-top: -2px; color: #62626b; font-size: 12px; }
+.tarjeta__precio { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; width: 100%; margin-top: 8px; }
+.tarjeta__precio strong { color: #171717; font-family: var(--tipo-familia-numeros); font-size: 22px; font-weight: 600; }
+.tarjeta__precio del { color: #71717a; font-family: var(--tipo-familia-numeros); font-size: 12px; }
+.tarjeta__precio > span { margin-left: auto; padding: 3px 6px; border-radius: 4px; background: #fce1e4; color: #a52134; font-size: 10px; font-weight: 600; }
+.tarjeta__enlace { align-self: flex-start; margin-top: 5px; color: #171717; font-size: 12px; font-weight: 600; text-underline-offset: 3px; }
+.tarjeta__enlace b { margin-left: 4px; }
+.tarjeta__top { margin-top: 1px; padding: 4px 7px; border-radius: 4px; background: #fdebd6; color: #9c4a0c; font-size: 9px; font-weight: 600; }
+.tarjeta__tallas { display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 6px; color: #52525b; font-size: 10px; }
+.tarjeta__tallas > div { display: flex; gap: 5px; }
+.tarjeta__tallas i { display: grid; place-items: center; width: 27px; height: 25px; border: 1px solid #d4d4d8; border-radius: 4px; color: #171717; font-size: 10px; font-style: normal; }
+.tarjeta__boton { display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; width: 100%; margin-top: 7px; padding: 9px 11px; border-radius: 6px; background: #171717; color: #fff; font-size: 12px; font-weight: 600; text-decoration: none; }
+.tarjeta--destacada { border-color: #dedee4; box-shadow: 0 16px 42px rgb(24 24 27 / .12); }
+.tarjeta__foto--destacada { aspect-ratio: 1.08 / 1; background: radial-gradient(ellipse at 52% 58%, #fff 0, #f7f7f8 51%, #eeeef1 100%); }
+.tarjeta__foto--destacada .concepto__imagen { width: 91%; height: 96%; transform: rotate(-3deg) scale(1.06); filter: drop-shadow(0 15px 12px rgb(20 20 25 / .13)); }
+.tarjeta__foto-pie { position: absolute; right: 12px; bottom: 10px; color: #85858d; font-size: 8px; font-weight: 600; letter-spacing: .14em; }
+.tarjeta--destacada .etiqueta--oferta { display: inline-flex; align-items: center; gap: 5px; padding: 6px 8px; background: #b42336; color: white; }
+.tarjeta--destacada .etiqueta--oferta b { font-size: 11px; }
+.tarjeta--destacada .tarjeta__favorito { width: 36px; height: 36px; box-shadow: 0 3px 12px rgb(24 24 27 / .1); }
+.tarjeta__datos--destacada { gap: 7px; padding: 16px 16px 14px; }
+.tarjeta__identidad { display: flex; align-items: center; gap: 6px; }
+.tarjeta__identidad .tarjeta__marca { color: #414149; font-size: 10px; font-weight: 600; letter-spacing: .09em; }
+.tarjeta__separador { color: #a1a1aa; font-size: 12px; }
+.tarjeta__identidad .tarjeta__categoria { color: #777780; font-size: 9px; letter-spacing: .12em; }
+.tarjeta--destacada .tarjeta__datos h3 { min-height: 0; font-size: 17px; letter-spacing: -.015em; }
+.tarjeta--destacada .tarjeta__datos h3 { display: -webkit-box; min-height: 2.4em; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.tarjeta__top { display: inline-flex; align-items: center; gap: 5px; margin-top: 1px; padding: 4px 7px; background: #f7f3e9; color: #725b25; font-size: 8px; letter-spacing: .055em; }
+.tarjeta__etiquetas-info { display: flex; align-items: center; gap: 5px; }
+.tarjeta__etiquetas-info .tarjeta__top { margin: 0; }
+.tarjeta__atributo { padding: 4px 7px; border-radius: 4px; background: #eef2f0; color: #42604f; font-size: 8px; font-weight: 600; letter-spacing: .05em; }
+.tarjeta__top span { color: #b58a27; font-size: 11px; }
+.tarjeta__precio--destacada { align-items: center; gap: 8px; margin-top: 6px; }
+.tarjeta__precio--destacada strong { font-size: 25px; letter-spacing: -.035em; }
+.tarjeta__precio--destacada del { font-size: 12px; }
+.tarjeta__precio--destacada > span { flex-basis: 100%; margin: -3px 0 0; padding: 0; background: transparent; color: #17803d; font-size: 10px; font-weight: 500; }
+.tarjeta__datos--destacada .tarjeta__tallas { gap: 7px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #ededf0; color: #414149; font-size: 11px; }
+.tarjeta__tallas > span { display: flex; justify-content: space-between; align-items: center; }
+.tarjeta__tallas > span b { color: #777780; font-size: 10px; font-weight: 500; }
+.tarjeta__datos--destacada .tarjeta__tallas > div { align-items: center; gap: 6px; }
+.tarjeta__datos--destacada .tarjeta__tallas i { width: 31px; height: 30px; border-color: #dedee3; border-radius: 6px; background: #fff; font-size: 11px; }
+.tarjeta__tallas small { margin-left: auto; color: #414149; font-size: 10px; text-decoration: underline; text-underline-offset: 3px; }
+.tarjeta__datos--destacada .tarjeta__boton { min-height: 42px; margin-top: 4px; padding-inline: 13px; border-radius: 7px; background: #171717; font-size: 13px; transition: background .18s ease, transform .18s ease; }
+.tarjeta__datos--destacada .tarjeta__boton:hover { transform: translateY(-1px); background: #34343a; }
+.tarjeta__boton b { font-size: 16px; }
+.tarjeta__envio { align-self: center; display: flex; align-items: center; gap: 5px; color: #62626b; font-size: 10px; }
+.tarjeta__envio span { color: #17803d; font-weight: 700; }
+.tarjeta__tallas-simple { margin-top: 1px; color: #62626b; font-size: 11px; }
+.tarjeta__foto--referencia { aspect-ratio: .94 / 1; background: #f1f1f2; }
+.tarjeta__foto--referencia .concepto__imagen { width: 88%; height: 91%; }
+.tarjeta__favorito--referencia { width: 32px; height: 32px; border: 0; background: transparent; box-shadow: none; color: #777780; font-size: 23px; }
+.tarjeta__ahorro-foto { position: absolute; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 7px; padding: 5px 9px; border-radius: 999px; background: #fff; box-shadow: 0 2px 8px rgb(24 24 27 / .07); }
+.tarjeta__ahorro-foto span { display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #e63945; color: #fff; font-size: 9px; font-weight: 700; }
+.tarjeta__ahorro-foto b { color: #171717; font-size: 10px; }
+.tarjeta__datos--referencia { gap: 8px; padding: 13px 14px 14px; }
+.tarjeta__datos--referencia .tarjeta__linea-marca { padding-bottom: 8px; border-bottom: 1px solid #ededf0; }
+.tarjeta__datos--referencia .tarjeta__marca { color: #62626b; font-size: 10px; font-weight: 600; letter-spacing: .06em; }
+.tarjeta__valoracion { color: #71717a; font-size: 10px; }
+.tarjeta__valoracion b { color: #171717; font-weight: 600; }
+.tarjeta__valoracion i { display: inline-block; width: 1px; height: 10px; margin-inline: 4px; background: #d4d4d8; vertical-align: -1px; }
+.tarjeta--clasica .tarjeta__datos--referencia h3 { display: -webkit-box; min-height: 2.4em; overflow: hidden; font-size: 15px; line-height: 1.2; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.tarjeta__precio--referencia { margin-top: 0; gap: 7px; }
+.tarjeta__precio--referencia strong { font-size: 19px; }
+.tarjeta__precio--referencia del { font-size: 11px; }
+.tarjeta__precio--referencia > span { flex-basis: auto; margin-left: auto; padding: 4px 6px; background: #e8f5ed; color: #17803d; font-size: 9px; }
+.tarjeta__variantes { display: flex; align-items: center; gap: 6px; }
+.tarjeta__variante-activa { padding: 5px 7px; border: 1px solid #e3e3e6; border-radius: 5px; color: #414149; font-size: 9px; }
+.tarjeta__variante-activa b { margin-left: 4px; color: #171717; }
+.tarjeta__boton--referencia { min-height: 40px; margin-top: 1px; border-radius: 7px; text-transform: uppercase; letter-spacing: .04em; }
+.opcion__resumen { margin: 10px 1px 0; color: #52525b; font-size: 12px; line-height: 1.45; }
+.propuesta__nota { margin: 30px auto 0; color: #62626b; font-size: 11px; text-align: center; }
+.propuesta__nuevas { margin: 58px auto 0; }
+.propuesta__nuevas-cabecera { max-width: 580px; margin: 0 auto 25px; text-align: center; }
+.propuesta__nuevas-cabecera h2 { margin: 7px 0 4px; color: #171717; font-size: clamp(23px, 3vw, 30px); letter-spacing: -.035em; }
+.propuesta__nuevas-cabecera p { color: #52525b; font-size: 14px; }
+.tarjeta--nueva { border-radius: 15px; box-shadow: 0 14px 38px rgb(24 24 27 / .085); }
+.tarjeta--nueva .tarjeta__foto { aspect-ratio: 1.12 / 1; background: #f4f4f5; }
+.tarjeta--nueva .concepto__imagen { width: 85%; height: 94%; }
+.tarjeta__datos--nueva { gap: 7px; padding: 15px 15px 16px; }
+.tarjeta--nueva .tarjeta__datos h3 { min-height: 2.4em; font-size: 15px; line-height: 1.2; }
+.tarjeta__badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tarjeta__badges .tarjeta__top { margin: 0; }
+.tarjeta__dato-chip { padding: 4px 7px; border-radius: 4px; background: #f2f2f4; color: #52525b; font-size: 9px; font-weight: 500; }
+.tarjeta--nueva .tarjeta__precio { margin-top: 3px; }
+.tarjeta__nota-corta { color: #62626b; font-size: 11px; }
+.tarjeta--seleccion { border-color: #e0e0e4; }
+.tarjeta--seleccion .tarjeta__foto { background: linear-gradient(145deg, #f2f3f6, #e9ebf0); }
+.tarjeta--seleccion .concepto__imagen { filter: drop-shadow(0 12px 10px rgb(20 20 25 / .12)); }
+.tarjeta__contador-foto { position: absolute; right: 10px; bottom: 10px; padding: 4px 7px; border: 1px solid rgb(255 255 255 / .8); border-radius: 99px; background: rgb(255 255 255 / .82); color: #52525b; font-family: var(--tipo-familia-numeros); font-size: 9px; }
+.tarjeta__linea-marca { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.tarjeta__disponible { display: flex; align-items: center; gap: 5px; color: #17803d; font-size: 9px; }
+.tarjeta__disponible i { width: 6px; height: 6px; border-radius: 50%; background: #17803d; }
+.tarjeta__tallas--nueva { flex-direction: row; flex-wrap: wrap; margin-top: 5px; }
+.tarjeta__tallas--nueva i { width: auto; height: auto; padding: 5px 7px; background: white; color: #52525b; font-size: 9px; }
+@media (max-width: 650px) {
+  .propuesta { padding-inline: 16px; }
+  .propuesta__cabecera { margin-bottom: 25px; text-align: left; }
+  .propuesta__opciones { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .opcion__cabecera { align-items: flex-start; gap: 7px; min-height: 55px; }
+  .opcion__numero { width: 27px; height: 27px; font-size: 12px; }
+  .opcion__cabecera h2 { font-size: 14px; }
+  .opcion__cabecera p { font-size: 11px; line-height: 1.25; }
+  .tarjeta__foto { aspect-ratio: .9 / 1; }
+  .tarjeta__datos { gap: 4px; padding: 10px 9px 11px; }
+  .tarjeta__datos h3 { min-height: 2.4em; font-size: 12px; }
+  .tarjeta__descripcion { font-size: 10px; }
+  .tarjeta__precio { gap: 5px; margin-top: 5px; }
+  .tarjeta__precio strong { font-size: 18px; }
+  .tarjeta__precio del { font-size: 10px; }
+  .tarjeta__precio > span { margin-left: 0; }
+  .tarjeta__datos--referencia { gap: 6px; padding: 10px 9px 10px; }
+  .tarjeta--clasica .tarjeta__datos--referencia h3 { font-size: 12px; }
+  .tarjeta__precio--referencia strong { font-size: 16px; }
+  .tarjeta__precio--referencia > span { margin-left: 0; }
+  .tarjeta__boton--referencia { min-height: 34px; padding: 7px 9px; font-size: 10px; }
+  .tarjeta__foto--destacada { aspect-ratio: .96 / 1; }
+  .tarjeta__datos--destacada { gap: 6px; padding: 12px 10px 11px; }
+  .tarjeta--destacada .tarjeta__datos h3 { font-size: 13px; }
+  .tarjeta__precio--destacada strong { font-size: 19px; }
+  .tarjeta__datos--destacada .tarjeta__tallas i { width: 25px; height: 25px; font-size: 10px; }
+  .tarjeta__tallas small { font-size: 9px; }
+  .tarjeta__datos--destacada .tarjeta__boton { min-height: 38px; font-size: 11px; }
+  .tarjeta__tallas-simple { font-size: 10px; }
+  .propuesta__nuevas { margin-top: 42px; }
+  .propuesta__nuevas-cabecera { text-align: left; }
+  .tarjeta__datos--nueva { gap: 6px; padding: 11px 9px 12px; }
+  .tarjeta--nueva .tarjeta__datos h3 { font-size: 12px; }
+  .tarjeta__nota-corta { font-size: 10px; }
+  .tarjeta__tallas--nueva i { padding: 4px 5px; font-size: 8px; }
+}
