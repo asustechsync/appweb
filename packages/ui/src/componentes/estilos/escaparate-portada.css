@@ -502,9 +502,9 @@
      fila), en vez de 4 tarjetas gigantes. */
   .ui-escaparate__ingresos .ui-carrusel { --visibles: 8; }
 
-  .ui-escaparate__presentacion { padding: var(--espacio-8); }
+  .ui-escaparate__presentacion { padding: var(--espacio-6); }
   .ui-escaparate__titulo { font-size: clamp(var(--tipo-tamano-4xl), 3.2vw, var(--tipo-tamano-5xl)); }
-  .ui-escaparate__coleccion-imagen { max-block-size: calc(var(--espacio-24) * 2.6); }
+  .ui-escaparate__coleccion-imagen { max-block-size: calc(var(--espacio-24) * 1.7); }
 
   /* Riel vertical de iconos a la izquierda; el texto queda solo para
      lectores de pantalla y en el title. */
@@ -545,7 +545,7 @@
 
   .ui-escaparate__producto .ui-tarjeta-producto--portada {
     grid-template-columns: minmax(0, 1fr);
-    min-block-size: calc(var(--espacio-24) * 4.6);
+    min-block-size: calc(var(--espacio-24) * 2.6);
     padding: 0;
   }
 
@@ -553,6 +553,7 @@
   .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen {
     grid-column: 1;
     block-size: 100%;
+    min-block-size: calc(var(--espacio-24) * 4.4);
     padding-inline-start: calc(var(--espacio-24) * 2.4);
     transform: none;
   }
@@ -560,7 +561,7 @@
   .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen img {
     inline-size: 80%;
     block-size: 80%;
-    max-block-size: calc(var(--espacio-24) * 4);
+    max-block-size: calc(var(--espacio-24) * 2.1);
   }
 
   .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__contenido {
