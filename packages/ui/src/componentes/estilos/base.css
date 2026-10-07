@@ -1,5 +1,26 @@
 /* Utilidades compartidas por los primitivos — no son un componente propio. */
 
+/* Fondo de toda la web: un cielo que llena la ventana entera y se aclara hacia
+   abajo, como la bruma del horizonte. Va fijo, como una foto detras: al bajar
+   siempre hay cielo bajo los paneles translucidos. (iOS ignora `fixed` y lo
+   desplaza con la pagina; se ve igual de bien.) */
+.ui-fondo-escena {
+  background-color: var(--color-escenaFin);
+  /* Paradas intermedias en curva suave (ease-in-out): sin la banda marcada
+     que deja un degradado lineal de dos colores. */
+  background-image: linear-gradient(
+    180deg,
+    var(--color-escenaInicio) 0%,
+    color-mix(in oklab, var(--color-escenaInicio) 88%, var(--color-escenaFin)) 18%,
+    color-mix(in oklab, var(--color-escenaInicio) 65%, var(--color-escenaFin)) 38%,
+    color-mix(in oklab, var(--color-escenaInicio) 35%, var(--color-escenaFin)) 62%,
+    color-mix(in oklab, var(--color-escenaInicio) 12%, var(--color-escenaFin)) 84%,
+    var(--color-escenaFin) 100%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
 .ui-solo-lectores {
   position: absolute;
   inline-size: 1px;

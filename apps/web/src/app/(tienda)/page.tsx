@@ -1,8 +1,8 @@
 import { EscaparatePortada } from "@appweb/ui";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import localFont from "next/font/local";
 
-import { contenidoColeccionPortada, productosEnOferta, productosNuevos } from "@/lib/consultas";
+import { contenidoColeccionPortada, productosNuevos } from "@/lib/consultas";
 
 
 export const metadata: Metadata = {
@@ -11,29 +11,33 @@ export const metadata: Metadata = {
     "Encuentra boxers cómodos y básicos para hombre. Revisa tallas, opciones de envío y compra segura en nuestra tienda.",
 };
 
-/** Se carga aqui y no en el layout raiz: solo la portada descarga estos archivos. */
-const poppins = Poppins({
-  subsets: ["latin"],
+/**
+ * Satoshi, local (apps/web/src/app/fuentes/satoshi). Se declara aqui y no en el
+ * layout raiz: solo la portada descarga estos archivos. 600 cae en Bold.
+ */
+const satoshi = localFont({
   display: "swap",
-  weight: ["400", "500", "600"],
+  src: [
+    { path: "../fuentes/satoshi/Satoshi-Regular.woff", weight: "400", style: "normal" },
+    { path: "../fuentes/satoshi/Satoshi-Medium.woff", weight: "500", style: "normal" },
+    { path: "../fuentes/satoshi/Satoshi-Bold.woff", weight: "700", style: "normal" },
+  ],
 });
 
 /** CLASE A — portada. Layout con estructura de producto. */
 export default async function PaginaPortada() {
-  const [productos, ofertas, ingresos, coleccion] = await Promise.all([
+  const [productos, ingresos, coleccion] = await Promise.all([
     productosNuevos(5),
-    productosEnOferta(10),
     productosNuevos(10),
     contenidoColeccionPortada(),
   ]);
 
   return (
-    <div style={{ "--tipo-familia-acceso": `${poppins.style.fontFamily}, system-ui, sans-serif` } as React.CSSProperties}>
+    <div style={{ "--tipo-familia-acceso": `${satoshi.style.fontFamily}, system-ui, sans-serif` } as React.CSSProperties}>
       <EscaparatePortada
         titulo="Básicos para todos los días"
         subtitulo="Boxers, medias y accesorios cómodos. Elige tu talla y recíbelos en todo el Perú."
         productos={productos}
-        ofertas={ofertas}
         ingresos={ingresos}
         coleccion={coleccion}
       />

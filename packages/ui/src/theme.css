@@ -2,6 +2,7 @@
    Cambia packages/ui/src/tokens.ts y corre: npm run ui:tokens */
 
 :root {
+  --color-logo: #6F8463;
   --color-marca-50: #F6F6F7;
   --color-marca-100: #EEEEEF;
   --color-marca-200: #D8D8DA;
@@ -42,16 +43,28 @@
   --color-nuevoTexto: #0B6A94;
   --color-disponibleFondo: #D8F3E5;
   --color-disponibleTexto: #17704A;
-  --color-fondoImagen: #FFFFFF;
+  --color-fondoImagen: #DEE9FA;
+  --color-fondoImagenFin: #FFFFFF;
   --color-fondo: #FFFFFF;
   --color-fondoSutil: #ECECED;
-  --color-fondoPortada: #F3F4FB;
+  --color-fondoPortada: #F1F5F9;
+  --color-escenaInicio: #D4D6D9;
+  --color-escenaFin: #EFF0F2;
+  --color-vidrio: rgb(62 66 72 / 0.5);
+  --color-vidrioBorde: rgb(255 255 255 / 0.24);
+  --color-textoVidrio: #FFFFFF;
+  --color-fondoCapsula: #FFFFFF;
+  --color-fondoPanel: rgb(255 255 255 / 0.55);
+  --color-fondoBoton: #D3D3D3;
   --color-superficie: #F6F6F7;
   --color-borde: #E3E3E6;
   --color-bordeFuerte: #D4D4D8;
   --color-texto: #171717;
   --color-textoSuave: #52525B;
+  --color-textoTarjeta: #505050;
+  --color-textoMarca: #A6A6A6;
   --color-textoTenue: #6B6B70;
+  --color-textoLogo: #5E5E5E;
   --color-textoInverso: #FFFFFF;
   --espacio-0: 0;
   --espacio-1: 4px;
@@ -107,10 +120,10 @@
   --contenedor-md: 768px;
   --contenedor-lg: 1024px;
   --contenedor-xl: 1280px;
-  --contenedor-ancho: 1400px;
-  --contenedorAmplio-3xl: 1760px;
-  --contenedorAmplio-4xl: 2000px;
-  --contenedorAmplio-5xl: 2400px;
+  --contenedor-ancho: 1360px;
+  --contenedorAmplio-3xl: 1680px;
+  --contenedorAmplio-4xl: 1900px;
+  --contenedorAmplio-5xl: 2300px;
   --quiebre-xs: 480px;
   --quiebre-sm: 640px;
   --quiebre-md: 768px;
@@ -135,13 +148,13 @@
    xs 30rem · sm 40rem · md 48rem · lg 64rem · xl 80rem · 2xl 96rem · 3xl 120rem · 4xl 160rem · 5xl 240rem */
 
 @media (min-width: 120rem) {
-  :root { --contenedor-ancho: 1760px; }
+  :root { --contenedor-ancho: 1680px; }
 }
 @media (min-width: 160rem) {
-  :root { --contenedor-ancho: 2000px; }
+  :root { --contenedor-ancho: 1900px; }
 }
 @media (min-width: 240rem) {
-  :root { --contenedor-ancho: 2400px; }
+  :root { --contenedor-ancho: 2300px; }
 }
 
 /* El sistema decide, salvo que el usuario haya elegido. */
@@ -164,7 +177,10 @@
     --color-bordeFuerte: #414148;
     --color-texto: #F2F2F2;
     --color-textoSuave: #A1A1AA;
+    --color-textoTarjeta: #D4D4D8;
+    --color-textoMarca: #A1A1AA;
     --color-textoTenue: #73737D;
+    --color-textoLogo: #8A8D91;
     --color-textoInverso: #171717;
     --color-oferta: #F07C81;
     --color-agotado: #6B6B74;
@@ -178,6 +194,16 @@
     --color-disponibleFondo: #1E3D30;
     --color-disponibleTexto: #7ED9A6;
     --color-fondoImagen: #27272A;
+    --color-fondoPortada: #121212;
+    --color-escenaInicio: #26282B;
+    --color-escenaFin: #151617;
+    --color-vidrio: rgb(255 255 255 / 0.08);
+    --color-vidrioBorde: rgb(255 255 255 / 0.14);
+    --color-textoVidrio: #F2F2F2;
+    --color-fondoCapsula: #1E1E22;
+    --color-fondoPanel: rgb(255 255 255 / 0.06);
+    --color-fondoBoton: #2A2A2F;
+    --color-fondoImagenFin: #1F1F22;
     --color-calificacion: #F4BB5C;
     --color-exito: #3ED68C;
     --color-exitoClaro: #8FE388;
@@ -211,7 +237,10 @@
   --color-bordeFuerte: #414148;
   --color-texto: #F2F2F2;
   --color-textoSuave: #A1A1AA;
+  --color-textoTarjeta: #D4D4D8;
+  --color-textoMarca: #A1A1AA;
   --color-textoTenue: #73737D;
+  --color-textoLogo: #8A8D91;
   --color-textoInverso: #171717;
   --color-oferta: #F07C81;
   --color-agotado: #6B6B74;
@@ -225,6 +254,16 @@
   --color-disponibleFondo: #1E3D30;
   --color-disponibleTexto: #7ED9A6;
   --color-fondoImagen: #27272A;
+  --color-fondoPortada: #121212;
+  --color-escenaInicio: #26282B;
+  --color-escenaFin: #151617;
+  --color-vidrio: rgb(255 255 255 / 0.08);
+  --color-vidrioBorde: rgb(255 255 255 / 0.14);
+  --color-textoVidrio: #F2F2F2;
+  --color-fondoCapsula: #1E1E22;
+  --color-fondoPanel: rgb(255 255 255 / 0.06);
+  --color-fondoBoton: #2A2A2F;
+  --color-fondoImagenFin: #1F1F22;
   --color-calificacion: #F4BB5C;
   --color-exito: #3ED68C;
   --color-exitoClaro: #8FE388;

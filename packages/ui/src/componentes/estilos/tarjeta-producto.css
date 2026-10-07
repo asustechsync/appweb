@@ -190,10 +190,6 @@
   block-size: 100%;
   object-fit: contain;
   object-position: center bottom;
-  transition: transform var(--transicion-normal);
-}
-.ui-tarjeta-producto--vertical:hover .ui-tarjeta-producto__imagen img {
-  transform: scale(1.04);
 }
 .ui-tarjeta-producto__insignia {
   position: absolute;
@@ -259,6 +255,7 @@
 }
 /* El reset global de svg (max-width: 100%) lo dejaria en 0 dentro de una pastilla
    que se ajusta a su contenido: el icono conserva su tamano. */
+.ui-tarjeta-producto__oferta svg,
 .ui-tarjeta-producto__tendencia svg {
   flex: none;
   max-inline-size: none;
@@ -284,10 +281,9 @@
 }
 .ui-tarjeta-producto__nombre {
   font-size: var(--tipo-tamano-xs);
-  font-weight: var(--tipo-peso-fuerte);
+  font-weight: var(--tipo-peso-normal);
   line-height: var(--tipo-altura-apretada);
   color: var(--color-texto);
-  text-transform: uppercase;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -334,4 +330,8 @@
 .ui-tarjeta-producto__calificacion svg {
   flex: none;
   max-inline-size: none;
+}
+
+.ui-escaparate__ofertas .ui-tarjeta-producto {
+  border-radius: var(--radio-xl);
 }

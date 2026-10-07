@@ -3,6 +3,7 @@
 
 export const tokensNativos = {
   "color": {
+    "logo": "#6F8463",
     "marca": {
       "50": "#F6F6F7",
       "100": "#EEEEEF",
@@ -47,16 +48,28 @@ export const tokensNativos = {
     "nuevoTexto": "#0B6A94",
     "disponibleFondo": "#D8F3E5",
     "disponibleTexto": "#17704A",
-    "fondoImagen": "#FFFFFF",
+    "fondoImagen": "#DEE9FA",
+    "fondoImagenFin": "#FFFFFF",
     "fondo": "#FFFFFF",
     "fondoSutil": "#ECECED",
-    "fondoPortada": "#F3F4FB",
+    "fondoPortada": "#F1F5F9",
+    "escenaInicio": "#D4D6D9",
+    "escenaFin": "#EFF0F2",
+    "vidrio": "rgb(62 66 72 / 0.5)",
+    "vidrioBorde": "rgb(255 255 255 / 0.24)",
+    "textoVidrio": "#FFFFFF",
+    "fondoCapsula": "#FFFFFF",
+    "fondoPanel": "rgb(255 255 255 / 0.55)",
+    "fondoBoton": "#D3D3D3",
     "superficie": "#F6F6F7",
     "borde": "#E3E3E6",
     "bordeFuerte": "#D4D4D8",
     "texto": "#171717",
     "textoSuave": "#52525B",
+    "textoTarjeta": "#505050",
+    "textoMarca": "#A6A6A6",
     "textoTenue": "#6B6B70",
+    "textoLogo": "#5E5E5E",
     "textoInverso": "#FFFFFF"
   },
   "espacio": {
@@ -132,12 +145,12 @@ export const tokensNativos = {
     "md": 768,
     "lg": 1024,
     "xl": 1280,
-    "ancho": 1400
+    "ancho": 1360
   },
   "contenedorAmplio": {
-    "3xl": 1760,
-    "4xl": 2000,
-    "5xl": 2400
+    "3xl": 1680,
+    "4xl": 1900,
+    "5xl": 2300
   },
   "quiebre": {
     "xs": 480,
@@ -186,7 +199,10 @@ export const tokensNativosOscuro = {
     "bordeFuerte": "#414148",
     "texto": "#F2F2F2",
     "textoSuave": "#A1A1AA",
+    "textoTarjeta": "#D4D4D8",
+    "textoMarca": "#A1A1AA",
     "textoTenue": "#73737D",
+    "textoLogo": "#8A8D91",
     "textoInverso": "#171717",
     "oferta": "#F07C81",
     "agotado": "#6B6B74",
@@ -200,6 +216,16 @@ export const tokensNativosOscuro = {
     "disponibleFondo": "#1E3D30",
     "disponibleTexto": "#7ED9A6",
     "fondoImagen": "#27272A",
+    "fondoPortada": "#121212",
+    "escenaInicio": "#26282B",
+    "escenaFin": "#151617",
+    "vidrio": "rgb(255 255 255 / 0.08)",
+    "vidrioBorde": "rgb(255 255 255 / 0.14)",
+    "textoVidrio": "#F2F2F2",
+    "fondoCapsula": "#1E1E22",
+    "fondoPanel": "rgb(255 255 255 / 0.06)",
+    "fondoBoton": "#2A2A2F",
+    "fondoImagenFin": "#1F1F22",
     "calificacion": "#F4BB5C",
     "exito": "#3ED68C",
     "exitoClaro": "#8FE388",

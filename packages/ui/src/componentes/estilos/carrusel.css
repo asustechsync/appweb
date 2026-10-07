@@ -53,24 +53,36 @@
   justify-content: center;
   inline-size: var(--espacio-10);
   block-size: var(--espacio-10);
+  padding: 0;
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-completo);
-  background: var(--color-superficie);
+  border-radius: var(--radio-md);
+  background: var(--color-fondoBoton);
   color: var(--color-texto);
-  box-shadow: var(--sombra-md);
   cursor: pointer;
-  transition: opacity var(--transicion-rapida);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transicion-rapida), background var(--transicion-rapida);
   z-index: 1;
+}
+/* Con foco por teclado (:focus-visible) y no con :focus-within: tras un clic
+   el boton conserva el foco, y las flechas se quedarian visibles al sacar el mouse. */
+.ui-carrusel:hover .ui-carrusel__flecha:not(:disabled),
+.ui-carrusel:has(:focus-visible) .ui-carrusel__flecha:not(:disabled) {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ui-carrusel .ui-carrusel__flecha:not(:disabled):hover {
+  background: var(--color-fondoCapsula);
 }
 .ui-carrusel__flecha:disabled {
   opacity: 0;
   pointer-events: none;
 }
 .ui-carrusel__flecha--prev {
-  inset-inline-start: calc(-1 * var(--espacio-4));
+  inset-inline-start: var(--espacio-2);
 }
 .ui-carrusel__flecha--next {
-  inset-inline-end: calc(-1 * var(--espacio-4));
+  inset-inline-end: var(--espacio-2);
 }
 
 /* Cada paso sube --visibles en 1: el fijo se queda en 1 slot siempre, asi

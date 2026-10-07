@@ -36,6 +36,23 @@ export interface ContenidoColeccionPortada {
   href: string;
 }
 
+/**
+ * Categorias de la cabecera, en el orden del panel. Etiqueta `navegacion`:
+ * crear, renombrar u ordenar una categoria la invalida en todas las paginas.
+ */
+export async function categoriasDeNavegacion(): Promise<{ slug: string; nombre: string }[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(etiquetas.navegacion());
+
+  // Solo las de primer nivel y activas: las hijas iran en el listado de cada una.
+  return prisma.categoria.findMany({
+    where: { activa: true, padreId: null },
+    orderBy: [{ orden: "asc" }, { nombre: "asc" }],
+    select: { slug: true, nombre: true },
+  });
+}
+
 export async function contenidoColeccionPortada(): Promise<ContenidoColeccionPortada> {
   "use cache";
   cacheLife("hours");

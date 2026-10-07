@@ -1,49 +1,151 @@
+/* Producto destacado de la escena. Base movil: tarjeta, ficha debajo y puntos.
+   Desde 64rem la ficha, los puntos y las flechas flotan sobre la escena. */
+
 .ui-carrusel-portada {
   position: relative;
+  display: grid;
+  gap: var(--espacio-3);
   min-inline-size: 0;
   block-size: 100%;
 }
 
+/* Piel de vidrio: lo que flota sobre el cielo de la escena. */
+.ui-carrusel-portada__ficha,
+.ui-carrusel-portada__controles {
+  border: 1px solid var(--color-vidrioBorde);
+  background: var(--color-vidrio);
+  color: var(--color-textoVidrio);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Ficha: estado arriba y lecturas en filas separadas por una linea. */
+
+.ui-carrusel-portada__ficha {
+  display: grid;
+  gap: var(--espacio-2);
+  margin-inline: var(--espacio-4);
+  padding: var(--espacio-4);
+  border-radius: var(--radio-bloque);
+}
+
+.ui-carrusel-portada__ficha-cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-carrusel-portada__estado {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  font-size: var(--tipo-tamano-etiqueta);
+  font-weight: var(--tipo-peso-medio);
+  text-transform: uppercase;
+}
+
+.ui-carrusel-portada__estado--disponible {
+  background: var(--color-disponibleFondo);
+  color: var(--color-disponibleTexto);
+}
+
+.ui-carrusel-portada__estado--agotado {
+  background: var(--color-ofertaFondo);
+  color: var(--color-ofertaTexto);
+}
+
+.ui-carrusel-portada__lecturas {
+  display: grid;
+  margin: 0;
+}
+
+.ui-carrusel-portada__lecturas > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding-block: var(--espacio-2);
+}
+
+.ui-carrusel-portada__lecturas > div + div {
+  border-block-start: 1px solid var(--color-vidrioBorde);
+}
+
+.ui-carrusel-portada__lecturas dt {
+  font-size: var(--tipo-tamano-xs);
+  opacity: 0.8;
+}
+
+.ui-carrusel-portada__lecturas dd {
+  min-inline-size: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-align: end;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Puntos: en movil una fila centrada; en escritorio, una columna a la izquierda. */
+
+.ui-carrusel-portada__puntos {
+  display: flex;
+  justify-content: center;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-carrusel-portada__punto {
+  display: block;
+  inline-size: var(--espacio-2);
+  block-size: var(--espacio-2);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-completo);
+  background: var(--color-vidrioBorde);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), inline-size var(--transicion-rapida), block-size var(--transicion-rapida);
+}
+
+.ui-carrusel-portada__punto[aria-current="true"] {
+  inline-size: var(--espacio-6);
+  background: var(--color-textoVidrio);
+}
+
+/* Flechas juntas en una capsula; ocultas en movil, donde se desliza. */
+
+.ui-carrusel-portada__controles {
+  display: none;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1);
+  border-radius: var(--radio-completo);
+}
+
 .ui-carrusel-portada__flecha {
-  position: absolute;
-  z-index: 2;
-  inset-block-start: 50%;
   display: grid;
   place-items: center;
   inline-size: var(--espacio-10);
-  block-size: var(--espacio-10);
+  block-size: var(--espacio-8);
   padding: 0;
-  transform: translateY(-50%);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
-  background: var(--color-superficie);
-  color: var(--color-texto);
-  font-size: var(--tipo-tamano-xl);
-  line-height: 1;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  border: 0;
+  border-radius: var(--radio-completo);
+  background: none;
+  color: inherit;
   cursor: pointer;
-  transition: opacity var(--transicion-rapida), visibility var(--transicion-rapida);
+  transition: background var(--transicion-rapida);
 }
 
-.ui-carrusel-portada__flecha--anterior {
-  inset-inline-start: var(--espacio-2);
+.ui-carrusel-portada__flecha:hover {
+  background: var(--color-vidrioBorde);
 }
 
-.ui-carrusel-portada__flecha--siguiente {
-  inset-inline-end: var(--espacio-2);
-}
-
-.ui-carrusel-portada:hover .ui-carrusel-portada__flecha,
-.ui-carrusel-portada:focus-within .ui-carrusel-portada__flecha {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.ui-carrusel-portada__flecha:focus-visible {
-  outline: 2px solid var(--color-marca-500);
+.ui-carrusel-portada__flecha:focus-visible,
+.ui-carrusel-portada__punto:focus-visible {
+  outline: 2px solid var(--color-textoVidrio);
   outline-offset: var(--espacio-1);
 }
 
@@ -52,16 +154,45 @@
     --alto-imagen-portada-movil: clamp(12rem, 50vw, 18rem);
     touch-action: pan-y;
   }
-
-  .ui-carrusel-portada__flecha {
-    display: none;
-  }
 }
 
-@media (hover: none) {
-  .ui-carrusel-portada__flecha {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+@media (min-width: 48rem) {
+  .ui-carrusel-portada__ficha { margin-inline: 0; }
+  .ui-carrusel-portada__controles { display: flex; justify-self: center; }
+}
+
+@media (min-width: 64rem) {
+  .ui-carrusel-portada {
+    display: block;
+  }
+
+  .ui-carrusel-portada__ficha {
+    position: absolute;
+    z-index: 2;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    inline-size: min(42%, calc(var(--espacio-24) * 2.8));
+  }
+
+  .ui-carrusel-portada__puntos {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    flex-direction: column;
+    transform: translateY(-50%);
+  }
+
+  .ui-carrusel-portada__punto[aria-current="true"] {
+    inline-size: var(--espacio-2);
+    block-size: var(--espacio-6);
+  }
+
+  .ui-carrusel-portada__controles {
+    position: absolute;
+    z-index: 2;
+    inset-block-end: 0;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
   }
 }

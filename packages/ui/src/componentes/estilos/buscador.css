@@ -3,30 +3,24 @@
    `.ui-cabecera .ui-buscador` en cabecera.css. */
 
 .ui-buscador {
-  /* El borde reacciona en dos pasos -- un poco al pasar el raton, mas al
-     enfocar -- en vez de saltar directo al color de marca. */
-  --buscador-borde-hover: color-mix(in srgb, var(--color-textoSuave) 24%, var(--color-borde));
   --buscador-focus: color-mix(in srgb, var(--color-textoSuave) 58%, var(--color-borde));
 
   display: flex;
   align-items: center;
   block-size: var(--control-alto);
   min-inline-size: 0;
-  border: 1px solid var(--color-borde);
+  border: 0;
   border-radius: var(--radio-lg);
-  background: var(--color-superficie);
-  box-shadow: var(--sombra-sm);
-  transition:
-    border-color var(--transicion-rapida),
-    box-shadow var(--transicion-rapida);
+  background: var(--color-neutro-0);
+  box-shadow: var(--sombra-difusa);
+  transition: box-shadow var(--transicion-rapida);
 }
-.ui-buscador:hover {
-  border-color: var(--buscador-borde-hover);
-}
-/* Halo discreto: suficiente para el foco por teclado, sin anillo grueso. */
+/* Sin marco: la sombra difusa de las capsulas lo delimita. Al enfocar se suma
+   un halo discreto para el teclado. */
 .ui-buscador:focus-within {
-  border-color: color-mix(in srgb, var(--buscador-focus) 68%, var(--color-borde));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--buscador-focus) 7%, transparent);
+  box-shadow:
+    var(--sombra-difusa),
+    0 0 0 2px color-mix(in srgb, var(--buscador-focus) 18%, transparent);
 }
 .ui-buscador input {
   inline-size: 100%;

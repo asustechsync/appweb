@@ -4,8 +4,6 @@
   justify-content: center;
   min-block-size: 100svh;
   padding: var(--espacio-8) var(--espacio-4);
-  /* Mismo plomo que el fondo del escaparate. */
-  background: var(--color-neutro-200);
   color: var(--color-texto);
   font-family: var(--tipo-familia-acceso);
   /* Controles mas grandes que el resto del sitio: es la unica pantalla donde
@@ -132,10 +130,10 @@
 /* El logo pesa mas aqui que en la cabecera: es lo unico de marca en pantalla. */
 .ui-acceso .ui-logo {
   gap: var(--espacio-5);
-  font-size: var(--tipo-tamano-4xl);
+  font-size: var(--tipo-tamano-5xl);
 }
 .ui-acceso .ui-logo__simbolo {
   inline-size: var(--espacio-16);
   block-size: auto;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
 }

@@ -13,6 +13,7 @@ export { IconoPedidos } from "./comercio/IconoPedidos";
 export { IconoSol } from "./interfaz/IconoSol";
 export { IconoLuna } from "./interfaz/IconoLuna";
 export { IconoLlama } from "./interfaz/IconoLlama";
+export { IconoFlash } from "./interfaz/IconoFlash";
 export { IconoEstrella } from "./interfaz/IconoEstrella";
 export { IconoSearch } from "./navegacion/IconoSearch";
 export { IconoUbicacion } from "./cuenta/IconoUbicacion";

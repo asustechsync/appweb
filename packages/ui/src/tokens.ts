@@ -21,6 +21,8 @@
 
 export const tokens = {
   color: {
+    // Verde original del simbolo de la marca.
+    logo: "#6F8463",
     marca: {
       50: "#F6F6F7",
       100: "#EEEEEF",
@@ -72,8 +74,9 @@ export const tokens = {
     // Disponible en menta: el estado normal, que no debe llamar la atencion.
     disponibleFondo: "#D8F3E5",
     disponibleTexto: "#17704A",
-    // Fondo pastel detras del producto en la tarjeta de ofertas: blanco.
-    fondoImagen: "#FFFFFF",
+    // Degradado pastel detras del producto en la tarjeta de ofertas: de arriba a abajo.
+    fondoImagen: "#DEE9FA",
+    fondoImagenFin: "#FFFFFF",
 
     // Roles de superficie: son los que usan los componentes.
     // Invertido a proposito: el fondo de la pagina es blanco y los bloques
@@ -83,13 +86,28 @@ export const tokens = {
     fondo: "#FFFFFF",
     fondoSutil: "#ECECED",
     // Fondo de la portada: gris con un toque azulado.
-    fondoPortada: "#F3F4FB",
+    fondoPortada: "#F1F5F9",
+    // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.
+    escenaInicio: "#D4D6D9",
+    escenaFin: "#EFF0F2",
+    vidrio: "rgb(62 66 72 / 0.5)",
+    vidrioBorde: "rgb(255 255 255 / 0.24)",
+    textoVidrio: "#FFFFFF",
+    // Capsulas de la cabecera (tema, carrito, cuenta).
+    fondoCapsula: "#FFFFFF",
+    // Paneles de la portada: blanco translucido, toma el tono del cielo de detras.
+    fondoPanel: "rgb(255 255 255 / 0.55)",
+    // Botones de icono: un paso mas oscuro que el fondo de la web.
+    fondoBoton: "#D3D3D3",
     superficie: "#F6F6F7",
     borde: "#E3E3E6",
     bordeFuerte: "#D4D4D8",
     texto: "#171717",
     textoSuave: "#52525B",
+    textoTarjeta: "#505050",
+    textoMarca: "#A6A6A6",
     textoTenue: "#6B6B70",
+    textoLogo: "#5E5E5E",
     textoInverso: "#FFFFFF",
   },
 
@@ -139,14 +157,14 @@ export const tokens = {
     paddingX: 12,
   },
 
-  contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1400 },
+  contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1360 },
 
   // Monitores grandes: el ancho maximo crece escalonado desde un quiebre, mas
-  // despacio que la pantalla. Debajo de FHD se queda en `ancho` (1400).
+  // despacio que la pantalla. Debajo de FHD se queda en `ancho` (1360).
   contenedorAmplio: {
-    "3xl": 1760, // FHD al 100%
-    "4xl": 2000, // 2K al 100%
-    "5xl": 2400, // 4K al 100%
+    "3xl": 1680, // FHD al 100%
+    "4xl": 1900, // 2K al 100%
+    "5xl": 2300, // 4K al 100%
   },
 
   // FIRST MOBILE: la base es movil y estos solo añaden desde arriba.
@@ -195,7 +213,10 @@ export const tokensOscuro = {
     bordeFuerte: "#414148",
     texto: "#F2F2F2",
     textoSuave: "#A1A1AA",
+    textoTarjeta: "#D4D4D8",
+    textoMarca: "#A1A1AA",
     textoTenue: "#73737D",
+    textoLogo: "#8A8D91",
     textoInverso: "#171717",
 
     oferta: "#F07C81",
@@ -210,6 +231,16 @@ export const tokensOscuro = {
     disponibleFondo: "#1E3D30",
     disponibleTexto: "#7ED9A6",
     fondoImagen: "#27272A",
+    fondoPortada: "#121212",
+    escenaInicio: "#26282B",
+    escenaFin: "#151617",
+    vidrio: "rgb(255 255 255 / 0.08)",
+    vidrioBorde: "rgb(255 255 255 / 0.14)",
+    textoVidrio: "#F2F2F2",
+    fondoCapsula: "#1E1E22",
+    fondoPanel: "rgb(255 255 255 / 0.06)",
+    fondoBoton: "#2A2A2F",
+    fondoImagenFin: "#1F1F22",
     calificacion: "#F4BB5C",
 
     exito: "#3ED68C",

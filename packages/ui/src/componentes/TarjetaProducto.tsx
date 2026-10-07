@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { IconoEstrella, IconoFlechaIzquierda, IconoLlama } from "../iconos";
+import { IconoEstrella, IconoFlash, IconoFlechaIzquierda, IconoLlama } from "../iconos";
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
@@ -112,11 +112,10 @@ export function TarjetaProducto({
             fetchPriority={portada ? "high" : undefined}
           />
         ) : null}
-        {/* Esquina izquierda: Nuevo siempre primero (arriba), luego Oferta. */}
-        {!portada && (esNuevo || esOferta) ? (
+        {/* Esquina izquierda: Nuevo. Oferta va en la info. */}
+        {!portada && esNuevo ? (
           <span className="ui-tarjeta-producto__esquina">
             {esNuevo ? <span className="ui-tarjeta-producto__nuevo">Nuevo</span> : null}
-            {esOferta ? <span className="ui-tarjeta-producto__oferta">Oferta</span> : null}
           </span>
         ) : null}
         {descuentoPct ? (
@@ -160,13 +159,18 @@ export function TarjetaProducto({
             listado decide si lo muestra; en el catalogo queda oculto. */}
         {!portada ? (
           <span className="ui-tarjeta-producto__etiquetas">
+            {esOferta ? (
+              <span className="ui-tarjeta-producto__oferta">
+                <IconoFlash tamano={11} />
+                Oferta
+              </span>
+            ) : null}
             {esTendencia ? (
               <span className="ui-tarjeta-producto__tendencia">
                 <IconoLlama tamano={11} />
                 Top
               </span>
             ) : null}
-            {disponible ? <span className="ui-tarjeta-producto__disponible">Disponible</span> : null}
           </span>
         ) : null}
         {portada && descripcionCorta ? <span className="ui-tarjeta-producto__descripcion">{descripcionCorta}</span> : null}

@@ -2,6 +2,8 @@ import { Poppins } from "next/font/google";
 
 import { PaginaTienda } from "@appweb/ui";
 
+import { categoriasDeNavegacion } from "@/lib/consultas";
+
 /**
  * Poppins para carrito y checkout: se carga aqui y no en el layout raiz para
  * que el resto del sitio no descargue estos archivos.
@@ -16,7 +18,8 @@ const poppins = Poppins({
  * Layout de compra — CLASE B (carrito y checkout).
  * La cabecera es estatica: la sesion entra por la isla cliente de adentro.
  */
-export default function LayoutCompra({ children }: { children: React.ReactNode }) {
+export default async function LayoutCompra({ children }: { children: React.ReactNode }) {
+  const categorias = await categoriasDeNavegacion();
   // La variable vive aqui y no en globals.css: alli se resolveria en <body>,
   // que es antes de que exista la fuente cargada por este layout.
   // Las cifras de la compra van en Bai Jamjuree (la base del sitio), no en Urbanist.
@@ -26,7 +29,7 @@ export default function LayoutCompra({ children }: { children: React.ReactNode }
   };
   return (
     <div style={estilo as React.CSSProperties}>
-      <PaginaTienda>{children}</PaginaTienda>
+      <PaginaTienda categorias={categorias}>{children}</PaginaTienda>
     </div>
   );
 }

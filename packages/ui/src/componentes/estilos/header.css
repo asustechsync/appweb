@@ -1,26 +1,35 @@
 /* El fondo ocupa todo el ancho de la pantalla; el grid de adentro
-   (.ui-header__interior) es lo unico que se limita a 1400px. Asi no
-   aparece una franja de otro color a los costados. */
+   (.ui-header__interior) es lo unico que se limita al contenedor. Asi no
+   aparece una franja de otro color a los costados.
+
+   Base movil:  logo ............ acciones
+                buscador ........ menu
+   Desde 48rem: logo · categorias (al centro) · lupa + acciones */
 .ui-header {
   --color-fondoSutil: var(--color-neutro-200);
   --color-texto: var(--color-neutro-900);
-  background: var(--color-fondoSutil);
+  /* Fija arriba al hacer scroll. Hereda el cielo fijo de .ui-fondo-escena: es
+     el mismo fondo de la pagina, asi que no se nota el corte. */
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-cabecera);
+  background: inherit;
   color: var(--color-texto);
 }
 
 .ui-header__interior {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(16rem, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--espacio-6);
-  min-block-size: var(--espacio-24);
+  gap: var(--espacio-3);
   max-inline-size: var(--contenedor-ancho);
   margin-inline: auto;
-  padding-inline: var(--espacio-6);
+  padding: var(--espacio-4);
 }
 
 .ui-header__marca {
+  grid-row: 1;
   grid-column: 1;
   display: flex;
   align-items: center;
@@ -28,75 +37,205 @@
 }
 
 .ui-header__marca .ui-logo {
+  gap: var(--espacio-2);
   font-size: var(--tipo-tamano-2xl);
 }
 
 .ui-header__marca .ui-logo__simbolo {
   inline-size: var(--espacio-10);
-  block-size: var(--espacio-8);
+  block-size: var(--espacio-10);
 }
 
+.ui-header__acciones {
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+/* Iconos de las acciones: texto suave (#52525B en claro; en oscuro se aclara solo). */
+.ui-header__acciones .ui-header__boton,
+.ui-header__acciones .ui-alternar-tema,
+.ui-header__acciones .ui-acciones-cuenta a,
+.ui-header__acciones .ui-acciones-cuenta button {
+  color: var(--color-textoSuave);
+}
+
+/* Categorias: solo en escritorio; en movil viven en el menu. */
+.ui-header__categorias {
+  display: none;
+}
+
+.ui-header__categoria {
+  padding: var(--espacio-3);
+  border-radius: var(--radio-md);
+  /* En oscuro se aclara solo. */
+  color: var(--color-textoSuave);
+  font-family: var(--tipo-familia-base);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transicion-rapida);
+}
+
+.ui-header__categoria:hover {
+  background: var(--color-fondoPanel);
+}
+
+/* Buscador visible en movil, en la segunda fila junto al menu. */
 .ui-header__buscador {
-  inline-size: min(100%, 32rem);
+  grid-row: 2;
+  grid-column: 1;
   min-inline-size: 0;
-  position: absolute;
-  inset-inline-start: 50%;
-  inset-block-start: 50%;
-  transform: translate(-50%, -50%);
 }
 
-.ui-header__buscador .ui-buscador {
+.ui-header__buscador .ui-buscador,
+.ui-header__lupa-panel .ui-buscador {
   block-size: var(--espacio-12);
   box-sizing: border-box;
 }
 
-.ui-header__acciones {
-  grid-column: 3;
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-1);
-}
-
-.ui-header__menu {
-  display: none;
+/* Boton de icono comun a la lupa y al menu: misma capsula que tema,
+   carrito y cuenta. `summary` pierde su triangulo. */
+.ui-header__boton {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   inline-size: var(--espacio-12);
   block-size: var(--espacio-12);
-  padding: 0;
-  border: 0;
+  box-sizing: border-box;
   border-radius: var(--radio-lg);
-  background: var(--color-superficie);
   color: var(--color-texto);
   cursor: pointer;
+  list-style: none;
+  transition: background-color var(--transicion-rapida);
 }
 
-.ui-header__menu:hover {
-  background: var(--color-neutro-0);
+/* En la cabecera, todos los botones de icono (lupa, menu, tema, carrito y
+   cuenta) llevan la piel de los bloques: blanco translucido con desenfoque. */
+.ui-header__boton,
+.ui-header .ui-acciones-cuenta a,
+.ui-header .ui-acciones-cuenta button {
+  background: var(--color-fondoPanel);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
-@media (max-width: 48rem) {
-  .ui-header__interior {
-    grid-template-columns: 1fr auto;
+.ui-header__boton:hover,
+details[open] > .ui-header__boton,
+.ui-header .ui-acciones-cuenta a:hover,
+.ui-header .ui-acciones-cuenta button:hover {
+  background: var(--color-fondoCapsula);
+}
+
+.ui-header__boton::-webkit-details-marker {
+  display: none;
+}
+
+.ui-header__boton:focus-visible,
+.ui-header__categoria:focus-visible,
+.ui-header__menu-enlace:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
+}
+
+.ui-header__menu,
+.ui-header__lupa {
+  position: relative;
+}
+
+.ui-header__menu {
+  grid-row: 2;
+  grid-column: 2;
+}
+
+/* La lupa solo existe en escritorio: en movil ya esta el buscador abierto. */
+.ui-header__lupa {
+  display: none;
+}
+
+/* Panel que despliegan la lupa y el menu. */
+.ui-header__desplegable {
+  position: absolute;
+  z-index: var(--z-desplegable);
+  inset-block-start: calc(100% + var(--espacio-2));
+  inset-inline-end: 0;
+  padding: var(--espacio-2);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-lg);
+}
+
+.ui-header__menu-lista {
+  display: grid;
+  min-inline-size: calc(var(--espacio-24) * 2);
+}
+
+.ui-header__menu-enlace {
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-md);
+  color: var(--color-textoSuave);
+  font-family: var(--tipo-familia-base);
+  font-weight: var(--tipo-peso-medio);
+  font-size: var(--tipo-tamano-sm);
+  text-decoration: none;
+}
+
+.ui-header__menu-enlace:hover {
+  background: var(--color-fondoBoton);
+}
+
+.ui-header__lupa-panel {
+  inline-size: min(28rem, 80vw);
+  padding: 0;
+  background: none;
+}
+
+@media (min-width: 48rem) {
+  .ui-header__marca .ui-logo {
     gap: var(--espacio-3);
-    padding: var(--espacio-4);
+    font-size: var(--tipo-tamano-4xl);
   }
-  .ui-header__marca { grid-row: 1; grid-column: 1; }
-  .ui-header__buscador {
-    position: static;
-    grid-row: 2;
-    grid-column: 1 / -1;
-    inline-size: calc(100% - var(--espacio-12) - var(--espacio-2));
-    justify-self: start;
-    transform: none;
+
+  .ui-header__marca .ui-logo__simbolo {
+    inline-size: var(--espacio-16);
+    block-size: var(--espacio-16);
   }
-  .ui-header__acciones { grid-row: 1; grid-column: 2; }
-  .ui-header__acciones .ui-acciones-cuenta { gap: var(--espacio-2); }
+
+  .ui-header__interior {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--espacio-6);
+    min-block-size: var(--espacio-24);
+    padding-block: 0;
+    padding-inline: var(--espacio-6);
+  }
+
+  .ui-header__acciones {
+    grid-column: 3;
+  }
+
+  .ui-header__categorias {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: center;
+    display: flex;
+    gap: var(--espacio-1);
+    min-inline-size: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ui-header__buscador,
   .ui-header__menu {
-    display: inline-flex;
-    grid-row: 2;
-    grid-column: 1 / -1;
-    justify-self: end;
+    display: none;
+  }
+
+  .ui-header__lupa {
+    display: block;
   }
 }

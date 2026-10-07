@@ -14,7 +14,7 @@
   box-sizing: border-box;
   border-radius: var(--radio-lg);
   border: 0;
-  background: var(--color-superficie);
+  background: var(--color-fondoBoton);
   color: var(--color-texto);
   cursor: pointer;
   padding: 0;
@@ -23,5 +23,5 @@
 }
 .ui-acciones-cuenta a:hover,
 .ui-acciones-cuenta button:hover {
-  background: var(--color-neutro-0);
+  background: var(--color-fondoCapsula);
 }

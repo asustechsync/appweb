@@ -65,14 +65,58 @@ export function CarruselPortada({ productos }: PropsCarruselPortada) {
       }}
     >
       <TarjetaProducto {...producto} presentacion="portada" contexto="portada" />
+
+      {/* Ficha del producto visible: lecturas sueltas, como un panel de estado. */}
+      <section className="ui-carrusel-portada__ficha" aria-label={`Detalles de ${producto.nombre}`}>
+        <header className="ui-carrusel-portada__ficha-cabecera">
+          <span>Estado</span>
+          <span
+            className={
+              producto.disponible
+                ? "ui-carrusel-portada__estado ui-carrusel-portada__estado--disponible"
+                : "ui-carrusel-portada__estado ui-carrusel-portada__estado--agotado"
+            }
+          >
+            {producto.disponible ? "Disponible" : "Agotado"}
+          </span>
+        </header>
+        <dl className="ui-carrusel-portada__lecturas">
+          {producto.categoria ? (
+            <div><dt>Categoría</dt><dd>{producto.categoria}</dd></div>
+          ) : null}
+          {producto.marca ? (
+            <div><dt>Marca</dt><dd>{producto.marca}</dd></div>
+          ) : null}
+          {producto.tallas && producto.tallas.length > 0 ? (
+            <div><dt>Tallas</dt><dd>{producto.tallas.join(" · ")}</dd></div>
+          ) : null}
+          <div><dt>Descuento</dt><dd>{producto.descuentoPct ? `-${producto.descuentoPct}%` : "—"}</dd></div>
+        </dl>
+      </section>
+
       {productos.length > 1 ? (
         <>
-          <button className="ui-carrusel-portada__flecha ui-carrusel-portada__flecha--anterior" type="button" aria-label="Ver producto anterior" onClick={() => mover(-1)}>
-            <IconoFlechaIzquierda tamano={18} />
-          </button>
-          <button className="ui-carrusel-portada__flecha ui-carrusel-portada__flecha--siguiente" type="button" aria-label="Ver producto siguiente" onClick={() => mover(1)}>
-            <IconoFlechaDerecha tamano={18} />
-          </button>
+          <ol className="ui-carrusel-portada__puntos" aria-label="Producto destacado">
+            {productos.map((item, posicion) => (
+              <li key={item.slug}>
+                <button
+                  type="button"
+                  className="ui-carrusel-portada__punto"
+                  aria-label={`Ver ${item.nombre}`}
+                  aria-current={posicion === indiceVisible ? "true" : undefined}
+                  onClick={() => setIndice(posicion)}
+                />
+              </li>
+            ))}
+          </ol>
+          <div className="ui-carrusel-portada__controles">
+            <button className="ui-carrusel-portada__flecha" type="button" aria-label="Ver producto anterior" onClick={() => mover(-1)}>
+              <IconoFlechaIzquierda tamano={16} />
+            </button>
+            <button className="ui-carrusel-portada__flecha" type="button" aria-label="Ver producto siguiente" onClick={() => mover(1)}>
+              <IconoFlechaDerecha tamano={16} />
+            </button>
+          </div>
         </>
       ) : null}
     </div>

@@ -31,7 +31,7 @@ export interface PropsDisposicionAcceso {
 export function DisposicionAcceso({ activa, titulo, children, alternativas, pie }: PropsDisposicionAcceso) {
   const contrario = activa ? CAMINO_CONTRARIO[activa] : null;
   return (
-    <main className="ui-acceso">
+    <main className="ui-acceso ui-fondo-escena">
       <div className="ui-acceso__columna">
         <Link href="/" className="ui-acceso__volver">
           <IconoFlechaIzquierda tamano={16} />
