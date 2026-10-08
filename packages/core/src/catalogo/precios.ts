@@ -75,3 +75,17 @@ export function resolverDisponibilidad(
     stockBajo: stockTotal > 0 && stockTotal <= umbralBajo,
   };
 }
+
+export interface NivelStock {
+  /** Unidades que quedan. */
+  restante: number;
+  /** Que parte de lo ingresado sigue en el almacen, de 0 a 100. `null` si no hay entradas registradas. */
+  porcentaje: number | null;
+}
+
+/** `ingresado` es la suma de las entradas de MovimientoStock del producto. */
+export function resolverNivelStock(restante: number, ingresado: number): NivelStock {
+  const quedan = Math.max(0, restante);
+  if (ingresado <= 0) return { restante: quedan, porcentaje: null };
+  return { restante: quedan, porcentaje: Math.min(100, Math.round((quedan / ingresado) * 100)) };
+}

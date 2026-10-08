@@ -53,6 +53,7 @@ export {
   type PropsEscaparatePortada,
 } from "./componentes/EscaparatePortada";
 export { BloqueColeccion, type PropsBloqueColeccion } from "./componentes/BloqueColeccion";
+export { CarruselBanners, type PropsCarruselBanners, type BannerDeslizable } from "./componentes/CarruselBanners";
 export { CarruselPortada, type PropsCarruselPortada } from "./componentes/CarruselPortada";
 export { CarruselMarcas, type PropsCarruselMarcas } from "./componentes/CarruselMarcas";
 export { Beneficio, type PropsBeneficio } from "./componentes/Beneficio";

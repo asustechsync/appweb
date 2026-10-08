@@ -2,9 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { IconoEstrella, IconoFlash, IconoFlechaIzquierda, IconoLlama } from "../iconos";
+import { ContadorOferta } from "./ContadorOferta";
 import { Precio } from "./Precio";
 
 import "./primitivos.css";
+import "./estilos/tarjeta-oferta.css";
 
 export interface PropsTarjetaProducto {
   slug: string;
@@ -28,7 +30,13 @@ export interface PropsTarjetaProducto {
    * Decide el ancho de imagen que solicita el navegador.
    */
   contexto?: "rejilla" | "carrusel" | "portada";
-  presentacion?: "catalogo" | "portada";
+  presentacion?: "catalogo" | "portada" | "oferta";
+  /** Solo en `oferta`: fin de la oferta (ISO 8601 con zona). Sin fecha, no hay contador. */
+  terminaEn?: string;
+  /** Solo en `oferta`: unidades que quedan; sin ellas no hay linea de stock. */
+  stockRestante?: number | null;
+  /** Solo en `oferta`: % de lo ingresado que sigue en almacen (0-100); sin el, no hay barra. */
+  stockPct?: number | null;
 }
 
 /**
@@ -75,6 +83,9 @@ export function TarjetaProducto({
   disponible,
   contexto = "rejilla",
   presentacion = "catalogo",
+  terminaEn,
+  stockRestante,
+  stockPct,
 }: PropsTarjetaProducto) {
   const portada = presentacion === "portada";
   const claveEtiqueta = etiqueta?.trim().toLowerCase();
@@ -87,6 +98,44 @@ export function TarjetaProducto({
   const esNuevo = claveEtiqueta === "nuevo";
   // Estas cuatro etiquetas tienen pastilla propia en la info.
   const etiquetaEnInfo = esTendencia || esOferta || esNuevo;
+
+  if (presentacion === "oferta") {
+    return (
+      <Link className="ui-tarjeta-oferta" href={`/productos/${slug}`}>
+        <span className="ui-tarjeta-oferta__imagen">
+          {imagenUrl ? (
+            <Image src={imagenUrl} alt={nombre} width={400} height={400} sizes="(min-width: 64rem) 160px, 40vw" loading="lazy" />
+          ) : null}
+        </span>
+        <span className="ui-tarjeta-oferta__contenido">
+          <span className="ui-tarjeta-oferta__nombre">{nombre}</span>
+          <span className="ui-tarjeta-oferta__calificacion" aria-label={`Calificacion ${CALIFICACION_PROVISIONAL}`}>
+            <IconoEstrella tamano={12} relleno />
+            {CALIFICACION_PROVISIONAL}
+          </span>
+          <span className="ui-tarjeta-oferta__precio">
+            <Precio valor={precio} antes={precioLista ?? null} tamano="md" />
+          </span>
+          <span className="ui-tarjeta-oferta__estado">
+            {disponible ? (stockRestante != null ? `Disponible: ${stockRestante}` : "Disponible") : "Agotado"}
+          </span>
+          {stockPct != null ? (
+            <span
+              className="ui-tarjeta-oferta__stock"
+              role="progressbar"
+              aria-label="Stock restante"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={stockPct}
+            >
+              <span className="ui-tarjeta-oferta__stock-relleno" style={{ inlineSize: `${stockPct}%` }} />
+            </span>
+          ) : null}
+          {terminaEn ? <ContadorOferta terminaEn={terminaEn} /> : null}
+        </span>
+      </Link>
+    );
+  }
 
   const claseTarjeta = `ui-tarjeta-producto ${portada ? "ui-tarjeta-producto--portada" : "ui-tarjeta-producto--vertical"}`;
 

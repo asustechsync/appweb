@@ -5,10 +5,12 @@
 export {
   resolverPrecio,
   resolverDisponibilidad,
+  resolverNivelStock,
   type PrecioProducto,
   type PrecioResuelto,
   type VarianteDisponible,
   type Disponibilidad,
+  type NivelStock,
 } from "./catalogo/precios";
 
 export {

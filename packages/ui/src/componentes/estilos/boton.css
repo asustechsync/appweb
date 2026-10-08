@@ -19,8 +19,8 @@
     border-color var(--transicion-rapida);
 }
 .ui-boton--primario {
-  background: var(--color-texto);
-  color: var(--color-textoInverso);
+  background: var(--color-acento);
+  color: var(--color-acentoTexto);
 }
 .ui-boton--primario:hover:not(:disabled) {
   opacity: 0.88;

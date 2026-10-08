@@ -53,8 +53,14 @@
   --color-vidrio: rgb(62 66 72 / 0.5);
   --color-vidrioBorde: rgb(255 255 255 / 0.24);
   --color-textoVidrio: #FFFFFF;
+  --color-acento: #E2F2B8;
+  --color-acentoTexto: #3F5A12;
+  --color-acentoFuerte: #9DC24A;
   --color-fondoCapsula: #FFFFFF;
   --color-fondoPanel: rgb(255 255 255 / 0.55);
+  --color-bandaInicio: #3F444B;
+  --color-bandaFin: #8C929A;
+  --color-fondoDestacado: #1D1F21;
   --color-fondoBoton: #D3D3D3;
   --color-superficie: #F6F6F7;
   --color-borde: #E3E3E6;
@@ -120,10 +126,10 @@
   --contenedor-md: 768px;
   --contenedor-lg: 1024px;
   --contenedor-xl: 1280px;
-  --contenedor-ancho: 1360px;
-  --contenedorAmplio-3xl: 1680px;
-  --contenedorAmplio-4xl: 1900px;
-  --contenedorAmplio-5xl: 2300px;
+  --contenedor-ancho: 1240px;
+  --contenedorAmplio-3xl: 1520px;
+  --contenedorAmplio-4xl: 1740px;
+  --contenedorAmplio-5xl: 2100px;
   --quiebre-xs: 480px;
   --quiebre-sm: 640px;
   --quiebre-md: 768px;
@@ -148,13 +154,13 @@
    xs 30rem · sm 40rem · md 48rem · lg 64rem · xl 80rem · 2xl 96rem · 3xl 120rem · 4xl 160rem · 5xl 240rem */
 
 @media (min-width: 120rem) {
-  :root { --contenedor-ancho: 1680px; }
+  :root { --contenedor-ancho: 1520px; }
 }
 @media (min-width: 160rem) {
-  :root { --contenedor-ancho: 1900px; }
+  :root { --contenedor-ancho: 1740px; }
 }
 @media (min-width: 240rem) {
-  :root { --contenedor-ancho: 2300px; }
+  :root { --contenedor-ancho: 2100px; }
 }
 
 /* El sistema decide, salvo que el usuario haya elegido. */
@@ -200,8 +206,14 @@
     --color-vidrio: rgb(255 255 255 / 0.08);
     --color-vidrioBorde: rgb(255 255 255 / 0.14);
     --color-textoVidrio: #F2F2F2;
+    --color-acento: #E2F2B8;
+    --color-acentoTexto: #3F5A12;
+    --color-acentoFuerte: #B6D96B;
     --color-fondoCapsula: #1E1E22;
     --color-fondoPanel: rgb(255 255 255 / 0.06);
+    --color-bandaInicio: #2E3135;
+    --color-bandaFin: #1A1C1E;
+    --color-fondoDestacado: #0D0E0F;
     --color-fondoBoton: #2A2A2F;
     --color-fondoImagenFin: #1F1F22;
     --color-calificacion: #F4BB5C;
@@ -260,8 +272,14 @@
   --color-vidrio: rgb(255 255 255 / 0.08);
   --color-vidrioBorde: rgb(255 255 255 / 0.14);
   --color-textoVidrio: #F2F2F2;
+  --color-acento: #E2F2B8;
+  --color-acentoTexto: #3F5A12;
+  --color-acentoFuerte: #B6D96B;
   --color-fondoCapsula: #1E1E22;
   --color-fondoPanel: rgb(255 255 255 / 0.06);
+  --color-bandaInicio: #2E3135;
+  --color-bandaFin: #1A1C1E;
+  --color-fondoDestacado: #0D0E0F;
   --color-fondoBoton: #2A2A2F;
   --color-fondoImagenFin: #1F1F22;
   --color-calificacion: #F4BB5C;

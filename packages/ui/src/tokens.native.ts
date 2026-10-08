@@ -58,8 +58,14 @@ export const tokensNativos = {
     "vidrio": "rgb(62 66 72 / 0.5)",
     "vidrioBorde": "rgb(255 255 255 / 0.24)",
     "textoVidrio": "#FFFFFF",
+    "acento": "#E2F2B8",
+    "acentoTexto": "#3F5A12",
+    "acentoFuerte": "#9DC24A",
     "fondoCapsula": "#FFFFFF",
     "fondoPanel": "rgb(255 255 255 / 0.55)",
+    "bandaInicio": "#3F444B",
+    "bandaFin": "#8C929A",
+    "fondoDestacado": "#1D1F21",
     "fondoBoton": "#D3D3D3",
     "superficie": "#F6F6F7",
     "borde": "#E3E3E6",
@@ -145,12 +151,12 @@ export const tokensNativos = {
     "md": 768,
     "lg": 1024,
     "xl": 1280,
-    "ancho": 1360
+    "ancho": 1240
   },
   "contenedorAmplio": {
-    "3xl": 1680,
-    "4xl": 1900,
-    "5xl": 2300
+    "3xl": 1520,
+    "4xl": 1740,
+    "5xl": 2100
   },
   "quiebre": {
     "xs": 480,
@@ -222,8 +228,14 @@ export const tokensNativosOscuro = {
     "vidrio": "rgb(255 255 255 / 0.08)",
     "vidrioBorde": "rgb(255 255 255 / 0.14)",
     "textoVidrio": "#F2F2F2",
+    "acento": "#E2F2B8",
+    "acentoTexto": "#3F5A12",
+    "acentoFuerte": "#B6D96B",
     "fondoCapsula": "#1E1E22",
     "fondoPanel": "rgb(255 255 255 / 0.06)",
+    "bandaInicio": "#2E3135",
+    "bandaFin": "#1A1C1E",
+    "fondoDestacado": "#0D0E0F",
     "fondoBoton": "#2A2A2F",
     "fondoImagenFin": "#1F1F22",
     "calificacion": "#F4BB5C",

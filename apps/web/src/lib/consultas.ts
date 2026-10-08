@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 
-import { opcionesDeCompra, resolverDisponibilidad, resolverPrecio } from "@appweb/core";
+import { opcionesDeCompra, resolverDisponibilidad, resolverNivelStock, resolverPrecio } from "@appweb/core";
 import type { OpcionDeTalla } from "@appweb/core";
 import { prisma } from "@appweb/db";
 
@@ -20,6 +20,23 @@ export interface ProductoDeRejilla {
   descuentoPct: number | null;
   etiqueta: string | null;
   disponible: boolean;
+  /** Unidades que quedan y % de lo ingresado que sigue en almacen (tarjeta de oferta). */
+  stockRestante?: number | null;
+  stockPct?: number | null;
+}
+
+/** Lo ingresado por producto: la suma de las entradas de MovimientoStock, no una columna. */
+async function ingresadoPorProducto(ids: string[]): Promise<Map<string, number>> {
+  const entradas = await prisma.movimientoStock.findMany({
+    where: { delta: { gt: 0 }, variante: { productoId: { in: ids } } },
+    select: { delta: true, variante: { select: { productoId: true } } },
+  });
+  const ingresado = new Map<string, number>();
+  for (const entrada of entradas) {
+    const id = entrada.variante.productoId;
+    ingresado.set(id, (ingresado.get(id) ?? 0) + entrada.delta);
+  }
+  return ingresado;
 }
 
 export interface MarcaDeFicha {
@@ -102,6 +119,8 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     },
   });
 
+  const ingresado = await ingresadoPorProducto(productos.map((p) => p.id));
+
   const resueltos = productos.map((p): ProductoDeRejilla | null => {
     const precio = resolverPrecio({
       precio: Number(p.precio),
@@ -111,6 +130,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     if (!precio.enOferta) return null;
 
     const disponibilidad = resolverDisponibilidad(p.variantes);
+    const nivel = resolverNivelStock(disponibilidad.stockTotal, ingresado.get(p.id) ?? 0);
 
     return {
       slug: p.slug,
@@ -124,6 +144,8 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
       descuentoPct: precio.descuentoPct,
       etiqueta: p.etiqueta,
       disponible: disponibilidad.hayStock,
+      stockRestante: nivel.restante,
+      stockPct: nivel.porcentaje,
     };
   });
 
@@ -146,12 +168,15 @@ export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> 
     },
   });
 
+  const ingresado = await ingresadoPorProducto(productos.map((p) => p.id));
+
   return productos.map((producto): ProductoDeRejilla => {
     const precio = resolverPrecio({
       precio: Number(producto.precio),
       precioLista: producto.precioLista !== null ? Number(producto.precioLista) : null,
     });
     const disponibilidad = resolverDisponibilidad(producto.variantes);
+    const nivel = resolverNivelStock(disponibilidad.stockTotal, ingresado.get(producto.id) ?? 0);
 
     return {
       slug: producto.slug,
@@ -167,6 +192,8 @@ export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> 
       descuentoPct: precio.descuentoPct,
       etiqueta: producto.etiqueta,
       disponible: disponibilidad.hayStock,
+      stockRestante: nivel.restante,
+      stockPct: nivel.porcentaje,
     };
   });
 }

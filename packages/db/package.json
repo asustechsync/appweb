@@ -13,6 +13,7 @@
     "migrar": "prisma migrate dev",
     "desplegar": "prisma migrate deploy",
     "semilla": "tsx prisma/semilla.ts",
+    "demo-stock": "tsx prisma/demo-stock.ts",
     "studio": "prisma studio",
     "typecheck": "tsc --noEmit"
   },

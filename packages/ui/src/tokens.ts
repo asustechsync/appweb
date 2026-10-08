@@ -93,10 +93,20 @@ export const tokens = {
     vidrio: "rgb(62 66 72 / 0.5)",
     vidrioBorde: "rgb(255 255 255 / 0.24)",
     textoVidrio: "#FFFFFF",
+    // Acento: verde pistacho pastel junto al plomo. `acento` es superficie (botones,
+    // con `acentoTexto` encima); `acentoFuerte` es la version con cuerpo para
+    // trazos finos sobre fondo claro: puntos activos, barras.
+    acento: "#E2F2B8",
+    acentoTexto: "#3F5A12",
+    acentoFuerte: "#9DC24A",
     // Capsulas de la cabecera (tema, carrito, cuenta).
     fondoCapsula: "#FFFFFF",
     // Paneles de la portada: blanco translucido, toma el tono del cielo de detras.
     fondoPanel: "rgb(255 255 255 / 0.55)",
+    // Banda superior de la portada (texto en textoVidrio) y su tarjeta oscura.
+    bandaInicio: "#3F444B",
+    bandaFin: "#8C929A",
+    fondoDestacado: "#1D1F21",
     // Botones de icono: un paso mas oscuro que el fondo de la web.
     fondoBoton: "#D3D3D3",
     superficie: "#F6F6F7",
@@ -157,14 +167,14 @@ export const tokens = {
     paddingX: 12,
   },
 
-  contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1360 },
+  contenedor: { sm: 640, md: 768, lg: 1024, xl: 1280, ancho: 1240 },
 
   // Monitores grandes: el ancho maximo crece escalonado desde un quiebre, mas
-  // despacio que la pantalla. Debajo de FHD se queda en `ancho` (1360).
+  // despacio que la pantalla. Debajo de FHD se queda en `ancho` (1240).
   contenedorAmplio: {
-    "3xl": 1680, // FHD al 100%
-    "4xl": 1900, // 2K al 100%
-    "5xl": 2300, // 4K al 100%
+    "3xl": 1520, // FHD al 100%
+    "4xl": 1740, // 2K al 100%
+    "5xl": 2100, // 4K al 100%
   },
 
   // FIRST MOBILE: la base es movil y estos solo añaden desde arriba.
@@ -237,8 +247,14 @@ export const tokensOscuro = {
     vidrio: "rgb(255 255 255 / 0.08)",
     vidrioBorde: "rgb(255 255 255 / 0.14)",
     textoVidrio: "#F2F2F2",
+    acento: "#E2F2B8",
+    acentoTexto: "#3F5A12",
+    acentoFuerte: "#B6D96B",
     fondoCapsula: "#1E1E22",
     fondoPanel: "rgb(255 255 255 / 0.06)",
+    bandaInicio: "#2E3135",
+    bandaFin: "#1A1C1E",
+    fondoDestacado: "#0D0E0F",
     fondoBoton: "#2A2A2F",
     fondoImagenFin: "#1F1F22",
     calificacion: "#F4BB5C",

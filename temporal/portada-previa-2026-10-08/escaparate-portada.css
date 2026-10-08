@@ -1,0 +1,997 @@
+/* Portada en panel de control. Base movil: todo apilado. Desde 64rem, cuatro columnas:
+     escena  escena  escena  presentacion
+     categorias tallas nuevos confianza
+     promociones (todo el ancho), ingresos (todo el ancho)
+   La escena va sobre el cielo del fondo de la web (.ui-fondo-escena): el riel
+   de atajos a la izquierda, el producto al centro y sus lecturas en vidrio. */
+
+.ui-escaparate {
+  --color-fondo: var(--color-neutro-0);
+  --color-fondoSutil: var(--color-neutro-200);
+  --color-superficie: var(--color-neutro-50);
+  --color-borde: var(--color-neutro-200);
+  --color-bordeFuerte: var(--color-neutro-300);
+  --color-texto: var(--color-neutro-900);
+  --color-textoSuave: var(--color-neutro-600);
+  --color-textoTenue: var(--color-neutro-500);
+  --color-textoInverso: var(--color-neutro-0);
+  --color-marca-500: var(--color-neutro-900);
+  min-block-size: 100svh;
+  color: var(--color-texto);
+  /* Poppins la define la pagina en --tipo-familia-acceso; sin ella, la de marca. */
+  font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
+}
+
+.ui-escaparate__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-4);
+  max-inline-size: var(--contenedor-ancho);
+  margin-inline: auto;
+  padding: var(--espacio-4) var(--espacio-4) var(--espacio-8);
+}
+
+/* Escena: cabecera con selector y segmentos, en vidrio sobre el cielo. */
+
+.ui-escaparate__zona {
+  display: grid;
+  gap: var(--espacio-3);
+  min-inline-size: 0;
+}
+
+.ui-escaparate__escena-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  min-inline-size: 0;
+}
+
+.ui-escaparate__selector,
+.ui-escaparate__segmentos {
+  border: 1px solid var(--color-vidrioBorde);
+  border-radius: var(--radio-completo);
+  background: var(--color-vidrio);
+  color: var(--color-textoVidrio);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.ui-escaparate__selector {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-1) var(--espacio-1) var(--espacio-1) var(--espacio-4);
+  font-size: var(--tipo-tamano-base);
+}
+
+.ui-escaparate__selector-cifra {
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
+  border-radius: var(--radio-completo);
+  background: var(--color-vidrioBorde);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__segmentos {
+  display: flex;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+  padding: var(--espacio-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ui-escaparate__segmento {
+  flex: 0 0 auto;
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio-completo);
+  color: inherit;
+  font-size: var(--tipo-tamano-sm);
+  text-decoration: none;
+  transition: background var(--transicion-rapida);
+}
+
+.ui-escaparate__segmento:first-child,
+.ui-escaparate__segmento:hover {
+  background: var(--color-vidrioBorde);
+}
+
+.ui-escaparate__segmento:focus-visible {
+  outline: 2px solid var(--color-textoVidrio);
+  outline-offset: var(--espacio-1);
+}
+
+/* Los datos del producto destacado flotan en vidrio, con texto claro. */
+.ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__contenido {
+  --color-texto: var(--color-textoVidrio);
+  --color-textoSuave: var(--color-textoVidrio);
+  --color-textoTenue: var(--color-textoVidrio);
+  border: 1px solid var(--color-vidrioBorde);
+  border-radius: var(--radio-bloque);
+  background: var(--color-vidrio);
+  color: var(--color-textoVidrio);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Piel comun de las tarjetas claras */
+
+.ui-escaparate__presentacion,
+.ui-escaparate__ofertas-titulo,
+.ui-escaparate__categorias,
+.ui-escaparate__tallas,
+.ui-escaparate__nuevos,
+.ui-escaparate__confianza {
+  min-inline-size: 0;
+  padding: var(--espacio-5);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoPanel);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--sombra-difusa);
+}
+
+.ui-escaparate__tarjeta-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.ui-escaparate__tarjeta-titulo {
+  margin: 0;
+  font-size: var(--tipo-tamano-xl);
+  font-weight: var(--tipo-peso-normal);
+}
+
+.ui-escaparate__contador,
+.ui-escaparate__insignia {
+  flex: 0 0 auto;
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondoCapsula);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+
+/* Compra por categoria: tira deslizable, la primera resaltada en pastel. */
+
+.ui-escaparate__categorias,
+.ui-escaparate__tallas {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-4);
+}
+
+.ui-escaparate__tira {
+  display: flex;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.ui-escaparate__categorias {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.ui-escaparate__tira > li {
+  flex: 0 0 auto;
+  display: flex;
+  scroll-snap-align: start;
+}
+
+.ui-escaparate__tira-item {
+  display: grid;
+  gap: var(--espacio-1);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  inline-size: calc(var(--espacio-24) * 1.15);
+  min-block-size: var(--espacio-24);
+  padding: var(--espacio-3);
+  border-radius: var(--radio-lg);
+  color: var(--color-texto);
+  text-decoration: none;
+  transition: background var(--transicion-rapida);
+}
+
+.ui-escaparate__tira-item strong {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__tira-item > span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__tira-item .ui-escaparate__tira-flecha {
+  align-self: end;
+  color: inherit;
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__tira-item:hover {
+  background: var(--color-fondoCapsula);
+}
+
+.ui-escaparate__tira > li:first-child .ui-escaparate__tira-item {
+  background: var(--color-nuevoFondo);
+  color: var(--color-nuevoTexto);
+}
+
+.ui-escaparate__tira > li:first-child .ui-escaparate__tira-item > span {
+  color: inherit;
+}
+
+.ui-escaparate__tira-item:focus-visible,
+a.ui-escaparate__contador:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
+}
+
+a.ui-escaparate__contador {
+  text-decoration: none;
+}
+
+/* Guia de tallas: una barra por talla, mas alta cuanto mayor la cintura. */
+
+.ui-escaparate__barras {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espacio-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-escaparate__barra {
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-2);
+}
+
+.ui-escaparate__barra-dato {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondoCapsula);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-etiqueta);
+  white-space: nowrap;
+}
+
+.ui-escaparate__barra-pista {
+  display: flex;
+  align-items: flex-end;
+  inline-size: 100%;
+  block-size: calc(var(--espacio-24) * 1.3);
+  overflow: hidden;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoCapsula);
+}
+
+.ui-escaparate__barra-relleno {
+  inline-size: 100%;
+  border-radius: var(--radio-md);
+  background: linear-gradient(180deg, var(--color-escenaInicio) 0%, color-mix(in srgb, var(--color-escenaInicio) 15%, transparent) 100%);
+}
+
+.ui-escaparate__barra:nth-child(1) .ui-escaparate__barra-relleno { block-size: 40%; }
+.ui-escaparate__barra:nth-child(2) .ui-escaparate__barra-relleno { block-size: 58%; }
+.ui-escaparate__barra:nth-child(3) .ui-escaparate__barra-relleno { block-size: 76%; }
+.ui-escaparate__barra:nth-child(4) .ui-escaparate__barra-relleno { block-size: 94%; }
+
+.ui-escaparate__barra-talla {
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+
+/* Banners promocionales antes de los productos recien llegados. */
+.ui-escaparate__promociones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-3);
+  min-inline-size: 0;
+}
+
+.ui-escaparate__promocion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-inline-size: 0;
+  min-block-size: calc(var(--espacio-24) * 2);
+  padding: var(--espacio-5);
+  overflow: hidden;
+  border-radius: var(--radio-bloque);
+  background: var(--color-neutro-100);
+}
+
+/* Cada banner va en degradado: su tono pastel se aclara hacia la superficie. */
+.ui-escaparate__promocion--ofertas { --tono-promocion: var(--color-ofertaFondo); }
+.ui-escaparate__promocion--envios { --tono-promocion: var(--color-nuevoFondo); }
+.ui-escaparate__promocion--pagos { --tono-promocion: var(--color-disponibleFondo); }
+.ui-escaparate__promocion--ofertas,
+.ui-escaparate__promocion--envios,
+.ui-escaparate__promocion--pagos {
+  background: linear-gradient(135deg, var(--tono-promocion) 0%, color-mix(in srgb, var(--tono-promocion) 35%, var(--color-superficie)) 100%);
+}
+
+.ui-escaparate__promocion-etiqueta,
+.ui-escaparate__promocion-detalle { margin: 0; }
+
+.ui-escaparate__promocion-etiqueta {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-escaparate__promocion-titulo {
+  max-inline-size: 28ch;
+  margin: var(--espacio-2) 0;
+  font-size: var(--tipo-tamano-xl);
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__promocion-detalle {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__promocion-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-block-start: var(--espacio-3);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: underline;
+  text-underline-offset: var(--espacio-1);
+}
+
+.ui-escaparate__promocion-enlace:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
+}
+
+/* Presentacion: titulo grande, insignia y colección al pie */
+
+.ui-escaparate__presentacion {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--espacio-6);
+}
+
+.ui-escaparate__presentacion-cabecera {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: var(--espacio-3);
+}
+
+.ui-escaparate__presentacion-textos {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.ui-escaparate__titulo {
+  margin: 0;
+  font-size: var(--tipo-tamano-3xl);
+  font-weight: var(--tipo-peso-normal);
+  line-height: var(--tipo-altura-apretada);
+  letter-spacing: -0.03em;
+}
+
+.ui-escaparate__subtitulo {
+  margin: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-escaparate__presentacion-pie {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--espacio-4);
+}
+
+.ui-escaparate__coleccion-texto {
+  display: grid;
+  justify-items: start;
+  gap: var(--espacio-1);
+}
+
+.ui-escaparate__coleccion-texto strong {
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__coleccion-texto > span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-block-start: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio-md);
+  background: var(--color-neutro-0);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  text-decoration: none;
+  transition: background var(--transicion-rapida);
+}
+
+.ui-escaparate__boton:hover {
+  background: var(--color-bordeFuerte);
+}
+
+.ui-escaparate__coleccion-imagen {
+  inline-size: 100%;
+  block-size: auto;
+  max-block-size: calc(var(--espacio-24) * 2);
+  object-fit: contain;
+}
+
+/* Escena: riel de atajos y producto */
+
+.ui-escaparate__escena {
+  position: relative;
+  display: grid;
+  gap: var(--espacio-3);
+  min-inline-size: 0;
+}
+
+.ui-escaparate__riel {
+  display: flex;
+  gap: var(--espacio-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ui-escaparate__riel-boton {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondoBoton);
+  color: var(--color-textoLogo);
+  font-size: var(--tipo-tamano-xs);
+  text-decoration: none;
+  transition: background var(--transicion-rapida), color var(--transicion-rapida);
+}
+
+.ui-escaparate__riel-boton:hover {
+  background: var(--color-fondoCapsula);
+  color: var(--color-texto);
+}
+
+.ui-escaparate__riel-boton:focus-visible,
+.ui-escaparate__fila:focus-visible,
+.ui-escaparate__boton:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
+}
+
+.ui-escaparate__producto {
+  position: relative;
+  min-inline-size: 0;
+  margin-inline: calc(var(--espacio-4) * -1);
+}
+
+/* Ofertas: carrusel de una sola linea; 2 tarjetas en movil y 4 desde 40rem.
+   Se sobreescribe --visibles del carrusel porque aqui no hay pieza fija. */
+
+.ui-escaparate__ofertas {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--espacio-4);
+}
+
+.ui-escaparate__ofertas-carrusel {
+  min-inline-size: 0;
+}
+
+.ui-escaparate__ofertas .ui-carrusel {
+  --visibles: 2;
+}
+
+/* La pista desliza con overflow, que recortaria el halo de cada tarjeta.
+   Se le da aire por dentro y se devuelve con margen negativo: las tarjetas
+   miden igual porque su ancho sale de `cqw` del carrusel, no de la pista. */
+.ui-escaparate__ofertas .ui-carrusel__pista {
+  margin: calc(var(--espacio-4) * -1);
+  padding: var(--espacio-4);
+  scroll-padding-inline: var(--espacio-4);
+}
+
+@media (min-width: 40rem) {
+  .ui-escaparate__ofertas .ui-carrusel {
+    --visibles: 4;
+  }
+}
+
+/* Compacto: imagen apaisada en vez de cuadrada y sin la pastilla de estado. */
+.ui-escaparate__ofertas {
+  gap: var(--espacio-3);
+}
+
+.ui-escaparate__ofertas .ui-tarjeta-producto__imagen {
+  aspect-ratio: 11 / 10;
+}
+
+/* Cada producto en su propia tarjeta, con la misma piel que el resto. */
+.ui-escaparate__ofertas .ui-tarjeta-producto {
+  box-sizing: border-box;
+  padding: 0;
+  overflow: hidden;
+  /* La portada va en Poppins; el producto conserva la fuente de la marca. */
+  font-family: var(--tipo-familia-base);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoPanel);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--sombra-difusa);
+}
+
+/* La imagen va pegada al filo de la tarjeta: arriba y a los lados no hay
+   margen blanco; las esquinas las recorta el `overflow` de la tarjeta.
+   Arriba queda aire dentro del plomo para las insignias. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__imagen {
+  padding: var(--espacio-4) 0 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* El texto conserva el margen que antes daba la tarjeta. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__contenido {
+  padding: var(--espacio-2) var(--espacio-3) var(--espacio-3);
+}
+
+/* Tendencia va en la info. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__etiquetas {
+  display: flex;
+  /* Top y Disponible van en una sola linea: nunca se parte en dos. */
+  flex-wrap: nowrap;
+  margin-block-start: var(--espacio-1);
+  /* Alto de una pastilla: reserva el hueco aunque no haya etiqueta. */
+  min-block-size: calc(var(--tipo-tamano-etiqueta) + var(--espacio-2));
+}
+
+/* Relleno lateral mas corto: las dos pastillas juntas miden mas que el ancho
+   util de la tarjeta (131px) con el relleno normal. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__etiquetas > span {
+  padding-inline: var(--espacio-1);
+  letter-spacing: 0.02em;
+}
+
+/* Nuevo y Oferta no se muestran: __esquina queda oculta (display: none base). */
+
+/* Oferta, nuevo y tendencia ya tienen su pastilla: no se repiten como la
+   etiqueta de texto de la esquina derecha. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__etiqueta--info {
+  display: none;
+}
+
+.ui-escaparate__ofertas .ui-tarjeta-producto__insignia {
+  display: none;
+}
+
+.ui-escaparate__ofertas .ui-tarjeta-producto__estado {
+  display: none;
+}
+
+.ui-escaparate__atributos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-escaparate__atributos > li {
+  min-inline-size: 0;
+}
+
+.ui-escaparate__tarjeta-beneficio {
+  block-size: 100%;
+  min-block-size: var(--espacio-24);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondoPanel);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.ui-escaparate__tarjeta-beneficio > span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__tarjeta-beneficio h3 {
+  margin-block: auto 0;
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__tarjeta-beneficio p {
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+/* Lo nuevo: lista con miniatura, nombre y precio */
+
+.ui-escaparate__nuevos {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-4);
+}
+
+.ui-escaparate__lista {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-escaparate__lista > li + li {
+  border-block-start: 1px solid var(--color-borde);
+}
+
+.ui-escaparate__fila {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding-block: var(--espacio-3);
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.ui-escaparate__miniatura {
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-neutro-0);
+}
+
+.ui-escaparate__miniatura img {
+  inline-size: 85%;
+  block-size: 85%;
+  object-fit: contain;
+}
+
+.ui-escaparate__fila-texto {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.ui-escaparate__fila-texto strong {
+  overflow: hidden;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-escaparate__fila-texto span {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+/* Confianza: datos grandes con su etiqueta, como lecturas de un panel */
+
+/* Sin tarjeta contenedora ni titulo: cada beneficio es un bloque suelto y las
+   dos filas se reparten todo el alto de la celda. Siempre en 2 columnas. */
+.ui-escaparate__confianza {
+  min-inline-size: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+.ui-escaparate__confianza .ui-escaparate__atributos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  block-size: 100%;
+}
+.ui-escaparate__confianza .ui-escaparate__tarjeta-beneficio {
+  box-shadow: var(--sombra-difusa);
+}
+
+.ui-escaparate__datos {
+  display: grid;
+  gap: var(--espacio-4);
+  margin: 0;
+}
+
+.ui-escaparate__datos dt {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+
+.ui-escaparate__datos dd {
+  margin: 0;
+  font-size: var(--tipo-tamano-lg);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-escaparate__datos a {
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.ui-escaparate__datos a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Orden movil: presentacion y producto primero */
+.ui-escaparate__presentacion { order: 1; }
+.ui-escaparate__escena { order: 2; }
+.ui-escaparate__categorias { order: 3; }
+.ui-escaparate__nuevos { order: 4; }
+.ui-escaparate__tallas { order: 5; }
+.ui-escaparate__promociones { order: 6; }
+.ui-escaparate__ingresos { order: 7; }
+.ui-escaparate__confianza { order: 8; }
+
+@media (min-width: 48rem) {
+  .ui-escaparate__promociones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ui-escaparate__promocion:last-child { grid-column: 1 / -1; }
+
+  .ui-escaparate__panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: var(--espacio-6);
+  }
+
+  .ui-escaparate__presentacion,
+  .ui-escaparate__escena,
+  .ui-escaparate__ofertas {
+    grid-column: 1 / -1;
+  }
+
+  .ui-escaparate__producto { margin-inline: 0; }
+  .ui-escaparate__titulo { font-size: var(--tipo-tamano-4xl); }
+  .ui-escaparate__atributos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .ui-escaparate__presentacion-cabecera {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 64rem) {
+  .ui-escaparate__promociones {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-column: 1 / -1;
+  }
+
+  .ui-escaparate__promocion:last-child { grid-column: auto; }
+
+  .ui-escaparate__panel {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ui-escaparate__presentacion,
+  .ui-escaparate__escena,
+  .ui-escaparate__categorias,
+  .ui-escaparate__tallas,
+  .ui-escaparate__nuevos,
+  .ui-escaparate__confianza {
+    order: 0;
+  }
+
+  .ui-escaparate__escena { grid-column: 1 / 4; grid-row: 1; }
+  .ui-escaparate__presentacion { grid-column: 4; grid-row: 1; }
+  .ui-escaparate__categorias { grid-column: 1; grid-row: 2; }
+  .ui-escaparate__tallas { grid-column: 2; grid-row: 2; }
+  /* Los banners y los ingresos comparten el ancho completo y quedan en ese orden. */
+  .ui-escaparate__promociones { grid-column: 1 / -1; grid-row: 3; }
+  .ui-escaparate__ingresos { grid-column: 1 / -1; grid-row: 4; }
+  .ui-escaparate__nuevos { grid-column: 3; grid-row: 2; }
+  .ui-escaparate__confianza { grid-column: 4; grid-row: 2; }
+
+  /* A todo el ancho caben 8 tarjetas del mismo tamano que las de ofertas (4 en media
+     fila), en vez de 4 tarjetas gigantes. */
+  .ui-escaparate__ingresos .ui-carrusel { --visibles: 8; }
+
+  /* Presentacion en una sola columna angosta, como la tarjeta de un panel. */
+  .ui-escaparate__presentacion { padding: var(--espacio-6); }
+  .ui-escaparate__presentacion-cabecera { flex-direction: column-reverse; }
+  .ui-escaparate__presentacion-pie { grid-template-columns: minmax(0, 1fr); }
+  .ui-escaparate__titulo { font-size: clamp(var(--tipo-tamano-3xl), 2.4vw, var(--tipo-tamano-4xl)); }
+  .ui-escaparate__coleccion-imagen { max-block-size: calc(var(--espacio-24) * 1.7); }
+
+  .ui-escaparate__zona {
+    grid-template-rows: auto minmax(0, 1fr);
+    block-size: 100%;
+  }
+
+  /* Riel vertical de iconos a la izquierda; el texto queda solo para
+     lectores de pantalla y en el title. */
+  .ui-escaparate__escena {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .ui-escaparate__riel {
+    flex-direction: column;
+    gap: var(--espacio-3);
+    margin-block-start: calc(var(--espacio-12) + var(--espacio-3));
+    overflow: visible;
+  }
+
+  /* Cada atajo es su propio bloque de vidrio. */
+  .ui-escaparate__riel-boton {
+    inline-size: var(--espacio-12);
+    block-size: var(--espacio-12);
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radio-bloque);
+    background: var(--color-fondoPanel);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--sombra-difusa);
+  }
+
+  .ui-escaparate__riel-boton svg {
+    inline-size: var(--espacio-6);
+    block-size: var(--espacio-6);  }
+
+  .ui-escaparate__riel-texto {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .ui-escaparate__producto { align-self: stretch; }
+
+  /* La tarjeta del producto deja la imagen al centro y baja sus datos a
+     una ficha flotante en la esquina inferior izquierda. */
+  .ui-escaparate__producto .ui-carrusel-portada,
+  .ui-escaparate__producto .ui-tarjeta-producto--portada {
+    block-size: 100%;
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada {
+    grid-template-columns: minmax(0, 1fr);
+    min-block-size: calc(var(--espacio-24) * 2.6);
+    padding: 0;
+  }
+
+  /* La imagen se centra en el espacio que deja libre la ficha flotante. */
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen {
+    grid-column: 1;
+    block-size: 100%;
+    min-block-size: calc(var(--espacio-24) * 4.4);
+    padding-inline: var(--espacio-8);
+    transform: none;
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__imagen img {
+    inline-size: 80%;
+    block-size: 80%;
+    max-block-size: calc(var(--espacio-24) * 3.2);
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__contenido {
+    position: absolute;
+    z-index: 2;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    align-self: auto;
+    inline-size: min(100%, calc(var(--espacio-24) * 2.6));
+    gap: var(--espacio-1);
+    padding: var(--espacio-4) var(--espacio-5);
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__nombre {
+    font-size: var(--tipo-tamano-md);
+    letter-spacing: -0.01em;
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__descripcion {
+    font-size: var(--tipo-tamano-sm);
+  }
+
+  .ui-escaparate__producto .ui-tarjeta-producto--portada .ui-tarjeta-producto__precio-fila {
+    margin-block-start: var(--espacio-1);
+  }
+}
+
+/* Marca a la izquierda y calificacion a la derecha, en la misma fila. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__marca-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.ui-escaparate__ofertas .ui-tarjeta-producto__calificacion {
+  display: inline-flex;
+}
+
+/* El precio de la tarjeta va en la fuente de la portada (Satoshi). Precio es un
+   componente compartido (Urbanist), asi que solo se cambia aqui. */
+.ui-escaparate__ofertas .ui-precio__actual,
+.ui-escaparate__ofertas .ui-precio__antes {
+  font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
+}
+
+.ui-escaparate__ofertas .ui-precio__antes {
+  font-size: var(--tipo-tamano-xs);
+}
+
+/* El titulo de la tarjeta va en Satoshi y en mayusculas: 12px en movil, 14px desde 48rem. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__nombre {
+  font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
+  font-weight: var(--tipo-peso-normal);
+  font-size: var(--tipo-tamano-xs);
+  text-transform: uppercase;
+}
+@media (min-width: 48rem) {
+  .ui-escaparate__ofertas .ui-tarjeta-producto__nombre {
+    font-size: var(--tipo-tamano-sm);
+  }
+}
+
+/* Marca y numero de calificacion tambien en Satoshi. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__marca,
+.ui-escaparate__ofertas .ui-tarjeta-producto__calificacion {
+  font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
+}
+
+/* Precio de la tarjeta en peso 600. */
+.ui-escaparate__ofertas .ui-precio__actual {
+  font-weight: var(--tipo-peso-fuerte);
+}
+
+.ui-escaparate__ofertas .ui-precio__actual {
+  color: var(--color-textoTarjeta);
+}
+
+/* Titulo, marca y calificacion con el mismo gris que el precio. */
+.ui-escaparate__ofertas .ui-tarjeta-producto__nombre,
+.ui-escaparate__ofertas .ui-tarjeta-producto__calificacion {
+  color: var(--color-textoTarjeta);
+}
+
+.ui-escaparate__ofertas .ui-tarjeta-producto__marca {
+  color: var(--color-textoMarca);
+  font-weight: var(--tipo-peso-medio);
+}

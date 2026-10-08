@@ -1,0 +1,182 @@
+/* Slide unico de banners a todo el ancho. Los banners se apilan en la misma
+   celda y se turnan con un fundido. El color es un halo que se desvanece en
+   todas direcciones: sin esquinas ni bordes, el slide se funde con el fondo
+   de la web. Quien lo usa puede fijar --margen-slide para alinear el texto
+   con su contenedor cuando el slide sale a sangre. */
+
+.ui-carrusel-banners {
+  position: relative;
+  display: grid;
+  min-inline-size: 0;
+  touch-action: pan-y;
+}
+
+.ui-carrusel-banners__banner {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--espacio-3);
+  min-block-size: calc(var(--espacio-24) * 3.2);
+  padding: var(--espacio-6) var(--margen-slide, var(--espacio-6)) calc(var(--espacio-24) * 0.9);
+  /* Halo centrado detras del texto: el tono pastel se apaga antes de llegar a
+     cualquier borde, asi no hay linea de corte con el fondo. */
+  background: radial-gradient(
+    ellipse 75% 85% at 30% 45%,
+    var(--tono-banner) 0%,
+    color-mix(in srgb, var(--tono-banner) 70%, transparent) 30%,
+    color-mix(in srgb, var(--tono-banner) 30%, transparent) 55%,
+    transparent 80%
+  );
+  color: var(--color-texto);
+  text-decoration: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms ease;
+}
+
+.ui-carrusel-banners__banner[data-activo="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ui-carrusel-banners__banner--oferta { --tono-banner: var(--color-ofertaFondo); --tono-texto: var(--color-ofertaTexto); }
+.ui-carrusel-banners__banner--nuevo { --tono-banner: var(--color-nuevoFondo); --tono-texto: var(--color-nuevoTexto); }
+.ui-carrusel-banners__banner--disponible { --tono-banner: var(--color-disponibleFondo); --tono-texto: var(--color-disponibleTexto); }
+
+.ui-carrusel-banners__etiqueta {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondo);
+  color: var(--tono-texto);
+  font-size: var(--tipo-tamano-etiqueta);
+  font-weight: var(--tipo-peso-medio);
+  text-transform: uppercase;
+}
+
+.ui-carrusel-banners__titulo {
+  max-inline-size: 16ch;
+  font-size: var(--tipo-tamano-4xl);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.ui-carrusel-banners__detalle {
+  max-inline-size: 42ch;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-carrusel-banners__accion {
+  margin-block-start: var(--espacio-2);
+  padding: var(--espacio-2) var(--espacio-4);
+  border-radius: var(--radio-completo);
+  background: var(--color-acento);
+  color: var(--color-acentoTexto);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-carrusel-banners__banner:focus-visible,
+.ui-carrusel-banners__punto:focus-visible,
+.ui-carrusel-banners__flecha:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: var(--espacio-1);
+}
+
+/* Controles dentro del slide, abajo, sobre la parte que se difumina. */
+.ui-carrusel-banners__controles {
+  position: absolute;
+  z-index: 2;
+  inset-inline: var(--margen-slide, var(--espacio-6));
+  inset-block-end: var(--espacio-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.ui-carrusel-banners__puntos {
+  display: flex;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-carrusel-banners__punto {
+  display: block;
+  inline-size: var(--espacio-2);
+  block-size: var(--espacio-2);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+  cursor: pointer;
+  transition: background var(--transicion-rapida), inline-size var(--transicion-rapida);
+}
+
+.ui-carrusel-banners__punto[aria-current="true"] {
+  inline-size: var(--espacio-6);
+  background: var(--color-acentoFuerte);
+}
+
+.ui-carrusel-banners__flechas {
+  display: none;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondoPanel);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.ui-carrusel-banners__flecha {
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-10);
+  block-size: var(--espacio-8);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-completo);
+  background: none;
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.ui-carrusel-banners__flecha:hover {
+  background: var(--color-fondoCapsula);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-carrusel-banners__banner { transition: none; }
+}
+
+@media (min-width: 48rem) {
+  .ui-carrusel-banners__flechas { display: flex; }
+
+  .ui-carrusel-banners__banner {
+    min-block-size: calc(var(--espacio-24) * 3.6);
+    padding-inline: var(--margen-slide, var(--espacio-10));
+  }
+
+  .ui-carrusel-banners__titulo { font-size: var(--tipo-tamano-5xl); }
+  .ui-carrusel-banners__controles { inset-inline: var(--margen-slide, var(--espacio-10)); }
+}
+
+@media (min-width: 64rem) {
+  /* Desde aqui la fila de ofertas se monta sobre el pie del slide: el texto y los
+     controles se suben ese solape (--solape-banda lo define la portada). */
+  .ui-carrusel-banners__banner {
+    min-block-size: calc(var(--espacio-24) * 4.4 + var(--solape-banda, 0px));
+    padding-inline: var(--margen-slide, calc(var(--espacio-12) * 1.5));
+    padding-block-end: calc(var(--solape-banda, 0px) + var(--espacio-12));
+  }
+
+  .ui-carrusel-banners__titulo { font-size: clamp(var(--tipo-tamano-5xl), 4.6vw, calc(var(--tipo-tamano-5xl) * 1.5)); }
+  .ui-carrusel-banners__detalle { font-size: var(--tipo-tamano-base); }
+  .ui-carrusel-banners__controles {
+    inset-inline: var(--margen-slide, calc(var(--espacio-12) * 1.5));
+    inset-block-end: calc(var(--solape-banda, 0px) + var(--espacio-4));
+  }
+}

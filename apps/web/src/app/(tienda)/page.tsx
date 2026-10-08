@@ -1,8 +1,9 @@
 import { EscaparatePortada } from "@appweb/ui";
 import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 
-import { contenidoColeccionPortada, productosNuevos } from "@/lib/consultas";
+import { productosEnOferta, productosNuevos } from "@/lib/consultas";
 
 
 export const metadata: Metadata = {
@@ -24,22 +25,25 @@ const satoshi = localFont({
   ],
 });
 
+/** Poppins para el texto de la tarjeta de producto; solo la portada la descarga. */
+const poppins = Poppins({ subsets: ["latin"], display: "swap", weight: ["400", "500"] });
+
 /** CLASE A — portada. Layout con estructura de producto. */
 export default async function PaginaPortada() {
-  const [productos, ingresos, coleccion] = await Promise.all([
-    productosNuevos(5),
-    productosNuevos(10),
-    contenidoColeccionPortada(),
-  ]);
+  const [productos, ofertas] = await Promise.all([productosNuevos(5), productosEnOferta(4)]);
 
   return (
-    <div style={{ "--tipo-familia-acceso": `${satoshi.style.fontFamily}, system-ui, sans-serif` } as React.CSSProperties}>
+    <div
+      style={{
+        "--tipo-familia-acceso": `${satoshi.style.fontFamily}, system-ui, sans-serif`,
+        "--tipo-familia-tarjeta": `${poppins.style.fontFamily}, system-ui, sans-serif`,
+      } as React.CSSProperties}
+    >
       <EscaparatePortada
         titulo="Básicos para todos los días"
         subtitulo="Boxers, medias y accesorios cómodos. Elige tu talla y recíbelos en todo el Perú."
         productos={productos}
-        ingresos={ingresos}
-        coleccion={coleccion}
+        ofertas={ofertas}
       />
     </div>
   );

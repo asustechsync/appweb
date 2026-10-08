@@ -1,0 +1,31 @@
+/* Cuenta regresiva: cuatro cajas iguales con cifra y unidad. */
+
+.ui-contador-oferta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-contador-oferta__caja {
+  display: grid;
+  justify-items: center;
+  padding: var(--espacio-1);
+  border-radius: var(--radio-md);
+  background: var(--color-fondoSutil);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-contador-oferta__caja strong {
+  font-family: var(--tipo-familia-numeros);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-contador-oferta__caja span {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-etiqueta);
+}
