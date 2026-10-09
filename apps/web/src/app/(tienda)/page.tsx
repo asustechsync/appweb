@@ -30,7 +30,7 @@ const poppins = Poppins({ subsets: ["latin"], display: "swap", weight: ["400", "
 
 /** CLASE A — portada. Layout con estructura de producto. */
 export default async function PaginaPortada() {
-  const [productos, ofertas] = await Promise.all([productosNuevos(5), productosEnOferta(4)]);
+  const [productos, ofertas] = await Promise.all([productosNuevos(5), productosEnOferta(10)]);
 
   return (
     <div

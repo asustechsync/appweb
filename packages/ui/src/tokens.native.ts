@@ -96,6 +96,7 @@ export const tokensNativos = {
   "radio": {
     "ninguno": 0,
     "sm": 4,
+    "tarjeta": 7,
     "md": 8,
     "lg": 12,
     "bloque": 10,

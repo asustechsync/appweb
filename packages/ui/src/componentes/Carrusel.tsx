@@ -17,6 +17,8 @@ export interface PropsCarrusel {
    * ambos sentidos y sin salto visible. Las flechas nunca se deshabilitan.
    */
   infinito?: boolean;
+  /** Clase extra en la raiz, para que quien lo usa ajuste `--visibles`. */
+  clase?: string;
 }
 
 /**
@@ -39,7 +41,7 @@ export interface PropsCarrusel {
  * FIRST MOBILE: cuantos items se ven por vez sube por quiebres via la
  * variable `--visibles` en el CSS; aqui no hay medidas.
  */
-export function Carrusel({ children, fijo, etiqueta = "Carrusel", infinito = false }: PropsCarrusel) {
+export function Carrusel({ children, fijo, etiqueta = "Carrusel", infinito = false, clase }: PropsCarrusel) {
   const pistaRef = useRef<HTMLDivElement>(null);
   const [alInicio, setAlInicio] = useState(true);
   const [alFinal, setAlFinal] = useState(true);
@@ -134,19 +136,75 @@ export function Carrusel({ children, fijo, etiqueta = "Carrusel", infinito = fal
     };
   }, [infinito]);
 
+  const animacionRef = useRef<{ cuadro: number; destino: number } | null>(null);
+
+  function detenerAnimacion() {
+    const pista = pistaRef.current;
+    if (animacionRef.current) cancelAnimationFrame(animacionRef.current.cuadro);
+    animacionRef.current = null;
+    if (pista) pista.style.scrollSnapType = "";
+  }
+
+  // Si la persona toma el control (rueda, dedo), se suelta la animacion.
+  useEffect(() => {
+    const pista = pistaRef.current;
+    if (!pista) return;
+    pista.addEventListener("wheel", detenerAnimacion, { passive: true });
+    pista.addEventListener("touchstart", detenerAnimacion, { passive: true });
+    return () => {
+      pista.removeEventListener("wheel", detenerAnimacion);
+      pista.removeEventListener("touchstart", detenerAnimacion);
+      detenerAnimacion();
+    };
+  }, []);
+
   function desplazar(sentido: 1 | -1) {
     const pista = pistaRef.current;
     if (!pista) return;
-    const suave = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Casi un ancho visible: avanza "de pagina" sin perder el hilo.
-    pista.scrollBy({
-      left: sentido * pista.clientWidth * 0.9,
-      behavior: suave ? "smooth" : "auto",
-    });
+
+    // Paso = distancia entre dos items; se avanzan los que caben casi completos.
+    const items = pista.querySelectorAll<HTMLElement>(":scope > :not(.ui-carrusel__copia), :scope > .ui-carrusel__copia > *");
+    const paso = items.length > 1 ? items[1].getBoundingClientRect().left - items[0].getBoundingClientRect().left : pista.clientWidth;
+    const cantidad = Math.max(1, Math.floor((pista.clientWidth * 0.95) / paso));
+
+    const origen = pista.scrollLeft;
+    // Clics seguidos suman pasos sobre el destino anterior, sin frenar a medias.
+    const base = animacionRef.current?.destino ?? origen;
+    let destino = base + sentido * cantidad * paso;
+    if (!infinito) destino = Math.min(Math.max(destino, 0), pista.scrollWidth - pista.clientWidth);
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      pista.scrollTo({ left: destino, behavior: "auto" });
+      return;
+    }
+
+    detenerAnimacion();
+    // Sin snap durante la animacion: si no, pelea con cada cuadro.
+    pista.style.scrollSnapType = "none";
+    const inicio = performance.now();
+    const duracion = 650;
+    const desde = origen;
+    const estado = { cuadro: 0, destino };
+    animacionRef.current = estado;
+
+    // Arranca y termina suave (easeInOutCubic), como un deslizamiento con inercia.
+    const suavizar = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+    const paso_ = (ahora: number) => {
+      const t = Math.min(1, (ahora - inicio) / duracion);
+      pista.scrollLeft = desde + (destino - desde) * suavizar(t);
+      if (t < 1) {
+        estado.cuadro = requestAnimationFrame(paso_);
+      } else {
+        animacionRef.current = null;
+        pista.style.scrollSnapType = "";
+      }
+    };
+    estado.cuadro = requestAnimationFrame(paso_);
   }
 
   return (
-    <div className="ui-carrusel" role="region" aria-roledescription="carrusel" aria-label={etiqueta}>
+    <div className={clase ? `ui-carrusel ${clase}` : "ui-carrusel"} role="region" aria-roledescription="carrusel" aria-label={etiqueta}>
       {fijo ? <div className="ui-carrusel__fijo">{fijo}</div> : null}
 
       <div className="ui-carrusel__pista" ref={pistaRef}>

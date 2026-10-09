@@ -9,7 +9,7 @@
   min-inline-size: 0;
   padding: var(--espacio-3);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-tarjeta);
   background: var(--color-fondo);
   color: var(--color-texto);
   text-decoration: none;
@@ -47,7 +47,8 @@
 }
 
 .ui-tarjeta-oferta .ui-precio__actual {
-  font-weight: var(--tipo-peso-medio);
+  font-weight: var(--tipo-peso-fuerte);
+  color: var(--color-textoSuave);
 }
 
 .ui-tarjeta-oferta__contenido {

@@ -318,21 +318,35 @@ a.ui-escaparate__contador:focus-visible {
   min-inline-size: 0;
 }
 
-.ui-escaparate__ofertas-lista {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--espacio-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* Ofertas flash: titulo en una capsula de ancho completo, separada de las tarjetas. */
+.ui-escaparate__capsula {
+  margin: 0 0 var(--espacio-1);
+  padding: var(--espacio-4) var(--espacio-5);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondoCapsula);
+  color: var(--color-textoSuave);
+  font-family: var(--tipo-familia-tarjeta, var(--tipo-familia-base));
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+  text-transform: uppercase;
 }
 
-.ui-escaparate__ofertas-lista > li {
+/* Carrusel de ofertas: sin elemento fijo, --visibles es la cuenta real. */
+.ui-escaparate__ofertas .ui-carrusel {
+  --visibles: 1;
+}
+
+.ui-escaparate__ofertas .ui-carrusel__pista {
+  /* Aire para que la sombra de la tarjeta no se recorte. */
+  padding-block: var(--espacio-1);
+}
+
+.ui-escaparate__oferta {
   display: grid;
   min-inline-size: 0;
 }
 
-.ui-escaparate__ofertas-lista .ui-tarjeta-oferta {
+.ui-escaparate__ofertas .ui-tarjeta-oferta {
   box-shadow: var(--sombra-sm);
 }
 
@@ -349,7 +363,7 @@ a.ui-escaparate__contador:focus-visible {
     grid-column: 1 / -1;
   }
 
-  .ui-escaparate__ofertas-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ui-escaparate__ofertas .ui-carrusel { --visibles: 2; }
 
   .ui-escaparate__atributos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
@@ -379,7 +393,7 @@ a.ui-escaparate__contador:focus-visible {
   .ui-escaparate__ofertas { grid-column: 1 / -1; grid-row: 3; }
   .ui-escaparate__confianza { grid-column: 1 / -1; grid-row: 4; }
 
-  .ui-escaparate__ofertas-lista { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ui-escaparate__ofertas .ui-carrusel { --visibles: 4; }
 
   /* La fila de bloques sube sobre el borde inferior del slide. */
   .ui-escaparate__tallas,

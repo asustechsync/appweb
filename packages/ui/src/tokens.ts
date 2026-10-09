@@ -128,7 +128,7 @@ export const tokens = {
   },
 
   radio: {
-    ninguno: 0, sm: 4, md: 8, lg: 12, bloque: 10, xl: 18, completo: 9999,
+    ninguno: 0, sm: 4, tarjeta: 7, md: 8, lg: 12, bloque: 10, xl: 18, completo: 9999,
   },
 
   tipo: {

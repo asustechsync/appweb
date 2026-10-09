@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Beneficio, type PropsBeneficio } from "./Beneficio";
+import { Carrusel } from "./Carrusel";
 import { CarruselBanners, type BannerDeslizable } from "./CarruselBanners";
 import { TarjetaProducto, type PropsTarjetaProducto } from "./TarjetaProducto";
 
@@ -10,7 +11,7 @@ export interface PropsEscaparatePortada {
   titulo: string;
   subtitulo: string;
   productos: PropsTarjetaProducto[];
-  /** Hasta 4 productos con descuento real, en tarjetas de oferta sobre los bloques. */
+  /** Hasta 10 productos con descuento real, en un carrusel de tarjetas de oferta (4 visibles). */
   ofertas?: PropsTarjetaProducto[];
 }
 
@@ -140,14 +141,15 @@ export function EscaparatePortada({ titulo, subtitulo, productos, ofertas = [] }
         </section>
 
         {ofertas.length > 0 ? (
-          <section className="ui-escaparate__ofertas" aria-label="Productos en oferta">
-            <ul className="ui-escaparate__ofertas-lista">
+          <section className="ui-escaparate__ofertas" aria-labelledby="escaparate-ofertas-flash">
+            <h2 id="escaparate-ofertas-flash" className="ui-escaparate__capsula">Ofertas flash</h2>
+            <Carrusel infinito etiqueta="Productos en oferta" clase="ui-escaparate__ofertas-carrusel">
               {ofertas.map((producto) => (
-                <li key={producto.slug}>
+                <div key={producto.slug} className="ui-escaparate__oferta">
                   <TarjetaProducto {...producto} presentacion="oferta" terminaEn={FIN_OFERTA_PROVISIONAL} />
-                </li>
+                </div>
               ))}
-            </ul>
+            </Carrusel>
           </section>
         ) : null}
 
