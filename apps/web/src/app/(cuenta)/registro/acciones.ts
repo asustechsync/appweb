@@ -31,6 +31,8 @@ export async function registrar(datos: unknown): Promise<ResultadoRegistro> {
       email,
       clave: hashClave(clave),
       telefono: telefono ?? null,
+      // El registro deja la sesion iniciada: ese es su primer acceso.
+      ultimoAccesoEn: new Date(),
     },
   });
 

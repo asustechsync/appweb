@@ -31,6 +31,9 @@ export {
 
 export { buscarCupon, descuentoDeCupon, type Cupon } from "./carrito/cupones";
 
+// Envios
+export { cubreDepartamento } from "./envios/zonas";
+
 export {
   agregarAlCarrito,
   cambiarCantidad,

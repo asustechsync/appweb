@@ -47,7 +47,7 @@ export interface VarianteDisponible {
   talla: string;
   color: string;
   stock: number;
-  activa: boolean;
+  activo: boolean;
 }
 
 export interface Disponibilidad {
@@ -63,7 +63,7 @@ export function resolverDisponibilidad(
   variantes: VarianteDisponible[],
   umbralBajo = 5,
 ): Disponibilidad {
-  const activas = variantes.filter((v) => v.activa);
+  const activas = variantes.filter((v) => v.activo);
   const conStock = activas.filter((v) => v.stock > 0);
   const stockTotal = activas.reduce((suma, v) => suma + v.stock, 0);
 

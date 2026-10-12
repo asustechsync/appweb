@@ -1,5 +1,21 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  ESQUEMA — diez tablas al arrancar.
+//  ESQUEMA — quince tablas en seis dominios:
+//
+//      Cuenta      usuarios, direcciones
+//      Catalogo    categorias, marcas, productos, variantes, imagenes_producto
+//      Contenido   banners
+//      Stock       movimientos_stock
+//      Venta       pedidos, items_pedido, pagos, historial_pedido
+//      Promo/envio cupones, metodos_envio
+//
+//  Diez son del arranque. Marca, Pago, HistorialPedido y Cupon se añadieron
+//  porque guardan datos imposibles de reconstruir si llegan tarde (quien pago
+//  con que operacion, quien cambio cada estado); Banner saca el contenido de
+//  portada de Categoria.
+//
+//  Orden de columnas dentro de cada modelo: identidad, contenido, relaciones,
+//  montos o precio, SEO, estado, fechas. El orden fisico en la base es el de
+//  las migraciones y no se toca: este archivo es el que se lee.
 //
 //  Se mantiene a mano. NO usar `prisma db pull`.
 //
@@ -28,7 +44,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ── Cuenta y acceso ────────────────────────────────────────────────────────
+// ═══ CUENTA ════════════════════════════════════════════════════════════════
 
 enum Rol {
   CLIENTE
@@ -52,38 +68,63 @@ enum Genero {
 }
 
 model Usuario {
-  id               String         @id @default(cuid())
-  email            String         @unique
-  clave            String
-  nombre           String
-  apellidoPaterno  String?
-  apellidoMaterno  String?
-  apodo            String?
-  telefono         String?
-  tipoDocumento    TipoDocumento?
-  numeroDocumento  String?
-  fechaNacimiento  DateTime?      @db.Date
-  genero           Genero?
-  rol              Rol            @default(CLIENTE)
-  activo           Boolean        @default(true)
-  creadoEn         DateTime       @default(now())
+  // Acceso
+  id    String @id @default(cuid())
+  email String @unique
+  clave String
+  rol   Rol    @default(CLIENTE)
+  // Persona
+  nombre          String
+  apellidoPaterno String?
+  apellidoMaterno String?
+  apodo           String?
+  telefono        String?
+  fechaNacimiento DateTime? @db.Date
+  genero          Genero?
+  // Documento (para el comprobante)
+  tipoDocumento   TipoDocumento?
+  numeroDocumento String?
+  // Estado
+  activo Boolean @default(true)
+  // Fechas
+  creadoEn       DateTime  @default(now())
+  // Cambios del perfil. Iniciar sesion NO lo mueve (ver ingresar/acciones.ts).
+  editadoEn      DateTime  @updatedAt
+  // Ultimo inicio de sesion: seguridad y clientes inactivos. `null` = nunca
+  // entro desde que existe la columna.
+  ultimoAccesoEn DateTime?
 
   direcciones Direccion[]
   pedidos     Pedido[]
+  // Auditoria: a quien se le atribuye cada pago confirmado, cada cambio de
+  // estado y cada movimiento de stock. Quedan aunque el empleado cambie de rol.
+  pagosConfirmados Pago[]            @relation("PagoConfirmadoPor")
+  cambiosDePedido  HistorialPedido[] @relation("CambioHechoPor")
+  movimientosStock MovimientoStock[] @relation("MovimientoHechoPor")
 
   @@index([rol])
   @@map("usuarios")
 }
 
 model Direccion {
-  id           String  @id @default(cuid())
-  usuarioId    String
+  // Identidad
+  id        String @id @default(cuid())
+  usuarioId String
+  // Quien recibe el paquete, que no siempre es el titular de la cuenta.
+  destinatario String?
+  telefono     String?
+  // Ubicacion
   departamento String
   provincia    String
   distrito     String
   calle        String
   referencia   String?
-  principal    Boolean @default(false)
+  // Estado. Una sola principal por usuario: indice parcial en
+  // prisma/sql/direccion-principal.sql.
+  principal Boolean @default(false)
+  // Fechas
+  creadoEn  DateTime @default(now())
+  editadoEn DateTime @updatedAt
 
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
@@ -91,66 +132,137 @@ model Direccion {
   @@map("direcciones")
 }
 
-// ── Catalogo ───────────────────────────────────────────────────────────────
+// ═══ CATALOGO ══════════════════════════════════════════════════════════════
 
 model Categoria {
-  id             String  @id @default(cuid())
-  slug           String  @unique
-  nombre         String
-  descripcion    String?
-  imagenUrl      String?
-  destacada      Boolean @default(false)
+  // Identidad
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  nombre      String
+  // Contenido
+  descripcion String?
+  imagenUrl   String?
+  // Arbol
+  padreId     String?
+  // SEO
   tituloSeo      String?
   descripcionSeo String?
-  portadaEtiqueta String?
-  portadaTitulo   String?
-  portadaTexto    String?
-  portadaImagen   String?
-  portadaHref     String?
-  orden          Int     @default(0)
-  activa         Boolean @default(true)
-  padreId        String?
+  // Estado
+  destacado Boolean @default(false)
+  orden     Int     @default(0)
+  activo    Boolean @default(true)
+  // Fechas
+  creadoEn  DateTime @default(now())
+  editadoEn DateTime @updatedAt
 
   padre     Categoria?  @relation("Arbol", fields: [padreId], references: [id])
   hijas     Categoria[] @relation("Arbol")
   productos Producto[]
 
   @@index([padreId])
+  // Menu de la cabecera: activas, de primer nivel, por orden.
+  @@index([activo, padreId, orden])
   @@map("categorias")
 }
 
+// Marca como tabla: da pagina propia (logo, SEO), filtro por marca y evita que
+// "Qiling" y "QILING" partan el catalogo en dos.
+model Marca {
+  // Identidad
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  nombre      String  @unique
+  // Contenido
+  descripcion String?
+  logoUrl     String?
+  // SEO
+  tituloSeo      String?
+  descripcionSeo String?
+  // Estado
+  destacado Boolean @default(false)
+  orden     Int     @default(0)
+  activo    Boolean @default(true)
+  // Fechas
+  creadoEn  DateTime @default(now())
+  editadoEn DateTime @updatedAt
+
+  productos Producto[]
+
+  // Fila de marcas de la portada: activas, destacadas primero, por orden.
+  @@index([activo, destacado, orden])
+  @@map("marcas")
+}
+
+// El producto es la ficha que se ve; lo que se vende es la Variante.
 model Producto {
+  // Identidad
   id               String   @id @default(cuid())
   slug             String   @unique
   nombre           String
+  // Contenido
   descripcion      String?
   // Resumen de una linea para la tarjeta del listado; `descripcion` es para
   // la ficha completa y no cabe ahi.
   descripcionCorta String?
   // Insignia corta sobre la imagen: "Nuevo", "Mas vendido". Texto libre.
   etiqueta         String?
-  // Si sale en "Productos destacados" de portada. No sirve de nada si
-  // `activo` es false: un producto oculto no aparece en ningun lado.
-  destacada        Boolean  @default(false)
-  tituloSeo        String?
-  descripcionSeo   String?
-  // Marca como texto: con pocas marcas propias no compensa una tabla y su
-  // join. Se promueve a tabla si algun dia pasan de ~15.
-  marca            String?
+  // Datos tecnicos que no justifican columna: material, composicion, cuidado.
+  // Ejemplo: { "material": "Algodon pima", "composicion": "85% algodon, 15% elastano" }
+  specs            Json?
+  // Relaciones
   categoriaId      String
+  marcaId          String?
+  // Precio, comun a todas las variantes. `precioLista` es el precio de antes:
+  // mayor que `precio` cuando hay oferta (CHECK en prisma/sql/restricciones.sql).
   precio           Decimal  @db.Decimal(10, 2)
   precioLista      Decimal? @db.Decimal(10, 2)
+  // SEO
+  tituloSeo        String?
+  descripcionSeo   String?
+  // Estado. `destacado` = sale en "Productos destacados" de portada; no sirve
+  // de nada si `activo` es false: un producto oculto no aparece en ningun lado.
+  destacado        Boolean  @default(false)
   activo           Boolean  @default(true)
+  // Fechas
   creadoEn         DateTime @default(now())
   editadoEn        DateTime @updatedAt
 
   categoria Categoria        @relation(fields: [categoriaId], references: [id])
+  marca     Marca?           @relation(fields: [marcaId], references: [id])
   imagenes  ImagenProducto[]
   variantes Variante[]
 
   // El indice que sostiene el listado de categoria de Clase A.
   @@index([categoriaId, activo])
+  // Pagina de marca y filtro por marca.
+  @@index([marcaId, activo])
+  // "Productos nuevos" de la portada: activos, del mas reciente al mas viejo.
+  @@index([activo, creadoEn])
   @@map("productos")
+}
+
+// Lo que se vende y se cuenta en almacen: un producto en una talla y un color.
+model Variante {
+  id         String  @id @default(cuid())
+  productoId String
+  // Talla y color son columnas, no un sistema generico de atributos. Para ropa
+  // basica la dimension no cambia nunca, y esto ahorra cinco tablas y un join
+  // en cada consulta del catalogo.
+  talla      String
+  color      String
+  sku        String  @unique
+  // Cache del saldo. La verdad es la suma de MovimientoStock; esta columna
+  // existe solo para no sumar el historico en cada lectura del catalogo.
+  stock      Int     @default(0)
+  activo     Boolean @default(true)
+
+  producto    Producto          @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  movimientos MovimientoStock[]
+  itemsPedido ItemPedido[]
+
+  @@unique([productoId, talla, color])
+  @@index([productoId, activo])
+  @@map("variantes")
 }
 
 model ImagenProducto {
@@ -166,30 +278,29 @@ model ImagenProducto {
   @@map("imagenes_producto")
 }
 
-model Variante {
-  id         String  @id @default(cuid())
-  productoId String
-  // Talla y color son columnas, no un sistema generico de atributos. Para ropa
-  // basica la dimension no cambia nunca, y esto ahorra cinco tablas y un join
-  // en cada consulta del catalogo.
-  talla      String
-  color      String
-  sku        String  @unique
-  // Cache del saldo. La verdad es la suma de MovimientoStock; esta columna
-  // existe solo para no sumar el historico en cada lectura del catalogo.
-  stock      Int     @default(0)
-  activa     Boolean @default(true)
+// ═══ CONTENIDO ═════════════════════════════════════════════════════════════
 
-  producto    Producto          @relation(fields: [productoId], references: [id], onDelete: Cascade)
-  movimientos MovimientoStock[]
-  itemsPedido ItemPedido[]
+// Banners de la portada. Antes vivian como cinco columnas `portada*` dentro de
+// Categoria, que es una tabla de catalogo. Hoy la portada muestra el primero
+// activo segun `orden`; con mas banners se vuelve un carrusel sin tocar nada.
+model Banner {
+  id        String   @id @default(cuid())
+  etiqueta  String
+  titulo    String
+  texto     String
+  imagenUrl String
+  // Ruta interna a la que lleva el banner, p. ej. "/categorias/hombres".
+  href      String
+  orden     Int      @default(0)
+  activo    Boolean  @default(true)
+  creadoEn  DateTime @default(now())
+  editadoEn DateTime @updatedAt
 
-  @@unique([productoId, talla, color])
-  @@index([productoId, activa])
-  @@map("variantes")
+  @@index([activo, orden])
+  @@map("banners")
 }
 
-// ── Stock ──────────────────────────────────────────────────────────────────
+// ═══ STOCK ═════════════════════════════════════════════════════════════════
 
 enum MotivoStock {
   INGRESO
@@ -206,18 +317,22 @@ model MovimientoStock {
   delta      Int
   motivo     MotivoStock
   pedidoId   String?
+  // Quien registro el movimiento (ingreso, ajuste, merma). `null` = el sistema,
+  // por ejemplo al descontar una venta.
+  usuarioId  String?
   nota       String?
   creadoEn   DateTime    @default(now())
 
   variante Variante @relation(fields: [varianteId], references: [id])
   pedido   Pedido?  @relation(fields: [pedidoId], references: [id])
+  usuario  Usuario? @relation("MovimientoHechoPor", fields: [usuarioId], references: [id])
 
   @@index([varianteId, creadoEn])
   @@index([pedidoId])
   @@map("movimientos_stock")
 }
 
-// ── Venta ──────────────────────────────────────────────────────────────────
+// ═══ VENTA ═════════════════════════════════════════════════════════════════
 
 enum EstadoPedido {
   PENDIENTE_PAGO
@@ -241,42 +356,59 @@ enum MedioPago {
 }
 
 model Pedido {
+  // Identidad
   id        String       @id @default(cuid())
   codigo    String       @unique
   usuarioId String
   estado    EstadoPedido @default(PENDIENTE_PAGO)
 
-  subtotal  Decimal @db.Decimal(10, 2)
-  descuento Decimal @default(0) @db.Decimal(10, 2)
-  costoEnvio Decimal @default(0) @db.Decimal(10, 2)
-  total     Decimal @db.Decimal(10, 2)
+  // Montos
+  subtotal    Decimal @db.Decimal(10, 2)
+  descuento   Decimal @default(0) @db.Decimal(10, 2)
+  costoEnvio  Decimal @default(0) @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
+  // Codigo del cupon aplicado, congelado: si la campana cambia o se borra, la
+  // venta sigue diciendo con que codigo se desconto.
+  cuponCodigo String?
 
-  // Direccion COPIADA, no referenciada: si el cliente edita su direccion,
-  // este pedido tiene que seguir diciendo a donde se envio de verdad.
+  // Pago. Elegido en el checkout; `PasarelaPago` lo necesita para recalcular
+  // las instrucciones de pago sin volver a preguntar. Los cobros reales van en
+  // la tabla `pagos`.
+  medioPago MedioPago
+
+  // Envio. Direccion COPIADA, no referenciada: si el cliente edita su
+  // direccion, este pedido tiene que seguir diciendo a donde se envio de verdad.
+  envioDestinatario String?
+  envioTelefono     String?
   envioDepartamento String
   envioProvincia    String
   envioDistrito     String
   envioCalle        String
   envioReferencia   String?
   envioMetodo       String
-  envioTelefono     String?
 
-  // Pedidas en el checkout DESDE AHORA aunque la boleta electronica se emita
-  // fuera del sistema por ahora: si no se capturan al inicio, el dia que
-  // toque emitir no hay forma de conseguirlas.
-  comprobante  TipoComprobante @default(BOLETA)
-  documento    String
-  razonSocial  String?
+  // Seguimiento del paquete. Se llenan al despachar y al entregar.
+  transportista     String?
+  codigoSeguimiento String?
+  enviadoEn         DateTime?
+  entregadoEn       DateTime?
 
-  // Elegido en el checkout; `PasarelaPago` lo necesita para recalcular las
-  // instrucciones de pago en la pagina de confirmacion sin volver a preguntar.
-  medioPago MedioPago
+  // Comprobante. Se pide en el checkout DESDE AHORA aunque la boleta se emita
+  // fuera del sistema (la facturacion electronica es una fase posterior): si
+  // no se capturan al inicio, el dia que toque emitir no hay forma de
+  // conseguirlos.
+  comprobante TipoComprobante @default(BOLETA)
+  documento   String
+  razonSocial String?
 
+  // Fechas
   creadoEn  DateTime @default(now())
   editadoEn DateTime @updatedAt
 
   usuario     Usuario           @relation(fields: [usuarioId], references: [id])
   items       ItemPedido[]
+  pagos       Pago[]
+  historial   HistorialPedido[]
   movimientos MovimientoStock[]
 
   @@index([usuarioId, creadoEn])
@@ -292,6 +424,7 @@ model ItemPedido {
   // Congelados en el momento de la compra. La referencia a Variante queda
   // para trazar, pero lo que se factura y se muestra sale de estas columnas.
   nombreProducto String
+  sku            String
   talla          String
   color          String
   precioUnitario Decimal @db.Decimal(10, 2)
@@ -301,19 +434,101 @@ model ItemPedido {
   variante Variante @relation(fields: [varianteId], references: [id])
 
   @@index([pedidoId])
+  // "Mas vendidos" y el historial de ventas de una variante.
+  @@index([varianteId])
   @@map("items_pedido")
 }
 
-// ── Envio ──────────────────────────────────────────────────────────────────
+enum EstadoPago {
+  PENDIENTE
+  CONFIRMADO
+  RECHAZADO
+  REEMBOLSADO
+}
+
+// Un pedido puede tener varios pagos: un intento rechazado y otro confirmado,
+// o un reembolso. `Pedido.estado` dice donde va el pedido; esta tabla dice que
+// plata entro, con que numero de operacion y quien la confirmo.
+model Pago {
+  id              String     @id @default(cuid())
+  pedidoId        String
+  medio           MedioPago
+  monto           Decimal    @db.Decimal(10, 2)
+  estado          EstadoPago @default(PENDIENTE)
+  // Numero de operacion de Yape, Plin o la transferencia.
+  referencia      String?
+  // Captura o voucher que sube el cliente.
+  comprobanteUrl  String?
+  confirmadoPorId String?
+  confirmadoEn    DateTime?
+  creadoEn        DateTime   @default(now())
+
+  pedido        Pedido   @relation(fields: [pedidoId], references: [id])
+  confirmadoPor Usuario? @relation("PagoConfirmadoPor", fields: [confirmadoPorId], references: [id])
+
+  // El mismo numero de operacion no puede cobrar dos pedidos. Los NULL no
+  // chocan entre si, asi que contra entrega queda libre.
+  @@unique([medio, referencia])
+  @@index([pedidoId])
+  @@index([estado, creadoEn])
+  @@map("pagos")
+}
+
+// Cada cambio de estado de un pedido, con quien lo hizo y cuando. Solo se
+// agrega, nunca se edita: es lo que responde "¿quien lo marco enviado?".
+model HistorialPedido {
+  id             String        @id @default(cuid())
+  pedidoId       String
+  estadoAnterior EstadoPedido?
+  estadoNuevo    EstadoPedido
+  // `null` = lo hizo el sistema (por ejemplo, al crear el pedido).
+  usuarioId      String?
+  nota           String?
+  creadoEn       DateTime      @default(now())
+
+  pedido  Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  usuario Usuario? @relation("CambioHechoPor", fields: [usuarioId], references: [id])
+
+  @@index([pedidoId, creadoEn])
+  @@map("historial_pedido")
+}
+
+// ═══ PROMO Y ENVIO ═════════════════════════════════════════════════════════
+
+// Cupones de descuento. `Pedido.cuponCodigo` guarda el codigo usado; esta
+// tabla guarda las reglas vigentes.
+model Cupon {
+  id           String    @id @default(cuid())
+  codigo       String    @unique
+  // Porcentaje del subtotal, de 1 a 100 (CHECK en prisma/sql/restricciones.sql).
+  porcentaje   Int
+  minimoCompra Decimal?  @db.Decimal(10, 2)
+  // `null` = sin tope de usos.
+  usosMaximos  Int?
+  usos         Int       @default(0)
+  desde        DateTime?
+  hasta        DateTime?
+  activo       Boolean   @default(true)
+  creadoEn     DateTime  @default(now())
+  editadoEn    DateTime  @updatedAt
+
+  @@map("cupones")
+}
 
 model MetodoEnvio {
-  id         String   @id @default(cuid())
-  nombre     String
-  costo      Decimal  @db.Decimal(10, 2)
+  id          String   @id @default(cuid())
+  nombre      String
+  costo       Decimal  @db.Decimal(10, 2)
   // Desde este subtotal el envio sale gratis. `null` = nunca.
   gratisDesde Decimal? @db.Decimal(10, 2)
-  activo     Boolean  @default(true)
-  orden      Int      @default(0)
+  // Departamentos a los que llega. Vacio = todo el pais. La regla vive en
+  // `cubreDepartamento` de @appweb/core: "Lima y Callao" no cobra S/ 12 por
+  // enviar a Cusco.
+  departamentos String[] @default([])
+  activo      Boolean  @default(true)
+  orden       Int      @default(0)
+  creadoEn    DateTime @default(now())
+  editadoEn   DateTime @updatedAt
 
   @@map("metodos_envio")
 }

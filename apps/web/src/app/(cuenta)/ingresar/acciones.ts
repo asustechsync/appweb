@@ -28,6 +28,13 @@ export async function ingresar(datos: unknown): Promise<ResultadoIngreso> {
     return { ok: false, error: "Correo o contraseña incorrectos" };
   }
 
+  // `editadoEn` se pasa tal cual: entrar no es editar el perfil, y sin esto
+  // @updatedAt lo moveria en cada inicio de sesion.
+  await prisma.usuario.update({
+    where: { id: usuario.id },
+    data: { ultimoAccesoEn: new Date(), editadoEn: usuario.editadoEn },
+  });
+
   await crearCookieSesion({ usuarioId: usuario.id, rol: usuario.rol, nombre: usuario.nombre }, recordar);
 
   return { ok: true };

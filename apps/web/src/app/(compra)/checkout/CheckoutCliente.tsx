@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import {
   calcularTotales,
+  cubreDepartamento,
   errorDocumentoComprobante,
   redondear,
   type LineaGuardada,
@@ -165,6 +166,26 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       })),
     [lineas],
   );
+
+  /** Departamento al que va el pedido: el de la direccion elegida o el que se esta escribiendo. */
+  const departamentoDestino = nuevaDireccion
+    ? departamento
+    : (direcciones.find((d) => d.id === direccionId)?.departamento ?? "");
+
+  /** Metodos que llegan a ese departamento. Sin departamento aun, todos. */
+  const metodosQueLlegan = useMemo(
+    () =>
+      departamentoDestino.trim() === ""
+        ? metodos
+        : metodos.filter((m) => cubreDepartamento(m.departamentos, departamentoDestino)),
+    [metodos, departamentoDestino],
+  );
+
+  // Si el metodo elegido no llega a la direccion nueva, se pasa al primero que si.
+  useEffect(() => {
+    if (metodoId !== null && metodosQueLlegan.some((m) => m.id === metodoId)) return;
+    setMetodoId(metodosQueLlegan[0]?.id ?? null);
+  }, [metodosQueLlegan, metodoId]);
 
   const metodoElegido = metodos.find((m) => m.id === metodoId) ?? null;
 
@@ -518,6 +539,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
         <GrupoOpciones etiqueta="Método de envío">
           {metodos.map((metodo) => {
             const costo = costoPorMetodo.get(metodo.id) ?? metodo.costo;
+            const llega = metodosQueLlegan.some((m) => m.id === metodo.id);
             return (
               <TarjetaSeleccionable
                 key={metodo.id}
@@ -525,11 +547,14 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
                 value={metodo.id}
                 checked={metodoId === metodo.id}
                 onChange={() => setMetodoId(metodo.id)}
+                disabled={!llega}
                 icono={<IconoPedidos tamano={20} />}
                 extra={costo === 0 ? "Gratis" : FORMATO.format(costo)}
               >
                 <strong>{metodo.nombre}</strong>
-                {metodo.gratisDesde !== null && costo > 0 ? (
+                {!llega ? (
+                  <span>No llega a {departamentoDestino}</span>
+                ) : metodo.gratisDesde !== null && costo > 0 ? (
                   <span>Gratis desde {FORMATO.format(metodo.gratisDesde)}</span>
                 ) : null}
               </TarjetaSeleccionable>

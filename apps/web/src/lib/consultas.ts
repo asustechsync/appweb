@@ -64,7 +64,7 @@ export async function categoriasDeNavegacion(): Promise<{ slug: string; nombre: 
 
   // Solo las de primer nivel y activas: las hijas iran en el listado de cada una.
   return prisma.categoria.findMany({
-    where: { activa: true, padreId: null },
+    where: { activo: true, padreId: null },
     orderBy: [{ orden: "asc" }, { nombre: "asc" }],
     select: { slug: true, nombre: true },
   });
@@ -75,23 +75,20 @@ export async function contenidoColeccionPortada(): Promise<ContenidoColeccionPor
   cacheLife("hours");
   cacheTag(etiquetas.portada());
 
-  const categoria = await prisma.categoria.findUnique({
-    where: { slug: "hombres" },
-    select: {
-      portadaEtiqueta: true,
-      portadaTitulo: true,
-      portadaTexto: true,
-      portadaImagen: true,
-      portadaHref: true,
-    },
+  // El primer banner activo segun `orden`. Sin banners, la portada usa el texto
+  // de siempre para no quedar vacia.
+  const banner = await prisma.banner.findFirst({
+    where: { activo: true },
+    orderBy: [{ orden: "asc" }, { creadoEn: "asc" }],
+    select: { etiqueta: true, titulo: true, texto: true, imagenUrl: true, href: true },
   });
 
   return {
-    etiqueta: categoria?.portadaEtiqueta ?? "Nueva colección",
-    titulo: categoria?.portadaTitulo ?? "Comodidad con personalidad",
-    texto: categoria?.portadaTexto ?? "Básicos cómodos para acompañarte todos los días.",
-    imagen: categoria?.portadaImagen ?? "/producto.webp",
-    href: categoria?.portadaHref ?? "/categorias/hombres",
+    etiqueta: banner?.etiqueta ?? "Nueva colección",
+    titulo: banner?.titulo ?? "Comodidad con personalidad",
+    texto: banner?.texto ?? "Básicos cómodos para acompañarte todos los días.",
+    imagen: banner?.imagenUrl ?? "/producto.webp",
+    href: banner?.href ?? "/categorias/hombres",
   };
 }
 
@@ -114,8 +111,9 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     take: limite,
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
-      variantes: { select: { stock: true, activa: true, talla: true, color: true } },
+      variantes: { select: { stock: true, activo: true, talla: true, color: true } },
       categoria: { select: { nombre: true } },
+      marca: { select: { nombre: true } },
     },
   });
 
@@ -137,7 +135,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
       nombre: p.nombre,
       descripcionCorta: p.descripcionCorta,
       categoria: p.categoria.nombre,
-      marca: p.marca,
+      marca: p.marca?.nombre ?? null,
       imagenUrl: p.imagenes[0]?.url ?? "",
       precio: precio.precio,
       precioLista: precio.precioLista,
@@ -163,8 +161,9 @@ export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> 
     take: limite,
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
-      variantes: { select: { stock: true, activa: true, talla: true, color: true } },
+      variantes: { select: { stock: true, activo: true, talla: true, color: true } },
       categoria: { select: { nombre: true, slug: true } },
+      marca: { select: { nombre: true } },
     },
   });
 
@@ -185,7 +184,7 @@ export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> 
       categoria: producto.categoria.nombre,
       categoriaSlug: producto.categoria.slug,
       tallas: disponibilidad.tallas,
-      marca: producto.marca,
+      marca: producto.marca?.nombre ?? null,
       imagenUrl: producto.imagenes[0]?.url ?? "",
       precio: precio.precio,
       precioLista: precio.precioLista,
@@ -235,11 +234,12 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
     where: { slug, activo: true },
     include: {
       categoria: { select: { slug: true, nombre: true } },
+      marca: { select: { nombre: true } },
       imagenes: { orderBy: { orden: "asc" } },
       variantes: {
-        where: { activa: true },
+        where: { activo: true },
         orderBy: [{ talla: "asc" }, { color: "asc" }],
-        select: { id: true, talla: true, color: true, stock: true, activa: true },
+        select: { id: true, talla: true, color: true, stock: true, activo: true },
       },
     },
   });
@@ -255,7 +255,7 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
   return {
     slug: producto.slug,
     nombre: producto.nombre,
-    marca: producto.marca,
+    marca: producto.marca?.nombre ?? null,
     descripcion: producto.descripcion,
     descripcionCorta: producto.descripcionCorta,
     etiqueta: producto.etiqueta,
@@ -331,7 +331,7 @@ export async function varianteParaCarrito(
   cacheTag(etiquetas.catalogo());
 
   const variante = await prisma.variante.findFirst({
-    where: { id: varianteId, activa: true, producto: { activo: true } },
+    where: { id: varianteId, activo: true, producto: { activo: true } },
     select: {
       id: true,
       talla: true,
@@ -375,6 +375,8 @@ export interface MetodoDeEnvio {
   nombre: string;
   costo: number;
   gratisDesde: number | null;
+  /** Departamentos que cubre. Vacio = todo el pais (ver `cubreDepartamento`). */
+  departamentos: string[];
 }
 
 /**
@@ -389,7 +391,7 @@ export async function metodosDeEnvio(): Promise<MetodoDeEnvio[]> {
   const metodos = await prisma.metodoEnvio.findMany({
     where: { activo: true },
     orderBy: { orden: "asc" },
-    select: { id: true, nombre: true, costo: true, gratisDesde: true },
+    select: { id: true, nombre: true, costo: true, gratisDesde: true, departamentos: true },
   });
 
   return metodos.map((metodo) => ({
@@ -397,6 +399,7 @@ export async function metodosDeEnvio(): Promise<MetodoDeEnvio[]> {
     nombre: metodo.nombre,
     costo: Number(metodo.costo),
     gratisDesde: metodo.gratisDesde !== null ? Number(metodo.gratisDesde) : null,
+    departamentos: metodo.departamentos,
   }));
 }
 
@@ -405,18 +408,12 @@ export async function marcas(limite = 10): Promise<MarcaDeFicha[]> {
   cacheLife("hours");
   cacheTag(etiquetas.portada());
 
-  const productos = await prisma.producto.findMany({
-    where: { activo: true, marca: { not: null } },
-    select: { marca: true },
-    distinct: ["marca"],
+  const marcas = await prisma.marca.findMany({
+    where: { activo: true, productos: { some: { activo: true } } },
+    select: { slug: true, nombre: true, logoUrl: true },
+    orderBy: [{ destacado: "desc" }, { orden: "asc" }, { nombre: "asc" }],
     take: limite,
   });
 
-  return productos
-    .map((p) => p.marca)
-    .filter((marca): marca is string => marca !== null)
-    .map((marca) => ({
-      slug: marca.toLowerCase().replace(/\s+/g, "-"),
-      nombre: marca,
-    }));
+  return marcas.map((marca) => ({ slug: marca.slug, nombre: marca.nombre, logo: marca.logoUrl }));
 }

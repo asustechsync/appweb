@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   buscarCupon,
   calcularTotales,
+  cubreDepartamento,
   errorDocumentoComprobante,
   generarCodigoPedido,
   hayStock,
@@ -147,10 +148,16 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
   if (!usuario) return { ok: false, error: "Sesión inválida." };
   if (!direccion) return { ok: false, error: "Elige una dirección válida." };
   if (!metodoEnvio) return { ok: false, error: "Elige un método de envío válido." };
+  if (!cubreDepartamento(metodoEnvio.departamentos, direccion.departamento)) {
+    return {
+      ok: false,
+      error: `${metodoEnvio.nombre} no llega a ${direccion.departamento}. Elige otro método de envío.`,
+    };
+  }
 
   const ids = [...new Set(lineas.map((linea) => linea.varianteId))];
   const variantes = await prisma.variante.findMany({
-    where: { id: { in: ids }, activa: true, producto: { activo: true } },
+    where: { id: { in: ids }, activo: true, producto: { activo: true } },
     include: { producto: { select: { nombre: true, precio: true, precioLista: true } } },
   });
 
@@ -164,6 +171,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
   const itemsPedido: {
     varianteId: string;
     nombreProducto: string;
+    sku: string;
     talla: string;
     color: string;
     precioUnitario: number;
@@ -191,6 +199,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     itemsPedido.push({
       varianteId: variante.id,
       nombreProducto: variante.producto.nombre,
+      sku: variante.sku,
       talla: variante.talla,
       color: variante.color,
       precioUnitario: precio.precio,
@@ -229,7 +238,9 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
       envioCalle: direccion.calle,
       envioReferencia: direccion.referencia,
       envioMetodo: metodoEnvio.nombre,
-      envioTelefono: usuario.telefono,
+      envioDestinatario: direccion.destinatario ?? usuario.nombre,
+      envioTelefono: direccion.telefono ?? usuario.telefono,
+      cuponCodigo: cuponValido?.codigo ?? null,
       comprobante: comprobante === "factura" ? "FACTURA" : "BOLETA",
       documento,
       razonSocial: razonSocial ?? null,
@@ -238,11 +249,19 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
         create: itemsPedido.map((item) => ({
           varianteId: item.varianteId,
           nombreProducto: item.nombreProducto,
+          sku: item.sku,
           talla: item.talla,
           color: item.color,
           precioUnitario: item.precioUnitario,
           cantidad: item.cantidad,
         })),
+      },
+      // El pago nace pendiente; el panel lo confirma con su referencia.
+      pagos: {
+        create: { medio: MEDIO_A_ENUM[medioPago], monto: totales.total },
+      },
+      historial: {
+        create: { estadoNuevo: "PENDIENTE_PAGO", nota: "Pedido creado en el checkout" },
       },
     },
   });

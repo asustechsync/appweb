@@ -28,14 +28,9 @@ const categorias = [
     nombre: "Hombres",
     descripcion: "Boxers, medias y basicos para hombre.",
     imagenUrl: "https://picsum.photos/seed/cat-hombres/800/600",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Ropa básica para hombre | Tienda",
     descripcionSeo: "Boxers, medias y polos básicos para hombre. Envío a todo el Perú.",
-    portadaEtiqueta: "Nueva colección",
-    portadaTitulo: "Comodidad con personalidad",
-    portadaTexto: "Básicos cómodos para acompañarte todos los días.",
-    portadaImagen: "/producto.webp",
-    portadaHref: "/categorias/hombres",
     orden: 1,
   },
   {
@@ -43,7 +38,7 @@ const categorias = [
     nombre: "Mujeres",
     descripcion: "Calzones, medias y basicos para mujer.",
     imagenUrl: "https://picsum.photos/seed/cat-mujeres/800/600",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Ropa básica para mujer | Tienda",
     descripcionSeo: "Calzones, medias y polos básicos para mujer. Envío a todo el Perú.",
     orden: 2,
@@ -53,7 +48,7 @@ const categorias = [
     nombre: "Jóvenes",
     descripcion: "Basicos pensados para adolescentes.",
     imagenUrl: "https://picsum.photos/seed/cat-jovenes/800/600",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Ropa básica para jóvenes | Tienda",
     descripcionSeo: "Básicos para adolescentes: polos, medias y ropa interior.",
     orden: 3,
@@ -63,7 +58,7 @@ const categorias = [
     nombre: "Niños",
     descripcion: "Basicos comodos y resistentes para niños.",
     imagenUrl: "https://picsum.photos/seed/cat-ninos/800/600",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Ropa básica para niños | Tienda",
     descripcionSeo: "Ropa básica infantil: cómoda, resistente y a buen precio.",
     orden: 4,
@@ -73,7 +68,7 @@ const categorias = [
     nombre: "Bebés",
     descripcion: "Basicos suaves para los mas pequeños.",
     imagenUrl: "https://picsum.photos/seed/cat-bebes/800/600",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Ropa básica para bebés | Tienda",
     descripcionSeo: "Ropa básica para bebé: algodón suave, hipoalergénico.",
     orden: 5,
@@ -97,7 +92,7 @@ interface ProductoSeed {
   descripcion: string;
   descripcionCorta: string;
   etiqueta: string;
-  destacada: boolean;
+  destacado: boolean;
   tituloSeo: string;
   descripcionSeo: string;
   marca: string;
@@ -116,7 +111,7 @@ const productos: ProductoSeed[] = [
       "Polo de algodón pima peruano, cuello redondo y corte recto. Suave al tacto y resistente al lavado diario.",
     descripcionCorta: "Algodón pima 100%, corte recto.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Polo Básico Algodón Pima Hombre | Tienda",
     descripcionSeo: "Polo básico de algodón pima para hombre. Cuello redondo, corte recto.",
     marca: "Fila",
@@ -136,7 +131,7 @@ const productos: ProductoSeed[] = [
       "Polo deportivo con tecnología dry-fit que absorbe la humedad. Ideal para entrenar o el uso diario en climas calurosos.",
     descripcionCorta: "Tela dry-fit, transpirable.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Polo Deportivo Dry-Fit para Hombre | Tienda",
     descripcionSeo: "Polo deportivo dry-fit para hombre. Transpirable, ideal para entrenar.",
     marca: "Amanecer",
@@ -156,7 +151,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 pares de medias de algodón con refuerzo en talón y punta. Talla única, elástico suave que no marca.",
     descripcionCorta: "Pack x3, talla única.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Medias Algodón Pack x3 Hombre | Tienda",
     descripcionSeo: "Pack de 3 medias de algodón para hombre. Refuerzo en talón y punta.",
     marca: "Boston",
@@ -175,7 +170,7 @@ const productos: ProductoSeed[] = [
       "Medias deportivas con banda antideslizante en la planta y compresión media en el arco. Pensadas para entrenar.",
     descripcionCorta: "Antideslizantes, compresión media.",
     etiqueta: "Oferta",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Medias Deportivas Antideslizantes Hombre | Tienda",
     descripcionSeo: "Medias deportivas antideslizantes para hombre. Compresión media.",
     marca: "San Shan",
@@ -194,7 +189,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 boxers de algodón con pretina elástica ancha que no se enrolla. Corte cómodo para uso diario.",
     descripcionCorta: "Pack x3, pretina elástica ancha.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Boxer Algodón Básico Pack x3 Hombre | Tienda",
     descripcionSeo: "Pack de 3 boxers de algodón para hombre. Pretina elástica ancha.",
     marca: "Qiling",
@@ -214,7 +209,7 @@ const productos: ProductoSeed[] = [
       "Boxer de microfibra sin costuras laterales, invisible bajo la ropa ajustada. Secado rápido.",
     descripcionCorta: "Microfibra, sin costuras.",
     etiqueta: "Top",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Boxer Microfibra Sin Costuras Hombre | Tienda",
     descripcionSeo: "Boxer de microfibra sin costuras para hombre. Secado rápido.",
     marca: "Amanecer",
@@ -236,7 +231,7 @@ const productos: ProductoSeed[] = [
       "Polo de algodón con corte entallado y cuello redondo. Tela suave que no pierde forma con el lavado.",
     descripcionCorta: "Algodón suave, corte entallado.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Polo Básico de Algodón para Mujer | Tienda",
     descripcionSeo: "Polo básico de algodón para mujer. Corte entallado, cuello redondo.",
     marca: "Fila",
@@ -256,7 +251,7 @@ const productos: ProductoSeed[] = [
       "Polo de corte oversize en algodón grueso. Hombro caído y largo midi, ideal para combinar de varias formas.",
     descripcionCorta: "Corte oversize, algodón grueso.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Polo Oversize de Algodón para Mujer | Tienda",
     descripcionSeo: "Polo oversize de algodón para mujer. Hombro caído, largo midi.",
     marca: "Boston",
@@ -275,7 +270,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 medias invisibles con silicona antideslizante en el talón. No se ven al usar zapatillas o flats.",
     descripcionCorta: "Pack x3, invisibles.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Medias Invisibles Pack x3 para Mujer | Tienda",
     descripcionSeo: "Pack de 3 medias invisibles para mujer. Silicona antideslizante.",
     marca: "Qiling",
@@ -294,7 +289,7 @@ const productos: ProductoSeed[] = [
       "Medias térmicas con forro polar interior. Abrigan sin perder elasticidad, ideales para climas fríos.",
     descripcionCorta: "Forro polar interior.",
     etiqueta: "Oferta",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Medias Térmicas de Invierno Mujer | Tienda",
     descripcionSeo: "Medias térmicas para mujer con forro polar interior.",
     marca: "San Shan",
@@ -313,7 +308,7 @@ const productos: ProductoSeed[] = [
       "Pack de 5 calzones de algodón corte clásico, pretina suave que no aprieta. Transpirables para uso diario.",
     descripcionCorta: "Pack x5, corte clásico.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Calzón Algodón Clásico Pack x5 Mujer | Tienda",
     descripcionSeo: "Pack de 5 calzones de algodón para mujer. Corte clásico, transpirables.",
     marca: "Amanecer",
@@ -333,7 +328,7 @@ const productos: ProductoSeed[] = [
       "Calzón de microfibra sin costuras, corte bikini. Invisible bajo prendas ajustadas.",
     descripcionCorta: "Microfibra, corte bikini.",
     etiqueta: "Top",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Calzón Microfibra Invisible Mujer | Tienda",
     descripcionSeo: "Calzón de microfibra invisible para mujer. Corte bikini, sin costuras.",
     marca: "Fila",
@@ -355,7 +350,7 @@ const productos: ProductoSeed[] = [
       "Polo unisex de algodón, corte recto pensado para adolescentes. Resistente a lavados frecuentes.",
     descripcionCorta: "Unisex, algodón resistente.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Polo Básico Unisex Joven Casual | Tienda",
     descripcionSeo: "Polo básico unisex para jóvenes. Algodón resistente, corte recto.",
     marca: "Boston",
@@ -374,7 +369,7 @@ const productos: ProductoSeed[] = [
       "Polo con estampado frontal, corte regular en algodón suave. Diseño pensado para el uso diario juvenil.",
     descripcionCorta: "Estampado frontal, corte regular.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Polo Estampado Juvenil Casual | Tienda",
     descripcionSeo: "Polo estampado para jóvenes. Corte regular, algodón suave.",
     marca: "San Shan",
@@ -393,7 +388,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 medias de algodón elástico, talla única. Resistentes para el uso escolar diario.",
     descripcionCorta: "Pack x3, uso diario.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Medias Básicas de Algodón Pack x3 Joven | Tienda",
     descripcionSeo: "Pack de 3 medias básicas para jóvenes. Algodón elástico.",
     marca: "Qiling",
@@ -411,7 +406,7 @@ const productos: ProductoSeed[] = [
       "Medias deportivas acolchadas en la planta, ideales para educación física y deporte.",
     descripcionCorta: "Acolchadas, uso deportivo.",
     etiqueta: "Oferta",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Medias Deportivas Running Joven | Tienda",
     descripcionSeo: "Medias deportivas acolchadas para jóvenes.",
     marca: "Amanecer",
@@ -430,7 +425,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 boxers de algodón con pretina suave, corte cómodo pensado para adolescentes.",
     descripcionCorta: "Pack x3, pretina suave.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Boxer Algodón Básico Joven Pack x3 | Tienda",
     descripcionSeo: "Pack de 3 boxers de algodón para jóvenes. Pretina suave.",
     marca: "Fila",
@@ -449,7 +444,7 @@ const productos: ProductoSeed[] = [
       "Boxer de algodón con estampado, pretina elástica ancha. Diseño divertido para el día a día.",
     descripcionCorta: "Estampado, algodón suave.",
     etiqueta: "Top",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Boxer Estampado Divertido Joven | Tienda",
     descripcionSeo: "Boxer estampado de algodón para jóvenes.",
     marca: "Boston",
@@ -470,7 +465,7 @@ const productos: ProductoSeed[] = [
       "Polo de algodón suave, corte holgado pensado para el movimiento de los niños. Resistente a lavados frecuentes.",
     descripcionCorta: "Algodón suave, corte holgado.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Polo Básico de Algodón para Niño | Tienda",
     descripcionSeo: "Polo básico de algodón para niño. Corte holgado, resistente.",
     marca: "San Shan",
@@ -489,7 +484,7 @@ const productos: ProductoSeed[] = [
       "Polo con estampado divertido, algodón suave que no irrita la piel. Ideal para el colegio o el juego.",
     descripcionCorta: "Estampado divertido, algodón suave.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Polo Estampado Divertido Niño | Tienda",
     descripcionSeo: "Polo estampado para niño. Algodón suave, no irrita la piel.",
     marca: "Qiling",
@@ -508,7 +503,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 medias de algodón, talla única. Resistentes para el uso escolar y el juego diario.",
     descripcionCorta: "Pack x3, uso escolar.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Medias Básicas de Algodón Pack x3 Niño | Tienda",
     descripcionSeo: "Pack de 3 medias básicas para niño. Uso escolar diario.",
     marca: "Amanecer",
@@ -526,7 +521,7 @@ const productos: ProductoSeed[] = [
       "Medias deportivas con refuerzo en talón y punta, ideales para educación física.",
     descripcionCorta: "Refuerzo talón y punta.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Medias Deportivas Running Niño | Tienda",
     descripcionSeo: "Medias deportivas para niño con refuerzo en talón y punta.",
     marca: "Fila",
@@ -545,7 +540,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 boxers de algodón suave, pretina que no aprieta. Corte cómodo para el día a día.",
     descripcionCorta: "Pack x3, pretina suave.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Boxer Algodón Básico Niño Pack x3 | Tienda",
     descripcionSeo: "Pack de 3 boxers de algodón para niño. Pretina suave.",
     marca: "Boston",
@@ -564,7 +559,7 @@ const productos: ProductoSeed[] = [
       "Boxer de algodón con estampado, pretina elástica suave. Diseño divertido pensado para niños.",
     descripcionCorta: "Estampado, pretina suave.",
     etiqueta: "Oferta",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Boxer Estampado Divertido Niño | Tienda",
     descripcionSeo: "Boxer estampado de algodón para niño.",
     marca: "San Shan",
@@ -585,7 +580,7 @@ const productos: ProductoSeed[] = [
       "Body de algodón con broches en la entrepierna para facilitar el cambio de pañal. Suave e hipoalergénico.",
     descripcionCorta: "Broches en entrepierna, hipoalergénico.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Body Manga Corta de Algodón Bebé | Tienda",
     descripcionSeo: "Body de algodón para bebé. Broches en entrepierna, hipoalergénico.",
     marca: "Qiling",
@@ -604,7 +599,7 @@ const productos: ProductoSeed[] = [
       "Polo de algodón suave para bebé, cuello ancho para facilitar el vestido. Costuras planas que no irritan.",
     descripcionCorta: "Cuello ancho, costuras planas.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Polo Básico de Algodón para Bebé | Tienda",
     descripcionSeo: "Polo básico de algodón para bebé. Cuello ancho, costuras planas.",
     marca: "Amanecer",
@@ -622,7 +617,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 medias de algodón extra suave, elástico delicado que no marca la piel del bebé.",
     descripcionCorta: "Pack x3, algodón extra suave.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Medias Suaves de Algodón Pack x3 Bebé | Tienda",
     descripcionSeo: "Pack de 3 medias suaves para bebé. Algodón extra suave.",
     marca: "Fila",
@@ -640,7 +635,7 @@ const productos: ProductoSeed[] = [
       "Medias con puntos antideslizantes en la planta, ideales para cuando el bebé empieza a gatear o caminar.",
     descripcionCorta: "Puntos antideslizantes.",
     etiqueta: "Top",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Medias Antideslizantes para Bebé | Tienda",
     descripcionSeo: "Medias antideslizantes para bebé. Ideales para gatear o caminar.",
     marca: "Boston",
@@ -659,7 +654,7 @@ const productos: ProductoSeed[] = [
       "Pack de 3 calzones de algodón suave para bebé, pretina delicada que no marca. Ideales para debajo del pañal de tela.",
     descripcionCorta: "Pack x3, pretina delicada.",
     etiqueta: "Más vendido",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Calzón de Algodón Suave Bebé Pack x3 | Tienda",
     descripcionSeo: "Pack de 3 calzones de algodón para bebé. Pretina delicada.",
     marca: "San Shan",
@@ -678,7 +673,7 @@ const productos: ProductoSeed[] = [
       "Body de algodón estampado con broches laterales y en entrepierna. Facil de poner y quitar.",
     descripcionCorta: "Broches laterales, estampado.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Body con Broches Estampado para Bebé | Tienda",
     descripcionSeo: "Body estampado con broches para bebé. Fácil de poner y quitar.",
     marca: "Qiling",
@@ -698,7 +693,7 @@ const productos: ProductoSeed[] = [
     descripcion: "Polo premium de algodón de alta calidad. Diseño exclusivo Pesail.",
     descripcionCorta: "Algodón premium, diseño Pesail.",
     etiqueta: "Nuevo",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Polo Premium Algodón Pesail Hombre | Tienda",
     descripcionSeo: "Polo premium Pesail de algodón. Calidad superior.",
     marca: "Pesail",
@@ -716,7 +711,7 @@ const productos: ProductoSeed[] = [
     descripcion: "Medias premium con tecnología microtech X&Y. Máxima comodidad.",
     descripcionCorta: "Tecnología microtech X&Y.",
     etiqueta: "Nuevo",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Medias Premium X&Y Algodón para Mujer | Tienda",
     descripcionSeo: "Medias premium X&Y para mujer. Tecnología microtech.",
     marca: "X&Y",
@@ -733,7 +728,7 @@ const productos: ProductoSeed[] = [
     descripcion: "Calzón premium corte americano con tela de alta densidad.",
     descripcionCorta: "Corte americano, alta densidad.",
     etiqueta: "Nuevo",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Calzón Americano Premium para Mujer | Tienda",
     descripcionSeo: "Calzón americano premium para mujer.",
     marca: "Americano",
@@ -751,7 +746,7 @@ const productos: ProductoSeed[] = [
     descripcion: "Boxer premium Unno con tecnología de microfibra avanzada.",
     descripcionCorta: "Microfibra avanzada, corte premium.",
     etiqueta: "Nuevo",
-    destacada: true,
+    destacado: true,
     tituloSeo: "Boxer Unno Premium Microfibra Hombre | Tienda",
     descripcionSeo: "Boxer premium Unno para hombre. Microfibra avanzada.",
     marca: "Unno",
@@ -769,7 +764,7 @@ const productos: ProductoSeed[] = [
     descripcion: "Medias deportivas Galufei con compresión y ventilación.",
     descripcionCorta: "Compresión transpirable",
     etiqueta: "Top",
-    destacada: false,
+    destacado: false,
     tituloSeo: "Medias Sport Galufei Compresión Joven | Tienda",
     descripcionSeo: "Medias sport Galufei para jóvenes. Compresión y ventilación.",
     marca: "Galufei",
@@ -783,6 +778,16 @@ const productos: ProductoSeed[] = [
 ];
 
 // ── Ejecucion ─────────────────────────────────────────────────────────────
+
+/** "San Shan" -> "san-shan", "X&Y" -> "x-y". */
+function slugDe(texto: string): string {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 function skuDe(slugProducto: string, variante: VarianteSeed): string {
   const talla = variante.talla.replace(/\s+/g, "").toUpperCase();
@@ -807,12 +812,19 @@ async function crearProductos() {
       where: { slug: p.categoriaSlug },
     });
 
-    const { variantes, categoriaSlug, ...datosProducto } = p;
+    const { variantes, categoriaSlug, marca: nombreMarca, ...datosProducto } = p;
+
+    // El nombre es unico en `marcas`: la semilla reutiliza la que ya existe.
+    const marca = await prisma.marca.upsert({
+      where: { nombre: nombreMarca },
+      update: {},
+      create: { nombre: nombreMarca, slug: slugDe(nombreMarca) },
+    });
 
     const producto = await prisma.producto.upsert({
       where: { slug: p.slug },
-      update: { ...datosProducto, categoriaId: categoria.id },
-      create: { ...datosProducto, categoriaId: categoria.id },
+      update: { ...datosProducto, categoriaId: categoria.id, marcaId: marca.id },
+      create: { ...datosProducto, categoriaId: categoria.id, marcaId: marca.id },
     });
 
     // Las variantes no se borran: un pedido o un movimiento de stock las
@@ -863,10 +875,11 @@ async function crearProductos() {
  * es la misma promesa que anuncian el hero y /envios: si cambia una, cambian
  * las tres.
  */
+// `departamentos` vacio = llega a todo el pais (ver `cubreDepartamento`).
 const metodosEnvio = [
-  { nombre: "Lima y Callao", costo: 12, gratisDesde: 99, orden: 1 },
-  { nombre: "Provincias (agencia)", costo: 22, gratisDesde: null, orden: 2 },
-  { nombre: "Recojo en tienda", costo: 0, gratisDesde: null, orden: 3 },
+  { nombre: "Lima y Callao", costo: 12, gratisDesde: 99, orden: 1, departamentos: ["Lima", "Callao"] },
+  { nombre: "Provincias (agencia)", costo: 22, gratisDesde: null, orden: 2, departamentos: [] },
+  { nombre: "Recojo en tienda", costo: 0, gratisDesde: null, orden: 3, departamentos: [] },
 ];
 
 async function crearMetodosEnvio() {
@@ -891,12 +904,62 @@ async function crearMetodosEnvio() {
   }
 }
 
+// ── Banners de portada ───────────────────────────────────────────────────
+
+const banners = [
+  {
+    etiqueta: "Nueva colección",
+    titulo: "Comodidad con personalidad",
+    texto: "Básicos cómodos para acompañarte todos los días.",
+    imagenUrl: "/producto.webp",
+    href: "/categorias/hombres",
+    orden: 1,
+  },
+];
+
+async function crearBanners() {
+  console.log("Banners:");
+
+  // Un banner no tiene clave natural: si ya hay alguno, la semilla no pisa lo
+  // que el panel editó. Solo crea el de arranque cuando la tabla esta vacia.
+  if ((await prisma.banner.count()) > 0) {
+    console.log("  · ya hay banners, no se toca nada");
+    return;
+  }
+  for (const banner of banners) {
+    await prisma.banner.create({ data: banner });
+    console.log(`  ✔ ${banner.titulo}`);
+  }
+}
+
+// ── Cupones ──────────────────────────────────────────────────────────────
+
+const cupones = [{ codigo: "PROMO10", porcentaje: 10 }];
+
+async function crearCupones() {
+  console.log("Cupones:");
+
+  // `update` no toca `usos`: la semilla no debe reiniciar el contador.
+  for (const cupon of cupones) {
+    await prisma.cupon.upsert({
+      where: { codigo: cupon.codigo },
+      update: { porcentaje: cupon.porcentaje },
+      create: cupon,
+    });
+    console.log(`  ✔ ${cupon.codigo} — ${cupon.porcentaje}%`);
+  }
+}
+
 async function main() {
   await crearCategorias();
   console.log("");
   await crearProductos();
   console.log("");
   await crearMetodosEnvio();
+  console.log("");
+  await crearBanners();
+  console.log("");
+  await crearCupones();
 }
 
 main()

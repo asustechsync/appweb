@@ -118,7 +118,7 @@ export const esquemaProducto = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Solo minusculas, numeros y guiones"),
   nombre: z.string().trim().min(3).max(140),
   descripcion: z.string().trim().max(4000).optional(),
-  marca: z.string().trim().max(60).optional(),
+  marcaId: z.string().optional(),
   categoriaId: z.string().min(1, "Elige una categoria"),
   precio: z.number().positive("El precio tiene que ser mayor que cero"),
   precioLista: z.number().positive().nullable().optional(),
@@ -130,7 +130,7 @@ export const esquemaVariante = z.object({
   color: z.string().trim().min(1).max(40),
   sku: z.string().trim().min(1).max(40),
   stock: z.number().int().min(0, "El stock no puede ser negativo"),
-  activa: z.boolean().default(true),
+  activo: z.boolean().default(true),
 });
 
 // ── Compra ─────────────────────────────────────────────────────────────────

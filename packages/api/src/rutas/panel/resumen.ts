@@ -64,7 +64,7 @@ export const resumen = router({
         : [],
       verStock
         ? ctx.prisma.variante.findMany({
-            where: { activa: true, stock: { lte: UMBRAL_STOCK_BAJO } },
+            where: { activo: true, stock: { lte: UMBRAL_STOCK_BAJO } },
             orderBy: { stock: "asc" },
             take: TOPE_LISTA,
             select: {
