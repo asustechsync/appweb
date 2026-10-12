@@ -6,7 +6,7 @@ import "./propuesta-tarjeta.css";
 const productos = [
   { id: "01", marca: "QILING", nombre: "Boxer estampado azul", precio: "S/ 39.90", anterior: "S/ 49.90", descuento: "−20%", categoria: "BOXERS" },
   { id: "02", marca: "BOSTON", nombre: "Medias antideslizantes", precio: "S/ 18.90", anterior: "S/ 24.90", descuento: "−24%", categoria: "MEDIAS" },
-];
+] as const;
 
 function FotoProducto({ segunda = false }: { segunda?: boolean }) {
   return <Image className={segunda ? "concepto__imagen concepto__imagen--alternativa" : "concepto__imagen"} src="/producto.webp" alt="Boxer estampado azul" width={480} height={480} priority />;

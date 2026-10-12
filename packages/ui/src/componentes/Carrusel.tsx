@@ -164,7 +164,8 @@ export function Carrusel({ children, fijo, etiqueta = "Carrusel", infinito = fal
 
     // Paso = distancia entre dos items; se avanzan los que caben casi completos.
     const items = pista.querySelectorAll<HTMLElement>(":scope > :not(.ui-carrusel__copia), :scope > .ui-carrusel__copia > *");
-    const paso = items.length > 1 ? items[1].getBoundingClientRect().left - items[0].getBoundingClientRect().left : pista.clientWidth;
+    const [primero, segundo] = items;
+    const paso = primero && segundo ? segundo.getBoundingClientRect().left - primero.getBoundingClientRect().left : pista.clientWidth;
     const cantidad = Math.max(1, Math.floor((pista.clientWidth * 0.95) / paso));
 
     const origen = pista.scrollLeft;
