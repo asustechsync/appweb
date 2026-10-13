@@ -57,7 +57,8 @@ export default async function PaginaPanel({ params }: Props) {
 
   const secciones = seccionesDelPanel(sesion.rol);
   const pedida = ruta?.[0];
-  const inicial = pedida && secciones.includes(pedida) ? pedida : (secciones[0] ?? "resumen");
+  // Sin seccion: en movil se ve el menu; en escritorio, la primera.
+  const inicial = pedida && secciones.includes(pedida) ? pedida : "";
 
   return (
     <Proveedores>

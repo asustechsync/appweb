@@ -1,12 +1,48 @@
-/* Mismos tokens que la tienda: una sola identidad visual para los dos.
-   Para cambiarla se edita packages/ui/src/tokens.ts y se corre:
+/* Mismos tokens y misma base que la tienda: una sola identidad visual para
+   los dos. Para cambiarla se edita packages/ui/src/tokens.ts y se corre:
        npm run ui:tokens                                                     */
 
 @import "@appweb/ui/base-web.css";
 
-body {
-  font-family: var(--tipo-familia-base);
-  font-size: var(--tipo-tamano-sm);
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
-h1, h2, h3 { margin: 0; line-height: var(--tipo-altura-apretada); }
+body {
+  --tipo-familia-base: var(--fuente-base), "Bai Jamjuree", system-ui, sans-serif;
+  --tipo-familia-numeros: var(--fuente-numeros), "Urbanist", system-ui, sans-serif;
+  /* La fuente del contenido de /mi-cuenta. */
+  --tipo-familia-acceso: var(--fuente-acceso), "Poppins", system-ui, sans-serif;
+  font-family: var(--tipo-familia-base);
+  font-size: var(--tipo-tamano-base);
+  line-height: var(--tipo-altura-normal);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

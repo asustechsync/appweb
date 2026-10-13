@@ -1,9 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import type { Rol } from "@appweb/core";
-import { DisposicionPanel, EstadoVacio } from "@appweb/ui";
+import {
+  DisposicionPanel,
+  EstadoVacio,
+  IconoCarrito,
+  IconoConfiguracion,
+  IconoEtiqueta,
+  IconoMoneda,
+  IconoPedidos,
+  IconoUbicacion,
+  IconoUsuario,
+} from "@appweb/ui";
 
 import { Resumen } from "./Resumen";
 import { Usuarios } from "./Usuarios";
@@ -19,9 +29,20 @@ const ETIQUETAS: Record<string, string> = {
   ajustes: "Ajustes",
 };
 
+const ICONOS: Record<string, ReactNode> = {
+  resumen: <IconoMoneda />,
+  pedidos: <IconoPedidos />,
+  envios: <IconoUbicacion />,
+  stock: <IconoEtiqueta />,
+  productos: <IconoCarrito />,
+  usuarios: <IconoUsuario />,
+  ajustes: <IconoConfiguracion />,
+};
+
 export interface PropsPanel {
   /** Ya filtradas por rol en el servidor con `seccionesDelPanel`. */
   secciones: string[];
+  /** "" = sin seccion en la URL: en movil se ve el menu. */
   seccionInicial: string;
   usuarioId: string;
   nombre: string;
@@ -41,16 +62,17 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
   useEffect(() => {
     function alNavegar() {
       const desdeUrl = window.location.pathname.replace(/^\/+/, "");
-      setActiva(secciones.includes(desdeUrl) ? desdeUrl : seccionInicial);
+      setActiva(secciones.includes(desdeUrl) ? desdeUrl : "");
     }
 
     window.addEventListener("popstate", alNavegar);
     return () => window.removeEventListener("popstate", alNavegar);
-  }, [secciones, seccionInicial]);
+  }, [secciones]);
 
   function ir(id: string) {
     setActiva(id);
     window.history.pushState(null, "", `/${id}`);
+    window.scrollTo(0, 0);
   }
 
   async function salir() {
@@ -58,9 +80,12 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
     window.location.href = `${process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000"}/ingresar`;
   }
 
+  // En escritorio no hay pantalla de menu: sin seccion se ve la primera.
+  const visible = activa || (secciones[0] ?? "resumen");
+
   return (
     <DisposicionPanel
-      secciones={secciones.map((id) => ({ id, etiqueta: ETIQUETAS[id] ?? id }))}
+      secciones={secciones.map((id) => ({ id, etiqueta: ETIQUETAS[id] ?? id, icono: ICONOS[id] }))}
       seccionActiva={activa}
       onSeccion={ir}
       nombreUsuario={nombre}
@@ -68,15 +93,15 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
       onSalir={salir}
       hrefTienda={process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000"}
     >
-      {activa === "resumen" ? (
+      {visible === "resumen" ? (
         <Resumen />
-      ) : activa === "usuarios" ? (
+      ) : visible === "usuarios" ? (
         <Usuarios usuarioIdActual={usuarioId} />
-      ) : activa === "ajustes" ? (
+      ) : visible === "ajustes" ? (
         <ColeccionPortada />
       ) : (
         <EstadoVacio
-          titulo={ETIQUETAS[activa] ?? activa}
+          titulo={ETIQUETAS[visible] ?? visible}
           texto="Esta sección todavía no está construida."
         />
       )}

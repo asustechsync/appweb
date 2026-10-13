@@ -2,19 +2,23 @@
 
 import type { ReactNode } from "react";
 
-import { IconoFlechaIzquierda } from "../iconos";
+import { IconoLuna } from "../iconos";
 import { AlternarTema } from "./AlternarTema";
-import { Insignia } from "./Insignia";
+import { DisposicionCuenta } from "./DisposicionCuenta";
+import { MenuCuenta } from "./MenuCuenta";
 import "./primitivos.css";
 
 export interface SeccionDePanel {
   id: string;
   etiqueta: string;
+  /** Icono de la fila en el menu movil. */
+  icono?: ReactNode;
 }
 
 export interface PropsDisposicionPanel {
   /** Ya filtradas por rol con `seccionesDelPanel` de @appweb/core. */
   secciones: SeccionDePanel[];
+  /** "" = sin seccion: en movil se ve el menu; en escritorio, la primera. */
   seccionActiva: string;
   onSeccion: (id: string) => void;
   nombreUsuario: string;
@@ -25,7 +29,9 @@ export interface PropsDisposicionPanel {
 }
 
 /**
- * Shell del panel: navegacion de secciones y area de contenido.
+ * Shell del panel: el mismo marco que /mi-cuenta (fondo de escena, tarjeta
+ * del usuario, pestañas y menu movil de dos pantallas), para que tienda y
+ * panel se lean como una sola identidad.
  *
  * No navega por su cuenta ni sabe que secciones existen — recibe la lista ya
  * filtrada por rol y avisa hacia arriba con `onSeccion`. Asi el cambio de
@@ -41,59 +47,53 @@ export function DisposicionPanel({
   hrefTienda,
   children,
 }: PropsDisposicionPanel) {
+  const visible = seccionActiva || (secciones[0]?.id ?? "");
+  const tituloSeccion = secciones.find((seccion) => seccion.id === visible)?.etiqueta;
+
   return (
-    <div className="ui-disposicion-panel">
-      <aside className="ui-disposicion-panel__lateral">
-        <div className="ui-disposicion-panel__marca">Panel</div>
-
-        {hrefTienda ? (
-          <a href={hrefTienda} className="ui-disposicion-panel__volver">
-            <IconoFlechaIzquierda tamano={16} />
-            Volver a la tienda
-          </a>
-        ) : null}
-
-        <nav className="ui-disposicion-panel__nav" aria-label="Secciones del panel">
-          {secciones.map((seccion) => (
-            <button
-              key={seccion.id}
-              type="button"
-              className={
-                seccion.id === seccionActiva
-                  ? "ui-disposicion-panel__seccion ui-disposicion-panel__seccion--activa"
-                  : "ui-disposicion-panel__seccion"
-              }
-              onClick={() => onSeccion(seccion.id)}
-              aria-current={seccion.id === seccionActiva ? "page" : undefined}
-            >
-              {seccion.etiqueta}
-            </button>
-          ))}
-        </nav>
-
-        <div className="ui-disposicion-panel__usuario">
-          <div className="ui-disposicion-panel__usuario-datos">
-            <span className="ui-disposicion-panel__avatar" aria-hidden="true">
-              {nombreUsuario.trim().charAt(0).toUpperCase() || "?"}
-            </span>
-            <span className="ui-disposicion-panel__usuario-texto">
-              <span className="ui-disposicion-panel__nombre">{nombreUsuario}</span>
-              <Insignia tono="marca">{rolUsuario}</Insignia>
-            </span>
-          </div>
-
-          <div className="ui-disposicion-panel__usuario-acciones">
-            <AlternarTema />
-            {onSalir ? (
-              <button type="button" className="ui-disposicion-panel__salir" onClick={onSalir}>
-                Salir
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </aside>
-
-      <main className="ui-disposicion-panel__contenido">{children}</main>
+    <div className="ui-pagina-tienda ui-fondo-escena">
+      <DisposicionCuenta
+        titulo="Panel de administración"
+        subtitulo={`Hola, ${nombreUsuario}`}
+        nombreUsuario={nombreUsuario}
+        rolUsuario={rolUsuario}
+        secciones={secciones}
+        seccionActiva={visible}
+        onSeccion={onSeccion}
+        {...(onSalir ? { onSalir } : {})}
+        {...(hrefTienda ? { enlaceLateral: { href: hrefTienda, etiqueta: "Volver a la tienda" }, hrefSalirMenu: hrefTienda } : {})}
+        enMenu={seccionActiva === ""}
+        {...(tituloSeccion ? { tituloSeccion } : {})}
+        onVolver={() => onSeccion("")}
+        menuMovil={
+          <MenuCuenta
+            grupos={[
+              {
+                opciones: secciones.map((seccion) => ({
+                  id: seccion.id,
+                  etiqueta: seccion.etiqueta,
+                  icono: seccion.icono ?? null,
+                  seccion: seccion.id,
+                })),
+              },
+              {
+                opciones: [
+                  {
+                    id: "modo-oscuro",
+                    etiqueta: "Modo oscuro",
+                    icono: <IconoLuna />,
+                    control: <AlternarTema variante="interruptor" />,
+                  },
+                ],
+              },
+            ]}
+            onSeccion={onSeccion}
+            {...(onSalir ? { onSalir } : {})}
+          />
+        }
+      >
+        {children}
+      </DisposicionCuenta>
     </div>
   );
 }

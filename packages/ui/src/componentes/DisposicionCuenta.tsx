@@ -24,7 +24,10 @@ export interface PropsDisposicionCuenta {
   seccionActiva: string;
   onSeccion: (id: string) => void;
   onSalir?: () => void;
+  /** Atajo de `enlaceLateral` para el boton "Panel de administracion". */
   hrefPanel?: string;
+  /** Enlace bajo las pestañas (p. ej. "Volver a la tienda" en el panel). */
+  enlaceLateral?: { href: string; etiqueta: string };
   /**
    * Menu de ajustes para movil (normalmente un `MenuCuenta`). Con el, en movil
    * la cuenta es de dos pantallas: el menu, o una seccion con flecha de volver.
@@ -60,6 +63,7 @@ export function DisposicionCuenta({
   onSeccion,
   onSalir,
   hrefPanel,
+  enlaceLateral,
   menuMovil,
   enMenu = false,
   tituloSeccion,
@@ -67,6 +71,7 @@ export function DisposicionCuenta({
   hrefSalirMenu = "/",
   children,
 }: PropsDisposicionCuenta) {
+  const enlace = enlaceLateral ?? (hrefPanel ? { href: hrefPanel, etiqueta: "Panel de administracion" } : null);
   const clase = menuMovil
     ? `ui-disposicion-cuenta ui-disposicion-cuenta--con-menu ${enMenu ? "ui-disposicion-cuenta--en-menu" : ""}`
     : "ui-disposicion-cuenta";
@@ -154,9 +159,9 @@ export function DisposicionCuenta({
               ) : null}
             </nav>
 
-            {hrefPanel ? (
-              <a href={hrefPanel} className="ui-disposicion-cuenta__ir-panel">
-                Panel de administracion
+            {enlace ? (
+              <a href={enlace.href} className="ui-disposicion-cuenta__ir-panel">
+                {enlace.etiqueta}
                 <IconoFlechaDerecha tamano={16} />
               </a>
             ) : null}
