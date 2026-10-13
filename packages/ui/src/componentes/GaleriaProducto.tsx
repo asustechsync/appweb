@@ -1,8 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { useState } from "react";
-
 import "./primitivos.css";
 
 export interface ImagenGaleria {
@@ -12,23 +8,16 @@ export interface ImagenGaleria {
 
 export interface PropsGaleriaProducto {
   imagenes: ImagenGaleria[];
-  /** Ya calculado por `resolverPrecio` de @appweb/core: aqui solo se pinta. */
-  descuentoPct?: number | null;
-  /** Insignia libre: "Nuevo", "Mas vendido". */
-  etiqueta?: string | null;
 }
 
 /**
- * Isla cliente: la unica parte de la ficha que necesita estado. El resto del
- * marcado es estatico y se sirve cacheado.
+ * Imagen principal del producto, sin insignias ni miniaturas.
  *
  * La imagen grande lleva `priority`: es el elemento mas grande de la pantalla
  * y decide el LCP de la ficha, asi que no debe cargarse en diferido.
  */
-export function GaleriaProducto({ imagenes, descuentoPct, etiqueta }: PropsGaleriaProducto) {
-  const [activa, setActiva] = useState(0);
-
-  const principal = imagenes[activa] ?? imagenes[0];
+export function GaleriaProducto({ imagenes }: PropsGaleriaProducto) {
+  const principal = imagenes[0];
   if (principal === undefined) return null;
 
   return (
@@ -44,35 +33,7 @@ export function GaleriaProducto({ imagenes, descuentoPct, etiqueta }: PropsGaler
           sizes="(min-width: 64rem) 640px, 100vw"
           priority
         />
-        {descuentoPct ? (
-          <span className="ui-galeria-producto__insignia">-{descuentoPct}%</span>
-        ) : null}
-        {etiqueta ? <span className="ui-galeria-producto__etiqueta">{etiqueta}</span> : null}
       </div>
-
-      {imagenes.length > 1 ? (
-        <ul className="ui-galeria-producto__miniaturas">
-          {imagenes.map((imagen, indice) => (
-            <li key={`${imagen.url}-${indice}`}>
-              <button
-                type="button"
-                className={
-                  indice === activa
-                    ? "ui-galeria-producto__miniatura ui-galeria-producto__miniatura--activa"
-                    : "ui-galeria-producto__miniatura"
-                }
-                onClick={() => setActiva(indice)}
-                aria-label={`Ver imagen ${indice + 1} de ${imagenes.length}`}
-                aria-current={indice === activa}
-              >
-                {/* alt vacio: el boton ya se anuncia con su aria-label, y
-                    repetirlo haria que el lector lea la misma frase dos veces. */}
-                <Image src={imagen.url} alt="" width={160} height={160} sizes="64px" loading="lazy" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 }

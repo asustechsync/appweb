@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SelectorCantidad } from "./SelectorCantidad";
+
 import "./primitivos.css";
 
 /** Estructuralmente igual a `ColorElegible` de @appweb/core. */
@@ -18,11 +20,34 @@ export interface OpcionDeCompra {
   colores: ColorDeCompra[];
 }
 
+/** Nombres de color (sin tildes, en minuscula) que tienen muestra en tokens.ts. */
+const MUESTRAS = new Set([
+  "negro", "blanco", "gris", "plomo", "azul", "celeste", "rojo", "vino",
+  "verde", "beige", "crema", "marron", "rosa", "amarillo", "naranja", "morado",
+]);
+const SINONIMOS: Record<string, string> = { cafe: "marron", lila: "morado", burdeos: "vino", turquesa: "celeste" };
+
+/** Token de muestra para un color de variante, o null si no hay (se pinta como texto). */
+function muestraDe(color: string): string | null {
+  const palabras = color
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .split(/\s+/);
+  for (const palabra of palabras) {
+    const nombre = SINONIMOS[palabra] ?? palabra;
+    if (MUESTRAS.has(nombre)) return `var(--color-muestra-${nombre})`;
+  }
+  return null;
+}
+
 export interface PropsSelectorVariantes {
   opciones: OpcionDeCompra[];
   /** Ausente = todavia no hay a donde agregar (compatibilidad hacia atras). */
-  onAgregar?: (varianteId: string) => void;
+  onAgregar?: (varianteId: string, cantidad: number) => void;
   agregando?: boolean;
+  /** Tope de unidades por compra; llega resuelto de fuera (stock). */
+  maximo?: number;
 }
 
 /**
@@ -35,13 +60,19 @@ export interface PropsSelectorVariantes {
  * existir en la talla nueva, y dejarlo marcado mostraria una combinacion que
  * no se puede comprar.
  */
-export function SelectorVariantes({ opciones, onAgregar, agregando }: PropsSelectorVariantes) {
+export function SelectorVariantes({
+  opciones,
+  onAgregar,
+  agregando,
+  maximo = 10,
+}: PropsSelectorVariantes) {
   const primera = opciones[0];
   const [talla, setTalla] = useState<string | null>(primera?.talla ?? null);
   const [color, setColor] = useState<string | null>(
     primera?.colores.length === 1 ? (primera.colores[0]?.color ?? null) : null,
   );
   const [agregado, setAgregado] = useState(false);
+  const [cantidad, setCantidad] = useState(1);
 
   if (opciones.length === 0) return null;
 
@@ -63,67 +94,92 @@ export function SelectorVariantes({ opciones, onAgregar, agregando }: PropsSelec
 
   function agregar() {
     if (!varianteElegida || !onAgregar) return;
-    onAgregar(varianteElegida.varianteId);
+    onAgregar(varianteElegida.varianteId, cantidad);
     setAgregado(true);
   }
 
   return (
     <div className="ui-selector-variantes">
-      <fieldset className="ui-selector-variantes__grupo">
-        <legend className="ui-selector-variantes__titulo">Talla</legend>
-        <div className="ui-selector-variantes__opciones">
-          {opciones.map((opcion) => (
-            <button
-              key={opcion.talla}
-              type="button"
-              className={
-                opcion.talla === talla
-                  ? "ui-selector-variantes__opcion ui-selector-variantes__opcion--activa"
-                  : "ui-selector-variantes__opcion"
-              }
-              onClick={() => elegirTalla(opcion.talla)}
-              aria-pressed={opcion.talla === talla}
-            >
-              {opcion.talla}
-            </button>
-          ))}
-        </div>
-      </fieldset>
-
-      {coloresDeLaTalla.length > 0 ? (
+      <div className="ui-selector-variantes__filas">
         <fieldset className="ui-selector-variantes__grupo">
-          <legend className="ui-selector-variantes__titulo">Color</legend>
-          <div className="ui-selector-variantes__opciones">
-            {coloresDeLaTalla.map((opcionColor) => (
+          <legend className="ui-selector-variantes__titulo">Talla</legend>
+          <div className="ui-selector-variantes__pastilla">
+            {opciones.map((opcion) => (
               <button
-                key={opcionColor.color}
+                key={opcion.talla}
                 type="button"
                 className={
-                  opcionColor.color === color
-                    ? "ui-selector-variantes__opcion ui-selector-variantes__opcion--activa"
-                    : "ui-selector-variantes__opcion"
+                  opcion.talla === talla
+                    ? "ui-selector-variantes__talla ui-selector-variantes__talla--activa"
+                    : "ui-selector-variantes__talla"
                 }
-                onClick={() => elegirColor(opcionColor.color)}
-                aria-pressed={opcionColor.color === color}
+                onClick={() => elegirTalla(opcion.talla)}
+                aria-pressed={opcion.talla === talla}
               >
-                {opcionColor.color}
+                {opcion.talla}
               </button>
             ))}
           </div>
         </fieldset>
-      ) : null}
 
-      <button
-        type="button"
-        className="ui-selector-variantes__comprar"
-        disabled={!seleccionCompleta || agregando}
-        onClick={agregar}
-      >
-        {agregando ? "Agregando…" : agregado ? "Añadido ✓" : "Añadir al carrito"}
-      </button>
-      {!seleccionCompleta ? (
-        <p className="ui-selector-variantes__aviso">Elige talla y color.</p>
-      ) : null}
+        {coloresDeLaTalla.length > 0 ? (
+          <fieldset className="ui-selector-variantes__grupo">
+            <legend className="ui-selector-variantes__titulo">Color</legend>
+            <div className="ui-selector-variantes__pastilla">
+              {coloresDeLaTalla.map((opcionColor) => {
+                const muestra = muestraDe(opcionColor.color);
+                const activo = opcionColor.color === color;
+                return (
+                  <button
+                    key={opcionColor.color}
+                    type="button"
+                    className={
+                      muestra === null
+                        ? activo
+                          ? "ui-selector-variantes__talla ui-selector-variantes__talla--activa ui-selector-variantes__talla--texto"
+                          : "ui-selector-variantes__talla ui-selector-variantes__talla--texto"
+                        : activo
+                          ? "ui-selector-variantes__muestra ui-selector-variantes__muestra--activa"
+                          : "ui-selector-variantes__muestra"
+                    }
+                    style={muestra === null ? undefined : ({ "--muestra": muestra } as React.CSSProperties)}
+                    onClick={() => elegirColor(opcionColor.color)}
+                    aria-pressed={activo}
+                    aria-label={opcionColor.color}
+                    title={opcionColor.color}
+                  >
+                    {muestra === null ? opcionColor.color : null}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        ) : null}
+      </div>
+
+      <div className="ui-selector-variantes__barra">
+        {!seleccionCompleta ? (
+          <p className="ui-selector-variantes__aviso">Elige talla y color.</p>
+        ) : null}
+        <div className="ui-selector-variantes__acciones">
+          <SelectorCantidad
+            valor={cantidad}
+            maximo={maximo}
+            onCambio={(n) => {
+              setCantidad(Math.min(Math.max(n, 1), maximo));
+              setAgregado(false);
+            }}
+          />
+          <button
+            type="button"
+            className="ui-selector-variantes__comprar"
+            disabled={!seleccionCompleta || agregando}
+            onClick={agregar}
+          >
+            {agregando ? "Agregando…" : agregado ? "Añadido ✓" : "Añadir al carrito"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

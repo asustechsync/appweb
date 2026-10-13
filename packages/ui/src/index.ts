@@ -39,6 +39,7 @@ export {
 export { Contenedor, type PropsContenedor } from "./componentes/Contenedor";
 export { PaginaTienda, type PropsPaginaTienda } from "./componentes/PaginaTienda";
 export { Logo, type PropsLogo } from "./componentes/Logo";
+export { BarraMovil, type PropsBarraMovil } from "./componentes/BarraMovil";
 export { Header, type CategoriaDeCabecera, type PropsHeader } from "./componentes/Header";
 export { Ubicacion, type PropsUbicacion } from "./componentes/Ubicacion";
 export { Buscador, type PropsBuscador } from "./componentes/Buscador";

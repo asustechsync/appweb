@@ -57,6 +57,27 @@ export const tokens = {
     error: "#D92D20",
     info: "#2F7DB8",
 
+    // Muestras de color de producto: el color real de la prenda, igual en tema
+    // claro y oscuro. Se eligen por el nombre del color de la variante.
+    muestra: {
+      negro: "#1C1C1F",
+      blanco: "#FFFFFF",
+      gris: "#B8B8BD",
+      plomo: "#6B6B70",
+      azul: "#2F5FB8",
+      celeste: "#8CC8E8",
+      rojo: "#D92D20",
+      vino: "#7A1F2E",
+      verde: "#3F7D4E",
+      beige: "#C9AE92",
+      crema: "#F1E6D0",
+      marron: "#7A5538",
+      rosa: "#F0A8C0",
+      amarillo: "#F2C94C",
+      naranja: "#EF7A1E",
+      morado: "#7B4FB8",
+    },
+
     // De negocio: su significado no cambia aunque cambie la marca.
     oferta: "#E63945",
     agotado: "#B92A1F",
@@ -88,6 +109,8 @@ export const tokens = {
     // Fondo de la portada: gris con un toque azulado.
     fondoPortada: "#F1F5F9",
     // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.
+    // Fondo de la caja de la foto en la ficha de producto; igual en tema oscuro.
+    fondoFoto: "#F6F6F6",
     escenaInicio: "#D4D6D9",
     escenaFin: "#EFF0F2",
     vidrio: "rgb(62 66 72 / 0.5)",
@@ -140,6 +163,8 @@ export const tokens = {
     },
     tamano: {
       etiqueta: 11, xs: 12, sm: 14, base: 16, lg: 18, xl: 20,
+      // Precio de la ficha en movil: entre xl y 2xl.
+      precio: 22,
       "2xl": 24, "3xl": 30, "4xl": 38, "5xl": 48,
     },
     // La web solo carga 400, 500 y 600 (ver apps/web/src/app/layout.tsx).

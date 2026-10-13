@@ -2,21 +2,33 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-2);
+  /* Movil: a sangre, de borde a borde; anula el margen lateral del contenedor. */
+  margin-inline: calc(var(--espacio-4) * -1);
 }
 .ui-galeria-producto__principal {
   position: relative;
-  display: block;
+  display: grid;
+  /* Fila del alto de la caja: la imagen, mas alta, se centra y se recorta
+     por igual arriba y abajo. */
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
   box-sizing: border-box;
-  aspect-ratio: 1;
-  border-radius: var(--radio-lg);
+  /* Movil: caja mas baja que la imagen (cuadrada); el sobrante vacio de
+     arriba y abajo se recorta sin encoger la imagen. */
+  aspect-ratio: 1.46;
+  border-radius: 0;
   overflow: hidden;
-  background: var(--color-neutro-200);
-  padding: var(--espacio-4);
+  /* Gutter del contenedor + el aire de antes: la imagen conserva su tamano. */
+  padding-inline: calc(var(--espacio-8) + var(--espacio-4));
 }
 .ui-galeria-producto__principal img {
   inline-size: 100%;
-  block-size: 100%;
+  block-size: auto;
+  aspect-ratio: 1;
   object-fit: contain;
+  /* En esta foto el producto ocupa del 16% al 81% del alto (aire de 105px
+     arriba y 121px abajo sobre 640): se baja 1.25% para centrarlo. */
+  transform: translateY(1.25%);
 }
 .ui-galeria-producto__insignia {
   position: absolute;
@@ -41,34 +53,17 @@
   font-weight: var(--tipo-peso-medio);
   box-shadow: var(--sombra-sm);
 }
-.ui-galeria-producto__miniaturas {
-  display: flex;
-  gap: var(--espacio-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
-}
-.ui-galeria-producto__miniatura {
-  display: block;
-  box-sizing: border-box;
-  inline-size: var(--espacio-16);
-  aspect-ratio: 1;
-  padding: var(--espacio-1);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
-  background: var(--color-neutro-200);
-  cursor: pointer;
-  transition: border-color var(--transicion-rapida);
-}
-.ui-galeria-producto__miniatura img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-}
-.ui-galeria-producto__miniatura:hover {
-  border-color: var(--color-bordeFuerte);
-}
-.ui-galeria-producto__miniatura--activa {
-  border-color: var(--color-marca-500);
+@media (min-width: 64rem) {
+  .ui-galeria-producto {
+    margin-inline: 0;
+  }
+  .ui-galeria-producto__principal {
+    aspect-ratio: 1;
+    border-radius: var(--radio-lg);
+    padding: var(--espacio-4);
+  }
+  .ui-galeria-producto__principal img {
+    block-size: 100%;
+    transform: none;
+  }
 }

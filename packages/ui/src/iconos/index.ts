@@ -15,6 +15,7 @@ export { IconoLuna } from "./interfaz/IconoLuna";
 export { IconoLlama } from "./interfaz/IconoLlama";
 export { IconoFlash } from "./interfaz/IconoFlash";
 export { IconoEstrella } from "./interfaz/IconoEstrella";
+export { IconoVerificado } from "./interfaz/IconoVerificado";
 export { IconoSearch } from "./navegacion/IconoSearch";
 export { IconoUbicacion } from "./cuenta/IconoUbicacion";
 export { IconoFlechaAbajo } from "./navegacion/IconoFlechaAbajo";

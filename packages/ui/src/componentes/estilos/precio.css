@@ -9,6 +9,19 @@
   font-weight: var(--tipo-peso-fuerte);
   color: var(--color-texto);
 }
+.ui-precio__actual--separado {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--espacio-1);
+}
+/* Simbolo aparte de la cifra, para poder darle otra fuente. */
+.ui-precio__simbolo {
+  font-family: var(--tipo-familia-precio, var(--tipo-familia-numeros));
+}
+/* Cifra con fuente propia cuando la pagina la define; si no, la de numeros. */
+.ui-precio__cifra {
+  font-family: var(--tipo-familia-precio, var(--tipo-familia-numeros));
+}
 .ui-precio--sm .ui-precio__actual {
   font-size: var(--tipo-tamano-sm);
 }

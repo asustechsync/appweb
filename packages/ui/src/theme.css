@@ -30,6 +30,22 @@
   --color-alerta: #B54708;
   --color-error: #D92D20;
   --color-info: #2F7DB8;
+  --color-muestra-negro: #1C1C1F;
+  --color-muestra-blanco: #FFFFFF;
+  --color-muestra-gris: #B8B8BD;
+  --color-muestra-plomo: #6B6B70;
+  --color-muestra-azul: #2F5FB8;
+  --color-muestra-celeste: #8CC8E8;
+  --color-muestra-rojo: #D92D20;
+  --color-muestra-vino: #7A1F2E;
+  --color-muestra-verde: #3F7D4E;
+  --color-muestra-beige: #C9AE92;
+  --color-muestra-crema: #F1E6D0;
+  --color-muestra-marron: #7A5538;
+  --color-muestra-rosa: #F0A8C0;
+  --color-muestra-amarillo: #F2C94C;
+  --color-muestra-naranja: #EF7A1E;
+  --color-muestra-morado: #7B4FB8;
   --color-oferta: #E63945;
   --color-agotado: #B92A1F;
   --color-favorito: #EF7A1E;
@@ -48,6 +64,7 @@
   --color-fondo: #FFFFFF;
   --color-fondoSutil: #ECECED;
   --color-fondoPortada: #F1F5F9;
+  --color-fondoFoto: #F6F6F6;
   --color-escenaInicio: #D4D6D9;
   --color-escenaFin: #EFF0F2;
   --color-vidrio: rgb(62 66 72 / 0.5);
@@ -103,6 +120,7 @@
   --tipo-tamano-base: 16px;
   --tipo-tamano-lg: 18px;
   --tipo-tamano-xl: 20px;
+  --tipo-tamano-precio: 22px;
   --tipo-tamano-2xl: 24px;
   --tipo-tamano-3xl: 30px;
   --tipo-tamano-4xl: 38px;

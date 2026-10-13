@@ -1,0 +1,45 @@
+.ui-barra-movil__fila {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr 2.75rem;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding-block: var(--espacio-3);
+}
+.ui-barra-movil__titulo {
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+  text-align: center;
+}
+.ui-barra-movil__boton {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+}
+/* Insignia con las unidades del carrito, en la esquina del icono. */
+.ui-barra-movil__contador {
+  position: absolute;
+  inset-block-start: calc(var(--espacio-2) * -1);
+  inset-inline-end: calc(var(--espacio-2) * -1);
+  display: grid;
+  place-items: center;
+  min-inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding-inline: var(--espacio-1);
+  border-radius: var(--radio-sm);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font-size: var(--tipo-tamano-etiqueta);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: 1;
+}
+@media (min-width: 64rem) {
+  .ui-barra-movil {
+    display: none;
+  }
+}

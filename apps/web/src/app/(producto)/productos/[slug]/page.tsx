@@ -13,6 +13,7 @@ import { Contenedor } from "@appweb/ui";
 
 import { productoPorSlug, slugsDeProductos } from "@/lib/consultas";
 
+import { BarraMovilCarrito } from "../../BarraMovilCarrito";
 import { FichaProductoCliente } from "./FichaProductoCliente";
 
 interface Props {
@@ -49,14 +50,13 @@ export default async function PaginaProducto({ params }: Props) {
 
   return (
     <>
+      <BarraMovilCarrito titulo="Detalle" />
       <main>
         <Contenedor>
           <FichaProductoCliente
             nombre={producto.nombre}
             marca={producto.marca}
             descripcion={producto.descripcion}
-            descripcionCorta={producto.descripcionCorta}
-            etiqueta={producto.etiqueta}
             imagenes={producto.imagenes}
             precio={producto.precio}
             precioLista={producto.precioLista}
@@ -65,7 +65,6 @@ export default async function PaginaProducto({ params }: Props) {
             stockBajo={producto.stockBajo}
             stockTotal={producto.stockTotal}
             opciones={producto.opciones}
-            categoria={producto.categoria}
           />
         </Contenedor>
       </main>

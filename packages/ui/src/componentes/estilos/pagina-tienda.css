@@ -1,6 +1,9 @@
 .ui-pagina-tienda {
   min-block-size: 100svh;
 }
+.ui-pagina-tienda--lisa {
+  background: var(--color-fondo);
+}
 .ui-pagina-tienda--sin-cabecera-movil > .ui-header {
   display: none;
 }

@@ -14,8 +14,8 @@ type PropsFichaProductoCliente = Omit<PropsFichaProducto, "onAgregar" | "agregan
  * toda esta rama se hidrata igual.
  */
 export function FichaProductoCliente(props: PropsFichaProductoCliente) {
-  function agregar(varianteId: string) {
-    guardarCarrito(agregarAlCarrito(leerCarrito(), varianteId, 1));
+  function agregar(varianteId: string, cantidad: number) {
+    guardarCarrito(agregarAlCarrito(leerCarrito(), varianteId, cantidad));
   }
 
   return <FichaProducto {...props} onAgregar={agregar} />;

@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { IconoVerificado } from "../iconos";
 import { GaleriaProducto, type ImagenGaleria } from "./GaleriaProducto";
 import { Precio } from "./Precio";
 import { SelectorVariantes, type OpcionDeCompra } from "./SelectorVariantes";
@@ -10,12 +9,11 @@ export interface PropsFichaProducto {
   nombre: string;
   marca?: string | null;
   descripcion?: string | null;
-  descripcionCorta?: string | null;
-  etiqueta?: string | null;
   imagenes: ImagenGaleria[];
   /** Ya resueltos por `resolverPrecio` de @appweb/core. */
   precio: number;
   precioLista?: number | null;
+  /** Ya calculado por `resolverPrecio` de @appweb/core: aqui solo se pinta. */
   descuentoPct?: number | null;
   /** Ya resuelta por `resolverDisponibilidad` de @appweb/core. */
   disponible: boolean;
@@ -23,8 +21,7 @@ export interface PropsFichaProducto {
   stockTotal?: number;
   /** Ya resueltas por `opcionesDeCompra` de @appweb/core. */
   opciones: OpcionDeCompra[];
-  categoria?: { slug: string; nombre: string } | null;
-  onAgregar?: (varianteId: string) => void;
+  onAgregar?: (varianteId: string, cantidad: number) => void;
   agregando?: boolean;
 }
 
@@ -39,8 +36,6 @@ export function FichaProducto({
   nombre,
   marca,
   descripcion,
-  descripcionCorta,
-  etiqueta,
   imagenes,
   precio,
   precioLista,
@@ -49,56 +44,48 @@ export function FichaProducto({
   stockBajo,
   stockTotal,
   opciones,
-  categoria,
   onAgregar,
   agregando,
 }: PropsFichaProducto) {
   return (
     <article className="ui-ficha-producto">
       <div className="ui-ficha-producto__galeria">
-        <GaleriaProducto
-          imagenes={imagenes}
-          descuentoPct={descuentoPct ?? null}
-          etiqueta={etiqueta ?? null}
-        />
+        <GaleriaProducto imagenes={imagenes} />
       </div>
 
       <div className="ui-ficha-producto__panel">
-        {categoria ? (
-          <Link className="ui-ficha-producto__categoria" href={`/categorias/${categoria.slug}`}>
-            {categoria.nombre}
-          </Link>
-        ) : null}
-
-        {marca ? <span className="ui-ficha-producto__marca">{marca}</span> : null}
         <h1 className="ui-ficha-producto__nombre">{nombre}</h1>
-
-        {descripcionCorta ? (
-          <p className="ui-ficha-producto__resumen">{descripcionCorta}</p>
+        {marca ? (
+          <span className="ui-ficha-producto__marca">
+            {marca}
+            <IconoVerificado className="ui-ficha-producto__verificado" tamano={18} />
+          </span>
         ) : null}
 
         <div className="ui-ficha-producto__precio">
-          <Precio valor={precio} antes={precioLista ?? null} tamano="lg" />
-        </div>
-
-        <div className="ui-ficha-producto__estado">
-          <span
-            className={
-              disponible
-                ? "ui-ficha-producto__disponibilidad ui-ficha-producto__disponibilidad--disponible"
-                : "ui-ficha-producto__disponibilidad ui-ficha-producto__disponibilidad--agotado"
-            }
-          >
-            {disponible ? "Disponible" : "Agotado"}
-          </span>
-          {disponible && stockBajo && stockTotal !== undefined ? (
-            <span className="ui-ficha-producto__stock-bajo">Ultimas {stockTotal} unidades</span>
+          <Precio valor={precio} antes={precioLista ?? null} tamano="lg" separarSimbolo />
+          {descuentoPct ? (
+            <span className="ui-ficha-producto__descuento">-{descuentoPct}%</span>
           ) : null}
         </div>
+
+        {!disponible || (stockBajo && stockTotal !== undefined) ? (
+          <div className="ui-ficha-producto__estado">
+            {!disponible ? (
+              <span className="ui-ficha-producto__disponibilidad ui-ficha-producto__disponibilidad--agotado">
+                Agotado
+              </span>
+            ) : null}
+            {disponible && stockBajo && stockTotal !== undefined ? (
+              <span className="ui-ficha-producto__stock-bajo">Ultimas {stockTotal} unidades</span>
+            ) : null}
+          </div>
+        ) : null}
 
         {disponible ? (
           <SelectorVariantes
             opciones={opciones}
+            {...(stockTotal !== undefined ? { maximo: stockTotal } : {})}
             {...(onAgregar ? { onAgregar } : {})}
             {...(agregando !== undefined ? { agregando } : {})}
           />
