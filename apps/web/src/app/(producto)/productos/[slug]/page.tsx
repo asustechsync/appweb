@@ -55,6 +55,10 @@ export default async function PaginaProducto({ params }: Props) {
         <Contenedor>
           <FichaProductoCliente
             nombre={producto.nombre}
+            categoria={{
+              nombre: producto.categoria.nombre,
+              href: `/categorias/${producto.categoria.slug}`,
+            }}
             marca={producto.marca}
             descripcion={producto.descripcion}
             imagenes={producto.imagenes}

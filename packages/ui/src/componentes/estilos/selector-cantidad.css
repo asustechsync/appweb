@@ -7,7 +7,7 @@
   block-size: var(--control-alto);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-md);
-  background: color-mix(in srgb, var(--color-fondoSutil) 20%, var(--color-fondo));
+  background: var(--color-superficie);
 }
 .ui-selector-cantidad button {
   display: inline-flex;

@@ -113,6 +113,8 @@
   content: "";
 }
 .ui-selector-variantes__acciones {
+  /* Cantidad y comprar, mas altos que un control normal. */
+  --control-alto: 3.25rem;
   display: flex;
   align-items: center;
   gap: var(--espacio-3);

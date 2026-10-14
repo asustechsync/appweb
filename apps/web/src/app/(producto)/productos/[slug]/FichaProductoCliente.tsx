@@ -1,11 +1,16 @@
 "use client";
 
+import { useState } from "react";
+
 import { agregarAlCarrito } from "@appweb/core";
 import { FichaProducto, type PropsFichaProducto } from "@appweb/ui";
 
 import { guardarCarrito, leerCarrito } from "@/lib/carrito-local";
 
-type PropsFichaProductoCliente = Omit<PropsFichaProducto, "onAgregar" | "agregando">;
+type PropsFichaProductoCliente = Omit<
+  PropsFichaProducto,
+  "onAgregar" | "agregando" | "sku" | "onSeleccion"
+>;
 
 /**
  * Envoltorio cliente de `FichaProducto`: es quien sabe que el carrito vive en
@@ -14,9 +19,11 @@ type PropsFichaProductoCliente = Omit<PropsFichaProducto, "onAgregar" | "agregan
  * toda esta rama se hidrata igual.
  */
 export function FichaProductoCliente(props: PropsFichaProductoCliente) {
+  const [sku, setSku] = useState<string | null>(null);
+
   function agregar(varianteId: string, cantidad: number) {
     guardarCarrito(agregarAlCarrito(leerCarrito(), varianteId, cantidad));
   }
 
-  return <FichaProducto {...props} onAgregar={agregar} />;
+  return <FichaProducto {...props} onAgregar={agregar} sku={sku} onSeleccion={setSku} />;
 }

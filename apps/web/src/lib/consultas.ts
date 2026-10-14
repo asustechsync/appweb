@@ -239,7 +239,7 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
       variantes: {
         where: { activo: true },
         orderBy: [{ talla: "asc" }, { color: "asc" }],
-        select: { id: true, talla: true, color: true, stock: true, activo: true },
+        select: { id: true, talla: true, color: true, sku: true, stock: true, activo: true },
       },
     },
   });
@@ -278,6 +278,7 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
         talla: variante.talla,
         color: variante.color,
         stock: variante.stock,
+        sku: variante.sku,
       })),
     ),
   };

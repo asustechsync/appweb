@@ -64,7 +64,7 @@
   --color-fondo: #FFFFFF;
   --color-fondoSutil: #ECECED;
   --color-fondoPortada: #F1F5F9;
-  --color-fondoFoto: #F6F6F6;
+  --color-fondoFoto: #F6F6F7;
   --color-escenaInicio: #D4D6D9;
   --color-escenaFin: #EFF0F2;
   --color-vidrio: rgb(62 66 72 / 0.5);
@@ -219,6 +219,7 @@
     --color-disponibleFondo: #1E3D30;
     --color-disponibleTexto: #7ED9A6;
     --color-fondoImagen: #27272A;
+    --color-fondoFoto: #2C2C30;
     --color-fondoPortada: #121212;
     --color-escenaInicio: #26282B;
     --color-escenaFin: #151617;
@@ -285,6 +286,7 @@
   --color-disponibleFondo: #1E3D30;
   --color-disponibleTexto: #7ED9A6;
   --color-fondoImagen: #27272A;
+  --color-fondoFoto: #2C2C30;
   --color-fondoPortada: #121212;
   --color-escenaInicio: #26282B;
   --color-escenaFin: #151617;

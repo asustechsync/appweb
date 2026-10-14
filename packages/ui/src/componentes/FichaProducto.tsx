@@ -7,6 +7,8 @@ import "./primitivos.css";
 
 export interface PropsFichaProducto {
   nombre: string;
+  /** Categoria sobre el nombre; `href` la vuelve enlace al listado. */
+  categoria?: { nombre: string; href: string } | null;
   marca?: string | null;
   descripcion?: string | null;
   imagenes: ImagenGaleria[];
@@ -23,6 +25,9 @@ export interface PropsFichaProducto {
   opciones: OpcionDeCompra[];
   onAgregar?: (varianteId: string, cantidad: number) => void;
   agregando?: boolean;
+  /** SKU de la variante elegida; llega de fuera porque la eleccion vive en el selector. */
+  sku?: string | null;
+  onSeleccion?: (sku: string | null) => void;
 }
 
 /**
@@ -34,6 +39,7 @@ export interface PropsFichaProducto {
  */
 export function FichaProducto({
   nombre,
+  categoria,
   marca,
   descripcion,
   imagenes,
@@ -46,6 +52,8 @@ export function FichaProducto({
   opciones,
   onAgregar,
   agregando,
+  sku,
+  onSeleccion,
 }: PropsFichaProducto) {
   return (
     <article className="ui-ficha-producto">
@@ -54,6 +62,11 @@ export function FichaProducto({
       </div>
 
       <div className="ui-ficha-producto__panel">
+        {categoria ? (
+          <a href={categoria.href} className="ui-ficha-producto__categoria">
+            {categoria.nombre}
+          </a>
+        ) : null}
         <h1 className="ui-ficha-producto__nombre">{nombre}</h1>
         {marca ? (
           <span className="ui-ficha-producto__marca">
@@ -61,6 +74,8 @@ export function FichaProducto({
             <IconoVerificado className="ui-ficha-producto__verificado" tamano={18} />
           </span>
         ) : null}
+
+        {sku ? <span className="ui-ficha-producto__sku">SKU {sku}</span> : null}
 
         <div className="ui-ficha-producto__precio">
           <Precio valor={precio} antes={precioLista ?? null} tamano="lg" separarSimbolo />
@@ -88,6 +103,7 @@ export function FichaProducto({
             {...(stockTotal !== undefined ? { maximo: stockTotal } : {})}
             {...(onAgregar ? { onAgregar } : {})}
             {...(agregando !== undefined ? { agregando } : {})}
+            {...(onSeleccion ? { onSeleccion } : {})}
           />
         ) : null}
 

@@ -109,8 +109,8 @@ export const tokens = {
     // Fondo de la portada: gris con un toque azulado.
     fondoPortada: "#F1F5F9",
     // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.
-    // Fondo de la caja de la foto en la ficha de producto; igual en tema oscuro.
-    fondoFoto: "#F6F6F6",
+    // Fondo de la caja de la foto en la ficha de producto.
+    fondoFoto: "#F6F6F7",
     escenaInicio: "#D4D6D9",
     escenaFin: "#EFF0F2",
     vidrio: "rgb(62 66 72 / 0.5)",
@@ -266,6 +266,7 @@ export const tokensOscuro = {
     disponibleFondo: "#1E3D30",
     disponibleTexto: "#7ED9A6",
     fondoImagen: "#27272A",
+    fondoFoto: "#2C2C30",
     fondoPortada: "#121212",
     escenaInicio: "#26282B",
     escenaFin: "#151617",

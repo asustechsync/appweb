@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SelectorCantidad } from "./SelectorCantidad";
 
@@ -10,6 +10,7 @@ import "./primitivos.css";
 export interface ColorDeCompra {
   color: string;
   varianteId: string;
+  sku?: string;
 }
 
 /** Estructuralmente igual a `OpcionDeTalla` de @appweb/core, que es quien la
@@ -48,6 +49,8 @@ export interface PropsSelectorVariantes {
   agregando?: boolean;
   /** Tope de unidades por compra; llega resuelto de fuera (stock). */
   maximo?: number;
+  /** Avisa el SKU de la variante elegida, o null mientras la seleccion este incompleta. */
+  onSeleccion?: (sku: string | null) => void;
 }
 
 /**
@@ -65,6 +68,7 @@ export function SelectorVariantes({
   onAgregar,
   agregando,
   maximo = 10,
+  onSeleccion,
 }: PropsSelectorVariantes) {
   const primera = opciones[0];
   const [talla, setTalla] = useState<string | null>(primera?.talla ?? null);
@@ -74,10 +78,15 @@ export function SelectorVariantes({
   const [agregado, setAgregado] = useState(false);
   const [cantidad, setCantidad] = useState(1);
 
-  if (opciones.length === 0) return null;
-
   const coloresDeLaTalla = opciones.find((o) => o.talla === talla)?.colores ?? [];
   const varianteElegida = coloresDeLaTalla.find((c) => c.color === color) ?? null;
+  const skuElegido = varianteElegida?.sku ?? null;
+
+  useEffect(() => {
+    onSeleccion?.(skuElegido);
+  }, [skuElegido, onSeleccion]);
+
+  if (opciones.length === 0) return null;
   const seleccionCompleta = varianteElegida !== null;
 
   function elegirTalla(nueva: string) {

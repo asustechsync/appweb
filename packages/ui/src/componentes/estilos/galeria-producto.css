@@ -2,8 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--espacio-2);
-  /* Movil: a sangre, de borde a borde; anula el margen lateral del contenedor. */
-  margin-inline: calc(var(--espacio-4) * -1);
 }
 .ui-galeria-producto__principal {
   position: relative;
@@ -16,10 +14,11 @@
   /* Movil: caja mas baja que la imagen (cuadrada); el sobrante vacio de
      arriba y abajo se recorta sin encoger la imagen. */
   aspect-ratio: 1.46;
-  border-radius: 0;
+  border-radius: var(--radio-lg);
+  background: var(--color-fondoFoto);
   overflow: hidden;
-  /* Gutter del contenedor + el aire de antes: la imagen conserva su tamano. */
-  padding-inline: calc(var(--espacio-8) + var(--espacio-4));
+  /* La caja respeta los margenes laterales del contenedor. */
+  padding-inline: var(--espacio-8);
 }
 .ui-galeria-producto__principal img {
   inline-size: 100%;

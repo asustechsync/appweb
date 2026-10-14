@@ -18,11 +18,13 @@ export interface VarianteElegible {
   talla: string;
   color: string;
   stock: number;
+  sku?: string;
 }
 
 export interface ColorElegible {
   color: string;
   varianteId: string;
+  sku?: string;
 }
 
 export interface OpcionDeTalla {
@@ -64,6 +66,12 @@ function compararTallas(a: string, b: string): number {
   return textoA.localeCompare(textoB, "es");
 }
 
+function colorElegible(variante: VarianteElegible): ColorElegible {
+  return variante.sku === undefined
+    ? { color: variante.color, varianteId: variante.varianteId }
+    : { color: variante.color, varianteId: variante.varianteId, sku: variante.sku };
+}
+
 /**
  * Tallas con stock y sus colores, en el orden en que se compra ropa: S antes
  * que M, 6M antes que 12M. Los colores quedan como llegan de la consulta.
@@ -79,11 +87,11 @@ export function opcionesDeCompra(variantes: VarianteElegible[]): OpcionDeTalla[]
 
     const colores = porTalla.get(variante.talla);
     if (colores === undefined) {
-      porTalla.set(variante.talla, [{ color: variante.color, varianteId: variante.varianteId }]);
+      porTalla.set(variante.talla, [colorElegible(variante)]);
       continue;
     }
     if (!colores.some((c) => c.color === variante.color)) {
-      colores.push({ color: variante.color, varianteId: variante.varianteId });
+      colores.push(colorElegible(variante));
     }
   }
 
