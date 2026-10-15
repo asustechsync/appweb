@@ -75,6 +75,7 @@
   --color-acentoFuerte: #9DC24A;
   --color-fondoCapsula: #FFFFFF;
   --color-fondoPanel: rgb(255 255 255 / 0.55);
+  --color-velo: rgb(24 24 27 / 0.40);
   --color-bandaInicio: #3F444B;
   --color-bandaFin: #8C929A;
   --color-fondoDestacado: #1D1F21;
@@ -231,6 +232,7 @@
     --color-acentoFuerte: #B6D96B;
     --color-fondoCapsula: #1E1E22;
     --color-fondoPanel: rgb(255 255 255 / 0.06);
+    --color-velo: rgb(0 0 0 / 0.60);
     --color-bandaInicio: #2E3135;
     --color-bandaFin: #1A1C1E;
     --color-fondoDestacado: #0D0E0F;
@@ -298,6 +300,7 @@
   --color-acentoFuerte: #B6D96B;
   --color-fondoCapsula: #1E1E22;
   --color-fondoPanel: rgb(255 255 255 / 0.06);
+  --color-velo: rgb(0 0 0 / 0.60);
   --color-bandaInicio: #2E3135;
   --color-bandaFin: #1A1C1E;
   --color-fondoDestacado: #0D0E0F;

@@ -126,6 +126,8 @@ export const tokens = {
     fondoCapsula: "#FFFFFF",
     // Paneles de la portada: blanco translucido, toma el tono del cielo de detras.
     fondoPanel: "rgb(255 255 255 / 0.55)",
+    // Velo detras de hojas y modales.
+    velo: "rgb(24 24 27 / 0.40)",
     // Banda superior de la portada (texto en textoVidrio) y su tarjeta oscura.
     bandaInicio: "#3F444B",
     bandaFin: "#8C929A",
@@ -278,6 +280,7 @@ export const tokensOscuro = {
     acentoFuerte: "#B6D96B",
     fondoCapsula: "#1E1E22",
     fondoPanel: "rgb(255 255 255 / 0.06)",
+    velo: "rgb(0 0 0 / 0.60)",
     bandaInicio: "#2E3135",
     bandaFin: "#1A1C1E",
     fondoDestacado: "#0D0E0F",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { AccionesCuenta } from "./AccionesCuenta";
 import { Buscador } from "./Buscador";
@@ -14,6 +15,8 @@ export interface CategoriaDeCabecera {
 export interface PropsHeader {
   /** Categorias de primer nivel; las lee el layout de una funcion cacheada. */
   categorias?: CategoriaDeCabecera[];
+  /** Boton de carrito con contador; lo aporta la app como isla cliente. */
+  carrito?: ReactNode;
 }
 
 /**
@@ -24,7 +27,7 @@ export interface PropsHeader {
  * La lupa y el menu son <details>: abren sin JavaScript, asi la cabecera sigue
  * siendo HTML estatico (Clase A) en todas las paginas.
  */
-export function Header({ categorias = [] }: PropsHeader) {
+export function Header({ categorias = [], carrito }: PropsHeader) {
   return (
     <header className="ui-header">
       <div className="ui-header__interior">
@@ -68,7 +71,7 @@ export function Header({ categorias = [] }: PropsHeader) {
               <Buscador id="busqueda-header" textoBuscar="Buscar productos, marcas y más" />
             </div>
           </details>
-          <AccionesCuenta />
+          <AccionesCuenta {...(carrito ? { carrito } : {})} />
         </div>
       </div>
     </header>

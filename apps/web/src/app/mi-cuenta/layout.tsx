@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import { PaginaTienda } from "@appweb/ui";
 
 import { categoriasDeNavegacion } from "@/lib/consultas";
+import { BotonCarritoCabecera } from "@/app/BotonCarritoCabecera";
 
 /**
  * Misma Poppins que ingresar y registro: se carga aqui y no en el layout raiz
@@ -23,7 +24,7 @@ export default async function LayoutMiCuenta({ children }: { children: React.Rea
   const categorias = await categoriasDeNavegacion();
   const estilo = { "--tipo-familia-acceso": `${poppins.style.fontFamily}, system-ui, sans-serif` };
   return (
-    <PaginaTienda cabecera="solo-escritorio" categorias={categorias}>
+    <PaginaTienda cabecera="solo-escritorio" categorias={categorias} carrito={<BotonCarritoCabecera />}>
       <div style={estilo as React.CSSProperties}>{children}</div>
     </PaginaTienda>
   );

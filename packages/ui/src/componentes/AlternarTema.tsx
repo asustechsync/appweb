@@ -7,6 +7,9 @@ import { TEMA_LLAVE, type Tema } from "../tema";
 
 import "./primitivos.css";
 
+/** Avisa a los demas alternadores de la pagina (cabecera y menu de usuario). */
+const TEMA_EVENTO = "ui:tema-cambio";
+
 function temaVigente(): Tema {
   const explicito = document.documentElement.dataset["tema"];
   if (explicito === "claro" || explicito === "oscuro") return explicito;
@@ -32,7 +35,10 @@ export function AlternarTema({ variante = "boton" }: PropsAlternarTema) {
   const [tema, setTema] = useState<Tema | null>(null);
 
   useEffect(() => {
-    setTema(temaVigente());
+    const actualizar = () => setTema(temaVigente());
+    actualizar();
+    window.addEventListener(TEMA_EVENTO, actualizar);
+    return () => window.removeEventListener(TEMA_EVENTO, actualizar);
   }, []);
 
   function alternar() {
@@ -43,7 +49,7 @@ export function AlternarTema({ variante = "boton" }: PropsAlternarTema) {
     } catch {
       /* almacenamiento no disponible: el cambio dura lo que dure la pestaña */
     }
-    setTema(siguiente);
+    window.dispatchEvent(new CustomEvent(TEMA_EVENTO));
   }
 
   const esOscuro = tema === "oscuro";

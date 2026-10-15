@@ -1,6 +1,7 @@
 import { PaginaTienda } from "@appweb/ui";
 
 import { categoriasDeNavegacion } from "@/lib/consultas";
+import { BotonCarritoCabecera } from "@/app/BotonCarritoCabecera";
 
 /**
  * Layout de la tienda publica — CLASE A.
@@ -9,5 +10,5 @@ import { categoriasDeNavegacion } from "@/lib/consultas";
  */
 export default async function LayoutTienda({ children }: { children: React.ReactNode }) {
   const categorias = await categoriasDeNavegacion();
-  return <PaginaTienda categorias={categorias}>{children}</PaginaTienda>;
+  return <PaginaTienda categorias={categorias} carrito={<BotonCarritoCabecera />}>{children}</PaginaTienda>;
 }

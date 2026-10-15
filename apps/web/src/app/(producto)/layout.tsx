@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { PaginaTienda } from "@appweb/ui";
 
 import { categoriasDeNavegacion } from "@/lib/consultas";
+import { BotonCarritoCabecera } from "@/app/BotonCarritoCabecera";
 
 /** Manrope para el titulo de la ficha: se carga aqui y no en el layout raiz. */
 const manrope = Manrope({
@@ -24,8 +25,8 @@ const satoshi = localFont({
 
 /**
  * Layout del detalle de producto — CLASE A.
- * Igual que el de la tienda, pero sin cabecera en movil; en escritorio se
- * mantiene. No lee cookies.
+ * Igual que el de la tienda, con cabecera en movil y escritorio, y fondo liso.
+ * No lee cookies.
  */
 export default async function LayoutProducto({ children }: { children: React.ReactNode }) {
   const categorias = await categoriasDeNavegacion();
@@ -35,7 +36,7 @@ export default async function LayoutProducto({ children }: { children: React.Rea
   };
   return (
     <div style={estilo as React.CSSProperties}>
-      <PaginaTienda cabecera="solo-escritorio" fondo="liso" categorias={categorias}>
+      <PaginaTienda fondo="liso" categorias={categorias} carrito={<BotonCarritoCabecera />}>
         {children}
       </PaginaTienda>
     </div>

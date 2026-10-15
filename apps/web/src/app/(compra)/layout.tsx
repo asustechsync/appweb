@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import { PaginaTienda } from "@appweb/ui";
 
 import { categoriasDeNavegacion } from "@/lib/consultas";
+import { BotonCarritoCabecera } from "@/app/BotonCarritoCabecera";
 
 /**
  * Poppins para carrito y checkout: se carga aqui y no en el layout raiz para
@@ -29,7 +30,7 @@ export default async function LayoutCompra({ children }: { children: React.React
   };
   return (
     <div style={estilo as React.CSSProperties}>
-      <PaginaTienda categorias={categorias}>{children}</PaginaTienda>
+      <PaginaTienda categorias={categorias} carrito={<BotonCarritoCabecera />}>{children}</PaginaTienda>
     </div>
   );
 }

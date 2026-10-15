@@ -7,8 +7,6 @@ import "./primitivos.css";
 
 export interface PropsFichaProducto {
   nombre: string;
-  /** Categoria sobre el nombre; `href` la vuelve enlace al listado. */
-  categoria?: { nombre: string; href: string } | null;
   marca?: string | null;
   descripcion?: string | null;
   imagenes: ImagenGaleria[];
@@ -39,7 +37,6 @@ export interface PropsFichaProducto {
  */
 export function FichaProducto({
   nombre,
-  categoria,
   marca,
   descripcion,
   imagenes,
@@ -62,11 +59,6 @@ export function FichaProducto({
       </div>
 
       <div className="ui-ficha-producto__panel">
-        {categoria ? (
-          <a href={categoria.href} className="ui-ficha-producto__categoria">
-            {categoria.nombre}
-          </a>
-        ) : null}
         <h1 className="ui-ficha-producto__nombre">{nombre}</h1>
         {marca ? (
           <span className="ui-ficha-producto__marca">

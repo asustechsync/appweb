@@ -2,16 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import { BarraMovil, type PropsBarraMovil } from "@appweb/ui";
-
-import { CARRITO_EVENTO, CARRITO_LLAVE, leerCarrito } from "@/lib/carrito-local";
+import { CARRITO_EVENTO, CARRITO_LLAVE, leerCarrito } from "./carrito-local";
 
 /**
- * Isla cliente: `BarraMovil` con el contador de unidades del carrito, que vive
- * en localStorage. Arranca en 0 (lo mismo que el servidor) y se corrige al
- * montar, asi la pagina sigue siendo estatica.
+ * Unidades en el carrito, que vive en localStorage. Arranca en 0 (lo mismo que
+ * el servidor) y se corrige al montar, asi la pagina sigue siendo estatica.
  */
-export function BarraMovilCarrito(props: Omit<PropsBarraMovil, "cantidadAccion">) {
+export function useCantidadCarrito(): number {
   const [cantidad, setCantidad] = useState(0);
 
   useEffect(() => {
@@ -33,5 +30,5 @@ export function BarraMovilCarrito(props: Omit<PropsBarraMovil, "cantidadAccion">
     };
   }, []);
 
-  return <BarraMovil {...props} cantidadAccion={cantidad} />;
+  return cantidad;
 }

@@ -206,7 +206,7 @@ export interface ProductoDeFicha {
   etiqueta: string | null;
   tituloSeo: string | null;
   descripcionSeo: string | null;
-  categoria: { slug: string; nombre: string };
+  categoria: { slug: string; nombre: string; padre: { slug: string; nombre: string } | null };
   imagenes: { url: string; alt: string }[];
   precio: number;
   precioLista: number | null;
@@ -233,7 +233,9 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
   const producto = await prisma.producto.findFirst({
     where: { slug, activo: true },
     include: {
-      categoria: { select: { slug: true, nombre: true } },
+      categoria: {
+        select: { slug: true, nombre: true, padre: { select: { slug: true, nombre: true } } },
+      },
       marca: { select: { nombre: true } },
       imagenes: { orderBy: { orden: "asc" } },
       variantes: {

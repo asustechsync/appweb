@@ -1,0 +1,132 @@
+/* Menu de usuario. Base movil: boton que abre la hoja inferior.
+   Desde 48rem: enlace directo a /mi-cuenta y la hoja no existe. */
+.ui-menu-usuario__enlace {
+  display: none !important;
+}
+
+/* La hoja: pegada al borde inferior, a todo el ancho, sube al abrirse. */
+.ui-menu-usuario__hoja {
+  position: fixed;
+  inset: auto 0 0 0;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  max-block-size: 70dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-start-start-radius: var(--radio-xl);
+  border-start-end-radius: var(--radio-xl);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-lg);
+  transform: translateY(100%);
+  transition:
+    transform var(--transicion-lenta),
+    overlay var(--transicion-lenta) allow-discrete,
+    display var(--transicion-lenta) allow-discrete;
+}
+.ui-menu-usuario__hoja[open] {
+  transform: translateY(0);
+}
+@starting-style {
+  .ui-menu-usuario__hoja[open] {
+    transform: translateY(100%);
+  }
+}
+.ui-menu-usuario__hoja::backdrop {
+  background: var(--color-velo);
+  opacity: 0;
+  transition:
+    opacity var(--transicion-lenta),
+    overlay var(--transicion-lenta) allow-discrete,
+    display var(--transicion-lenta) allow-discrete;
+}
+.ui-menu-usuario__hoja[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .ui-menu-usuario__hoja[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.ui-menu-usuario__contenido {
+  display: grid;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3) var(--espacio-4) calc(var(--espacio-6) + env(safe-area-inset-bottom));
+}
+/* Asa: la rayita de arriba que dice "esto es una hoja". */
+.ui-menu-usuario__asa {
+  justify-self: center;
+  inline-size: var(--espacio-10);
+  block-size: var(--espacio-1);
+  margin-block-end: var(--espacio-2);
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+}
+
+.ui-menu-usuario__lista {
+  display: grid;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-menu-usuario__opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-block-size: var(--espacio-12);
+  padding-inline: var(--espacio-3);
+  border-radius: var(--radio-md);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: none;
+  transition: background-color var(--transicion-rapida);
+}
+.ui-menu-usuario__opcion:hover,
+.ui-menu-usuario__opcion:focus-visible {
+  background: var(--color-superficie);
+}
+.ui-menu-usuario__opcion svg {
+  color: var(--color-textoSuave);
+}
+
+@media (min-width: 48rem) {
+  .ui-menu-usuario__enlace {
+    display: inline-flex !important;
+  }
+  .ui-menu-usuario__boton,
+  .ui-menu-usuario__hoja {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-menu-usuario__hoja,
+  .ui-menu-usuario__hoja::backdrop {
+    transition: none;
+  }
+}
+
+/* Fila de ajuste (modo oscuro): misma altura que las opciones, separada por
+   una linea y con el switch al final. */
+.ui-menu-usuario__ajuste {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-block-size: var(--espacio-12);
+  margin-block-start: var(--espacio-1);
+  padding-block-start: var(--espacio-2);
+  padding-inline: var(--espacio-3);
+  border-block-start: 1px solid var(--color-borde);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-menu-usuario__ajuste svg {
+  color: var(--color-textoSuave);
+}
+.ui-menu-usuario__ajuste-texto {
+  flex: 1;
+}

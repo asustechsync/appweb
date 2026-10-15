@@ -1,16 +1,4 @@
-.ui-barra-movil__fila {
-  display: grid;
-  grid-template-columns: 2.75rem 1fr 2.75rem;
-  align-items: center;
-  gap: var(--espacio-3);
-  padding-block: var(--espacio-3);
-}
-.ui-barra-movil__titulo {
-  font-size: var(--tipo-tamano-base);
-  font-weight: var(--tipo-peso-medio);
-  text-align: center;
-}
-.ui-barra-movil__boton {
+.ui-boton-carrito {
   position: relative;
   display: grid;
   place-items: center;
@@ -22,7 +10,7 @@
   color: var(--color-texto);
 }
 /* Insignia con las unidades del carrito, en la esquina del icono. */
-.ui-barra-movil__contador {
+.ui-boton-carrito__contador {
   position: absolute;
   inset-block-start: calc(var(--espacio-2) * -1);
   inset-inline-end: calc(var(--espacio-2) * -1);
@@ -37,9 +25,4 @@
   font-size: var(--tipo-tamano-etiqueta);
   font-weight: var(--tipo-peso-fuerte);
   line-height: 1;
-}
-@media (min-width: 64rem) {
-  .ui-barra-movil {
-    display: none;
-  }
 }

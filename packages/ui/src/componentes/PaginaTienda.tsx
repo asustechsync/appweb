@@ -13,6 +13,8 @@ export interface PropsPaginaTienda {
   cabecera?: "siempre" | "solo-escritorio";
   /** Categorias de la cabecera; el layout las lee de una funcion cacheada. */
   categorias?: CategoriaDeCabecera[];
+  /** Boton de carrito con contador para la cabecera (isla cliente de la app). */
+  carrito?: ReactNode;
   /** `liso`: fondo blanco (el del tema) en lugar del cielo de escena. */
   fondo?: "escena" | "liso";
 }
@@ -25,6 +27,7 @@ export function PaginaTienda({
   children,
   cabecera = "siempre",
   categorias,
+  carrito,
   fondo = "escena",
 }: PropsPaginaTienda) {
   const clases = ["ui-pagina-tienda"];
@@ -33,7 +36,7 @@ export function PaginaTienda({
 
   return (
     <div className={clases.join(" ")}>
-      <Header {...(categorias ? { categorias } : {})} />
+      <Header {...(categorias ? { categorias } : {})} {...(carrito ? { carrito } : {})} />
       {children}
     </div>
   );

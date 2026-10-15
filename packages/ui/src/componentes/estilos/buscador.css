@@ -11,7 +11,7 @@
   min-inline-size: 0;
   border: 0;
   border-radius: var(--radio-lg);
-  background: var(--color-neutro-0);
+  background: var(--color-superficie);
   box-shadow: var(--sombra-difusa);
   transition: box-shadow var(--transicion-rapida);
 }

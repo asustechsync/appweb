@@ -9,11 +9,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { Contenedor } from "@appweb/ui";
+import { Contenedor, Migas } from "@appweb/ui";
 
 import { productoPorSlug, slugsDeProductos } from "@/lib/consultas";
 
-import { BarraMovilCarrito } from "../../BarraMovilCarrito";
 import { FichaProductoCliente } from "./FichaProductoCliente";
 
 interface Props {
@@ -50,15 +49,25 @@ export default async function PaginaProducto({ params }: Props) {
 
   return (
     <>
-      <BarraMovilCarrito titulo="Detalle" />
       <main>
         <Contenedor>
+          <Migas
+            tramos={[
+              { nombre: "Inicio", href: "/" },
+              ...(producto.categoria.padre
+                ? [
+                    {
+                      nombre: producto.categoria.padre.nombre,
+                      href: `/categorias/${producto.categoria.padre.slug}`,
+                    },
+                  ]
+                : []),
+              { nombre: producto.categoria.nombre, href: `/categorias/${producto.categoria.slug}` },
+              { nombre: producto.nombre },
+            ]}
+          />
           <FichaProductoCliente
             nombre={producto.nombre}
-            categoria={{
-              nombre: producto.categoria.nombre,
-              href: `/categorias/${producto.categoria.slug}`,
-            }}
             marca={producto.marca}
             descripcion={producto.descripcion}
             imagenes={producto.imagenes}
