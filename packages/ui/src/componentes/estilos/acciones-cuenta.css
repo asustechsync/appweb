@@ -1,3 +1,7 @@
+/* Envoltura sin caja: solo sirve para poder ocultar el carrito. */
+.ui-acciones-cuenta__carrito {
+  display: contents;
+}
 .ui-acciones-cuenta {
   display: flex;
   align-items: center;

@@ -89,6 +89,7 @@ export {
   type OpcionDeCompra,
 } from "./componentes/SelectorVariantes";
 export { FichaProducto, type PropsFichaProducto } from "./componentes/FichaProducto";
+export { Acordeon, type PropsAcordeon, type SeccionDeAcordeon } from "./componentes/Acordeon";
 export {
   PaginaInformativa,
   type PropsPaginaInformativa,

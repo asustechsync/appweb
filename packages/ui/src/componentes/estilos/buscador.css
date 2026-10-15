@@ -31,6 +31,8 @@
   background: transparent;
   color: var(--color-texto);
   font: inherit;
+  /* Manrope si la app la carga; si no, la fuente heredada. */
+  font-family: var(--tipo-familia-buscador, inherit);
   font-size: var(--tipo-tamano-sm);
 }
 /* `opacity: 1` porque Firefox aplica opacidad propia al placeholder. */

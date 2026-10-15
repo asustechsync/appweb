@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { IconoVerificado } from "../iconos";
 import { GaleriaProducto, type ImagenGaleria } from "./GaleriaProducto";
 import { Precio } from "./Precio";
@@ -26,6 +28,8 @@ export interface PropsFichaProducto {
   /** SKU de la variante elegida; llega de fuera porque la eleccion vive en el selector. */
   sku?: string | null;
   onSeleccion?: (sku: string | null) => void;
+  /** Bloque bajo la descripcion (p. ej. un Acordeon con tallas y envio). */
+  extras?: ReactNode;
 }
 
 /**
@@ -51,6 +55,7 @@ export function FichaProducto({
   agregando,
   sku,
   onSeleccion,
+  extras,
 }: PropsFichaProducto) {
   return (
     <article className="ui-ficha-producto">
@@ -105,6 +110,8 @@ export function FichaProducto({
             <p>{descripcion}</p>
           </section>
         ) : null}
+
+        {extras}
       </div>
     </article>
   );

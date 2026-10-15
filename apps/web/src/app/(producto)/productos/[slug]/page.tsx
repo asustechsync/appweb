@@ -14,6 +14,7 @@ import { Contenedor, Migas } from "@appweb/ui";
 import { productoPorSlug, slugsDeProductos } from "@/lib/consultas";
 
 import { FichaProductoCliente } from "./FichaProductoCliente";
+import { SeccionesFicha } from "./secciones-ficha";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -78,6 +79,7 @@ export default async function PaginaProducto({ params }: Props) {
             stockBajo={producto.stockBajo}
             stockTotal={producto.stockTotal}
             opciones={producto.opciones}
+            extras={<SeccionesFicha />}
           />
         </Contenedor>
       </main>

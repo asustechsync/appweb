@@ -1,26 +1,15 @@
 import { Manrope } from "next/font/google";
-import localFont from "next/font/local";
 
 import { PaginaTienda } from "@appweb/ui";
 
 import { categoriasDeNavegacion } from "@/lib/consultas";
 import { BotonCarritoCabecera } from "@/app/BotonCarritoCabecera";
 
-/** Manrope para el titulo de la ficha: se carga aqui y no en el layout raiz. */
+/** Manrope para todo el detalle de producto: se carga aqui y no en el layout raiz. */
 const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600"],
-});
-
-/** Satoshi, local (apps/web/src/app/fuentes/satoshi), para la cifra del precio de la ficha. */
-const satoshi = localFont({
-  display: "swap",
-  src: [
-    { path: "../fuentes/satoshi/Satoshi-Regular.woff", weight: "400", style: "normal" },
-    { path: "../fuentes/satoshi/Satoshi-Medium.woff", weight: "500", style: "normal" },
-    { path: "../fuentes/satoshi/Satoshi-Bold.woff", weight: "700", style: "normal" },
-  ],
 });
 
 /**
@@ -30,13 +19,20 @@ const satoshi = localFont({
  */
 export default async function LayoutProducto({ children }: { children: React.ReactNode }) {
   const categorias = await categoriasDeNavegacion();
+  // Todas las familias apuntan a Manrope; `fontFamily` hace falta porque el
+  // body ya resolvio la base antes de llegar aqui.
+  const familia = `${manrope.style.fontFamily}, system-ui, sans-serif`;
   const estilo = {
-    "--tipo-familia-acceso": `${manrope.style.fontFamily}, system-ui, sans-serif`,
-    "--tipo-familia-precio": `${satoshi.style.fontFamily}, system-ui, sans-serif`,
+    "--tipo-familia-base": familia,
+    "--tipo-familia-numeros": familia,
+    "--tipo-familia-acceso": familia,
+    "--tipo-familia-precio": familia,
+    "--tipo-familia-buscador": familia,
+    fontFamily: familia,
   };
   return (
     <div style={estilo as React.CSSProperties}>
-      <PaginaTienda fondo="liso" categorias={categorias} carrito={<BotonCarritoCabecera />}>
+      <PaginaTienda fondo="liso" carritoJuntoAlBuscador categorias={categorias} carrito={<BotonCarritoCabecera />}>
         {children}
       </PaginaTienda>
     </div>

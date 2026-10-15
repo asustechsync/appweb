@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bai_Jamjuree, Urbanist } from "next/font/google";
+import { Bai_Jamjuree, Manrope, Urbanist } from "next/font/google";
 
 import { GuionTemaInicial } from "@appweb/ui";
 import { tokens, tokensOscuro } from "@appweb/ui/tokens";
@@ -27,6 +27,14 @@ const urbanist = Urbanist({
   display: "swap",
   variable: "--fuente-numeros",
   weight: ["400", "600"],
+});
+
+/** Manrope solo aparece en el buscador: 400 el texto y el placeholder. */
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--fuente-buscador",
+  weight: ["400"],
 });
 
 /**
@@ -67,7 +75,7 @@ export default function LayoutRaiz({ children }: { children: React.ReactNode }) 
       <head>
         <GuionTemaInicial />
       </head>
-      <body className={`${baiJamjuree.variable} ${urbanist.variable}`}>{children}</body>
+      <body className={`${baiJamjuree.variable} ${urbanist.variable} ${manrope.variable}`}>{children}</body>
     </html>
   );
 }

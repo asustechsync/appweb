@@ -16,7 +16,7 @@
   align-self: flex-start;
   gap: var(--espacio-1);
   font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
-  font-size: var(--tipo-tamano-sm);
+  font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-medio);
   color: var(--color-textoSuave);
   text-transform: uppercase;
@@ -24,6 +24,9 @@
 }
 .ui-ficha-producto__verificado {
   flex: 0 0 auto;
+  /* Proporcional al texto de la marca: si este cambia, el icono lo sigue. */
+  inline-size: 1.25em;
+  block-size: 1.25em;
   color: var(--color-info);
 }
 .ui-ficha-producto__sku {
@@ -40,7 +43,8 @@
   line-height: var(--tipo-altura-apretada);
   /* Sin balance: cada linea se llena hasta el borde. */
   text-wrap: wrap;
-  color: var(--color-texto);
+  /* Un punto mas oscuro que el gris del logo (#52525B frente a #5E5E5E). */
+  color: var(--color-textoSuave);
 }
 .ui-ficha-producto__resumen {
   margin: 0;
@@ -68,6 +72,9 @@
 .ui-ficha-producto__precio .ui-precio__actual {
   grid-column: 1;
   grid-row: 2;
+  /* Mismo gris que el titulo (#52525B). */
+  color: var(--color-textoSuave);
+  font-family: var(--tipo-familia-precio);
 }
 .ui-ficha-producto__precio .ui-ficha-producto__descuento {
   grid-column: 2;

@@ -13,7 +13,7 @@
   box-sizing: border-box;
   /* Movil: caja mas baja que la imagen (cuadrada); el sobrante vacio de
      arriba y abajo se recorta sin encoger la imagen. */
-  aspect-ratio: 1.46;
+  aspect-ratio: 1.6;
   border-radius: var(--radio-lg);
   background: var(--color-fondoFoto);
   overflow: hidden;
@@ -21,7 +21,8 @@
   padding-inline: var(--espacio-8);
 }
 .ui-galeria-producto__principal img {
-  inline-size: 100%;
+  /* Algo menor que la caja: el producto no queda al filo del recorte. */
+  inline-size: 88%;
   block-size: auto;
   aspect-ratio: 1;
   object-fit: contain;

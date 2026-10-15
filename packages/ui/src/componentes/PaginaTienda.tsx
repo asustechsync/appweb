@@ -17,6 +17,8 @@ export interface PropsPaginaTienda {
   carrito?: ReactNode;
   /** `liso`: fondo blanco (el del tema) en lugar del cielo de escena. */
   fondo?: "escena" | "liso";
+  /** En movil, el carrito ocupa el sitio del menu junto al buscador. */
+  carritoJuntoAlBuscador?: boolean;
 }
 
 /**
@@ -29,6 +31,7 @@ export function PaginaTienda({
   categorias,
   carrito,
   fondo = "escena",
+  carritoJuntoAlBuscador = false,
 }: PropsPaginaTienda) {
   const clases = ["ui-pagina-tienda"];
   clases.push(fondo === "liso" ? "ui-pagina-tienda--lisa" : "ui-fondo-escena");
@@ -36,7 +39,11 @@ export function PaginaTienda({
 
   return (
     <div className={clases.join(" ")}>
-      <Header {...(categorias ? { categorias } : {})} {...(carrito ? { carrito } : {})} />
+      <Header
+        {...(categorias ? { categorias } : {})}
+        {...(carrito ? { carrito } : {})}
+        carritoJuntoAlBuscador={carritoJuntoAlBuscador}
+      />
       {children}
     </div>
   );

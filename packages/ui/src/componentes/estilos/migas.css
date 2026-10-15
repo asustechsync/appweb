@@ -1,5 +1,6 @@
 .ui-migas {
-  padding-block: var(--espacio-3);
+  /* Arriba menos aire: las migas quedan pegadas a la cabecera. */
+  padding-block: var(--espacio-1) var(--espacio-3);
   font-family: var(--tipo-familia-acceso, var(--tipo-familia-base));
   font-size: var(--tipo-tamano-sm);
 }
@@ -42,6 +43,6 @@
   text-decoration: underline;
 }
 .ui-migas__actual {
-  color: var(--color-texto);
+  color: var(--color-textoSuave);
   font-weight: var(--tipo-peso-medio);
 }

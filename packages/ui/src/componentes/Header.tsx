@@ -17,6 +17,11 @@ export interface PropsHeader {
   categorias?: CategoriaDeCabecera[];
   /** Boton de carrito con contador; lo aporta la app como isla cliente. */
   carrito?: ReactNode;
+  /**
+   * Movil: el carrito ocupa el sitio del menu de categorias, junto al
+   * buscador, y sigue a la vista al hacer scroll (detalle de producto).
+   */
+  carritoJuntoAlBuscador?: boolean;
 }
 
 /**
@@ -27,9 +32,9 @@ export interface PropsHeader {
  * La lupa y el menu son <details>: abren sin JavaScript, asi la cabecera sigue
  * siendo HTML estatico (Clase A) en todas las paginas.
  */
-export function Header({ categorias = [], carrito }: PropsHeader) {
+export function Header({ categorias = [], carrito, carritoJuntoAlBuscador = false }: PropsHeader) {
   return (
-    <header className="ui-header">
+    <header className={carritoJuntoAlBuscador ? "ui-header ui-header--carrito-abajo" : "ui-header"}>
       <div className="ui-header__interior">
         <div className="ui-header__marca">
           <Logo />
@@ -48,6 +53,13 @@ export function Header({ categorias = [], carrito }: PropsHeader) {
         <div className="ui-header__buscador">
           <Buscador id="busqueda-header-movil" textoBuscar="Buscar productos" />
         </div>
+
+        {/* Escritorio lo oculta: alli el carrito sigue en las acciones. */}
+        {carritoJuntoAlBuscador ? (
+          <div className="ui-header__carrito-abajo">
+            <AccionesCuenta {...(carrito ? { carrito } : {})} soloCarrito />
+          </div>
+        ) : null}
 
         <details className="ui-header__menu">
           <summary className="ui-header__boton" aria-label="Menú de categorías" title="Categorías">
