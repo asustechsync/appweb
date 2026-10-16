@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { IconoVerificado } from "../iconos";
+import { IconoEstrella, IconoGaleria, IconoMensaje, IconoVerificado } from "../iconos";
 import { GaleriaProducto, type ImagenGaleria } from "./GaleriaProducto";
 import { Precio } from "./Precio";
 import { SelectorVariantes, type OpcionDeCompra } from "./SelectorVariantes";
@@ -10,6 +10,11 @@ import "./primitivos.css";
 export interface PropsFichaProducto {
   nombre: string;
   marca?: string | null;
+  /** Nota media de 0 a 5. Sin dato real aun: la pagina pasa un valor de ejemplo. */
+  calificacion?: number;
+  totalOpiniones?: number;
+  /** Opiniones con fotos. */
+  totalFotos?: number;
   descripcion?: string | null;
   imagenes: ImagenGaleria[];
   /** Ya resueltos por `resolverPrecio` de @appweb/core. */
@@ -42,6 +47,9 @@ export interface PropsFichaProducto {
 export function FichaProducto({
   nombre,
   marca,
+  calificacion,
+  totalOpiniones,
+  totalFotos,
   descripcion,
   imagenes,
   precio,
@@ -70,6 +78,25 @@ export function FichaProducto({
             {marca}
             <IconoVerificado className="ui-ficha-producto__verificado" tamano={18} />
           </span>
+        ) : null}
+
+        {calificacion !== undefined ? (
+          <div className="ui-ficha-producto__opiniones">
+            <IconoEstrella className="ui-ficha-producto__estrella" tamano={18} relleno />
+            <span className="ui-ficha-producto__nota">{calificacion.toFixed(1).replace(".", ",")}</span>
+            {totalOpiniones !== undefined ? (
+              <span className="ui-ficha-producto__dato">
+                <IconoMensaje tamano={18} />
+                ({totalOpiniones})
+              </span>
+            ) : null}
+            {totalFotos !== undefined ? (
+              <span className="ui-ficha-producto__dato">
+                <IconoGaleria tamano={18} />
+                ({totalFotos})
+              </span>
+            ) : null}
+          </div>
         ) : null}
 
         {sku ? <span className="ui-ficha-producto__sku">SKU {sku}</span> : null}

@@ -29,6 +29,29 @@
   block-size: 1.25em;
   color: var(--color-info);
 }
+.ui-ficha-producto__opiniones {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--espacio-1);
+  font-size: var(--tipo-tamano-sm);
+  color: var(--color-textoSuave);
+}
+.ui-ficha-producto__estrella {
+  flex: 0 0 auto;
+  /* Mismo gris que el precio principal. */
+  color: var(--color-textoSuave);
+}
+.ui-ficha-producto__nota {
+  font-weight: var(--tipo-peso-fuerte);
+}
+/* Icono + cifra, sin texto: opiniones y fotos. */
+.ui-ficha-producto__dato {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  margin-inline-start: var(--espacio-2);
+}
 .ui-ficha-producto__sku {
   align-self: flex-start;
   font-size: var(--tipo-tamano-xs);
@@ -52,12 +75,12 @@
   line-height: var(--tipo-altura-normal);
   color: var(--color-textoSuave);
 }
-/* Precio de lista tachado arriba; debajo el precio principal con la etiqueta de
-   descuento a su lado. `.ui-precio` pasa a `contents` para que el actual y el
+/* Una sola fila: precio principal, luego el de lista tachado y la etiqueta de
+   descuento. `.ui-precio` pasa a `contents` para que el actual y el
    tachado se ubiquen en esta cuadricula. */
 .ui-ficha-producto__precio {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto 1fr;
   align-items: center;
   column-gap: var(--espacio-3);
   margin-block-start: var(--espacio-1);
@@ -66,19 +89,19 @@
   display: contents;
 }
 .ui-ficha-producto__precio .ui-precio__antes {
-  grid-column: 1 / -1;
+  grid-column: 2;
   grid-row: 1;
 }
 .ui-ficha-producto__precio .ui-precio__actual {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1;
   /* Mismo gris que el titulo (#52525B). */
   color: var(--color-textoSuave);
   font-family: var(--tipo-familia-precio);
 }
 .ui-ficha-producto__precio .ui-ficha-producto__descuento {
-  grid-column: 2;
-  grid-row: 2;
+  grid-column: 3;
+  grid-row: 1;
   justify-self: start;
 }
 /* Etiqueta de descuento en plomo suave, junto al precio. */
