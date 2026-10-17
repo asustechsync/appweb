@@ -1,8 +1,9 @@
 .ui-resumen-compra {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
-  padding: var(--espacio-5);
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
 }

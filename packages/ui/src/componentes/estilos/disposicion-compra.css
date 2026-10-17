@@ -3,9 +3,9 @@
 
 .ui-disposicion-compra {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--espacio-5);
-  padding-block: var(--espacio-6) var(--espacio-16);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-4);
+  padding-block: var(--espacio-4) var(--espacio-12);
 }
 .ui-disposicion-compra__cabecera {
   display: flex;
@@ -82,4 +82,15 @@
 .ui-disposicion-compra--acceso button,
 .ui-disposicion-compra--acceso input {
   font-family: inherit;
+}
+
+/* Mismo boton principal que "Añadir al carrito" de la ficha de producto. */
+.ui-disposicion-compra .ui-boton--primario {
+  background: var(--color-marca-500);
+  color: var(--color-textoInverso);
+}
+.ui-disposicion-compra .ui-boton--primario:disabled {
+  background: var(--color-neutro-300);
+  color: var(--color-textoTenue);
+  opacity: 1;
 }

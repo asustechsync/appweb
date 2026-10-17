@@ -15,14 +15,13 @@ export interface PropsLineaDeCarrito {
   imagenUrl: string;
   talla: string;
   color: string;
-  precioUnitario: number;
-  /** Precio tachado. `null` si no esta en oferta. */
-  precioLista?: number | null;
   cantidad: number;
   /** Unidades disponibles ahora mismo. */
   stock: number;
   /** Total de la linea, ya calculado fuera. */
   total: number;
+  /** Total de la linea a precio de lista (el tachado). `null` si no esta en oferta. */
+  totalLista?: number | null;
   onCantidad: (cantidad: number) => void;
   onQuitar: () => void;
 }
@@ -40,11 +39,10 @@ export function LineaDeCarrito({
   imagenUrl,
   talla,
   color,
-  precioUnitario,
-  precioLista,
   cantidad,
   stock,
   total,
+  totalLista,
   onCantidad,
   onQuitar,
 }: PropsLineaDeCarrito) {
@@ -103,26 +101,20 @@ export function LineaDeCarrito({
           onCambio={onCantidad}
           etiqueta={`Cantidad de ${nombre}`}
         />
-        <button
-          type="button"
-          className="ui-linea-carrito__quitar"
-          onClick={onQuitar}
-          aria-label={`Quitar ${nombre}`}
-        >
-          <IconoPapelera tamano={14} />
-          Quitar
-        </button>
       </div>
 
+      <button
+        type="button"
+        className="ui-linea-carrito__quitar"
+        onClick={onQuitar}
+        aria-label={`Quitar ${nombre}`}
+      >
+        <IconoPapelera tamano={16} />
+        <span className="ui-linea-carrito__quitar-texto">Quitar</span>
+      </button>
+
       <div className="ui-linea-carrito__precio">
-        <Precio valor={total} tamano="md" />
-        {cantidad > 1 ? (
-          <span className="ui-linea-carrito__unitario">
-            <Precio valor={precioUnitario} antes={precioLista ?? null} tamano="sm" /> c/u
-          </span>
-        ) : precioLista ? (
-          <Precio valor={precioUnitario} antes={precioLista} tamano="sm" />
-        ) : null}
+        <Precio valor={total} antes={totalLista ?? null} tamano="md" />
       </div>
     </article>
   );

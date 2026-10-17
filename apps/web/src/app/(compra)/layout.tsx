@@ -1,4 +1,4 @@
-import { Poppins } from "next/font/google";
+import { Manrope } from "next/font/google";
 
 import { PaginaTienda } from "@appweb/ui";
 
@@ -6,10 +6,11 @@ import { categoriasDeNavegacion } from "@/lib/consultas";
 import { BotonCarritoCabecera } from "@/app/BotonCarritoCabecera";
 
 /**
- * Poppins para carrito y checkout: se carga aqui y no en el layout raiz para
- * que el resto del sitio no descargue estos archivos.
+ * Manrope para carrito y checkout, igual que el detalle de producto: se carga
+ * aqui y no en el layout raiz para que el resto del sitio no descargue estos
+ * archivos.
  */
-const poppins = Poppins({
+const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600"],
@@ -17,20 +18,28 @@ const poppins = Poppins({
 
 /**
  * Layout de compra — CLASE B (carrito y checkout).
- * La cabecera es estatica: la sesion entra por la isla cliente de adentro.
+ * Mismo aspecto que el detalle de producto: fuente, fondo liso y carrito junto
+ * al buscador. La cabecera es estatica: la sesion entra por la isla cliente de
+ * adentro.
  */
 export default async function LayoutCompra({ children }: { children: React.ReactNode }) {
   const categorias = await categoriasDeNavegacion();
-  // La variable vive aqui y no en globals.css: alli se resolveria en <body>,
-  // que es antes de que exista la fuente cargada por este layout.
-  // Las cifras de la compra van en Bai Jamjuree (la base del sitio), no en Urbanist.
+  // Todas las familias apuntan a Manrope; `fontFamily` hace falta porque el
+  // body ya resolvio la base antes de llegar aqui.
+  const familia = `${manrope.style.fontFamily}, system-ui, sans-serif`;
   const estilo = {
-    "--tipo-familia-acceso": `${poppins.style.fontFamily}, system-ui, sans-serif`,
-    "--tipo-familia-numeros": "var(--tipo-familia-base)",
+    "--tipo-familia-base": familia,
+    "--tipo-familia-numeros": familia,
+    "--tipo-familia-acceso": familia,
+    "--tipo-familia-precio": familia,
+    "--tipo-familia-buscador": familia,
+    fontFamily: familia,
   };
   return (
     <div style={estilo as React.CSSProperties}>
-      <PaginaTienda categorias={categorias} carrito={<BotonCarritoCabecera />}>{children}</PaginaTienda>
+      <PaginaTienda fondo="liso" carritoJuntoAlBuscador categorias={categorias} carrito={<BotonCarritoCabecera />}>
+        {children}
+      </PaginaTienda>
     </div>
   );
 }

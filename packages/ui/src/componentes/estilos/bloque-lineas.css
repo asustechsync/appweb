@@ -2,15 +2,22 @@
 .ui-bloque-lineas {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
+  gap: var(--espacio-2);
 }
 .ui-bloque-lineas .ui-linea-carrito,
 .ui-bloque-lineas .ui-cabecera-lineas {
-  padding-inline: var(--espacio-5);
+  padding-inline: var(--espacio-3);
   border: 0;
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
 }
 .ui-bloque-lineas .ui-cabecera-lineas {
   padding-block: var(--espacio-3);
+}
+
+@media (min-width: 40rem) {
+  .ui-bloque-lineas .ui-linea-carrito,
+  .ui-bloque-lineas .ui-cabecera-lineas {
+    padding-inline: var(--espacio-5);
+  }
 }

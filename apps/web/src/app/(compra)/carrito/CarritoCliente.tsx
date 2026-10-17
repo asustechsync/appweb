@@ -194,11 +194,14 @@ export function CarritoCliente() {
             imagenUrl={linea.imagenUrl}
             talla={linea.talla}
             color={linea.color}
-            precioUnitario={linea.precio}
-            precioLista={linea.precioLista}
             cantidad={linea.cantidad}
             stock={linea.stock}
             total={redondear(linea.precio * linea.cantidad)}
+            totalLista={
+              linea.precioLista
+                ? redondear(linea.precioLista * linea.cantidad)
+                : null
+            }
             onCantidad={(cantidad) =>
               aplicar(cambiarCantidad(guardadas, linea.varianteId, cantidad))
             }

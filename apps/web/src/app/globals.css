@@ -9,6 +9,20 @@ html {
   -webkit-text-size-adjust: 100%;
   /* FIRST MOBILE: la base es movil; los quiebres solo añaden desde arriba. */
   scroll-behavior: smooth;
+  /* En movil el scroll es tactil: la barra no se muestra. */
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  html {
+    scrollbar-width: auto;
+  }
+  html::-webkit-scrollbar {
+    display: initial;
+  }
 }
 
 body {

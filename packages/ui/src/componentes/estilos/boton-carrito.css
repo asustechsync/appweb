@@ -20,8 +20,8 @@
   block-size: 1.25rem;
   padding-inline: var(--espacio-1);
   border-radius: var(--radio-sm);
-  background: var(--color-texto);
-  color: var(--color-textoInverso);
+  background: var(--color-acento);
+  color: var(--color-acentoTexto);
   font-size: var(--tipo-tamano-etiqueta);
   font-weight: var(--tipo-peso-fuerte);
   line-height: 1;
