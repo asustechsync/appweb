@@ -1,6 +1,6 @@
-/* Los tokens vienen generados desde packages/ui/src/tokens.ts.
-   Este archivo NO define colores ni medidas: solo el reset y las reglas base.
-   Para cambiar la identidad visual se edita tokens.ts y se corre:
+/* La base comun (tipografia, reset, titulos) vive en @appweb/ui/base-web.css
+   y la comparte el panel. Aqui solo va lo propio de la tienda.
+   Para cambiar la identidad visual se edita packages/ui/src/tokens.ts y se corre:
        npm run ui:tokens                                                     */
 
 @import "@appweb/ui/base-web.css";
@@ -25,44 +25,5 @@ html::-webkit-scrollbar {
   }
 }
 
-body {
-  --tipo-familia-base: var(--fuente-base), "Bai Jamjuree", system-ui, sans-serif;
-  --tipo-familia-numeros: var(--fuente-numeros), "Urbanist", system-ui, sans-serif;
-  --tipo-familia-buscador: var(--fuente-buscador), "Manrope", system-ui, sans-serif;
-  font-family: var(--tipo-familia-base);
-  font-size: var(--tipo-tamano-base);
-  line-height: var(--tipo-altura-normal);
-}
-
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-weight: var(--tipo-peso-fuerte);
-  line-height: var(--tipo-altura-apretada);
-  text-wrap: balance;
-}
-
-p { margin: 0; }
-
-ul, ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 /* `.ui-solo-lectores` vive en @appweb/ui/componentes/estilos/base.css: la
    trae cualquier primitivo que la necesite, no hace falta repetirla aqui. */
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}

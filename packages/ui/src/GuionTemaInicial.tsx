@@ -11,6 +11,7 @@ export function GuionTemaInicial() {
     <script
       type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
       suppressHydrationWarning
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: GUION_TEMA es codigo propio y fijo; debe correr antes de hidratar para no parpadear.
       dangerouslySetInnerHTML={{ __html: GUION_TEMA }}
     />
   );

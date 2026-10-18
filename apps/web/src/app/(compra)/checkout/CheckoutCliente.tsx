@@ -40,7 +40,7 @@ import {
 import { guardarCarrito, guardarCupon, leerCarrito, CARRITO_EVENTO } from "@/lib/carrito-local";
 import type { DireccionDeUsuario } from "@/lib/consultas-privadas";
 import type { MetodoDeEnvio, VarianteDeCarrito } from "@/lib/consultas";
-import { usarCupon } from "@/lib/usar-cupon";
+import { useCupon } from "@/lib/use-cupon";
 
 import { resolverLineasDelCarrito } from "../carrito/acciones";
 import {
@@ -48,6 +48,7 @@ import {
   crearPedido,
   sesionYDireccionesCheckout,
   type ContactoCheckout,
+  type NivelCheckout,
 } from "./acciones";
 
 export interface PropsCheckoutCliente {
@@ -78,6 +79,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
   const [variantes, setVariantes] = useState<VarianteDeCarrito[]>([]);
   const [contacto, setContacto] = useState<ContactoCheckout | null>(null);
   const [direcciones, setDirecciones] = useState<DireccionDeUsuario[]>([]);
+  const [nivel, setNivel] = useState<NivelCheckout | null>(null);
 
   const [direccionId, setDireccionId] = useState<string | null>(null);
   const [nuevaDireccion, setNuevaDireccion] = useState(false);
@@ -93,8 +95,6 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
   const [documento, setDocumento] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
   const [medioPago, setMedioPago] = useState<MedioPago | null>(mediosDePago[0]?.valor ?? null);
-
-  const cupon = usarCupon();
 
   const [error, setError] = useState<string | null>(null);
   const [errores, setErrores] = useState<Record<string, string>>({});
@@ -127,6 +127,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       setVariantes(resueltas);
       setContacto(datosSesion.sesion);
       setDirecciones(datosSesion.direcciones);
+      setNivel(datosSesion.nivel);
       const principal =
         datosSesion.direcciones.find((d) => d.principal) ?? datosSesion.direcciones[0];
       if (principal) setDireccionId(principal.id);
@@ -167,6 +168,11 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
     [lineas],
   );
 
+  // El subtotal sin descuento decide si el cupon alcanza su minimo de compra.
+  const subtotal = useMemo(() => calcularTotales(lineasCalculo).subtotal, [lineasCalculo]);
+  const cupon = useCupon(subtotal);
+  const descuentoNivelPct = nivel?.descuentoPct ?? 0;
+
   /** Departamento al que va el pedido: el de la direccion elegida o el que se esta escribiendo. */
   const departamentoDestino = nuevaDireccion
     ? departamento
@@ -193,11 +199,12 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
     () =>
       calcularTotales(lineasCalculo, {
         cupon: cupon.aplicado,
+        descuentoNivelPct,
         ...(metodoElegido
           ? { metodoEnvio: { costo: metodoElegido.costo, gratisDesde: metodoElegido.gratisDesde } }
           : {}),
       }),
-    [lineasCalculo, metodoElegido, cupon.aplicado],
+    [lineasCalculo, metodoElegido, cupon.aplicado, descuentoNivelPct],
   );
 
   /** Lo que costaria cada metodo con este carrito: el gratis-desde ya aplicado. */
@@ -208,11 +215,12 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
           metodo.id,
           calcularTotales(lineasCalculo, {
             cupon: cupon.aplicado,
+            descuentoNivelPct,
             metodoEnvio: { costo: metodo.costo, gratisDesde: metodo.gratisDesde },
           }).costoEnvio ?? metodo.costo,
         ]),
       ),
-    [metodos, lineasCalculo, cupon.aplicado],
+    [metodos, lineasCalculo, cupon.aplicado, descuentoNivelPct],
   );
 
   function limpiarError(campo: string) {
@@ -273,7 +281,9 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
 
     if (!direccionId || nuevaDireccion) {
       mostrarError(
-        nuevaDireccion ? "Guarda la dirección nueva antes de confirmar." : "Elige una dirección de envío.",
+        nuevaDireccion
+          ? "Guarda la dirección nueva antes de confirmar."
+          : "Elige una dirección de envío.",
       );
       return;
     }
@@ -354,7 +364,9 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
   }
 
   const bloqueo =
-    totales.lineasSinStock.length > 0 ? "Vuelve al carrito y ajusta las cantidades marcadas." : null;
+    totales.lineasSinStock.length > 0
+      ? "Vuelve al carrito y ajusta las cantidades marcadas."
+      : null;
 
   return (
     <DisposicionCompra
@@ -384,15 +396,26 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
             />
           }
           codigo={
-            <CodigoPromocional
-              valor={cupon.texto}
-              onCambio={cupon.cambiar}
-              onAplicar={cupon.aplicar}
-              aplicado={cupon.aplicado?.codigo ?? null}
-              onQuitar={cupon.quitar}
-              mensaje={cupon.aviso}
-              tonoMensaje="error"
-            />
+            <>
+              {nivel && nivel.descuentoPct > 0 ? (
+                <Alerta tono="info">
+                  {totales.origenDescuento === "cupon"
+                    ? `Tu cupón da más descuento que tu nivel ${nivel.nombre}: se aplica el cupón.`
+                    : cupon.aplicado
+                      ? `Tu nivel ${nivel.nombre} (${nivel.descuentoPct}%) da más descuento que el cupón: se aplica el de tu nivel.`
+                      : `Por ser nivel ${nivel.nombre} tienes ${nivel.descuentoPct}% de descuento.`}
+                </Alerta>
+              ) : null}
+              <CodigoPromocional
+                valor={cupon.texto}
+                onCambio={cupon.cambiar}
+                onAplicar={cupon.aplicar}
+                aplicado={cupon.aplicado?.codigo ?? null}
+                onQuitar={cupon.quitar}
+                mensaje={cupon.aviso}
+                tonoMensaje="error"
+              />
+            </>
           }
           motivoBloqueo={bloqueo}
           onConfirmar={confirmar}
@@ -413,7 +436,9 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
         <p className="ui-seccion-checkout__datos">
           <strong>{contacto.nombre}</strong>
           <span>{contacto.email}</span>
-          <span>{contacto.telefono ?? "Sin teléfono: agrégalo en Mi cuenta para coordinar la entrega."}</span>
+          <span>
+            {contacto.telefono ?? "Sin teléfono: agrégalo en Mi cuenta para coordinar la entrega."}
+          </span>
         </p>
       </SeccionCheckout>
 
@@ -622,7 +647,11 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
         </FilaCampos>
       </SeccionCheckout>
 
-      <SeccionCheckout numero={5} titulo="Método de pago" descripcion="Te mostramos cómo pagar al confirmar.">
+      <SeccionCheckout
+        numero={5}
+        titulo="Método de pago"
+        descripcion="Te mostramos cómo pagar al confirmar."
+      >
         <GrupoOpciones etiqueta="Método de pago" columnas={2}>
           {mediosDePago.map((medio) => (
             <TarjetaSeleccionable

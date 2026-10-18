@@ -1,0 +1,41 @@
+// Linter y formateador de todo el monorepo. Un solo programa en vez de
+// ESLint + Prettier: `npm run revisar` avisa y `npm run arreglar` corrige.
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    // Las migraciones las escribe Prisma y no se tocan despues de aplicadas.
+    "includes": ["**", "!**/prisma/migrations", "!**/*.svg", "!**/package-lock.json"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    // Git guarda LF y Windows trabaja con CRLF (core.autocrlf): cada sistema usa el suyo.
+    "lineEnding": "auto"
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "double", "semicolons": "always", "trailingCommas": "all" }
+  },
+  // El orden de los imports lo decide quien escribe: agrupados por origen y con linea en blanco.
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
+  "linter": {
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        // `process.env["X"]` es el estilo del proyecto: deja claro que la clave puede no existir.
+        "useLiteralKeys": "off"
+      },
+      "style": {
+        // En CSS el orden de los selectores lo dan los quiebres FIRST MOBILE, no la especificidad.
+        "noDescendingSpecificity": "off",
+        // Con `noUncheckedIndexedAccess`, `lista[0]!` tras comprobar el largo es la salida prevista.
+        "noNonNullAssertion": "off"
+      },
+      // DEUDA PENDIENTE: avisan sin bloquear. Al corregir cada componente de `ui`,
+      // subir estas dos a "error" para que no vuelvan.
+      "a11y": "warn",
+      "suspicious": { "noArrayIndexKey": "warn" }
+    }
+  }
+}

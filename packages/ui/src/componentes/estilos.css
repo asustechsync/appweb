@@ -1,0 +1,71 @@
+/* Indice de estilos de los primitivos. Cada componente tiene su css al lado,
+   en la carpeta de su familia (base, formularios, catalogo...). Este archivo
+   solo los importa EN ORDEN: el orden decide que regla gana, no lo cambies
+   sin revisar la cascada.
+
+   Ninguno contiene un color ni una medida literal: todo sale de las
+   variables de ../theme.css, generado desde ../tokens.ts. */
+
+@import "./base/base.css";
+@import "./base/control-base.css";
+@import "./formularios/opciones-desplegables.css";
+@import "./base/contenedor.css";
+@import "./base/logo.css";
+@import "./navegacion/boton-carrito.css";
+@import "./navegacion/migas.css";
+@import "./navegacion/buscador.css";
+@import "./navegacion/acciones-cuenta.css";
+@import "./navegacion/menu-usuario.css";
+@import "./base/alternar-tema.css";
+@import "./navegacion/item-desplegable.css";
+@import "./navegacion/navegacion-secciones.css";
+@import "./portada/hero.css";
+@import "./catalogo/precio.css";
+@import "./base/cabecera-seccion.css";
+@import "./catalogo/tarjeta-producto.css";
+@import "./catalogo/tarjeta-marca.css";
+@import "./catalogo/banner-oferta.css";
+@import "./portada/banner-promo.css";
+@import "./catalogo/rejilla-productos.css";
+@import "./portada/carrusel.css";
+@import "./catalogo/galeria-producto.css";
+@import "./catalogo/selector-variantes.css";
+@import "./catalogo/ficha-producto.css";
+@import "./base/acordeon.css";
+@import "./disposiciones/pagina-informativa.css";
+@import "./disposiciones/layout-producto.css";
+@import "./paneles/panel-acciones.css";
+@import "./paneles/informacion-grid.css";
+@import "./disposiciones/disposicion-compra.css";
+@import "./disposiciones/pagina-tienda.css";
+@import "./formularios/selector-cantidad.css";
+@import "./compra/cabecera-lineas.css";
+@import "./compra/linea-carrito.css";
+@import "./compra/resumen-compra.css";
+@import "./base/estado-vacio.css";
+@import "./base/cargando.css";
+@import "./formularios/formulario.css";
+@import "./formularios/bloque-formulario.css";
+@import "./disposiciones/disposicion-acceso.css";
+@import "./formularios/campo.css";
+@import "./formularios/casilla.css";
+@import "./base/boton.css";
+@import "./base/alerta.css";
+@import "./formularios/tarjeta-seleccionable.css";
+@import "./formularios/grupo-opciones.css";
+@import "./compra/articulos-resumen.css";
+@import "./disposiciones/confirmacion.css";
+@import "./compra/linea-estados.css";
+@import "./paneles/bloque-detalle.css";
+@import "./compra/seccion-checkout.css";
+@import "./compra/tarjeta-pedido.css";
+
+/* Cuenta y panel (Clase C). */
+@import "./disposiciones/disposicion-cuenta.css";
+@import "./navegacion/menu-cuenta.css";
+@import "./base/tarjeta.css";
+@import "./paneles/fila-lista.css";
+@import "./base/insignia.css";
+@import "./formularios/indicador-clave.css";
+@import "./formularios/codigo-promocional.css";
+@import "./compra/bloque-lineas.css";

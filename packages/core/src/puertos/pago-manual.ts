@@ -1,9 +1,4 @@
-import type {
-  MedioPago,
-  PasarelaPago,
-  ResultadoPago,
-  SolicitudPago,
-} from "./pasarela-pago";
+import type { MedioPago, PasarelaPago, ResultadoPago, SolicitudPago } from "./pasarela-pago";
 
 /**
  * Implementacion de arranque: el cliente paga por Yape, Plin o transferencia y

@@ -18,7 +18,7 @@ import { crearTokenSesion, verificarTokenSesion, type CargaSesion, type Rol } fr
 const DURACION_MS = 1000 * 60 * 60 * 24 * 30; // 30 dias
 const DURACION_SIN_RECORDAR_MS = 1000 * 60 * 60 * 24; // 1 dia, y la cookie muere al cerrar el navegador
 
-function secreto(): string {
+export function secreto(): string {
   const valor = process.env["AUTH_SECRETO"];
   if (!valor) {
     throw new Error("Falta AUTH_SECRETO en el entorno. Revisa .env.local.");
@@ -33,7 +33,11 @@ export interface Sesion {
 }
 
 export async function crearCookieSesion(carga: CargaSesion, recordar = true): Promise<void> {
-  const token = crearTokenSesion(carga, secreto(), recordar ? DURACION_MS : DURACION_SIN_RECORDAR_MS);
+  const token = crearTokenSesion(
+    carga,
+    secreto(),
+    recordar ? DURACION_MS : DURACION_SIN_RECORDAR_MS,
+  );
   const almacen = await cookies();
   almacen.set(COOKIE_SESION, token, {
     httpOnly: true,

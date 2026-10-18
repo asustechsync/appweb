@@ -22,11 +22,7 @@ function firmar(datos: string, secreto: string): string {
   return createHmac("sha256", secreto).update(datos).digest("base64url");
 }
 
-export function crearTokenSesion(
-  carga: CargaSesion,
-  secreto: string,
-  duracionMs: number,
-): string {
+export function crearTokenSesion(carga: CargaSesion, secreto: string, duracionMs: number): string {
   const expira = Date.now() + duracionMs;
   const cuerpo = Buffer.from(JSON.stringify({ ...carga, expira })).toString("base64url");
   const firma = firmar(cuerpo, secreto);

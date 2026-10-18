@@ -29,6 +29,8 @@ export interface TotalesCompra {
   unidades: number;
   subtotal: number;
   descuento: number;
+  /** De donde salio el descuento: cupon o nivel, nunca los dos (gana el mayor). */
+  origenDescuento: "cupon" | "nivel" | null;
   /** `null` mientras no se haya elegido metodo de envio. */
   costoEnvio: number | null;
   total: number;
@@ -48,17 +50,29 @@ export function calcularTotales(
   opciones: {
     /** Cupon aplicado: su descuento se calcula sobre el subtotal. */
     cupon?: Cupon | null;
+    /** Descuento del nivel del cliente (ver `NIVELES`). No se suma al cupon. */
+    descuentoNivelPct?: number;
     metodoEnvio?: MetodoEnvioCalculo | null;
   } = {},
 ): TotalesCompra {
-  const { cupon = null, metodoEnvio = null } = opciones;
+  const { cupon = null, descuentoNivelPct = 0, metodoEnvio = null } = opciones;
 
   const unidades = lineas.reduce((suma, linea) => suma + linea.cantidad, 0);
   const subtotal = redondear(
     lineas.reduce((suma, linea) => suma + linea.precioUnitario * linea.cantidad, 0),
   );
 
-  const descuento = descuentoDeCupon(subtotal, cupon);
+  // Cupon y nivel no se suman: se aplica el que mas descuenta. Asi un cupon
+  // nunca deja a un cliente Oro pagando mas que sin cupon, y nadie apila dos
+  // promociones que el negocio no penso juntas.
+  const porCupon = descuentoDeCupon(subtotal, cupon);
+  const porNivel = descuentoDeCupon(
+    subtotal,
+    descuentoNivelPct > 0 ? { codigo: "NIVEL", porcentaje: descuentoNivelPct } : null,
+  );
+  const origenDescuento =
+    porCupon === 0 && porNivel === 0 ? null : porCupon >= porNivel ? "cupon" : "nivel";
+  const descuento = Math.max(porCupon, porNivel);
 
   // El descuento nunca puede dejar el subtotal en negativo.
   const descuentoAplicado = redondear(Math.min(Math.max(descuento, 0), subtotal));
@@ -68,8 +82,7 @@ export function calcularTotales(
   let faltaEnvioGratis: number | null = null;
 
   if (metodoEnvio) {
-    const tieneGratis =
-      metodoEnvio.gratisDesde !== null && base >= metodoEnvio.gratisDesde;
+    const tieneGratis = metodoEnvio.gratisDesde !== null && base >= metodoEnvio.gratisDesde;
     costoEnvio = tieneGratis ? 0 : redondear(metodoEnvio.costo);
 
     if (metodoEnvio.gratisDesde !== null && !tieneGratis) {
@@ -85,6 +98,7 @@ export function calcularTotales(
     unidades,
     subtotal,
     descuento: descuentoAplicado,
+    origenDescuento,
     costoEnvio,
     total: redondear(base + (costoEnvio ?? 0)),
     faltaEnvioGratis,

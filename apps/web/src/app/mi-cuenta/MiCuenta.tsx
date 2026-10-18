@@ -43,7 +43,12 @@ const GRUPOS_MENU: GrupoMenuCuenta[] = [
   {
     opciones: [
       { id: "perfil", etiqueta: "Perfil", icono: <IconoPerfil />, seccion: "perfil" },
-      { id: "direcciones", etiqueta: "Direcciones", icono: <IconoUbicacion />, seccion: "direcciones" },
+      {
+        id: "direcciones",
+        etiqueta: "Direcciones",
+        icono: <IconoUbicacion />,
+        seccion: "direcciones",
+      },
       { id: "seguridad", etiqueta: "Seguridad", icono: <IconoEscudo />, seccion: "seguridad" },
       { id: "pedidos", etiqueta: "Mis pedidos", icono: <IconoPedidos />, seccion: "pedidos" },
       { id: "favoritos", etiqueta: "Favoritos", icono: <IconoFavorito />, seccion: "favoritos" },
@@ -53,7 +58,12 @@ const GRUPOS_MENU: GrupoMenuCuenta[] = [
   {
     opciones: [
       { id: "soporte", etiqueta: "Soporte", icono: <IconoSoporte />, href: "/ayuda/contacto" },
-      { id: "configuracion", etiqueta: "Configuración", icono: <IconoConfiguracion />, seccion: "configuracion" },
+      {
+        id: "configuracion",
+        etiqueta: "Configuración",
+        icono: <IconoConfiguracion />,
+        seccion: "configuracion",
+      },
     ],
   },
 ];
@@ -99,7 +109,9 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
 
   // En escritorio no hay pantalla de menu: sin seccion se ve el perfil.
   const visible = activa || "perfil";
-  const tituloSeccion = GRUPOS_MENU.flatMap((grupo) => grupo.opciones).find((opcion) => opcion.id === visible)?.etiqueta ?? "Mi cuenta";
+  const tituloSeccion =
+    GRUPOS_MENU.flatMap((grupo) => grupo.opciones).find((opcion) => opcion.id === visible)
+      ?.etiqueta ?? "Mi cuenta";
 
   return (
     <DisposicionCuenta

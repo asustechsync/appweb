@@ -35,7 +35,10 @@ export async function ingresar(datos: unknown): Promise<ResultadoIngreso> {
     data: { ultimoAccesoEn: new Date(), editadoEn: usuario.editadoEn },
   });
 
-  await crearCookieSesion({ usuarioId: usuario.id, rol: usuario.rol, nombre: usuario.nombre }, recordar);
+  await crearCookieSesion(
+    { usuarioId: usuario.id, rol: usuario.rol, nombre: usuario.nombre },
+    recordar,
+  );
 
   return { ok: true };
 }

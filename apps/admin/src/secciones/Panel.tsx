@@ -2,8 +2,10 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-import type { Rol } from "@appweb/core";
+import { puede, type Rol } from "@appweb/core";
 import {
+  Alerta,
+  Boton,
   DisposicionPanel,
   EstadoVacio,
   IconoCarrito,
@@ -15,9 +17,15 @@ import {
   IconoUsuario,
 } from "@appweb/ui";
 
+import { useAvisos } from "@/lib/use-avisos";
+
+import { Ajustes } from "./Ajustes";
+import { Envios } from "./Envios";
+import { Pedidos } from "./Pedidos";
+import { Productos } from "./Productos";
 import { Resumen } from "./Resumen";
+import { Stock } from "./Stock";
 import { Usuarios } from "./Usuarios";
-import { ColeccionPortada } from "./ColeccionPortada";
 
 const ETIQUETAS: Record<string, string> = {
   resumen: "Resumen",
@@ -83,9 +91,21 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
   // En escritorio no hay pantalla de menu: sin seccion se ve la primera.
   const visible = activa || (secciones[0] ?? "resumen");
 
+  const avisos = useAvisos();
+  /** El numero junto al nombre de la seccion: lo que espera a alguien. */
+  const contadores: Record<string, number> = {
+    pedidos: avisos.porConfirmar,
+    envios: avisos.porDespachar,
+  };
+  function etiqueta(id: string): string {
+    const texto = ETIQUETAS[id] ?? id;
+    const n = contadores[id] ?? 0;
+    return n > 0 ? `${texto} (${n})` : texto;
+  }
+
   return (
     <DisposicionPanel
-      secciones={secciones.map((id) => ({ id, etiqueta: ETIQUETAS[id] ?? id, icono: ICONOS[id] }))}
+      secciones={secciones.map((id) => ({ id, etiqueta: etiqueta(id), icono: ICONOS[id] }))}
       seccionActiva={activa}
       onSeccion={ir}
       nombreUsuario={nombre}
@@ -93,12 +113,37 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
       onSalir={salir}
       hrefTienda={process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000"}
     >
+      {avisos.nuevo && secciones.includes("pedidos") ? (
+        <Alerta tono="exito">
+          Llegó el pedido <strong>{avisos.nuevo}</strong>.{" "}
+          <Boton
+            variante="secundario"
+            onClick={() => {
+              avisos.descartar();
+              ir("pedidos");
+            }}
+          >
+            Ver pedidos
+          </Boton>{" "}
+          <Boton variante="secundario" onClick={avisos.descartar}>
+            Cerrar
+          </Boton>
+        </Alerta>
+      ) : null}
       {visible === "resumen" ? (
         <Resumen />
+      ) : visible === "pedidos" ? (
+        <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
+      ) : visible === "envios" ? (
+        <Envios puedeTarifas={puede(rol, "gestionar_ajustes")} />
+      ) : visible === "productos" ? (
+        <Productos />
+      ) : visible === "stock" ? (
+        <Stock />
       ) : visible === "usuarios" ? (
         <Usuarios usuarioIdActual={usuarioId} />
       ) : visible === "ajustes" ? (
-        <ColeccionPortada />
+        <Ajustes />
       ) : (
         <EstadoVacio
           titulo={ETIQUETAS[visible] ?? visible}

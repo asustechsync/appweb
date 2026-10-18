@@ -11,8 +11,8 @@ export default function PaginaCambiosYDevoluciones() {
   return (
     <PaginaInformativa titulo="Cambios y devoluciones">
       <p>
-        Por ser prendas de uso íntimo, los cambios y devoluciones aplican solo cuando el
-        producto no ha sido usado y conserva su empaque y etiquetas originales.
+        Por ser prendas de uso íntimo, los cambios y devoluciones aplican solo cuando el producto no
+        ha sido usado y conserva su empaque y etiquetas originales.
       </p>
 
       <h2>Plazo</h2>
@@ -31,8 +31,8 @@ export default function PaginaCambiosYDevoluciones() {
       </ul>
 
       <p>
-        Para iniciar un cambio, escríbenos por <a href="/ayuda/contacto">contacto</a> con tu
-        número de pedido y una foto del producto.
+        Para iniciar un cambio, escríbenos por <a href="/ayuda/contacto">contacto</a> con tu número
+        de pedido y una foto del producto.
       </p>
     </PaginaInformativa>
   );

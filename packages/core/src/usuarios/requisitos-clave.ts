@@ -18,7 +18,12 @@ export const TODOS_LOS_REQUISITOS_CLAVE: readonly RequisitoClave[] = [
   { id: "mayuscula", texto: "Mayúscula", obligatorio: true, cumple: (c) => /[A-Z]/.test(c) },
   { id: "numero", texto: "Número", obligatorio: true, cumple: (c) => /\d/.test(c) },
   { id: "largo", texto: "8 caracteres", obligatorio: true, cumple: (c) => c.length >= 8 },
-  { id: "extra", texto: "Símbolo o 12 caracteres", obligatorio: false, cumple: (c) => c.length >= 12 || /[^A-Za-z0-9\s]/.test(c) },
+  {
+    id: "extra",
+    texto: "Símbolo o 12 caracteres",
+    obligatorio: false,
+    cumple: (c) => c.length >= 12 || /[^A-Za-z0-9\s]/.test(c),
+  },
 ];
 
 /** Los que el esquema exige para crear la cuenta. */

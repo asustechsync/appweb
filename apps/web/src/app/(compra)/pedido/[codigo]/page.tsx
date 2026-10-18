@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import { pasosDelPedido, type EstadoPedido } from "@appweb/core";
+import { mensajeComprobanteWhatsApp, pasosDelPedido, type EstadoPedido } from "@appweb/core";
 import { prisma } from "@appweb/db";
 import {
   BloqueDetalle,
@@ -19,6 +19,7 @@ import {
 import { pedidoDelUsuario } from "@/lib/consultas-privadas";
 import { ETIQUETAS_MEDIO, medioPagoDesdeEnum, pasarela } from "@/lib/pago";
 import { leerSesion } from "@/lib/sesion";
+import { whatsappTienda } from "@/lib/whatsapp";
 
 /**
  * Confirmacion del pedido. Hoja dinamica: lee la sesion para comprobar que el
@@ -75,6 +76,12 @@ export default async function PaginaPedido({ params }: Props) {
       : null;
 
   const pasos = pasosDelPedido(pedido.estado as EstadoPedido);
+
+  // Contra entrega se paga al recibir: no hay comprobante que mandar.
+  const enviarComprobante =
+    instrucciones && medio !== "contra_entrega"
+      ? whatsappTienda(mensajeComprobanteWhatsApp({ codigo: pedido.codigo, total: pedido.total }))
+      : null;
   const cancelado = pasos.length === 0;
   const primerNombre = sesion.nombre.split(" ")[0] ?? sesion.nombre;
   const esFactura = pedido.comprobante === "FACTURA";
@@ -121,6 +128,11 @@ export default async function PaginaPedido({ params }: Props) {
               <span>{ETIQUETAS_MEDIO[medio]?.etiqueta ?? "Pago"}</span>
               <span className="ui-bloque-detalle__monto">{MONEDA.format(pedido.total)}</span>
               <p>{instrucciones}</p>
+              {enviarComprobante ? (
+                <Boton variante="secundario" href={enviarComprobante} externo>
+                  Enviar comprobante por WhatsApp
+                </Boton>
+              ) : null}
             </BloqueDetalle>
           ) : null}
 

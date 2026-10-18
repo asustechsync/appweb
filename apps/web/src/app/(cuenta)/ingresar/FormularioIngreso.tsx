@@ -63,11 +63,7 @@ export function FormularioIngreso({ siguiente }: PropsFormularioIngreso) {
   }
 
   return (
-    <DisposicionAcceso
-      activa="ingresar"
-      titulo="Bienvenido"
-      alternativas={<AccesoSocial />}
-    >
+    <DisposicionAcceso activa="ingresar" titulo="Bienvenido" alternativas={<AccesoSocial />}>
       <Formulario onSubmit={enviar}>
         {error ? <Alerta tono="error">{error}</Alerta> : null}
 

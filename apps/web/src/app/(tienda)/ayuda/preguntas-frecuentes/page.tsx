@@ -15,14 +15,14 @@ export default function PaginaPreguntasFrecuentes() {
 
       <h2>¿Cuánto demora el envío?</h2>
       <p>
-        1 – 3 días hábiles en Lima y Callao, 3 – 7 días hábiles en el resto del país. Más
-        detalles en <a href="/envios">Envíos</a>.
+        1 – 3 días hábiles en Lima y Callao, 3 – 7 días hábiles en el resto del país. Más detalles
+        en <a href="/envios">Envíos</a>.
       </p>
 
       <h2>No sé qué talla pedir, ¿qué hago?</h2>
       <p>
-        Revisa nuestra <a href="/guia-tallas">Guía de Tallas</a> antes de comprar. Si tu
-        medida está entre dos tallas, te recomendamos elegir la mayor.
+        Revisa nuestra <a href="/guia-tallas">Guía de Tallas</a> antes de comprar. Si tu medida está
+        entre dos tallas, te recomendamos elegir la mayor.
       </p>
 
       <h2>¿Puedo cambiar un producto si no me queda?</h2>
@@ -37,7 +37,9 @@ export default function PaginaPreguntasFrecuentes() {
         <a href="/mayorista">Ventas al por mayor</a>.
       </p>
 
-      <p>¿No encontraste tu respuesta? Escríbenos por <a href="/ayuda/contacto">contacto</a>.</p>
+      <p>
+        ¿No encontraste tu respuesta? Escríbenos por <a href="/ayuda/contacto">contacto</a>.
+      </p>
     </PaginaInformativa>
   );
 }

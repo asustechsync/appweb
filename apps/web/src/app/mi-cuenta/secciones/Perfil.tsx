@@ -149,7 +149,7 @@ export function Perfil() {
                 ...(fechaNacimiento === "" ? {} : { fechaNacimiento }),
                 ...(genero === "" ? {} : { genero: genero as Genero }),
               };
-  
+
               // Mismo esquema que valida el servidor: el error aparece junto al
               // campo que falla, sin esperar la respuesta.
               const analizado = esquemaPerfil.safeParse(datos);
@@ -301,7 +301,9 @@ export function Perfil() {
           // Campos de maqueta: todavia no se guardan. Quedan deshabilitados y
           // vacios hasta definir las columnas de la empresa en la base de datos.
           <Formulario ancho="completo" onSubmit={(evento) => evento.preventDefault()}>
-            <Alerta>Muy pronto podrás guardar aquí los datos de tu empresa para tus facturas.</Alerta>
+            <Alerta>
+              Muy pronto podrás guardar aquí los datos de tu empresa para tus facturas.
+            </Alerta>
             <FilaCampos>
               <Campo
                 id="empresa-ruc"

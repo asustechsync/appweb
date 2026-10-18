@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { ROLES, type Rol } from "@appweb/core";
+import { estaAnonimizada, ROLES, type Rol } from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -19,6 +19,8 @@ import {
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
+
+import { DetalleUsuario } from "./DetalleUsuario";
 
 const ETIQUETA_ROL: Record<Rol, string> = {
   CLIENTE: "Cliente",
@@ -41,6 +43,7 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
   const queryClient = useQueryClient();
 
   const [busqueda, setBusqueda] = useState("");
+  const [abierto, setAbierto] = useState<string | null>(null);
   const [creando, setCreando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -116,6 +119,17 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
 
   const trabajando = crear.isPending || cambiarRol.isPending || cambiarActivo.isPending;
 
+  if (abierto !== null) {
+    return (
+      <DetalleUsuario
+        usuarioId={abierto}
+        usuarioIdActual={usuarioIdActual}
+        etiquetaRol={(rol) => ETIQUETA_ROL[rol as Rol] ?? rol}
+        onVolver={() => setAbierto(null)}
+      />
+    );
+  }
+
   return (
     <>
       {error ? <Alerta tono="error">{error}</Alerta> : null}
@@ -142,7 +156,13 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
               });
             }}
           >
-            <Campo id="nuevo-nombre" etiqueta="Nombre" valor={nombre} onCambio={setNombre} requerido />
+            <Campo
+              id="nuevo-nombre"
+              etiqueta="Nombre"
+              valor={nombre}
+              onCambio={setNombre}
+              requerido
+            />
             <Campo
               id="nuevo-email"
               etiqueta="Correo"
@@ -182,7 +202,10 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
             </Boton>
           </Formulario>
         ) : (
-          <p>Las cuentas del equipo se crean aquí con su rol. El público se registra por su cuenta como cliente.</p>
+          <p>
+            Las cuentas del equipo se crean aquí con su rol. El público se registra por su cuenta
+            como cliente.
+          </p>
         )}
       </Tarjeta>
 
@@ -203,13 +226,11 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
         ) : lista.isError ? (
           <Alerta tono="error">{lista.error.message}</Alerta>
         ) : visibles.length === 0 ? (
-          <EstadoVacio
-            titulo="Sin resultados"
-            texto="Ninguna cuenta coincide con esa búsqueda."
-          />
+          <EstadoVacio titulo="Sin resultados" texto="Ninguna cuenta coincide con esa búsqueda." />
         ) : (
           visibles.map((usuario) => {
             const esUnoMismo = usuario.id === usuarioIdActual;
+            const eliminada = estaAnonimizada(usuario.email);
 
             return (
               <FilaLista
@@ -225,11 +246,14 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
                       onCambio={(rol) =>
                         cambiarRol.mutate({ usuarioId: usuario.id, rol: rol as Rol })
                       }
-                      disabled={esUnoMismo || trabajando}
+                      disabled={esUnoMismo || eliminada || trabajando}
                     />
+                    <Boton variante="secundario" onClick={() => setAbierto(usuario.id)}>
+                      Ver ficha
+                    </Boton>
                     <Boton
                       variante="secundario"
-                      disabled={esUnoMismo || trabajando}
+                      disabled={esUnoMismo || eliminada || trabajando}
                       onClick={() =>
                         cambiarActivo.mutate({ usuarioId: usuario.id, activo: !usuario.activo })
                       }

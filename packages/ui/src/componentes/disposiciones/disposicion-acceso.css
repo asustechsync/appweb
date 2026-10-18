@@ -1,0 +1,138 @@
+.ui-acceso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 100svh;
+  padding: var(--espacio-8) var(--espacio-4);
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-texto);
+  /* Controles mas grandes que el resto del sitio: es la unica pantalla donde
+     el formulario es lo unico que hay. */
+  --control-alto: 3rem;
+}
+.ui-acceso button,
+.ui-acceso input {
+  font-family: inherit;
+}
+/* El logo conserva la fuente de la marca. */
+.ui-acceso .ui-logo {
+  font-family: var(--tipo-familia-texto);
+}
+.ui-acceso__columna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  inline-size: 100%;
+  max-inline-size: 26rem;
+  /* Alto de la pantalla mas larga (crear cuenta). Con el mismo alto las dos
+     se centran igual y el logo no salta al cambiar de una a otra; lo que
+     sobra en ingresar queda abajo. */
+  min-block-size: 42rem;
+}
+/* Salida a la portada: pequena y discreta, arriba a la izquierda. */
+.ui-acceso__volver {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--espacio-1);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-decoration: none;
+}
+.ui-acceso__volver:hover,
+.ui-acceso__volver:focus-visible {
+  color: var(--color-texto);
+}
+.ui-acceso__logo {
+  display: flex;
+  justify-content: center;
+}
+.ui-acceso__titulo {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-normal);
+  line-height: var(--tipo-altura-normal);
+  text-align: center;
+}
+.ui-acceso .ui-campo label,
+.ui-acceso .ui-fila-opciones a,
+.ui-acceso .ui-casilla,
+.ui-acceso__separador,
+.ui-acceso__pie {
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-acceso .ui-campo__input,
+.ui-acceso .ui-boton {
+  font-size: var(--tipo-tamano-base);
+}
+.ui-acceso__columna .ui-formulario {
+  max-inline-size: none;
+}
+.ui-acceso__separador {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-acceso__separador::before,
+.ui-acceso__separador::after {
+  content: "";
+  flex: 1;
+  border-block-start: 1px solid var(--color-borde);
+}
+/* Movil: los botones van lado a lado, con solo logo y nombre. */
+.ui-acceso__alternativas {
+  display: flex;
+  flex-direction: row;
+  gap: var(--espacio-2);
+}
+.ui-acceso__alternativas .ui-boton {
+  flex: 1;
+  min-inline-size: 0;
+}
+.ui-acceso__continuar {
+  display: none;
+}
+@media (min-width: 30rem) {
+  .ui-acceso__alternativas {
+    flex-direction: column;
+  }
+  /* En columna, `flex: 1` encogeria el alto del boton. */
+  .ui-acceso__alternativas .ui-boton {
+    flex: none;
+  }
+  .ui-acceso__continuar {
+    display: inline;
+  }
+}
+.ui-acceso__alternativas .ui-boton {
+  gap: var(--espacio-2);
+}
+.ui-acceso__pie {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-align: center;
+}
+.ui-acceso__pie a {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+  text-decoration: none;
+}
+
+/* Los botones de otras cuentas van mas livianos que el "Ingresar" principal. */
+.ui-acceso__alternativas .ui-boton {
+  color: var(--color-textoSuave);
+  font-weight: var(--tipo-peso-medio);
+}
+
+/* El logo pesa mas aqui que en la cabecera: es lo unico de marca en pantalla. */
+.ui-acceso .ui-logo {
+  gap: var(--espacio-5);
+  font-size: var(--tipo-tamano-5xl);
+}
+.ui-acceso .ui-logo__simbolo {
+  inline-size: var(--espacio-16);
+  block-size: auto;
+  aspect-ratio: 1;
+}

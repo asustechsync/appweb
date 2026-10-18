@@ -1,32 +1,20 @@
-import { Bai_Jamjuree, Poppins, Urbanist } from "next/font/google";
+import { Manrope, Poppins } from "next/font/google";
 
 import { GuionTemaInicial } from "@appweb/ui";
 
 import "./globals.css";
 
-/**
- * Las mismas familias que la tienda, para que panel y web se lean igual:
- * Bai Jamjuree de base, Urbanist en los precios y Poppins en el contenido,
- * como /mi-cuenta.
- */
-const baiJamjuree = Bai_Jamjuree({
+/** Las mismas dos familias que la tienda (ver apps/web/src/app/layout.tsx). */
+const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
-  variable: "--fuente-base",
-  weight: ["400", "500", "600"],
-});
-
-const urbanist = Urbanist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--fuente-numeros",
-  weight: ["400", "600"],
+  variable: "--fuente-texto",
 });
 
 const poppins = Poppins({
   subsets: ["latin"],
   display: "swap",
-  variable: "--fuente-acceso",
+  variable: "--fuente-titulos",
   weight: ["400", "500", "600"],
 });
 
@@ -53,7 +41,7 @@ export default function LayoutPanel({ children }: { children: React.ReactNode })
       <head>
         <GuionTemaInicial />
       </head>
-      <body className={`${baiJamjuree.variable} ${urbanist.variable} ${poppins.variable}`}>{children}</body>
+      <body className={`${manrope.variable} ${poppins.variable}`}>{children}</body>
     </html>
   );
 }

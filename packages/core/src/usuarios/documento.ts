@@ -40,7 +40,9 @@ export function errorNumeroDocumento(tipo: TipoDocumento, numero: string): strin
   if (tipo === "CARNE_EXTRANJERIA") {
     return limpio.length <= 12 ? null : "El carné de extranjería tiene hasta 12 caracteres.";
   }
-  return limpio.length >= 6 && limpio.length <= 12 ? null : "El pasaporte tiene entre 6 y 12 caracteres.";
+  return limpio.length >= 6 && limpio.length <= 12
+    ? null
+    : "El pasaporte tiene entre 6 y 12 caracteres.";
 }
 
 /** Version corta para controles angostos, como el selector del perfil. */

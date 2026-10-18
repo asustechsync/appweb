@@ -1,0 +1,58 @@
+/* Buscador — el aspecto del componente, no su colocacion.
+   Como se coloca dentro de un contenedor es asunto de ese contenedor: mira
+   `.ui-cabecera .ui-buscador` en cabecera.css. */
+
+.ui-buscador {
+  --buscador-focus: color-mix(in srgb, var(--color-textoSuave) 58%, var(--color-borde));
+
+  display: flex;
+  align-items: center;
+  block-size: var(--control-alto);
+  min-inline-size: 0;
+  border: 0;
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-difusa);
+  transition: box-shadow var(--transicion-rapida);
+}
+/* Sin marco: la sombra difusa de las capsulas lo delimita. Al enfocar se suma
+   un halo discreto para el teclado. */
+.ui-buscador:focus-within {
+  box-shadow:
+    var(--sombra-difusa),
+    0 0 0 2px color-mix(in srgb, var(--buscador-focus) 18%, transparent);
+}
+.ui-buscador input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding-inline: var(--control-paddingX);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font: inherit;
+  /* Manrope si la app la carga; si no, la fuente heredada. */
+  font-family: var(--tipo-familia-texto);
+  font-size: var(--tipo-tamano-sm);
+}
+/* `opacity: 1` porque Firefox aplica opacidad propia al placeholder. */
+.ui-buscador input::placeholder {
+  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+  opacity: 1;
+}
+.ui-buscador button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  inline-size: var(--espacio-10);
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: var(--color-textoSuave);
+  cursor: pointer;
+  transition: color var(--transicion-rapida);
+}
+.ui-buscador button:hover {
+  color: var(--color-texto);
+}

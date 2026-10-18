@@ -1,8 +1,14 @@
 import { cacheLife, cacheTag } from "next/cache";
 
-import { opcionesDeCompra, resolverDisponibilidad, resolverNivelStock, resolverPrecio } from "@appweb/core";
+import {
+  opcionesDeCompra,
+  resolverDisponibilidad,
+  resolverNivelStock,
+  resolverPrecio,
+} from "@appweb/core";
 import type { OpcionDeTalla } from "@appweb/core";
 import { prisma } from "@appweb/db";
+import type { BannerDePortada } from "@appweb/ui";
 
 import { etiquetas } from "./cache";
 
@@ -45,14 +51,6 @@ export interface MarcaDeFicha {
   logo?: string | null;
 }
 
-export interface ContenidoColeccionPortada {
-  etiqueta: string;
-  titulo: string;
-  texto: string;
-  imagen: string;
-  href: string;
-}
-
 /**
  * Categorias de la cabecera, en el orden del panel. Etiqueta `navegacion`:
  * crear, renombrar u ordenar una categoria la invalida en todas las paginas.
@@ -70,26 +68,28 @@ export async function categoriasDeNavegacion(): Promise<{ slug: string; nombre: 
   });
 }
 
-export async function contenidoColeccionPortada(): Promise<ContenidoColeccionPortada> {
+/**
+ * Promociones del carrusel de la portada, en el orden del panel. Etiqueta
+ * `portada`: el panel la invalida al guardar un banner.
+ */
+export async function bannersDePortada(): Promise<BannerDePortada[]> {
   "use cache";
   cacheLife("hours");
   cacheTag(etiquetas.portada());
 
-  // El primer banner activo segun `orden`. Sin banners, la portada usa el texto
-  // de siempre para no quedar vacia.
-  const banner = await prisma.banner.findFirst({
+  const banners = await prisma.banner.findMany({
     where: { activo: true },
     orderBy: [{ orden: "asc" }, { creadoEn: "asc" }],
-    select: { etiqueta: true, titulo: true, texto: true, imagenUrl: true, href: true },
+    select: { etiqueta: true, titulo: true, texto: true, href: true, accion: true },
   });
 
-  return {
-    etiqueta: banner?.etiqueta ?? "Nueva colección",
-    titulo: banner?.titulo ?? "Comodidad con personalidad",
-    texto: banner?.texto ?? "Básicos cómodos para acompañarte todos los días.",
-    imagen: banner?.imagenUrl ?? "/producto.webp",
-    href: banner?.href ?? "/categorias/hombres",
-  };
+  return banners.map((banner) => ({
+    etiqueta: banner.etiqueta,
+    titulo: banner.titulo,
+    detalle: banner.texto,
+    href: banner.href,
+    accion: banner.accion,
+  }));
 }
 
 /**
@@ -326,9 +326,7 @@ export interface VarianteDeCarrito {
  * mostrar uno muy viejo llevaria a prometer unidades que ya no estan. La
  * comprobacion que manda sigue siendo la del checkout, contra MovimientoStock.
  */
-export async function varianteParaCarrito(
-  varianteId: string,
-): Promise<VarianteDeCarrito | null> {
+export async function varianteParaCarrito(varianteId: string): Promise<VarianteDeCarrito | null> {
   "use cache";
   cacheLife("minutes");
   cacheTag(etiquetas.catalogo());

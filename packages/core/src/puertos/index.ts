@@ -15,4 +15,5 @@ export type {
 export { PagoManual } from "./pago-manual";
 
 export type { Facturacion, SolicitudComprobante, ResultadoComprobante } from "./facturacion";
-export type { Notificaciones, Mensaje } from "./notificaciones";
+export type { Notificaciones, Mensaje, CanalAviso } from "./notificaciones";
+export { CorreoConsola, CorreoResend } from "./correo";

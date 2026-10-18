@@ -1,43 +1,59 @@
+// GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
+
 export type { PropsIcono } from "./tipos";
-export { IconoUsuario } from "./cuenta/IconoUsuario";
-export { IconoOjo } from "./interfaz/IconoOjo";
-export { IconoOjoTachado } from "./interfaz/IconoOjoTachado";
-export { IconoCorreo } from "./contacto/IconoCorreo";
-export { IconoCandado } from "./cuenta/IconoCandado";
-export { IconoTelefono } from "./contacto/IconoTelefono";
-export { IconoGoogle } from "./marcas/IconoGoogle";
-export { IconoApple } from "./marcas/IconoApple";
-export { IconoCarrito } from "./comercio/IconoCarrito";
-export { IconoOpciones } from "./navegacion/IconoOpciones";
-export { IconoPedidos } from "./comercio/IconoPedidos";
-export { IconoSol } from "./interfaz/IconoSol";
-export { IconoLuna } from "./interfaz/IconoLuna";
-export { IconoLlama } from "./interfaz/IconoLlama";
-export { IconoFlash } from "./interfaz/IconoFlash";
-export { IconoEstrella } from "./interfaz/IconoEstrella";
-export { IconoCamara } from "./interfaz/IconoCamara";
-export { IconoMensaje } from "./interfaz/IconoMensaje";
-export { IconoGaleria } from "./interfaz/IconoGaleria";
-export { IconoVerificado } from "./interfaz/IconoVerificado";
-export { IconoSearch } from "./navegacion/IconoSearch";
-export { IconoUbicacion } from "./cuenta/IconoUbicacion";
-export { IconoFlechaAbajo } from "./navegacion/IconoFlechaAbajo";
-export { IconoFlechaIzquierda } from "./navegacion/IconoFlechaIzquierda";
-export { IconoFlechaDerecha } from "./navegacion/IconoFlechaDerecha";
-export { IconoFlechaArriba } from "./navegacion/IconoFlechaArriba";
-export { IconoEtiqueta } from "./comercio/IconoEtiqueta";
-export { IconoPregunta } from "./contacto/IconoPregunta";
-export { IconoMoneda } from "./comercio/IconoMoneda";
-export { IconoMarca } from "./comercio/IconoMarca";
-export { IconoTicket } from "./comercio/IconoTicket";
-export { IconoTarjetaPersonal } from "./cuenta/IconoTarjetaPersonal";
-export { IconoPapelera } from "./interfaz/IconoPapelera";
-export { IconoSalir } from "./cuenta/IconoSalir";
-export { IconoSoporte } from "./contacto/IconoSoporte";
-export { IconoGlobo } from "./contacto/IconoGlobo";
-export { IconoPerfil } from "./cuenta/IconoPerfil";
-export { IconoEscudo } from "./cuenta/IconoEscudo";
-export { IconoConfiguracion } from "./cuenta/IconoConfiguracion";
-export { IconoNotificacion } from "./interfaz/IconoNotificacion";
-export { IconoPremio } from "./cuenta/IconoPremio";
-export { IconoFavorito } from "./comercio/IconoFavorito";
+
+// comercio
+export { IconoCarrito } from "./generados/IconoCarrito";
+export { IconoEtiqueta } from "./generados/IconoEtiqueta";
+export { IconoFavorito } from "./generados/IconoFavorito";
+export { IconoMarca } from "./generados/IconoMarca";
+export { IconoMoneda } from "./generados/IconoMoneda";
+export { IconoPedidos } from "./generados/IconoPedidos";
+export { IconoTicket } from "./generados/IconoTicket";
+
+// contacto
+export { IconoCorreo } from "./generados/IconoCorreo";
+export { IconoGlobo } from "./generados/IconoGlobo";
+export { IconoPregunta } from "./generados/IconoPregunta";
+export { IconoSoporte } from "./generados/IconoSoporte";
+export { IconoTelefono } from "./generados/IconoTelefono";
+
+// cuenta
+export { IconoCandado } from "./generados/IconoCandado";
+export { IconoConfiguracion } from "./generados/IconoConfiguracion";
+export { IconoEscudo } from "./generados/IconoEscudo";
+export { IconoPerfil } from "./generados/IconoPerfil";
+export { IconoPremio } from "./generados/IconoPremio";
+export { IconoSalir } from "./generados/IconoSalir";
+export { IconoTarjetaPersonal } from "./generados/IconoTarjetaPersonal";
+export { IconoUbicacion } from "./generados/IconoUbicacion";
+export { IconoUsuario } from "./generados/IconoUsuario";
+
+// interfaz
+export { IconoCamara } from "./generados/IconoCamara";
+export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
+export { IconoEstrella } from "./generados/IconoEstrella";
+export { IconoFlash } from "./generados/IconoFlash";
+export { IconoGaleria } from "./generados/IconoGaleria";
+export { IconoLlama } from "./generados/IconoLlama";
+export { IconoLuna } from "./generados/IconoLuna";
+export { IconoMensaje } from "./generados/IconoMensaje";
+export { IconoNotificacion } from "./generados/IconoNotificacion";
+export { IconoOjoTachado } from "./generados/IconoOjoTachado";
+export { IconoOjo } from "./generados/IconoOjo";
+export { IconoPapelera } from "./generados/IconoPapelera";
+export { IconoSol } from "./generados/IconoSol";
+export { IconoVerificado } from "./generados/IconoVerificado";
+
+// marcas
+export { IconoApple } from "./generados/IconoApple";
+export { IconoGoogle } from "./generados/IconoGoogle";
+export { IconoWhatsApp } from "./generados/IconoWhatsApp";
+
+// navegacion
+export { IconoBuscar } from "./generados/IconoBuscar";
+export { IconoFlechaAbajo } from "./generados/IconoFlechaAbajo";
+export { IconoFlechaArriba } from "./generados/IconoFlechaArriba";
+export { IconoFlechaDerecha } from "./generados/IconoFlechaDerecha";
+export { IconoFlechaIzquierda } from "./generados/IconoFlechaIzquierda";
+export { IconoOpciones } from "./generados/IconoOpciones";

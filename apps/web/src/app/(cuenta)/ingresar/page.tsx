@@ -19,7 +19,7 @@ interface Props {
 
 export default async function PaginaIngresar({ searchParams }: Props) {
   const { next } = await searchParams;
-  const siguiente = next && next.startsWith("/") && !next.startsWith("//") ? next : "/mi-cuenta";
+  const siguiente = next?.startsWith("/") && !next.startsWith("//") ? next : "/mi-cuenta";
 
   // Quien ya tiene sesion no ve el formulario: va directo a su destino.
   if ((await leerSesion()) !== null) redirect(siguiente);

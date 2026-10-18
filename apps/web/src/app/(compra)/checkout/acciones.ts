@@ -1,20 +1,29 @@
 "use server";
 
+import { after } from "next/server";
 import { z } from "zod";
 
 import {
-  buscarCupon,
   calcularTotales,
+  correoPedidoNuevoTienda,
+  correoPedidoRecibido,
   cubreDepartamento,
+  ETIQUETAS_MEDIO_PAGO,
   errorDocumentoComprobante,
   generarCodigoPedido,
   hayStock,
+  mensajeDeRechazoCupon,
   resolverPrecio,
+  revisarCupon,
+  type Cupon,
 } from "@appweb/core";
 import { esquemaCheckout, esquemaDireccion, esquemaLineaCarrito } from "@appweb/core/tipos";
+import { nivelDeUsuario } from "@appweb/api";
 import { prisma } from "@appweb/db";
 
+import { buscarReglaCupon } from "@/lib/cupones";
 import { direccionesDelUsuario, type DireccionDeUsuario } from "@/lib/consultas-privadas";
+import { enviarCorreo, URL_PANEL, URL_TIENDA } from "@/lib/notificaciones";
 import { pasarela } from "@/lib/pago";
 import { leerSesion } from "@/lib/sesion";
 
@@ -37,27 +46,39 @@ export interface ContactoCheckout {
   telefono: string | null;
 }
 
+/** El nivel del cliente, para mostrar su descuento antes de confirmar. */
+export interface NivelCheckout {
+  nombre: string;
+  descuentoPct: number;
+}
+
 export interface SesionCheckout {
   sesion: ContactoCheckout | null;
   direcciones: DireccionDeUsuario[];
+  nivel: NivelCheckout | null;
 }
 
 export async function sesionYDireccionesCheckout(): Promise<SesionCheckout> {
   const sesion = await leerSesion();
-  if (!sesion) return { sesion: null, direcciones: [] };
+  if (!sesion) return { sesion: null, direcciones: [], nivel: null };
 
-  const [usuario, direcciones] = await Promise.all([
+  const [usuario, direcciones, estadoNivel] = await Promise.all([
     prisma.usuario.findUnique({
       where: { id: sesion.usuarioId },
       select: { email: true, telefono: true },
     }),
     direccionesDelUsuario(sesion.usuarioId),
+    nivelDeUsuario(prisma, sesion.usuarioId),
   ]);
-  if (!usuario) return { sesion: null, direcciones: [] };
+  if (!usuario) return { sesion: null, direcciones: [], nivel: null };
 
   return {
     sesion: { nombre: sesion.nombre, email: usuario.email, telefono: usuario.telefono },
     direcciones,
+    nivel: {
+      nombre: estadoNivel.nivel.nombre,
+      descuentoPct: estadoNivel.nivel.descuentoPct,
+    },
   };
 }
 
@@ -209,13 +230,26 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
   }
 
   // El descuento se recalcula aqui: el navegador solo manda el codigo.
-  const cuponValido = buscarCupon(cupon);
-  if (cupon && !cuponValido) {
-    return { ok: false, error: "El código promocional no es válido. Quítalo para continuar." };
+  const subtotalBase = calcularTotales(itemsPedido).subtotal;
+  const regla = cupon ? await buscarReglaCupon(cupon) : null;
+  let cuponValido: Cupon | null = null;
+  if (cupon) {
+    const revision = revisarCupon(regla, { subtotal: subtotalBase });
+    if ("rechazo" in revision) {
+      return {
+        ok: false,
+        error: `${mensajeDeRechazoCupon(revision.rechazo, regla)} Quítalo para continuar.`,
+      };
+    }
+    cuponValido = revision.cupon;
   }
+
+  // El nivel se lee de los pedidos del cliente; cupon y nivel no se suman.
+  const { nivel } = await nivelDeUsuario(prisma, sesion.usuarioId);
 
   const totales = calcularTotales(itemsPedido, {
     cupon: cuponValido,
+    descuentoNivelPct: nivel.descuentoPct,
     metodoEnvio: {
       costo: Number(metodoEnvio.costo),
       gratisDesde: metodoEnvio.gratisDesde !== null ? Number(metodoEnvio.gratisDesde) : null,
@@ -223,48 +257,67 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
   });
 
   const codigo = generarCodigoPedido();
+  // El cupon se consume solo si fue el que descontó (si ganó el nivel, queda libre).
+  const reglaUsada = totales.origenDescuento === "cupon" ? regla : null;
+  const notaCreacion =
+    totales.origenDescuento === "nivel"
+      ? `Pedido creado en el checkout. Descuento de nivel ${nivel.nombre} (${nivel.descuentoPct}%)`
+      : "Pedido creado en el checkout";
 
-  const pedido = await prisma.pedido.create({
-    data: {
-      codigo,
-      usuarioId: sesion.usuarioId,
-      subtotal: totales.subtotal,
-      descuento: totales.descuento,
-      costoEnvio: totales.costoEnvio ?? 0,
-      total: totales.total,
-      envioDepartamento: direccion.departamento,
-      envioProvincia: direccion.provincia,
-      envioDistrito: direccion.distrito,
-      envioCalle: direccion.calle,
-      envioReferencia: direccion.referencia,
-      envioMetodo: metodoEnvio.nombre,
-      envioDestinatario: direccion.destinatario ?? usuario.nombre,
-      envioTelefono: direccion.telefono ?? usuario.telefono,
-      cuponCodigo: cuponValido?.codigo ?? null,
-      comprobante: comprobante === "factura" ? "FACTURA" : "BOLETA",
-      documento,
-      razonSocial: razonSocial ?? null,
-      medioPago: MEDIO_A_ENUM[medioPago],
-      items: {
-        create: itemsPedido.map((item) => ({
-          varianteId: item.varianteId,
-          nombreProducto: item.nombreProducto,
-          sku: item.sku,
-          talla: item.talla,
-          color: item.color,
-          precioUnitario: item.precioUnitario,
-          cantidad: item.cantidad,
-        })),
+  const pedido = await prisma.$transaction(async (tx) => {
+    if (reglaUsada) {
+      // Un uso mas, solo si queda alguno: dos compras a la vez no pasan del tope.
+      const sumado = await tx.$executeRaw`
+        UPDATE "cupones" SET "usos" = "usos" + 1, "editadoEn" = now()
+        WHERE "id" = ${reglaUsada.id}
+          AND ("usosMaximos" IS NULL OR "usos" < "usosMaximos")`;
+      if (sumado === 0) return null;
+    }
+    return tx.pedido.create({
+      data: {
+        codigo,
+        usuarioId: sesion.usuarioId,
+        subtotal: totales.subtotal,
+        descuento: totales.descuento,
+        costoEnvio: totales.costoEnvio ?? 0,
+        total: totales.total,
+        envioDepartamento: direccion.departamento,
+        envioProvincia: direccion.provincia,
+        envioDistrito: direccion.distrito,
+        envioCalle: direccion.calle,
+        envioReferencia: direccion.referencia,
+        envioMetodo: metodoEnvio.nombre,
+        envioDestinatario: direccion.destinatario ?? usuario.nombre,
+        envioTelefono: direccion.telefono ?? usuario.telefono,
+        cuponCodigo: reglaUsada?.codigo ?? null,
+        comprobante: comprobante === "factura" ? "FACTURA" : "BOLETA",
+        documento,
+        razonSocial: razonSocial ?? null,
+        medioPago: MEDIO_A_ENUM[medioPago],
+        items: {
+          create: itemsPedido.map((item) => ({
+            varianteId: item.varianteId,
+            nombreProducto: item.nombreProducto,
+            sku: item.sku,
+            talla: item.talla,
+            color: item.color,
+            precioUnitario: item.precioUnitario,
+            cantidad: item.cantidad,
+          })),
+        },
+        // El pago nace pendiente; el panel lo confirma con su referencia.
+        pagos: {
+          create: { medio: MEDIO_A_ENUM[medioPago], monto: totales.total },
+        },
+        historial: {
+          create: { estadoNuevo: "PENDIENTE_PAGO", nota: notaCreacion },
+        },
       },
-      // El pago nace pendiente; el panel lo confirma con su referencia.
-      pagos: {
-        create: { medio: MEDIO_A_ENUM[medioPago], monto: totales.total },
-      },
-      historial: {
-        create: { estadoNuevo: "PENDIENTE_PAGO", nota: "Pedido creado en el checkout" },
-      },
-    },
+    });
   });
+  if (pedido === null) {
+    return { ok: false, error: `${mensajeDeRechazoCupon("agotado")} Quítalo para continuar.` };
+  }
 
   await pasarela.cobrar({
     pedidoId: pedido.id,
@@ -272,6 +325,33 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     monto: totales.total,
     medio: medioPago,
     emailCliente: usuario.email,
+  });
+
+  // Los correos salen despues de responder: el cliente no espera a Resend, y
+  // si el correo falla el pedido ya quedo creado igual.
+  const medio = ETIQUETAS_MEDIO_PAGO[MEDIO_A_ENUM[medioPago]];
+  after(async () => {
+    const alCliente = correoPedidoRecibido({
+      nombre: usuario.nombre,
+      codigo: pedido.codigo,
+      total: totales.total,
+      medioPago: medio,
+      enlace: `${URL_TIENDA}/pedido/${pedido.codigo}`,
+    });
+    await enviarCorreo(usuario.email, alCliente.asunto, alCliente.cuerpo);
+
+    const tienda = process.env["NOTIFICAR_PEDIDOS_A"];
+    if (tienda) {
+      const aviso = correoPedidoNuevoTienda({
+        codigo: pedido.codigo,
+        total: totales.total,
+        cliente: usuario.nombre,
+        medioPago: medio,
+        departamento: direccion.departamento,
+        enlacePanel: `${URL_PANEL}/pedidos`,
+      });
+      await enviarCorreo(tienda, aviso.asunto, aviso.cuerpo);
+    }
   });
 
   return { ok: true, codigo: pedido.codigo };

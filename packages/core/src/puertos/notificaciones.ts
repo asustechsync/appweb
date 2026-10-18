@@ -1,8 +1,9 @@
 /**
  * PUERTO — Avisos al cliente (correo, WhatsApp, SMS).
  *
- * Sin implementar. Cuando entre, los cambios de estado del pedido la llamaran
- * desde un solo sitio: `pedidos/estados.ts`, no desde cada pantalla.
+ * Implementaciones en ./correo.ts: `CorreoResend` (envio real) y
+ * `CorreoConsola` (desarrollo, imprime en la terminal). Cada app elige cual
+ * en un solo archivo, como con la pasarela de pago.
  */
 
 export type CanalAviso = "correo" | "whatsapp" | "sms";

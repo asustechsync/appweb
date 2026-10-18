@@ -12,8 +12,8 @@ export default function PaginaGuiaTallas() {
   return (
     <PaginaInformativa titulo="Guía de Tallas">
       <p>
-        Toma la medida de cintura o de pie antes de comprar. Si tu medida cae entre dos
-        tallas, elige la mayor.
+        Toma la medida de cintura o de pie antes de comprar. Si tu medida cae entre dos tallas,
+        elige la mayor.
       </p>
 
       <h2>Boxers y calzones — adultos</h2>
@@ -78,9 +78,7 @@ export default function PaginaGuiaTallas() {
       </div>
 
       <h2>Medias</h2>
-      <p>
-        La talla de medias se mide por el número de calzado, no por edad ni por cintura.
-      </p>
+      <p>La talla de medias se mide por el número de calzado, no por edad ni por cintura.</p>
       <div className="ui-pagina-informativa__tabla-envoltorio">
         <table>
           <thead>

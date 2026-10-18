@@ -31,6 +31,12 @@ Antes de crear una pantalla, decide su clase. La clase decide render y cache.
 7. **El precio y la direccion se congelan en el pedido.** `ItemPedido` guarda
    nombre, talla, color y precio; `Pedido` copia la direccion. Si mañana
    cambian, la venta de ayer no se altera.
+8. **Dos fuentes, cargadas solo en el layout raiz:** Manrope
+   (`--tipo-familia-texto`) y Poppins (`--tipo-familia-titulos`). Ningun
+   layout ni pagina carga fuentes propias.
+9. **Los iconos se crean como `.svg`** en `packages/ui/src/iconos/fuente/<categoria>/`
+   y se generan con `npm run ui:iconos`. `iconos/generados/` no se edita a mano.
+   Solo `marcas/` puede tener colores propios; el resto usa `currentColor`.
 
 ## Donde va cada archivo
 
@@ -51,6 +57,7 @@ Si si, va en `packages/`. Si no, va en `apps/`.
 - Codigo, comentarios, nombres de variables y mensajes de commit **en español**.
 - FIRST MOBILE: los estilos base son de movil; los quiebres solo añaden.
 - Tras `npm run build` hay que reiniciar `npm run dev`.
+- Antes de un commit: `npm run revisar`, `npm run typecheck` y `npm run prueba`.
 
 ## Integraciones aplazadas
 

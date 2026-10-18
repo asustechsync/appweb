@@ -9,18 +9,26 @@ import { z } from "zod";
 
 import { errorNumeroDocumento, TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
+import { ESTADOS_PEDIDO } from "../pedidos/estados";
+import { TIPOS_MOVIMIENTO_MANUAL } from "../stock/manual";
 import { ROLES } from "../usuarios/permisos";
 import { REQUISITOS_CLAVE } from "../usuarios/requisitos-clave";
 
 // ── Cuenta ─────────────────────────────────────────────────────────────────
 
+/** La clave, igual en registro, panel y recuperacion. */
+const esquemaClave = z
+  .string()
+  .max(72)
+  .refine(
+    (c) => REQUISITOS_CLAVE.every((r) => r.cumple(c)),
+    "La contraseña no cumple los requisitos",
+  );
+
 export const esquemaRegistro = z.object({
   nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
   email: z.email("Escribe un correo válido").toLowerCase(),
-  clave: z
-    .string()
-    .max(72)
-    .refine((c) => REQUISITOS_CLAVE.every((r) => r.cumple(c)), "La contraseña no cumple los requisitos"),
+  clave: esquemaClave,
   telefono: z
     .string()
     .trim()
@@ -31,6 +39,12 @@ export const esquemaRegistro = z.object({
 /** Recuperacion de clave: solo pide el correo. */
 export const esquemaRecuperacion = z.object({
   email: z.email("Escribe un correo válido").toLowerCase(),
+});
+
+/** Clave nueva desde el enlace del correo. */
+export const esquemaNuevaClave = z.object({
+  token: z.string().min(10, "El enlace no es válido"),
+  clave: esquemaClave,
 });
 
 /** Autorregistro publico: correo, contraseña y telefono (obligatorio). El
@@ -53,32 +67,49 @@ export const esquemaIngreso = z.object({
 /** Actualizacion del perfil desde /mi-cuenta. El tipo y numero de documento
     van juntos o no van: uno sin el otro no sirve para precargar el checkout
     ni para identificar al cliente. */
-export const esquemaPerfil = z.object({
-  nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
-  apellidoPaterno: z.string().trim().min(2, "Escribe tu apellido paterno").max(80, "El apellido es demasiado largo").optional(),
-  apellidoMaterno: z.string().trim().min(2, "Escribe tu apellido materno").max(80, "El apellido es demasiado largo").optional(),
-  apodo: z.string().trim().min(2, "El apodo debe tener al menos 2 caracteres").max(30, "El apodo es demasiado largo").optional(),
-  telefono: z
-    .string()
-    .trim()
-    .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos")
-    .optional(),
-  tipoDocumento: z.enum(TIPOS_DOCUMENTO).optional(),
-  numeroDocumento: z.string().trim().optional(),
-  fechaNacimiento: z
-    .string()
-    .trim()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha de nacimiento no es válida")
-    .optional(),
-  genero: z.enum(GENEROS).optional(),
-}).superRefine((datos, ctx) => {
-  const mensaje = !datos.tipoDocumento
-    ? datos.numeroDocumento
-      ? "Elige el tipo de documento."
-      : null
-    : errorNumeroDocumento(datos.tipoDocumento, datos.numeroDocumento ?? "");
-  if (mensaje) ctx.addIssue({ code: "custom", message: mensaje, path: ["numeroDocumento"] });
-});
+export const esquemaPerfil = z
+  .object({
+    nombre: z.string().trim().min(2, "Escribe tu nombre").max(80),
+    apellidoPaterno: z
+      .string()
+      .trim()
+      .min(2, "Escribe tu apellido paterno")
+      .max(80, "El apellido es demasiado largo")
+      .optional(),
+    apellidoMaterno: z
+      .string()
+      .trim()
+      .min(2, "Escribe tu apellido materno")
+      .max(80, "El apellido es demasiado largo")
+      .optional(),
+    apodo: z
+      .string()
+      .trim()
+      .min(2, "El apodo debe tener al menos 2 caracteres")
+      .max(30, "El apodo es demasiado largo")
+      .optional(),
+    telefono: z
+      .string()
+      .trim()
+      .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos")
+      .optional(),
+    tipoDocumento: z.enum(TIPOS_DOCUMENTO).optional(),
+    numeroDocumento: z.string().trim().optional(),
+    fechaNacimiento: z
+      .string()
+      .trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha de nacimiento no es válida")
+      .optional(),
+    genero: z.enum(GENEROS).optional(),
+  })
+  .superRefine((datos, ctx) => {
+    const mensaje = !datos.tipoDocumento
+      ? datos.numeroDocumento
+        ? "Elige el tipo de documento."
+        : null
+      : errorNumeroDocumento(datos.tipoDocumento, datos.numeroDocumento ?? "");
+    if (mensaje) ctx.addIssue({ code: "custom", message: mensaje, path: ["numeroDocumento"] });
+  });
 
 // ── Usuarios (panel) ───────────────────────────────────────────────────────
 
@@ -98,39 +129,216 @@ export const esquemaCambioActivo = z.object({
   activo: z.boolean(),
 });
 
+export const esquemaIdUsuario = z.object({
+  usuarioId: z.string().min(1),
+});
+
+/** Datos de contacto que corrige el panel. El perfil completo lo edita el cliente. */
+export const esquemaEdicionUsuario = z.object({
+  usuarioId: z.string().min(1),
+  nombre: z.string().trim().min(2, "Escribe el nombre").max(80),
+  email: z.email("Escribe un correo válido").toLowerCase(),
+  telefono: z
+    .string()
+    .trim()
+    .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos")
+    .nullable(),
+});
+
+/** Clave nueva que pone el panel (la persona la cambia despues desde su cuenta). */
+export const esquemaClavePanel = z.object({
+  usuarioId: z.string().min(1),
+  clave: esquemaClave,
+});
+
+// ── Pedidos (panel) ────────────────────────────────────────────────────────
+
+export const esquemaFiltroPedidos = z.object({
+  /** Sin estado: todos. */
+  estado: z.enum(ESTADOS_PEDIDO).optional(),
+});
+
+export const esquemaIdPedido = z.object({
+  pedidoId: z.string().min(1),
+});
+
+export const esquemaConfirmarPago = z.object({
+  pedidoId: z.string().min(1),
+  pagoId: z.string().min(1),
+  referencia: z
+    .string()
+    .trim()
+    .min(1, "Escribe el número de operación del pago")
+    .max(40, "El número de operación es demasiado largo"),
+  nota: z.string().trim().max(200, "La nota es demasiado larga").optional(),
+});
+
+export const esquemaCambioEstadoPedido = z.object({
+  pedidoId: z.string().min(1),
+  estado: z.enum(ESTADOS_PEDIDO),
+  nota: z.string().trim().max(200, "La nota es demasiado larga").optional(),
+  /** Solo al marcar ENVIADO. */
+  transportista: z.string().trim().max(60).optional(),
+  codigoSeguimiento: z.string().trim().max(60).optional(),
+});
+
+// ── Envios (panel) ─────────────────────────────────────────────────────────
+
+/** Metodo de envio. Sin `metodoId` se crea uno nuevo. */
+export const esquemaMetodoEnvio = z.object({
+  metodoId: z.string().min(1).optional(),
+  nombre: z.string().trim().min(3, "Escribe el nombre del método").max(60),
+  costo: z.number({ error: "Escribe el costo" }).min(0, "El costo no puede ser negativo").max(9999),
+  gratisDesde: z.number().min(0, "No puede ser negativo").max(99999).nullable(),
+  /** Vacio = todo el pais. */
+  departamentos: z.array(z.string().trim().min(1).max(40)).max(30),
+  activo: z.boolean(),
+  orden: z.number().int().min(0).max(999),
+});
+
+// ── Promociones (panel) ────────────────────────────────────────────────────
+
+/** Ruta interna: "/envios", "/categorias/hombres", "/#ofertas". Nunca otro sitio. */
+const rutaInterna = z
+  .string()
+  .trim()
+  .regex(/^\/(?!\/)[a-zA-Z0-9/_#-]*$/, "Usa una ruta de la tienda que empiece con /");
+
+/** Banner del carrusel de la portada. Sin `bannerId` se crea uno nuevo. */
+export const esquemaBanner = z.object({
+  bannerId: z.string().min(1).optional(),
+  etiqueta: z.string().trim().min(1, "Escribe la etiqueta").max(40, "Máximo 40 caracteres"),
+  titulo: z.string().trim().min(1, "Escribe el título").max(80, "Máximo 80 caracteres"),
+  texto: z.string().trim().min(1, "Escribe el detalle").max(140, "Máximo 140 caracteres"),
+  accion: z.string().trim().min(1, "Escribe el texto del botón").max(30, "Máximo 30 caracteres"),
+  href: rutaInterna,
+  orden: z.number().int().min(0).max(999),
+  activo: z.boolean(),
+});
+
+/** Fecha del panel ("2026-12-31") o vacia. */
+const fechaOpcional = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Usa una fecha válida")
+  .nullable();
+
+/** Cupon de descuento. Sin `cuponId` se crea uno nuevo. */
+export const esquemaCupon = z
+  .object({
+    cuponId: z.string().min(1).optional(),
+    codigo: z
+      .string()
+      .trim()
+      .toUpperCase()
+      .regex(/^[A-Z0-9_-]{3,30}$/, "De 3 a 30 letras o números, sin espacios"),
+    porcentaje: z
+      .number({ error: "Escribe el porcentaje" })
+      .int("Usa un número entero")
+      .min(1, "Mínimo 1%")
+      .max(100, "Máximo 100%"),
+    minimoCompra: z.number().min(0).max(99999).nullable(),
+    usosMaximos: z.number().int().min(1, "Mínimo 1 uso").max(1000000).nullable(),
+    desde: fechaOpcional,
+    hasta: fechaOpcional,
+    activo: z.boolean(),
+  })
+  .refine((c) => c.desde === null || c.hasta === null || c.desde <= c.hasta, {
+    message: "La fecha final tiene que ser posterior a la inicial",
+    path: ["hasta"],
+  });
+
 // ── Direccion ──────────────────────────────────────────────────────────────
 
 export const esquemaDireccion = z.object({
   departamento: z.string().trim().min(1, "Elige el departamento"),
   provincia: z.string().trim().min(1, "Elige la provincia"),
   distrito: z.string().trim().min(1, "Elige el distrito"),
-  calle: z.string().trim().min(5, "Escribe la dirección completa").max(200, "La dirección es demasiado larga"),
+  calle: z
+    .string()
+    .trim()
+    .min(5, "Escribe la dirección completa")
+    .max(200, "La dirección es demasiado larga"),
   referencia: z.string().trim().max(200, "La referencia es demasiado larga").optional(),
   principal: z.boolean().default(false),
 });
 
 // ── Catalogo (panel) ───────────────────────────────────────────────────────
 
-export const esquemaProducto = z.object({
-  slug: z
-    .string()
-    .trim()
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Solo minusculas, numeros y guiones"),
-  nombre: z.string().trim().min(3).max(140),
-  descripcion: z.string().trim().max(4000).optional(),
-  marcaId: z.string().optional(),
-  categoriaId: z.string().min(1, "Elige una categoria"),
-  precio: z.number().positive("El precio tiene que ser mayor que cero"),
-  precioLista: z.number().positive().nullable().optional(),
-  activo: z.boolean().default(true),
+const textoOpcional = (maximo: number, mensaje: string) =>
+  z.string().trim().max(maximo, mensaje).optional();
+
+/** Alta y edicion de producto. El precio anterior, si hay, tiene que ser mayor
+    (es lo que lo vuelve "oferta"); la base tiene el mismo CHECK. */
+export const esquemaProducto = z
+  .object({
+    nombre: z
+      .string()
+      .trim()
+      .min(3, "Escribe el nombre del producto")
+      .max(140, "El nombre es demasiado largo"),
+    slug: z
+      .string()
+      .trim()
+      .min(3, "La dirección web es demasiado corta")
+      .max(80, "La dirección web es demasiado larga")
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Solo minúsculas, números y guiones"),
+    categoriaId: z.string().min(1, "Elige una categoría"),
+    marcaId: z.string().min(1).nullable().optional(),
+    precio: z
+      .number({ error: "Escribe el precio" })
+      .positive("El precio tiene que ser mayor que cero")
+      .max(99999, "El precio es demasiado alto"),
+    precioLista: z.number().positive().max(99999).nullable().optional(),
+    descripcionCorta: textoOpcional(160, "El resumen admite hasta 160 caracteres"),
+    descripcion: textoOpcional(4000, "La descripción es demasiado larga"),
+    etiqueta: textoOpcional(20, "La insignia admite hasta 20 caracteres"),
+    destacado: z.boolean().default(false),
+    activo: z.boolean().default(true),
+  })
+  .refine((p) => p.precioLista == null || p.precioLista > p.precio, {
+    message: "El precio anterior tiene que ser mayor que el precio actual",
+    path: ["precioLista"],
+  });
+
+export const esquemaEdicionProducto = z.object({
+  productoId: z.string().min(1),
+  datos: esquemaProducto,
 });
 
-export const esquemaVariante = z.object({
-  talla: z.string().trim().min(1).max(12),
-  color: z.string().trim().min(1).max(40),
-  sku: z.string().trim().min(1).max(40),
-  stock: z.number().int().min(0, "El stock no puede ser negativo"),
-  activo: z.boolean().default(true),
+/** Variante nueva. El SKU lo arma `skuDeVariante`; el stock inicial entra
+    como un INGRESO, nunca escrito directo en la columna. */
+export const esquemaVarianteNueva = z.object({
+  productoId: z.string().min(1),
+  talla: z.string().trim().min(1, "Escribe la talla").max(12, "La talla es demasiado larga"),
+  color: z.string().trim().min(1, "Escribe el color").max(40, "El color es demasiado largo"),
+  stockInicial: z
+    .number({ error: "Escribe el stock inicial" })
+    .int("El stock tiene que ser un número entero")
+    .min(0, "El stock no puede ser negativo")
+    .max(100000),
+});
+
+export const esquemaCambioActivoVariante = z.object({
+  varianteId: z.string().min(1),
+  activo: z.boolean(),
+});
+
+// ── Stock (panel) ──────────────────────────────────────────────────────────
+
+/** Ingreso, ajuste por conteo o merma. Lo demas lo revisa `planMovimientoManual`. */
+export const esquemaMovimientoStock = z.object({
+  varianteId: z.string().min(1),
+  tipo: z.enum(TIPOS_MOVIMIENTO_MANUAL),
+  cantidad: z
+    .number({ error: "Escribe la cantidad" })
+    .int("La cantidad tiene que ser un número entero")
+    .min(0, "La cantidad no puede ser negativa")
+    .max(100000),
+  nota: z.string().trim().max(200, "La nota es demasiado larga").optional(),
+});
+
+export const esquemaIdVariante = z.object({
+  varianteId: z.string().min(1),
 });
 
 // ── Compra ─────────────────────────────────────────────────────────────────
@@ -163,5 +371,6 @@ export type DatosPerfil = z.infer<typeof esquemaPerfil>;
 export type DatosUsuarioPanel = z.infer<typeof esquemaUsuarioPanel>;
 export type DatosDireccion = z.infer<typeof esquemaDireccion>;
 export type DatosProducto = z.infer<typeof esquemaProducto>;
-export type DatosVariante = z.infer<typeof esquemaVariante>;
+export type DatosVarianteNueva = z.infer<typeof esquemaVarianteNueva>;
+export type DatosMovimientoStock = z.infer<typeof esquemaMovimientoStock>;
 export type DatosCheckout = z.infer<typeof esquemaCheckout>;

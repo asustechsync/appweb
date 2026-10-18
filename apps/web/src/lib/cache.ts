@@ -29,9 +29,5 @@ export const etiquetas = {
 
 /** Etiquetas a invalidar cuando se guarda un producto desde el panel. */
 export function etiquetasDeProducto(slug: string, slugCategoria: string): string[] {
-  return [
-    etiquetas.producto(slug),
-    etiquetas.categoria(slugCategoria),
-    etiquetas.portada(),
-  ];
+  return [etiquetas.producto(slug), etiquetas.categoria(slugCategoria), etiquetas.portada()];
 }

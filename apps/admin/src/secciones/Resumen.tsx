@@ -45,8 +45,7 @@ export function Resumen() {
 
   const { alertas, metricas, ultimosPedidos, ultimosUsuarios, dias } = datos.data;
   const contexto = `vs. ${dias} días previos`;
-  const hayAlertas =
-    alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
+  const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
   return (
     <>
@@ -134,9 +133,7 @@ export function Resumen() {
             <FilaLista
               key={pedido.id}
               acciones={
-                <Insignia tono={tonoDeEstado(pedido.estado)}>
-                  {ETIQUETAS[pedido.estado]}
-                </Insignia>
+                <Insignia tono={tonoDeEstado(pedido.estado)}>{ETIQUETAS[pedido.estado]}</Insignia>
               }
             >
               <strong>{pedido.codigo}</strong>

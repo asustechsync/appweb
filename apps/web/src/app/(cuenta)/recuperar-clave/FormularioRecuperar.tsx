@@ -6,20 +6,20 @@ import Link from "next/link";
 import { esquemaRecuperacion } from "@appweb/core/tipos";
 import { Alerta, Boton, Campo, DisposicionAcceso, Formulario, IconoCorreo } from "@appweb/ui";
 
+import { pedirRecuperacion } from "./acciones";
+
 /**
- * Pide el correo para recuperar la contraseña.
- *
- * Aun no envia nada: el envio de correos (`puertos/notificaciones.ts`) es una
- * integracion aplazada. Por ahora solo muestra la confirmacion; cuando exista
- * el puerto, `enviar` llamara a una accion del servidor. La respuesta es la
- * misma exista o no el correo, para no revelar que cuentas hay.
+ * Pide el correo para recuperar la contraseña. La respuesta es la misma
+ * exista o no la cuenta, para no revelar quien esta registrado: eso lo decide
+ * `pedirRecuperacion`, aqui solo se valida el formato.
  */
 export function FormularioRecuperar() {
   const [email, setEmail] = useState("");
   const [enviado, setEnviado] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function enviar(evento: React.FormEvent) {
+  async function enviar(evento: React.FormEvent) {
     evento.preventDefault();
     const analizado = esquemaRecuperacion.safeParse({ email });
     if (!analizado.success) {
@@ -27,6 +27,13 @@ export function FormularioRecuperar() {
       return;
     }
     setError(null);
+    setEnviando(true);
+    const resultado = await pedirRecuperacion({ email });
+    setEnviando(false);
+    if (!resultado.ok) {
+      setError(resultado.error ?? "No se pudo enviar. Inténtalo de nuevo.");
+      return;
+    }
     setEnviado(true);
   }
 
@@ -37,7 +44,8 @@ export function FormularioRecuperar() {
     >
       {enviado ? (
         <Alerta tono="exito" centrada>
-          <strong>Revisa tu correo.</strong> Si {email} está registrado, te enviamos un enlace.
+          <strong>Revisa tu correo.</strong> Si {email} está registrado, te enviamos un enlace que
+          vale 1 hora.
         </Alerta>
       ) : (
         <Formulario onSubmit={enviar}>
@@ -54,8 +62,8 @@ export function FormularioRecuperar() {
             etiquetaOculta
             requerido
           />
-          <Boton tipo="submit" anchoCompleto>
-            Enviar enlace
+          <Boton tipo="submit" anchoCompleto disabled={enviando}>
+            {enviando ? "Enviando…" : "Enviar enlace"}
           </Boton>
         </Formulario>
       )}

@@ -36,8 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // `tituloSeo` se escribe completo en el panel ("... | Tienda"), asi que va
   // como `absolute`: pasarlo por la plantilla del layout raiz lo dejaria con
   // el sufijo dos veces. Sin tituloSeo si usamos la plantilla.
-  const title =
-    producto.tituloSeo !== null ? { absolute: producto.tituloSeo } : producto.nombre;
+  const title = producto.tituloSeo !== null ? { absolute: producto.tituloSeo } : producto.nombre;
 
   return descripcion !== null ? { title, description: descripcion } : { title };
 }
@@ -49,40 +48,38 @@ export default async function PaginaProducto({ params }: Props) {
   if (producto === null) notFound();
 
   return (
-    <>
-      <main>
-        <Contenedor>
-          <Migas
-            tramos={[
-              { nombre: "Inicio", href: "/" },
-              ...(producto.categoria.padre
-                ? [
-                    {
-                      nombre: producto.categoria.padre.nombre,
-                      href: `/categorias/${producto.categoria.padre.slug}`,
-                    },
-                  ]
-                : []),
-              { nombre: producto.categoria.nombre, href: `/categorias/${producto.categoria.slug}` },
-              { nombre: producto.nombre },
-            ]}
-          />
-          <FichaProductoCliente
-            nombre={producto.nombre}
-            marca={producto.marca}
-            descripcion={producto.descripcion}
-            imagenes={producto.imagenes}
-            precio={producto.precio}
-            precioLista={producto.precioLista}
-            descuentoPct={producto.descuentoPct}
-            disponible={producto.disponible}
-            stockBajo={producto.stockBajo}
-            stockTotal={producto.stockTotal}
-            opciones={producto.opciones}
-            extras={<SeccionesFicha />}
-          />
-        </Contenedor>
-      </main>
-    </>
+    <main>
+      <Contenedor>
+        <Migas
+          tramos={[
+            { nombre: "Inicio", href: "/" },
+            ...(producto.categoria.padre
+              ? [
+                  {
+                    nombre: producto.categoria.padre.nombre,
+                    href: `/categorias/${producto.categoria.padre.slug}`,
+                  },
+                ]
+              : []),
+            { nombre: producto.categoria.nombre, href: `/categorias/${producto.categoria.slug}` },
+            { nombre: producto.nombre },
+          ]}
+        />
+        <FichaProductoCliente
+          nombre={producto.nombre}
+          marca={producto.marca}
+          descripcion={producto.descripcion}
+          imagenes={producto.imagenes}
+          precio={producto.precio}
+          precioLista={producto.precioLista}
+          descuentoPct={producto.descuentoPct}
+          disponible={producto.disponible}
+          stockBajo={producto.stockBajo}
+          stockTotal={producto.stockTotal}
+          opciones={producto.opciones}
+          extras={<SeccionesFicha />}
+        />
+      </Contenedor>
+    </main>
   );
 }

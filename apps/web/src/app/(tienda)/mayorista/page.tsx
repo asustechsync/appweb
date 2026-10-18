@@ -14,8 +14,8 @@ export default function PaginaMayorista() {
   return (
     <PaginaInformativa titulo="Ventas al por mayor">
       <p>
-        Si necesitas boxers, calzones, medias o accesorios en volumen —para tu colegio,
-        empresa o negocio de reventa— tenemos precios especiales por cantidad.
+        Si necesitas boxers, calzones, medias o accesorios en volumen —para tu colegio, empresa o
+        negocio de reventa— tenemos precios especiales por cantidad.
       </p>
 
       <h2>¿Para quién es?</h2>
@@ -27,8 +27,8 @@ export default function PaginaMayorista() {
 
       <h2>¿Cómo funciona?</h2>
       <p>
-        Escríbenos con la cantidad y los productos que necesitas. Te respondemos con precio,
-        tiempo de entrega y forma de pago para tu pedido.
+        Escríbenos con la cantidad y los productos que necesitas. Te respondemos con precio, tiempo
+        de entrega y forma de pago para tu pedido.
       </p>
 
       <a

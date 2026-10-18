@@ -55,15 +55,17 @@ export function SeccionesFicha() {
         {
           titulo: "Formas de pago",
           contenido: (
-            <p>Yape, Plin o transferencia bancaria. Te enviamos los datos al confirmar el pedido.</p>
+            <p>
+              Yape, Plin o transferencia bancaria. Te enviamos los datos al confirmar el pedido.
+            </p>
           ),
         },
         {
           titulo: "Cambios y devoluciones",
           contenido: (
             <p>
-              Por higiene, la ropa interior solo se cambia sin abrir y con su empaque original, dentro
-              de los 7 días de recibida.
+              Por higiene, la ropa interior solo se cambia sin abrir y con su empaque original,
+              dentro de los 7 días de recibida.
             </p>
           ),
         },

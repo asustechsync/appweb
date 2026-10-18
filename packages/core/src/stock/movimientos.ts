@@ -23,10 +23,7 @@ export interface LineaVendida {
 }
 
 /** Movimientos que genera un pedido al pagarse. */
-export function movimientosPorVenta(
-  lineas: LineaVendida[],
-  pedidoId: string,
-): MovimientoNuevo[] {
+export function movimientosPorVenta(lineas: LineaVendida[], pedidoId: string): MovimientoNuevo[] {
   return lineas.map((linea) => ({
     varianteId: linea.varianteId,
     delta: -Math.abs(linea.cantidad),

@@ -281,8 +281,9 @@ model ImagenProducto {
 // ═══ CONTENIDO ═════════════════════════════════════════════════════════════
 
 // Banners de la portada. Antes vivian como cinco columnas `portada*` dentro de
-// Categoria, que es una tabla de catalogo. Hoy la portada muestra el primero
-// activo segun `orden`; con mas banners se vuelve un carrusel sin tocar nada.
+// Categoria, que es una tabla de catalogo. La portada los muestra todos los
+// activos, por `orden`, en el carrusel superior (texto sobre tono pastel; la
+// imagen no se usa hoy). El panel los edita en Ajustes.
 model Banner {
   id        String   @id @default(cuid())
   etiqueta  String
@@ -291,6 +292,8 @@ model Banner {
   imagenUrl String
   // Ruta interna a la que lleva el banner, p. ej. "/categorias/hombres".
   href      String
+  // Texto del boton: "Ver ofertas", "Conocer envios".
+  accion    String   @default("Ver más")
   orden     Int      @default(0)
   activo    Boolean  @default(true)
   creadoEn  DateTime @default(now())

@@ -59,10 +59,7 @@ export function cambiarCantidad(
   );
 }
 
-export function quitarDelCarrito(
-  lineas: LineaGuardada[],
-  varianteId: string,
-): LineaGuardada[] {
+export function quitarDelCarrito(lineas: LineaGuardada[], varianteId: string): LineaGuardada[] {
   return lineas.filter((linea) => linea.varianteId !== varianteId);
 }
 

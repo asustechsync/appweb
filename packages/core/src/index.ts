@@ -20,6 +20,8 @@ export {
   type OpcionDeTalla,
 } from "./catalogo/variantes";
 
+export { IMAGEN_DEMO, slugDesdeTexto, skuDeVariante, varianteRepetida } from "./catalogo/gestion";
+
 // Carrito
 export {
   calcularTotales,
@@ -29,10 +31,21 @@ export {
   type TotalesCompra,
 } from "./carrito/totales";
 
-export { buscarCupon, descuentoDeCupon, type Cupon } from "./carrito/cupones";
+export {
+  revisarCupon,
+  normalizarCodigo,
+  mensajeDeRechazoCupon,
+  descuentoDeCupon,
+  type Cupon,
+  type ReglaCupon,
+  type RechazoCupon,
+} from "./carrito/cupones";
+
+// Clientes
+export { NIVELES, nivelPorCompras, type Nivel, type EstadoNivel } from "./clientes/niveles";
 
 // Envios
-export { cubreDepartamento } from "./envios/zonas";
+export { cubreDepartamento, departamentosDesdeTexto } from "./envios/zonas";
 
 export {
   agregarAlCarrito,
@@ -57,6 +70,16 @@ export {
   type LineaVendida,
 } from "./stock/movimientos";
 
+export {
+  planMovimientoManual,
+  mensajeDeRechazoStock,
+  TIPOS_MOVIMIENTO_MANUAL,
+  ETIQUETAS_MOVIMIENTO,
+  type TipoMovimientoManual,
+  type RechazoStock,
+  type EntradaMovimientoManual,
+} from "./stock/manual";
+
 // Pedidos
 export {
   puedePasarA,
@@ -65,12 +88,50 @@ export {
   afectaStock,
   pasosDelPedido,
   ETIQUETAS,
+  ESTADOS_PEDIDO,
   type EstadoPedido,
+  type OpcionesEstado,
   type PasoPedido,
   type SituacionPaso,
 } from "./pedidos/estados";
 
+export {
+  revisarConfirmacionPago,
+  revisarCambioEstado,
+  movimientosDelCambio,
+  variantesSinStock,
+  notaDeCambio,
+  mensajeDeRechazoPedido,
+  MEDIOS_PAGO,
+  ETIQUETAS_MEDIO_PAGO,
+  ESTADOS_PAGO,
+  ETIQUETAS_PAGO,
+  type MedioPagoPedido,
+  type EstadoPago,
+  type RechazoPedido,
+  type EntradaCambioEstado,
+  revisarDespacho,
+  ESTADOS_DESPACHO,
+} from "./pedidos/gestion";
+
 export { generarCodigoPedido } from "./pedidos/codigo";
+
+// WhatsApp
+export {
+  numeroWhatsApp,
+  enlaceWhatsApp,
+  mensajeConsultaWhatsApp,
+  mensajeComprobanteWhatsApp,
+  mensajeAlClienteWhatsApp,
+} from "./contacto/whatsapp";
+
+// Correos
+export {
+  correoRecuperacion,
+  correoPedidoRecibido,
+  correoPedidoNuevoTienda,
+  type TextoCorreo,
+} from "./notificaciones/mensajes";
 
 // Panel
 export {
@@ -97,8 +158,17 @@ export {
   revisarCambioRol,
   revisarDesactivacion,
   mensajeDeRechazo,
+  datosAnonimos,
+  estaAnonimizada,
   type RechazoGestionUsuario,
 } from "./usuarios/administracion";
+
+export {
+  crearTokenRecuperacion,
+  usuarioDeTokenRecuperacion,
+  verificarTokenRecuperacion,
+  DURACION_RECUPERACION_MS,
+} from "./usuarios/recuperacion";
 
 export { hashClave, verificarClave } from "./usuarios/credenciales";
 export { nombreDesdeCorreo } from "./usuarios/nombre";

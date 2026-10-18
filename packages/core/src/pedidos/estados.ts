@@ -5,13 +5,16 @@
  * puedan dejar un pedido en un estado imposible.
  */
 
-export type EstadoPedido =
-  | "PENDIENTE_PAGO"
-  | "PAGADO"
-  | "PREPARANDO"
-  | "ENVIADO"
-  | "ENTREGADO"
-  | "CANCELADO";
+export const ESTADOS_PEDIDO = [
+  "PENDIENTE_PAGO",
+  "PAGADO",
+  "PREPARANDO",
+  "ENVIADO",
+  "ENTREGADO",
+  "CANCELADO",
+] as const;
+
+export type EstadoPedido = (typeof ESTADOS_PEDIDO)[number];
 
 const TRANSICIONES: Record<EstadoPedido, readonly EstadoPedido[]> = {
   PENDIENTE_PAGO: ["PAGADO", "CANCELADO"],
@@ -23,6 +26,25 @@ const TRANSICIONES: Record<EstadoPedido, readonly EstadoPedido[]> = {
   CANCELADO: [],
 };
 
+/**
+ * Contra entrega se cobra al final: el pedido no puede esperar un pago para
+ * salir, porque el pago llega con el paquete. Se confirma directo a
+ * PREPARANDO (ahi se descuenta el stock) y el cobro se registra al entregar.
+ */
+const TRANSICIONES_CONTRA_ENTREGA: Record<EstadoPedido, readonly EstadoPedido[]> = {
+  ...TRANSICIONES,
+  PENDIENTE_PAGO: ["PREPARANDO", "CANCELADO"],
+};
+
+export interface OpcionesEstado {
+  /** El pedido se paga al recibirlo. */
+  contraEntrega?: boolean;
+}
+
+function tabla(opciones: OpcionesEstado) {
+  return opciones.contraEntrega ? TRANSICIONES_CONTRA_ENTREGA : TRANSICIONES;
+}
+
 export const ETIQUETAS: Record<EstadoPedido, string> = {
   PENDIENTE_PAGO: "Pendiente de pago",
   PAGADO: "Pagado",
@@ -32,24 +54,37 @@ export const ETIQUETAS: Record<EstadoPedido, string> = {
   CANCELADO: "Cancelado",
 };
 
-export function puedePasarA(desde: EstadoPedido, hacia: EstadoPedido): boolean {
-  return TRANSICIONES[desde].includes(hacia);
+export function puedePasarA(
+  desde: EstadoPedido,
+  hacia: EstadoPedido,
+  opciones: OpcionesEstado = {},
+): boolean {
+  return tabla(opciones)[desde].includes(hacia);
 }
 
-export function siguientesEstados(desde: EstadoPedido): readonly EstadoPedido[] {
-  return TRANSICIONES[desde];
+export function siguientesEstados(
+  desde: EstadoPedido,
+  opciones: OpcionesEstado = {},
+): readonly EstadoPedido[] {
+  return tabla(opciones)[desde];
 }
 
 export function esFinal(estado: EstadoPedido): boolean {
   return TRANSICIONES[estado].length === 0;
 }
 
-/** El stock se descuenta al pagar y se devuelve al cancelar despues de pagar. */
+/**
+ * El stock se descuenta cuando el pedido sale de "pendiente de pago" hacia
+ * adelante (al pagar, o al confirmar uno contra entrega) y se devuelve al
+ * cancelar uno que ya lo habia descontado.
+ */
 export function afectaStock(
   desde: EstadoPedido,
   hacia: EstadoPedido,
 ): "descontar" | "devolver" | null {
-  if (desde === "PENDIENTE_PAGO" && hacia === "PAGADO") return "descontar";
+  if (desde === "PENDIENTE_PAGO" && (hacia === "PAGADO" || hacia === "PREPARANDO")) {
+    return "descontar";
+  }
   if (hacia === "CANCELADO" && desde !== "PENDIENTE_PAGO") return "devolver";
   return null;
 }

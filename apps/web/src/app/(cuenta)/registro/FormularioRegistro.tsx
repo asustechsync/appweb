@@ -67,11 +67,7 @@ export function FormularioRegistro() {
   }
 
   return (
-    <DisposicionAcceso
-      activa="registro"
-      titulo="Únete"
-      alternativas={<AccesoSocial />}
-    >
+    <DisposicionAcceso activa="registro" titulo="Únete" alternativas={<AccesoSocial />}>
       <Formulario onSubmit={enviar}>
         {error ? <Alerta tono="error">{error}</Alerta> : null}
 
@@ -122,7 +118,8 @@ export function FormularioRegistro() {
           id="terminos"
           etiqueta={
             <>
-              Acepto los <Link href="/terminos">Términos</Link> y la <Link href="/privacidad">Privacidad</Link>
+              Acepto los <Link href="/terminos">Términos</Link> y la{" "}
+              <Link href="/privacidad">Privacidad</Link>
             </>
           }
           marcada={acepta}

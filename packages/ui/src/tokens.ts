@@ -50,6 +50,10 @@ export const tokens = {
       900: "#171717",
     },
 
+    // Verde oficial de WhatsApp: solo para su boton, igual en los dos temas.
+    whatsapp: "#25D366",
+    whatsappTexto: "#FFFFFF",
+
     // Estado, no marca. Nunca como color decorativo.
     exito: "#17803D",
     exitoClaro: "#62B846",
@@ -148,26 +152,56 @@ export const tokens = {
 
   // Escala de 4 px: padding, margin y gap.
   espacio: {
-    0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24,
-    8: 32, 10: 40, 12: 48, 16: 64, 20: 80, 24: 96,
+    0: 0,
+    1: 4,
+    2: 8,
+    3: 12,
+    4: 16,
+    5: 20,
+    6: 24,
+    8: 32,
+    10: 40,
+    12: 48,
+    16: 64,
+    20: 80,
+    24: 96,
   },
 
   radio: {
-    ninguno: 0, sm: 4, tarjeta: 7, md: 8, lg: 12, bloque: 10, xl: 18, completo: 9999,
+    ninguno: 0,
+    sm: 4,
+    tarjeta: 7,
+    md: 8,
+    lg: 12,
+    bloque: 10,
+    xl: 18,
+    completo: 9999,
   },
 
   tipo: {
+    // Dos familias para todo el proyecto, web, panel y movil. Una tercera
+    // rompe la unidad visual: si algo "necesita otra fuente", es un peso o un
+    // tamaño distinto de estas dos.
     familia: {
-      base: "'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      numeros: "'Urbanist', system-ui, -apple-system, sans-serif",
-      acceso: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      /** Cuerpo, formularios, buscador, cuenta: todo lo que se lee. */
+      texto: "'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      /** Titulos, precios y cifras: lo que se mira de un vistazo. */
+      titulos: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
       mono: "'IBM Plex Mono', ui-monospace, Consolas, monospace",
     },
     tamano: {
-      etiqueta: 11, xs: 12, sm: 14, base: 16, lg: 18, xl: 20,
+      etiqueta: 11,
+      xs: 12,
+      sm: 14,
+      base: 16,
+      lg: 18,
+      xl: 20,
       // Precio de la ficha en movil: entre xl y 2xl.
       precio: 22,
-      "2xl": 24, "3xl": 30, "4xl": 38, "5xl": 48,
+      "2xl": 24,
+      "3xl": 30,
+      "4xl": 38,
+      "5xl": 48,
     },
     // La web solo carga 400, 500 y 600 (ver apps/web/src/app/layout.tsx).
     // `ligero` y `negrita` siguen aqui para la app movil, que carga sus
@@ -227,8 +261,12 @@ export const tokens = {
   },
 
   z: {
-    base: 0, cabecera: 100, desplegable: 200,
-    superposicion: 300, modal: 400, aviso: 500,
+    base: 0,
+    cabecera: 100,
+    desplegable: 200,
+    superposicion: 300,
+    modal: 400,
+    aviso: 500,
   },
 } as const;
 
@@ -239,9 +277,16 @@ export const tokens = {
 export const tokensOscuro = {
   color: {
     marca: {
-      50: "#1C1C1F", 100: "#242428", 200: "#303035", 300: "#52525B",
-      400: "#A1A1AA", 500: "#F2F2F2", 600: "#DEDEDE", 700: "#F7F7F7",
-      800: "#FAFAFA", 900: "#FFFFFF",
+      50: "#1C1C1F",
+      100: "#242428",
+      200: "#303035",
+      300: "#52525B",
+      400: "#A1A1AA",
+      500: "#F2F2F2",
+      600: "#DEDEDE",
+      700: "#F7F7F7",
+      800: "#FAFAFA",
+      900: "#FFFFFF",
     },
     fondo: "#121212",
     fondoSutil: "#1C1C1F",

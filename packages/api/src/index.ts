@@ -1,12 +1,18 @@
 import { cuenta } from "./rutas/cuenta";
+import { avisos } from "./rutas/panel/avisos";
+import { envios } from "./rutas/panel/envios";
 import { resumen } from "./rutas/panel/resumen";
+import { pedidos } from "./rutas/panel/pedidos";
+import { productos } from "./rutas/panel/productos";
+import { promociones } from "./rutas/panel/promociones";
+import { stock } from "./rutas/panel/stock";
 import { usuarios } from "./rutas/panel/usuarios";
-import { coleccionPortada } from "./rutas/panel/coleccion-portada";
 import { router } from "./trpc";
 
 export { crearContexto, type Contexto, type Sesion } from "./trpc";
 export { publico, privado, exige, router } from "./trpc";
 export { COOKIE_SESION, sesionDesdeToken, tokenDeCabeceraCookie } from "./sesion";
+export { nivelDeUsuario } from "./clientes";
 
 /**
  * Enrutador raiz. Las rutas se añaden en src/rutas/ conforme se construyen:
@@ -20,8 +26,13 @@ export const enrutador = router({
   cuenta,
   panel: router({
     resumen,
+    avisos,
+    envios,
+    pedidos,
+    productos,
+    stock,
     usuarios,
-    coleccionPortada,
+    promociones,
   }),
 });
 

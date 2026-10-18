@@ -1,0 +1,188 @@
+.ui-ficha-producto {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-4);
+  /* Hueco para que la barra fija de compra no tape el final. */
+  padding-block: 0 8rem;
+}
+.ui-ficha-producto__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+.ui-ficha-producto__marca {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--espacio-1);
+  font-family: var(--tipo-familia-texto);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  color: var(--color-textoSuave);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.ui-ficha-producto__verificado {
+  flex: 0 0 auto;
+  /* Proporcional al texto de la marca: si este cambia, el icono lo sigue. */
+  inline-size: 1.25em;
+  block-size: 1.25em;
+  color: var(--color-info);
+}
+.ui-ficha-producto__opiniones {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--espacio-1);
+  font-size: var(--tipo-tamano-sm);
+  color: var(--color-textoSuave);
+}
+.ui-ficha-producto__estrella {
+  flex: 0 0 auto;
+  /* Mismo gris que el precio principal. */
+  color: var(--color-textoSuave);
+}
+.ui-ficha-producto__nota {
+  font-weight: var(--tipo-peso-fuerte);
+}
+/* Icono + cifra, sin texto: opiniones y fotos. */
+.ui-ficha-producto__dato {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  margin-inline-start: var(--espacio-2);
+}
+.ui-ficha-producto__sku {
+  align-self: flex-start;
+  font-size: var(--tipo-tamano-xs);
+  color: var(--color-textoTenue);
+  letter-spacing: 0.03em;
+}
+.ui-ficha-producto__nombre {
+  margin: 0;
+  font-family: var(--tipo-familia-texto);
+  font-size: var(--tipo-tamano-xl);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+  /* Sin balance: cada linea se llena hasta el borde. */
+  text-wrap: wrap;
+  /* Un punto mas oscuro que el gris del logo (#52525B frente a #5E5E5E). */
+  color: var(--color-textoSuave);
+}
+.ui-ficha-producto__resumen {
+  margin: 0;
+  font-size: var(--tipo-tamano-sm);
+  line-height: var(--tipo-altura-normal);
+  color: var(--color-textoSuave);
+}
+/* Una sola fila: precio principal, luego el de lista tachado y la etiqueta de
+   descuento. `.ui-precio` pasa a `contents` para que el actual y el
+   tachado se ubiquen en esta cuadricula. */
+.ui-ficha-producto__precio {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  column-gap: var(--espacio-3);
+  margin-block-start: var(--espacio-1);
+}
+.ui-ficha-producto__precio .ui-precio {
+  display: contents;
+}
+.ui-ficha-producto__precio .ui-precio__antes {
+  grid-column: 2;
+  grid-row: 1;
+}
+.ui-ficha-producto__precio .ui-precio__actual {
+  grid-column: 1;
+  grid-row: 1;
+  /* Mismo gris que el titulo (#52525B). */
+  color: var(--color-textoSuave);
+  font-family: var(--tipo-familia-titulos);
+}
+.ui-ficha-producto__precio .ui-ficha-producto__descuento {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: start;
+}
+/* Etiqueta de descuento en plomo suave, junto al precio. */
+.ui-ficha-producto__descuento {
+  flex: 0 0 auto;
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-etiqueta);
+  font-weight: var(--tipo-peso-normal);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+/* Movil: precio de 22px. Desde lg vuelve a `lg`. */
+.ui-ficha-producto__precio .ui-precio--lg .ui-precio__actual {
+  font-size: var(--tipo-tamano-precio);
+}
+.ui-ficha-producto__estado {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+.ui-ficha-producto__disponibilidad {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--espacio-2);
+  border-radius: var(--radio-sm);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.ui-ficha-producto__disponibilidad--disponible {
+  background: color-mix(in srgb, var(--color-exito) 14%, var(--color-superficie));
+  color: var(--color-exito);
+}
+.ui-ficha-producto__disponibilidad--agotado {
+  background: color-mix(in srgb, var(--color-error) 14%, var(--color-superficie));
+  color: var(--color-error);
+}
+.ui-ficha-producto__stock-bajo {
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  color: var(--color-alerta);
+}
+.ui-ficha-producto__descripcion {
+  font-family: var(--tipo-familia-texto);
+  margin-block-start: var(--espacio-1);
+  padding-block-start: var(--espacio-3);
+}
+.ui-ficha-producto__descripcion p {
+  margin: 0;
+  font-size: var(--tipo-tamano-sm);
+  line-height: var(--tipo-altura-normal);
+  color: var(--color-textoSuave);
+}
+.ui-ficha-producto__subtitulo {
+  margin: 0 0 var(--espacio-2);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-fuerte);
+  color: var(--color-texto);
+}
+
+@media (min-width: 64rem) {
+  .ui-ficha-producto__precio .ui-precio--lg .ui-precio__actual {
+    font-size: var(--tipo-tamano-2xl);
+  }
+  .ui-ficha-producto {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--espacio-12);
+    align-items: start;
+    padding-block: var(--espacio-10);
+  }
+  .ui-ficha-producto__nombre {
+    font-size: var(--tipo-tamano-3xl);
+  }
+  .ui-ficha-producto__resumen {
+    font-size: var(--tipo-tamano-base);
+  }
+}

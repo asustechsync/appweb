@@ -58,13 +58,43 @@ interface EntradaDesactivacion {
  * `null` si la cuenta se puede desactivar. Reactivar no se revisa: devolver el
  * acceso a alguien nunca deja a la tienda sin administradores.
  */
-export function revisarDesactivacion(
-  entrada: EntradaDesactivacion,
-): RechazoGestionUsuario | null {
+export function revisarDesactivacion(entrada: EntradaDesactivacion): RechazoGestionUsuario | null {
   const { actorId, objetivoId, rolActual, adminsActivos } = entrada;
 
   if (actorId === objetivoId) return "es_uno_mismo";
   if (rolActual === "ADMIN" && adminsActivos <= 1) return "ultimo_admin";
 
   return null;
+}
+
+/**
+ * "Eliminar" una cuenta es anonimizarla: se borran los datos personales y el
+ * acceso, pero la fila queda porque sus pedidos, pagos y movimientos la
+ * referencian. La venta de ayer no puede quedar sin cliente; solo deja de
+ * saberse quien era. Pasa las mismas reglas que desactivar
+ * (`revisarDesactivacion`).
+ *
+ * `claveInutil` la arma quien llama (un hash de algo aleatorio): nadie puede
+ * volver a entrar con esta cuenta.
+ */
+export function datosAnonimos(usuarioId: string, claveInutil: string) {
+  return {
+    email: `eliminado-${usuarioId}@anonimo.invalid`,
+    clave: claveInutil,
+    nombre: "Cuenta eliminada",
+    apellidoPaterno: null,
+    apellidoMaterno: null,
+    apodo: null,
+    telefono: null,
+    fechaNacimiento: null,
+    genero: null,
+    tipoDocumento: null,
+    numeroDocumento: null,
+    activo: false,
+  } as const;
+}
+
+/** Una cuenta anonimizada ya no se puede editar ni reactivar. */
+export function estaAnonimizada(email: string): boolean {
+  return email.endsWith("@anonimo.invalid");
 }

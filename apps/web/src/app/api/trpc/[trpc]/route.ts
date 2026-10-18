@@ -1,11 +1,6 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
-import {
-  crearContexto,
-  enrutador,
-  sesionDesdeToken,
-  tokenDeCabeceraCookie,
-} from "@appweb/api";
+import { crearContexto, enrutador, sesionDesdeToken, tokenDeCabeceraCookie } from "@appweb/api";
 
 /**
  * Datos de /mi-cuenta (CLASE C).

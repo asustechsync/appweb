@@ -9,9 +9,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { hashClave, REQUISITOS_CLAVE, verificarClave } from "@appweb/core";
+import { hashClave, REQUISITOS_CLAVE, verificarClave, NIVELES } from "@appweb/core";
 import { esquemaDireccion, esquemaPerfil } from "@appweb/core/tipos";
 
+import { nivelDeUsuario } from "../../clientes";
 import { privado, router } from "../../trpc";
 
 const esquemaClave = z.object({
@@ -19,7 +20,10 @@ const esquemaClave = z.object({
   claveNueva: z
     .string()
     .max(72, "La clave nueva es demasiado larga")
-    .refine((c) => REQUISITOS_CLAVE.every((r) => r.cumple(c)), "La clave nueva no cumple los requisitos"),
+    .refine(
+      (c) => REQUISITOS_CLAVE.every((r) => r.cumple(c)),
+      "La clave nueva no cumple los requisitos",
+    ),
 });
 
 export const cuenta = router({
@@ -110,6 +114,12 @@ export const cuenta = router({
 
   // ── Pedidos ──────────────────────────────────────────────────────────────
 
+  /** Nivel de recompensa: en cual esta, cuanto lleva y cuanto le falta. */
+  nivel: privado.query(async ({ ctx }) => {
+    const estado = await nivelDeUsuario(ctx.prisma, ctx.sesion.usuarioId);
+    return { ...estado, niveles: NIVELES };
+  }),
+
   pedidos: privado.query(async ({ ctx }) => {
     const pedidos = await ctx.prisma.pedido.findMany({
       where: { usuarioId: ctx.sesion.usuarioId },
@@ -136,43 +146,41 @@ export const cuenta = router({
   }),
 
   /** Detalle de un pedido propio. `codigo` de otra persona devuelve NOT_FOUND. */
-  pedido: privado
-    .input(z.object({ codigo: z.string().min(1) }))
-    .query(async ({ ctx, input }) => {
-      const pedido = await ctx.prisma.pedido.findFirst({
-        where: { codigo: input.codigo, usuarioId: ctx.sesion.usuarioId },
-        include: { items: true },
-      });
+  pedido: privado.input(z.object({ codigo: z.string().min(1) })).query(async ({ ctx, input }) => {
+    const pedido = await ctx.prisma.pedido.findFirst({
+      where: { codigo: input.codigo, usuarioId: ctx.sesion.usuarioId },
+      include: { items: true },
+    });
 
-      if (pedido === null) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Ese pedido no existe." });
-      }
+    if (pedido === null) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Ese pedido no existe." });
+    }
 
-      return {
-        codigo: pedido.codigo,
-        estado: pedido.estado,
-        subtotal: Number(pedido.subtotal),
-        descuento: Number(pedido.descuento),
-        costoEnvio: Number(pedido.costoEnvio),
-        total: Number(pedido.total),
-        creadoEn: pedido.creadoEn,
-        envioMetodo: pedido.envioMetodo,
-        envioDepartamento: pedido.envioDepartamento,
-        envioProvincia: pedido.envioProvincia,
-        envioDistrito: pedido.envioDistrito,
-        envioCalle: pedido.envioCalle,
-        envioReferencia: pedido.envioReferencia,
-        comprobante: pedido.comprobante,
-        documento: pedido.documento,
-        items: pedido.items.map((item) => ({
-          nombreProducto: item.nombreProducto,
-          talla: item.talla,
-          color: item.color,
-          precioUnitario: Number(item.precioUnitario),
-          cantidad: item.cantidad,
-        })),
-      };
-    }),
+    return {
+      codigo: pedido.codigo,
+      estado: pedido.estado,
+      subtotal: Number(pedido.subtotal),
+      descuento: Number(pedido.descuento),
+      costoEnvio: Number(pedido.costoEnvio),
+      total: Number(pedido.total),
+      creadoEn: pedido.creadoEn,
+      envioMetodo: pedido.envioMetodo,
+      envioDepartamento: pedido.envioDepartamento,
+      envioProvincia: pedido.envioProvincia,
+      envioDistrito: pedido.envioDistrito,
+      envioCalle: pedido.envioCalle,
+      envioReferencia: pedido.envioReferencia,
+      comprobante: pedido.comprobante,
+      documento: pedido.documento,
+      items: pedido.items.map((item) => ({
+        nombreProducto: item.nombreProducto,
+        talla: item.talla,
+        color: item.color,
+        precioUnitario: Number(item.precioUnitario),
+        cantidad: item.cantidad,
+      })),
+    };
+  }),
 
   // ── Direcciones ──────────────────────────────────────────────────────────
 

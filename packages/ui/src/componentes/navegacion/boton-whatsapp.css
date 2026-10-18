@@ -1,0 +1,26 @@
+/* Boton flotante de WhatsApp. Base movil; desde md se aleja un poco del borde. */
+.ui-boton-whatsapp {
+  position: fixed;
+  inset-block-end: var(--espacio-4);
+  inset-inline-end: var(--espacio-4);
+  z-index: var(--z-cabecera);
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  border-radius: var(--radio-completo);
+  background: var(--color-whatsapp);
+  color: var(--color-whatsappTexto);
+  box-shadow: var(--sombra-lg);
+  transition: transform var(--transicion-rapida);
+}
+.ui-boton-whatsapp:hover {
+  transform: scale(1.06);
+}
+
+@media (min-width: 48rem) {
+  .ui-boton-whatsapp {
+    inset-block-end: var(--espacio-6);
+    inset-inline-end: var(--espacio-6);
+  }
+}

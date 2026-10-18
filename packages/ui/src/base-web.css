@@ -1,4 +1,8 @@
-/* Base comun de tienda y panel; cada app conserva su tipografia propia. */
+/* Base comun de tienda y panel: misma tipografia, mismo reset, misma identidad.
+   Las apps solo añaden lo que es suyo (la barra de scroll de la tienda).
+
+   `--fuente-texto` y `--fuente-titulos` los pone next/font en el layout raiz
+   de cada app; el nombre literal queda de respaldo. */
 @import "./theme.css";
 
 *,
@@ -8,13 +12,21 @@
 }
 
 body {
+  --tipo-familia-texto: var(--fuente-texto), "Manrope", system-ui, sans-serif;
+  --tipo-familia-titulos: var(--fuente-titulos), "Poppins", system-ui, sans-serif;
   margin: 0;
   background: var(--color-fondo);
   color: var(--color-texto);
+  font-family: var(--tipo-familia-texto);
+  font-size: var(--tipo-tamano-base);
+  line-height: var(--tipo-altura-normal);
   -webkit-font-smoothing: antialiased;
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font: inherit;
   color: inherit;
 }
@@ -24,7 +36,54 @@ a {
   text-decoration: none;
 }
 
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--tipo-familia-titulos);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-marca-500);
   outline-offset: 2px;
 }
+
+/* biome-ignore-start lint/complexity/noImportantStyles: reducir movimiento debe ganarle a cualquier animacion de un componente. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* biome-ignore-end lint/complexity/noImportantStyles: fin */

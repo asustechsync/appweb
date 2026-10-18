@@ -21,13 +21,9 @@ import {
   ResumenCompra,
 } from "@appweb/ui";
 
-import {
-  guardarCarrito,
-  leerCarrito,
-  CARRITO_EVENTO,
-} from "@/lib/carrito-local";
+import { guardarCarrito, leerCarrito, CARRITO_EVENTO } from "@/lib/carrito-local";
 import type { VarianteDeCarrito } from "@/lib/consultas";
-import { usarCupon } from "@/lib/usar-cupon";
+import { useCupon } from "@/lib/use-cupon";
 
 import { resolverLineasDelCarrito } from "./acciones";
 
@@ -46,7 +42,6 @@ export function CarritoCliente() {
   const [guardadas, setGuardadas] = useState<LineaGuardada[]>([]);
   const [variantes, setVariantes] = useState<VarianteDeCarrito[]>([]);
   const [cargando, setCargando] = useState(true);
-  const cupon = usarCupon();
 
   useEffect(() => {
     let vigente = true;
@@ -63,9 +58,7 @@ export function CarritoCliente() {
         return;
       }
 
-      const resueltas = await resolverLineasDelCarrito(
-        lineas.map((l) => l.varianteId),
-      );
+      const resueltas = await resolverLineasDelCarrito(lineas.map((l) => l.varianteId));
       if (!vigente) return;
 
       // Lo que el servidor no devolvio ya no se vende: se cae del carrito
@@ -97,28 +90,33 @@ export function CarritoCliente() {
   const lineas = useMemo(
     () =>
       guardadas.flatMap((linea) => {
-        const variante = variantes.find(
-          (v) => v.varianteId === linea.varianteId,
-        );
+        const variante = variantes.find((v) => v.varianteId === linea.varianteId);
         if (variante === undefined) return [];
         return [{ ...variante, cantidad: linea.cantidad }];
       }),
     [guardadas, variantes],
   );
 
+  const lineasCalculo = useMemo(
+    () =>
+      lineas.map((linea) => ({
+        varianteId: linea.varianteId,
+        precioUnitario: linea.precio,
+        cantidad: linea.cantidad,
+        stock: linea.stock,
+      })),
+    [lineas],
+  );
+
+  // El subtotal sin descuento decide si el cupon alcanza su minimo de compra.
+  const subtotal = useMemo(() => calcularTotales(lineasCalculo).subtotal, [lineasCalculo]);
+  const cupon = useCupon(subtotal);
+
   const totales = useMemo(
     () =>
-      calcularTotales(
-        lineas.map((linea) => ({
-          varianteId: linea.varianteId,
-          precioUnitario: linea.precio,
-          cantidad: linea.cantidad,
-          stock: linea.stock,
-        })),
-        // Sin metodo de envio: el costo y la direccion se eligen en el checkout.
-        { cupon: cupon.aplicado },
-      ),
-    [lineas, cupon.aplicado],
+      // Sin metodo de envio: el costo y la direccion se eligen en el checkout.
+      calcularTotales(lineasCalculo, { cupon: cupon.aplicado }),
+    [lineasCalculo, cupon.aplicado],
   );
 
   function aplicar(siguientes: LineaGuardada[]) {
@@ -149,9 +147,7 @@ export function CarritoCliente() {
   }
 
   const bloqueo =
-    totales.lineasSinStock.length > 0
-      ? "Ajusta las cantidades marcadas para continuar."
-      : null;
+    totales.lineasSinStock.length > 0 ? "Ajusta las cantidades marcadas para continuar." : null;
 
   return (
     <DisposicionCompra
@@ -197,17 +193,11 @@ export function CarritoCliente() {
             cantidad={linea.cantidad}
             stock={linea.stock}
             total={redondear(linea.precio * linea.cantidad)}
-            totalLista={
-              linea.precioLista
-                ? redondear(linea.precioLista * linea.cantidad)
-                : null
-            }
+            totalLista={linea.precioLista ? redondear(linea.precioLista * linea.cantidad) : null}
             onCantidad={(cantidad) =>
               aplicar(cambiarCantidad(guardadas, linea.varianteId, cantidad))
             }
-            onQuitar={() =>
-              aplicar(quitarDelCarrito(guardadas, linea.varianteId))
-            }
+            onQuitar={() => aplicar(quitarDelCarrito(guardadas, linea.varianteId))}
           />
         ))}
       </BloqueLineas>

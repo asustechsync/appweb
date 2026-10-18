@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bai_Jamjuree, Manrope, Urbanist } from "next/font/google";
+import { Manrope, Poppins } from "next/font/google";
 
 import { GuionTemaInicial } from "@appweb/ui";
 import { tokens, tokensOscuro } from "@appweb/ui/tokens";
@@ -7,34 +7,24 @@ import { tokens, tokensOscuro } from "@appweb/ui/tokens";
 import "./globals.css";
 
 /**
- * Solo los pesos que alguna regla de packages/ui pide de verdad. Cada peso de
- * mas es un archivo que el visitante descarga para nada.
+ * Las dos unicas familias del proyecto (ver `tipo.familia` en tokens.ts). Se
+ * cargan aqui una sola vez: ningun layout ni pagina carga fuentes propias.
  *
- * Bai Jamjuree es la familia base: 400 es el cuerpo, y 500 y 600 los usan los
- * primitivos. Es estatica, asi que cada peso es su propio archivo (~12 KB del
- * subconjunto latino) y suma al descargar.
+ * Manrope es variable: un solo archivo cubre todos los pesos. Poppins es
+ * estatica, asi que solo los pesos que pide packages/ui: cada uno es un
+ * archivo que el visitante descarga.
  */
-const baiJamjuree = Bai_Jamjuree({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--fuente-base",
-  weight: ["400", "500", "600"],
-});
-
-/** Urbanist solo aparece en Precio: 600 el precio y 400 el tachado. */
-const urbanist = Urbanist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--fuente-numeros",
-  weight: ["400", "600"],
-});
-
-/** Manrope solo aparece en el buscador: 400 el texto y el placeholder. */
 const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
-  variable: "--fuente-buscador",
-  weight: ["400"],
+  variable: "--fuente-texto",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--fuente-titulos",
+  weight: ["400", "500", "600"],
 });
 
 /**
@@ -75,7 +65,7 @@ export default function LayoutRaiz({ children }: { children: React.ReactNode }) 
       <head>
         <GuionTemaInicial />
       </head>
-      <body className={`${baiJamjuree.variable} ${urbanist.variable} ${manrope.variable}`}>{children}</body>
+      <body className={`${manrope.variable} ${poppins.variable}`}>{children}</body>
     </html>
   );
 }

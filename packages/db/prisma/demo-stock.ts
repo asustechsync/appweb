@@ -41,17 +41,33 @@ async function main() {
 
     await prisma.movimientoStock.createMany({
       data: [
-        { varianteId: variante.id, delta: variante.stock + vendido, motivo: "INGRESO", nota: "Datos de demostracion" },
+        {
+          varianteId: variante.id,
+          delta: variante.stock + vendido,
+          motivo: "INGRESO",
+          nota: "Datos de demostracion",
+        },
         ...(vendido > 0
-          ? [{ varianteId: variante.id, delta: -vendido, motivo: "VENTA" as const, nota: "Datos de demostracion" }]
+          ? [
+              {
+                varianteId: variante.id,
+                delta: -vendido,
+                motivo: "VENTA" as const,
+                nota: "Datos de demostracion",
+              },
+            ]
           : []),
       ],
     });
     creadas += 1;
-    console.log(`  ✔ ${variante.sku} — ingreso ${variante.stock + vendido}, vendido ${vendido}, queda ${variante.stock}`);
+    console.log(
+      `  ✔ ${variante.sku} — ingreso ${variante.stock + vendido}, vendido ${vendido}, queda ${variante.stock}`,
+    );
   }
 
-  console.log(`\n${creadas} variantes con historial (${variantes.length === 0 ? "ya estaban todas" : "nuevas"}).`);
+  console.log(
+    `\n${creadas} variantes con historial (${variantes.length === 0 ? "ya estaban todas" : "nuevas"}).`,
+  );
 }
 
 main()

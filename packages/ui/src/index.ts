@@ -35,178 +35,213 @@ export {
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
 // Se van añadiendo conforme hagan falta; cada uno con su CSS en
-// src/componentes/estilos/, que consume las variables de theme.css.
-export { Contenedor, type PropsContenedor } from "./componentes/Contenedor";
-export { PaginaTienda, type PropsPaginaTienda } from "./componentes/PaginaTienda";
-export { Logo, type PropsLogo } from "./componentes/Logo";
-export { BotonCarrito, type PropsBotonCarrito } from "./componentes/BotonCarrito";
-export { Migas, type MigaDeRuta, type PropsMigas } from "./componentes/Migas";
-export { MenuUsuario } from "./componentes/MenuUsuario";
-export { Header, type CategoriaDeCabecera, type PropsHeader } from "./componentes/Header";
-export { Ubicacion, type PropsUbicacion } from "./componentes/Ubicacion";
-export { Buscador, type PropsBuscador } from "./componentes/Buscador";
-export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/AccionesCuenta";
-export { CodigoPromocional, type PropsCodigoPromocional } from "./componentes/CodigoPromocional";
-export { CabeceraLineas } from "./componentes/CabeceraLineas";
-export { BloqueLineas } from "./componentes/BloqueLineas";
-export { AlternarTema } from "./componentes/AlternarTema";
-export { IndicadorClave, type PropsIndicadorClave } from "./componentes/IndicadorClave";
+// src/componentes/<familia>/, que consume las variables de theme.css.
+export { Contenedor, type PropsContenedor } from "./componentes/base/Contenedor";
+export { PaginaTienda, type PropsPaginaTienda } from "./componentes/disposiciones/PaginaTienda";
+export { Logo, type PropsLogo } from "./componentes/base/Logo";
+export { BotonCarrito, type PropsBotonCarrito } from "./componentes/navegacion/BotonCarrito";
+export { Migas, type MigaDeRuta, type PropsMigas } from "./componentes/navegacion/Migas";
+export { MenuUsuario } from "./componentes/navegacion/MenuUsuario";
+export {
+  Header,
+  type CategoriaDeCabecera,
+  type PropsHeader,
+} from "./componentes/navegacion/Header";
+export { Ubicacion, type PropsUbicacion } from "./componentes/navegacion/Ubicacion";
+export { BotonWhatsApp, type PropsBotonWhatsApp } from "./componentes/navegacion/BotonWhatsApp";
+export { Buscador, type PropsBuscador } from "./componentes/navegacion/Buscador";
+export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/navegacion/AccionesCuenta";
+export {
+  CodigoPromocional,
+  type PropsCodigoPromocional,
+} from "./componentes/formularios/CodigoPromocional";
+export { CabeceraLineas } from "./componentes/compra/CabeceraLineas";
+export { BloqueLineas } from "./componentes/compra/BloqueLineas";
+export { AlternarTema } from "./componentes/base/AlternarTema";
+export { IndicadorClave, type PropsIndicadorClave } from "./componentes/formularios/IndicadorClave";
 export {
   EscaparatePortada,
   type PropsEscaparatePortada,
-} from "./componentes/EscaparatePortada";
-export { BloqueColeccion, type PropsBloqueColeccion } from "./componentes/BloqueColeccion";
-export { CarruselBanners, type PropsCarruselBanners, type BannerDeslizable } from "./componentes/CarruselBanners";
-export { CarruselPortada, type PropsCarruselPortada } from "./componentes/CarruselPortada";
-export { CarruselMarcas, type PropsCarruselMarcas } from "./componentes/CarruselMarcas";
-export { Beneficio, type PropsBeneficio } from "./componentes/Beneficio";
+  type BannerDePortada,
+} from "./componentes/portada/EscaparatePortada";
+export { BloqueColeccion, type PropsBloqueColeccion } from "./componentes/portada/BloqueColeccion";
+export {
+  CarruselBanners,
+  type PropsCarruselBanners,
+  type BannerDeslizable,
+} from "./componentes/portada/CarruselBanners";
+export { CarruselPortada, type PropsCarruselPortada } from "./componentes/portada/CarruselPortada";
+export { CarruselMarcas, type PropsCarruselMarcas } from "./componentes/portada/CarruselMarcas";
+export { Beneficio, type PropsBeneficio } from "./componentes/portada/Beneficio";
 export {
   NavegacionSecciones,
   type PropsNavegacionSecciones,
   type SeccionDeNavegacion,
-} from "./componentes/NavegacionSecciones";
+} from "./componentes/navegacion/NavegacionSecciones";
 export {
   ItemDesplegable,
   type PropsItemDesplegable,
   type EnlaceDeDesplegable,
-} from "./componentes/ItemDesplegable";
-export { Hero, type PropsHero, type DiapositivaHero } from "./componentes/Hero";
-export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/CabeceraSeccion";
-export { BloqueFormulario, type PropsBloqueFormulario } from "./componentes/BloqueFormulario";
-export { Precio, type PropsPrecio } from "./componentes/Precio";
-export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/TarjetaProducto";
-export { TarjetaMarca, type PropsTarjetaMarca } from "./componentes/TarjetaMarca";
-export { BannerOferta, type PropsBannerOferta } from "./componentes/BannerOferta";
-export { BannerPromo, type PropsBannerPromo } from "./componentes/BannerPromo";
-export { RejillaProductos, type PropsRejillaProductos } from "./componentes/RejillaProductos";
-export { Carrusel, type PropsCarrusel } from "./componentes/Carrusel";
+} from "./componentes/navegacion/ItemDesplegable";
+export { Hero, type PropsHero, type DiapositivaHero } from "./componentes/portada/Hero";
+export { CabeceraSeccion, type PropsCabeceraSeccion } from "./componentes/base/CabeceraSeccion";
+export {
+  BloqueFormulario,
+  type PropsBloqueFormulario,
+} from "./componentes/formularios/BloqueFormulario";
+export { Precio, type PropsPrecio } from "./componentes/catalogo/Precio";
+export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/catalogo/TarjetaProducto";
+export { TarjetaMarca, type PropsTarjetaMarca } from "./componentes/catalogo/TarjetaMarca";
+export { BannerOferta, type PropsBannerOferta } from "./componentes/catalogo/BannerOferta";
+export { BannerPromo, type PropsBannerPromo } from "./componentes/portada/BannerPromo";
+export {
+  RejillaProductos,
+  type PropsRejillaProductos,
+} from "./componentes/catalogo/RejillaProductos";
+export { Carrusel, type PropsCarrusel } from "./componentes/portada/Carrusel";
 // Alias temporal para compatibilidad
-export { Carrusel as CarruselProductos, type PropsCarrusel as PropsCarruselProductos } from "./componentes/Carrusel";
-export { GaleriaProducto, type PropsGaleriaProducto, type ImagenGaleria } from "./componentes/GaleriaProducto";
+export {
+  Carrusel as CarruselProductos,
+  type PropsCarrusel as PropsCarruselProductos,
+} from "./componentes/portada/Carrusel";
+export {
+  GaleriaProducto,
+  type PropsGaleriaProducto,
+  type ImagenGaleria,
+} from "./componentes/catalogo/GaleriaProducto";
 export {
   SelectorVariantes,
   type PropsSelectorVariantes,
   type OpcionDeCompra,
-} from "./componentes/SelectorVariantes";
-export { FichaProducto, type PropsFichaProducto } from "./componentes/FichaProducto";
-export { Acordeon, type PropsAcordeon, type SeccionDeAcordeon } from "./componentes/Acordeon";
+} from "./componentes/catalogo/SelectorVariantes";
+export { FichaProducto, type PropsFichaProducto } from "./componentes/catalogo/FichaProducto";
+export { Acordeon, type PropsAcordeon, type SeccionDeAcordeon } from "./componentes/base/Acordeon";
 export {
   PaginaInformativa,
   type PropsPaginaInformativa,
-} from "./componentes/PaginaInformativa";
+} from "./componentes/disposiciones/PaginaInformativa";
 export {
   LayoutProducto,
   type PropsLayoutProducto,
-} from "./componentes/LayoutProducto";
+} from "./componentes/disposiciones/LayoutProducto";
 export {
   PanelAcciones,
   type PropsPanelAcciones,
-} from "./componentes/PanelAcciones";
+} from "./componentes/paneles/PanelAcciones";
 export {
   InformacionGrid,
   type PropsInformacionGrid,
   type Dato,
-} from "./componentes/InformacionGrid";
+} from "./componentes/paneles/InformacionGrid";
 
 // Compra (Clase B): carrito y checkout.
 export {
   DisposicionCompra,
   type PropsDisposicionCompra,
-} from "./componentes/DisposicionCompra";
+} from "./componentes/disposiciones/DisposicionCompra";
 export {
   SelectorCantidad,
   type PropsSelectorCantidad,
-} from "./componentes/SelectorCantidad";
-export { LineaDeCarrito, type PropsLineaDeCarrito } from "./componentes/LineaDeCarrito";
+} from "./componentes/formularios/SelectorCantidad";
+export { LineaDeCarrito, type PropsLineaDeCarrito } from "./componentes/compra/LineaDeCarrito";
 export {
   ResumenCompra,
   type PropsResumenCompra,
-} from "./componentes/ResumenCompra";
+} from "./componentes/compra/ResumenCompra";
 export {
   ArticulosResumen,
   type ArticuloResumen,
   type PropsArticulosResumen,
-} from "./componentes/ArticulosResumen";
-export { GrupoOpciones, type PropsGrupoOpciones } from "./componentes/GrupoOpciones";
+} from "./componentes/compra/ArticulosResumen";
+export { GrupoOpciones, type PropsGrupoOpciones } from "./componentes/formularios/GrupoOpciones";
 export {
   DisposicionConfirmacion,
   type PropsDisposicionConfirmacion,
-} from "./componentes/DisposicionConfirmacion";
-export { LineaEstados, type PasoDeLinea, type PropsLineaEstados } from "./componentes/LineaEstados";
-export { BloqueDetalle, FilaDetalles, type PropsBloqueDetalle } from "./componentes/BloqueDetalle";
-export { EstadoVacio, type PropsEstadoVacio } from "./componentes/EstadoVacio";
-export { Cargando, type PropsCargando } from "./componentes/Cargando";
-export { Formulario, type PropsFormulario } from "./componentes/Formulario";
+} from "./componentes/disposiciones/DisposicionConfirmacion";
+export {
+  LineaEstados,
+  type PasoDeLinea,
+  type PropsLineaEstados,
+} from "./componentes/compra/LineaEstados";
+export {
+  BloqueDetalle,
+  FilaDetalles,
+  type PropsBloqueDetalle,
+} from "./componentes/paneles/BloqueDetalle";
+export { EstadoVacio, type PropsEstadoVacio } from "./componentes/base/EstadoVacio";
+export { Cargando, type PropsCargando } from "./componentes/base/Cargando";
+export { Formulario, type PropsFormulario } from "./componentes/formularios/Formulario";
 export {
   DisposicionAcceso,
   type PropsDisposicionAcceso,
-} from "./componentes/DisposicionAcceso";
-export { Campo, type PropsCampo } from "./componentes/Campo";
-export { Casilla, type PropsCasilla } from "./componentes/Casilla";
-export { AccesoSocial } from "./componentes/AccesoSocial";
-export { FilaCampos, type PropsFilaCampos } from "./componentes/FilaCampos";
-export { FilaUnida, type PropsFilaUnida } from "./componentes/FilaUnida";
-export { Pestanas, type OpcionDePestana, type PropsPestanas } from "./componentes/Pestanas";
-export { FilaOpciones, type PropsFilaOpciones } from "./componentes/FilaOpciones";
-export { SelectorPais, type PropsSelectorPais } from "./componentes/SelectorPais";
-export { SelectorFecha, type PropsSelectorFecha } from "./componentes/SelectorFecha";
+} from "./componentes/disposiciones/DisposicionAcceso";
+export { Campo, type PropsCampo } from "./componentes/formularios/Campo";
+export { CampoTexto, type PropsCampoTexto } from "./componentes/formularios/CampoTexto";
+export { Casilla, type PropsCasilla } from "./componentes/formularios/Casilla";
+export { AccesoSocial } from "./componentes/navegacion/AccesoSocial";
+export { FilaCampos, type PropsFilaCampos } from "./componentes/formularios/FilaCampos";
+export { FilaUnida, type PropsFilaUnida } from "./componentes/paneles/FilaUnida";
+export { Pestanas, type OpcionDePestana, type PropsPestanas } from "./componentes/base/Pestanas";
+export { FilaOpciones, type PropsFilaOpciones } from "./componentes/formularios/FilaOpciones";
+export { SelectorPais, type PropsSelectorPais } from "./componentes/formularios/SelectorPais";
+export { SelectorFecha, type PropsSelectorFecha } from "./componentes/formularios/SelectorFecha";
 export { PAISES, type Pais } from "./datos/paises";
-export { Boton, type PropsBoton } from "./componentes/Boton";
-export { Alerta, type PropsAlerta } from "./componentes/Alerta";
+export { Boton, type PropsBoton } from "./componentes/base/Boton";
+export { Alerta, type PropsAlerta } from "./componentes/base/Alerta";
 export {
   TarjetaSeleccionable,
   type PropsTarjetaSeleccionable,
-} from "./componentes/TarjetaSeleccionable";
+} from "./componentes/formularios/TarjetaSeleccionable";
 export {
   SeccionCheckout,
   type PropsSeccionCheckout,
-} from "./componentes/SeccionCheckout";
+} from "./componentes/compra/SeccionCheckout";
 export {
   TarjetaPedido,
   type PropsTarjetaPedido,
   type ItemDePedido,
-} from "./componentes/TarjetaPedido";
+} from "./componentes/compra/TarjetaPedido";
 
 // Cuenta y panel (Clase C).
 export {
   DisposicionCuenta,
   type PropsDisposicionCuenta,
   type SeccionDeCuenta,
-} from "./componentes/DisposicionCuenta";
+} from "./componentes/disposiciones/DisposicionCuenta";
 export {
   MenuCuenta,
   type GrupoMenuCuenta,
   type OpcionMenuCuenta,
   type PropsMenuCuenta,
-} from "./componentes/MenuCuenta";
+} from "./componentes/navegacion/MenuCuenta";
 export {
   DisposicionPanel,
   type PropsDisposicionPanel,
   type SeccionDePanel,
-} from "./componentes/DisposicionPanel";
-export { Tarjeta, type PropsTarjeta } from "./componentes/Tarjeta";
-export { TarjetaInfo, type PropsTarjetaInfo } from "./componentes/TarjetaInfo";
-export { FilaTarjetas, type PropsFilaTarjetas } from "./componentes/FilaTarjetas";
-export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/TarjetaMetrica";
-export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/RejillaMetricas";
-export { FilaLista, type PropsFilaLista } from "./componentes/FilaLista";
-export { Insignia, type PropsInsignia } from "./componentes/Insignia";
+} from "./componentes/disposiciones/DisposicionPanel";
+export { Tarjeta, type PropsTarjeta } from "./componentes/base/Tarjeta";
+export { TarjetaInfo, type PropsTarjetaInfo } from "./componentes/paneles/TarjetaInfo";
+export { FilaTarjetas, type PropsFilaTarjetas } from "./componentes/paneles/FilaTarjetas";
+export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/TarjetaMetrica";
+export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";
+export { FilaLista, type PropsFilaLista } from "./componentes/paneles/FilaLista";
+export { Insignia, type PropsInsignia } from "./componentes/base/Insignia";
 export {
   CampoSelect,
   type PropsCampoSelect,
   type OpcionDeSelect,
-} from "./componentes/CampoSelect";
+} from "./componentes/formularios/CampoSelect";
 export {
   SelectorBuscable,
   type PropsSelectorBuscable,
   type OpcionDeSelectorBuscable,
-} from "./componentes/SelectorBuscable";
+} from "./componentes/formularios/SelectorBuscable";
 export {
   CampoSelectorLista,
   type PropsCampoSelectorLista,
-} from "./componentes/CampoSelectorLista";
+} from "./componentes/formularios/CampoSelectorLista";
 export {
   SelectorLista,
   type PropsSelectorLista,
   type OpcionDeSelectorLista,
-} from "./componentes/SelectorLista";
+} from "./componentes/formularios/SelectorLista";

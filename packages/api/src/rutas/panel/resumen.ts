@@ -113,8 +113,7 @@ export const resumen = router({
     const cantidadPedidos = pedidosVentana?._count ?? 0;
     const cantidadPedidosPrevios = pedidosVentanaPrevia?._count ?? 0;
     const ticket = cantidadPedidos > 0 ? ventas / cantidadPedidos : 0;
-    const ticketPrevio =
-      cantidadPedidosPrevios > 0 ? ventasPrevias / cantidadPedidosPrevios : 0;
+    const ticketPrevio = cantidadPedidosPrevios > 0 ? ventasPrevias / cantidadPedidosPrevios : 0;
 
     const ahora = new Date();
 

@@ -49,7 +49,7 @@ export function Seguridad() {
       <Tarjeta titulo="Cambiar clave" sinMarco>
         {error ? <Alerta tono="error">{error}</Alerta> : null}
         {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-  
+
         <Formulario
           onSubmit={(evento) => {
             evento.preventDefault();
@@ -89,7 +89,10 @@ export function Seguridad() {
 
       <TarjetaInfo titulo="Cuida tu cuenta">
         <p>Elige una clave de al menos 8 caracteres que no uses en otros sitios.</p>
-        <p>Para cambiarla te pedimos tu clave actual, así nadie más puede hacerlo desde tu sesión abierta.</p>
+        <p>
+          Para cambiarla te pedimos tu clave actual, así nadie más puede hacerlo desde tu sesión
+          abierta.
+        </p>
         <p>Nunca te pediremos tu clave por correo ni por WhatsApp.</p>
       </TarjetaInfo>
     </FilaTarjetas>

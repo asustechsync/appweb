@@ -517,8 +517,7 @@ const productos: ProductoSeed[] = [
   {
     slug: "medias-deportivas-running-nino",
     nombre: "Medias Deportivas Running Niño",
-    descripcion:
-      "Medias deportivas con refuerzo en talón y punta, ideales para educación física.",
+    descripcion: "Medias deportivas con refuerzo en talón y punta, ideales para educación física.",
     descripcionCorta: "Refuerzo talón y punta.",
     etiqueta: "Nuevo",
     destacado: false,
@@ -877,7 +876,13 @@ async function crearProductos() {
  */
 // `departamentos` vacio = llega a todo el pais (ver `cubreDepartamento`).
 const metodosEnvio = [
-  { nombre: "Lima y Callao", costo: 12, gratisDesde: 99, orden: 1, departamentos: ["Lima", "Callao"] },
+  {
+    nombre: "Lima y Callao",
+    costo: 12,
+    gratisDesde: 99,
+    orden: 1,
+    departamentos: ["Lima", "Callao"],
+  },
   { nombre: "Provincias (agencia)", costo: 22, gratisDesde: null, orden: 2, departamentos: [] },
   { nombre: "Recojo en tienda", costo: 0, gratisDesde: null, orden: 3, departamentos: [] },
 ];
@@ -906,14 +911,35 @@ async function crearMetodosEnvio() {
 
 // ── Banners de portada ───────────────────────────────────────────────────
 
+// Las tres promociones del carrusel de la portada. `imagenUrl` queda en la
+// foto demo: el carrusel no muestra imagen, solo texto sobre un tono pastel.
 const banners = [
   {
-    etiqueta: "Nueva colección",
-    titulo: "Comodidad con personalidad",
-    texto: "Básicos cómodos para acompañarte todos los días.",
+    etiqueta: "Ofertas por tiempo limitado",
+    titulo: "Tus básicos favoritos, a mejor precio",
+    texto: "Prendas seleccionadas desde S/ 11.90.",
     imagenUrl: "/producto.webp",
-    href: "/categorias/hombres",
+    href: "/#ofertas",
+    accion: "Ver ofertas",
     orden: 1,
+  },
+  {
+    etiqueta: "Envíos a todo el Perú",
+    titulo: "Envío gratis desde S/ 99",
+    texto: "Arma tu pedido y recíbelo donde estés.",
+    imagenUrl: "/producto.webp",
+    href: "/envios",
+    accion: "Conocer envíos",
+    orden: 2,
+  },
+  {
+    etiqueta: "Compra fácil y segura",
+    titulo: "Paga con Yape, Plin o transferencia",
+    texto: "Elige tu medio de pago al finalizar la compra.",
+    imagenUrl: "/producto.webp",
+    href: "/ayuda/preguntas-frecuentes",
+    accion: "Ver medios de pago",
+    orden: 3,
   },
 ];
 

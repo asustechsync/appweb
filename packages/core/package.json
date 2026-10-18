@@ -12,12 +12,15 @@
     "./tipos": "./src/tipos/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prueba": "vitest run",
+    "prueba:vigilar": "vitest"
   },
   "dependencies": {
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "vitest": "^5.0.5"
   }
 }

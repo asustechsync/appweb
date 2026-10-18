@@ -1,0 +1,156 @@
+.ui-selector-variantes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  margin-block-start: var(--espacio-1);
+}
+.ui-selector-variantes__grupo {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-selector-variantes__titulo {
+  font-family: var(--tipo-familia-texto);
+  padding: 0;
+  margin-block-end: var(--espacio-2);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+  color: var(--color-textoSuave);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+/* Talla y color en dos mitades iguales; cada grupo ocupa todo su lado. */
+.ui-selector-variantes__filas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--espacio-4);
+}
+.ui-selector-variantes__grupo {
+  min-inline-size: 0;
+}
+/* Agrupa los cuadrados de una opcion; sin fondo propio. */
+.ui-selector-variantes__pastilla {
+  /* Cinco por fila; los cuadrados se reparten el ancho de su mitad. */
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--espacio-1);
+}
+.ui-selector-variantes__talla,
+.ui-selector-variantes__muestra {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radio-md);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color var(--transicion-rapida),
+    background var(--transicion-rapida),
+    color var(--transicion-rapida);
+}
+.ui-selector-variantes__talla {
+  font-family: var(--tipo-familia-texto);
+  /* Borde en reposo mas suave que el del sistema; el seleccionado lo mantiene. */
+  border-color: color-mix(in srgb, var(--color-borde) 30%, var(--color-fondo));
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-selector-variantes__talla:hover {
+  border-color: var(--color-bordeFuerte);
+}
+.ui-selector-variantes__talla--activa,
+.ui-selector-variantes__talla--activa:hover {
+  border-color: var(--color-texto);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+}
+/* Color sin muestra conocida: pastilla con el nombre. */
+.ui-selector-variantes__talla--texto {
+  grid-column: span 2;
+  inline-size: 100%;
+  aspect-ratio: auto;
+  min-block-size: 2.25rem;
+  padding-inline: var(--espacio-2);
+}
+.ui-selector-variantes__muestra {
+  background: var(--muestra);
+  border-color: color-mix(in srgb, var(--color-borde) 30%, var(--color-fondo));
+}
+.ui-selector-variantes__muestra--activa {
+  border-color: var(--color-texto);
+  box-shadow: 0 0 0 2px var(--color-fondoSutil) inset;
+}
+/* Movil: barra fija al pie con cantidad y boton. Desde lg vuelve al flujo. */
+.ui-selector-variantes__barra {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3) var(--espacio-4);
+  background: var(--color-fondo);
+}
+/* En lugar de una linea divisoria, el contenido se desvanece hacia la barra. */
+.ui-selector-variantes__barra::before {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 100%;
+  block-size: var(--espacio-10);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-fondo) 0%, transparent),
+    var(--color-fondo)
+  );
+  pointer-events: none;
+  content: "";
+}
+.ui-selector-variantes__acciones {
+  /* Cantidad y comprar, mas altos que un control normal. */
+  --control-alto: 3.25rem;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+.ui-selector-variantes__acciones .ui-selector-variantes__comprar {
+  flex: 1;
+}
+.ui-selector-variantes__comprar {
+  min-block-size: var(--control-alto);
+  padding-inline: var(--espacio-5);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-marca-500);
+  color: var(--color-textoInverso);
+  font-family: var(--tipo-familia-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  cursor: pointer;
+}
+.ui-selector-variantes__comprar:disabled {
+  background: var(--color-neutro-300);
+  color: var(--color-textoTenue);
+  cursor: not-allowed;
+}
+.ui-selector-variantes__aviso {
+  margin: 0;
+  font-size: var(--tipo-tamano-xs);
+  color: var(--color-textoTenue);
+}
+@media (min-width: 64rem) {
+  .ui-selector-variantes__barra {
+    position: static;
+    padding: 0;
+    background: none;
+  }
+  .ui-selector-variantes__barra::before {
+    display: none;
+  }
+}
