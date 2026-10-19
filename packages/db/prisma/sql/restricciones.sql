@@ -1,7 +1,8 @@
 -- Reglas de validez que Prisma no expresa: restricciones CHECK.
 -- Idempotente: cada una se crea solo si todavia no existe, asi que se puede
 -- correr las veces que haga falta. La migracion
--- 20261011140000_banners_fechas_specs_restricciones crea las mismas.
+-- 20261011140000_banners_fechas_specs_restricciones crea las mismas (y
+-- 20261019120000_libro_reclamaciones, la de reclamos).
 DO $$
 DECLARE
   regla record;
@@ -23,7 +24,9 @@ BEGIN
       ('cupones',          'cupones_porcentaje_valido',
        $c$"porcentaje" BETWEEN 1 AND 100$c$),
       ('metodos_envio',    'metodos_envio_costos_validos',
-       $c$"costo" >= 0 AND ("gratisDesde" IS NULL OR "gratisDesde" >= 0)$c$)
+       $c$"costo" >= 0 AND ("gratisDesde" IS NULL OR "gratisDesde" >= 0)$c$),
+      ('reclamos',         'reclamos_respuesta_coherente',
+       $c$("estado" = 'PENDIENTE' AND "respuesta" IS NULL) OR ("estado" = 'RESPONDIDO' AND "respuesta" IS NOT NULL AND "respondidoEn" IS NOT NULL)$c$)
     ) AS t(tabla, nombre, condicion)
   LOOP
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = regla.nombre) THEN

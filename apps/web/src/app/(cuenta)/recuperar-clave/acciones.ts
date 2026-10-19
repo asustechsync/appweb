@@ -4,14 +4,17 @@ import {
   correoRecuperacion,
   crearTokenRecuperacion,
   hashClave,
+  mensajeDeEspera,
   usuarioDeTokenRecuperacion,
   verificarTokenRecuperacion,
 } from "@appweb/core";
 import { esquemaNuevaClave, esquemaRecuperacion } from "@appweb/core/tipos";
+import { secretoSesion } from "@appweb/api";
+import { enviarCorreo } from "@appweb/api/correo";
+import { URL_TIENDA } from "@appweb/api/urls";
 import { prisma } from "@appweb/db";
 
-import { enviarCorreo, URL_TIENDA } from "@/lib/notificaciones";
-import { secreto } from "@/lib/sesion";
+import { ipDelCliente, limites } from "@/lib/limites";
 
 export interface ResultadoRecuperacion {
   ok: boolean;
@@ -28,13 +31,19 @@ export async function pedirRecuperacion(datos: unknown): Promise<ResultadoRecupe
     return { ok: false, error: analizado.error.issues[0]?.message ?? "Escribe un correo válido" };
   }
 
+  // Sin limite, el formulario sirve para inundar de correos a cualquiera.
+  const porIp = limites.recuperacionPorIp.consumir(await ipDelCliente());
+  if (!porIp.permitido) return { ok: false, error: mensajeDeEspera(porIp.reintentarEnMs) };
+  const porCorreo = limites.recuperacionPorCorreo.consumir(analizado.data.email);
+  if (!porCorreo.permitido) return { ok: false, error: mensajeDeEspera(porCorreo.reintentarEnMs) };
+
   const usuario = await prisma.usuario.findUnique({
     where: { email: analizado.data.email },
     select: { id: true, nombre: true, email: true, clave: true, activo: true },
   });
 
   if (usuario?.activo) {
-    const token = crearTokenRecuperacion(usuario.id, usuario.clave, secreto());
+    const token = crearTokenRecuperacion(usuario.id, usuario.clave, secretoSesion());
     const enlace = `${URL_TIENDA}/recuperar-clave/nueva?token=${encodeURIComponent(token)}`;
     const { asunto, cuerpo } = correoRecuperacion({ nombre: usuario.nombre, enlace });
     await enviarCorreo(usuario.email, asunto, cuerpo);
@@ -61,7 +70,7 @@ export async function restablecerClave(datos: unknown): Promise<ResultadoRecuper
     select: { id: true, clave: true, activo: true },
   });
   if (usuario === null || !usuario.activo) return { ok: false, error: vencido };
-  if (!verificarTokenRecuperacion(token, usuario.clave, secreto())) {
+  if (!verificarTokenRecuperacion(token, usuario.clave, secretoSesion())) {
     return { ok: false, error: vencido };
   }
 

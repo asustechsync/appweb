@@ -13,6 +13,7 @@ import {
   IconoTicket,
   IconoUbicacion,
   LineaEstados,
+  MontoDetalle,
   TarjetaPedido,
 } from "@appweb/ui";
 
@@ -20,6 +21,7 @@ import { pedidoDelUsuario } from "@/lib/consultas-privadas";
 import { ETIQUETAS_MEDIO, medioPagoDesdeEnum, pasarela } from "@/lib/pago";
 import { leerSesion } from "@/lib/sesion";
 import { whatsappTienda } from "@/lib/whatsapp";
+import { FECHA_HORA_LARGA, MONEDA } from "@appweb/core/formato";
 
 /**
  * Confirmacion del pedido. Hoja dinamica: lee la sesion para comprobar que el
@@ -32,18 +34,6 @@ export const metadata = { title: "Pedido confirmado" };
 interface Props {
   params: Promise<{ codigo: string }>;
 }
-
-const FECHA = new Intl.DateTimeFormat("es-PE", {
-  dateStyle: "long",
-  timeStyle: "short",
-  timeZone: "America/Lima",
-});
-
-const MONEDA = new Intl.NumberFormat("es-PE", {
-  style: "currency",
-  currency: "PEN",
-  minimumFractionDigits: 2,
-});
 
 export default async function PaginaPedido({ params }: Props) {
   const { codigo } = await params;
@@ -97,7 +87,7 @@ export default async function PaginaPedido({ params }: Props) {
               : "Recibimos tu pedido. Apenas confirmemos el pago lo preparamos; puedes seguirlo desde Mi cuenta."
           }
           codigo={pedido.codigo}
-          fecha={FECHA.format(pedido.creadoEn)}
+          fecha={FECHA_HORA_LARGA.format(pedido.creadoEn)}
           lateral={
             <TarjetaPedido
               titulo="Resumen del pedido"
@@ -126,7 +116,7 @@ export default async function PaginaPedido({ params }: Props) {
           {instrucciones ? (
             <BloqueDetalle titulo="Cómo pagar" icono={<IconoMoneda tamano={20} />} destacado>
               <span>{ETIQUETAS_MEDIO[medio]?.etiqueta ?? "Pago"}</span>
-              <span className="ui-bloque-detalle__monto">{MONEDA.format(pedido.total)}</span>
+              <MontoDetalle>{MONEDA.format(pedido.total)}</MontoDetalle>
               <p>{instrucciones}</p>
               {enviarComprobante ? (
                 <Boton variante="secundario" href={enviarComprobante} externo>

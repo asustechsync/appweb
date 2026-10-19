@@ -7,6 +7,8 @@
  * vencido se rechaza igual en todos lados.
  */
 
+import { MONEDA } from "../formato";
+
 /** Lo que el carrito necesita saber de un cupon ya aceptado. */
 export interface Cupon {
   codigo: string;
@@ -33,8 +35,6 @@ export type RechazoCupon =
   | "vencido"
   | "agotado"
   | "minimo_no_alcanzado";
-
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
 
 export function mensajeDeRechazoCupon(motivo: RechazoCupon, regla?: ReglaCupon | null): string {
   switch (motivo) {

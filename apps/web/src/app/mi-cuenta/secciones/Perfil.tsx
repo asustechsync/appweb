@@ -39,6 +39,7 @@ import {
 import { esquemaPerfil } from "@appweb/core/tipos";
 
 import { useTRPC } from "@/lib/trpc";
+import { mensajeDeFallo } from "@appweb/core/formato";
 
 const OPCIONES_DOCUMENTO = [
   { valor: "", etiqueta: "Selecciona…" },
@@ -109,7 +110,7 @@ export function Perfil() {
       },
       onError: (fallo: unknown) => {
         setAviso(null);
-        setError(fallo instanceof Error ? fallo.message : "No se pudo guardar.");
+        setError(mensajeDeFallo(fallo, "No se pudo guardar."));
       },
     }),
   );

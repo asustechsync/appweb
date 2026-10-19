@@ -1,13 +1,15 @@
 import { cacheLife, cacheTag } from "next/cache";
 
 import {
+  compararTallas,
+  urlDeFoto,
   opcionesDeCompra,
   resolverDisponibilidad,
   resolverNivelStock,
   resolverPrecio,
 } from "@appweb/core";
-import type { OpcionDeTalla } from "@appweb/core";
-import { prisma } from "@appweb/db";
+import type { FiltrosListado, OpcionDeTalla } from "@appweb/core";
+import { type Prisma, prisma } from "@appweb/db";
 import type { BannerDePortada } from "@appweb/ui";
 
 import { etiquetas } from "./cache";
@@ -80,7 +82,13 @@ export async function bannersDePortada(): Promise<BannerDePortada[]> {
   const banners = await prisma.banner.findMany({
     where: { activo: true },
     orderBy: [{ orden: "asc" }, { creadoEn: "asc" }],
-    select: { etiqueta: true, titulo: true, texto: true, href: true, accion: true },
+    select: {
+      etiqueta: true,
+      titulo: true,
+      texto: true,
+      href: true,
+      accion: true,
+    },
   });
 
   return banners.map((banner) => ({
@@ -111,7 +119,9 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     take: limite,
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
-      variantes: { select: { stock: true, activo: true, talla: true, color: true } },
+      variantes: {
+        select: { stock: true, activo: true, talla: true, color: true },
+      },
       categoria: { select: { nombre: true } },
       marca: { select: { nombre: true } },
     },
@@ -136,7 +146,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
       descripcionCorta: p.descripcionCorta,
       categoria: p.categoria.nombre,
       marca: p.marca?.nombre ?? null,
-      imagenUrl: p.imagenes[0]?.url ?? "",
+      imagenUrl: urlDeFoto(p.imagenes[0]?.url),
       precio: precio.precio,
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
@@ -150,23 +160,26 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
   return resueltos.filter((p): p is ProductoDeRejilla => p !== null);
 }
 
-export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(etiquetas.portada());
+/** Lo que una tarjeta de producto necesita leer de la base. */
+const INCLUIR_EN_REJILLA = {
+  imagenes: { orderBy: { orden: "asc" as const }, take: 1 },
+  variantes: {
+    select: { stock: true, activo: true, talla: true, color: true },
+  },
+  categoria: { select: { nombre: true, slug: true } },
+  marca: { select: { nombre: true } },
+};
 
-  const productos = await prisma.producto.findMany({
-    where: { activo: true },
-    orderBy: { creadoEn: "desc" },
-    take: limite,
-    include: {
-      imagenes: { orderBy: { orden: "asc" }, take: 1 },
-      variantes: { select: { stock: true, activo: true, talla: true, color: true } },
-      categoria: { select: { nombre: true, slug: true } },
-      marca: { select: { nombre: true } },
-    },
-  });
+type ProductoConRejilla = Awaited<
+  ReturnType<typeof prisma.producto.findMany<{ include: typeof INCLUIR_EN_REJILLA }>>
+>[number];
 
+/**
+ * De la fila de la base a la tarjeta del catalogo. Precio, stock y nivel los
+ * deciden las funciones de @appweb/core: portada, marca y categoria muestran
+ * exactamente lo mismo para el mismo producto.
+ */
+async function aRejilla(productos: ProductoConRejilla[]): Promise<ProductoDeRejilla[]> {
   const ingresado = await ingresadoPorProducto(productos.map((p) => p.id));
 
   return productos.map((producto): ProductoDeRejilla => {
@@ -185,7 +198,7 @@ export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> 
       categoriaSlug: producto.categoria.slug,
       tallas: disponibilidad.tallas,
       marca: producto.marca?.nombre ?? null,
-      imagenUrl: producto.imagenes[0]?.url ?? "",
+      imagenUrl: urlDeFoto(producto.imagenes[0]?.url),
       precio: precio.precio,
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
@@ -197,6 +210,285 @@ export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> 
   });
 }
 
+export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.portada());
+
+  const productos = await prisma.producto.findMany({
+    where: { activo: true },
+    orderBy: { creadoEn: "desc" },
+    take: limite,
+    include: INCLUIR_EN_REJILLA,
+  });
+
+  return aRejilla(productos);
+}
+
+export interface MarcaConProductos {
+  nombre: string;
+  logo: string | null;
+  productos: ProductoDeRejilla[];
+}
+
+/**
+ * Pagina de una marca: sus productos visibles. Etiqueta `portada`, la misma
+ * que el carrusel de marcas: guardar cualquier producto la invalida
+ * (`etiquetasDeProducto` la incluye), asi precio y stock no quedan viejos.
+ */
+export async function marcaConProductos(slug: string): Promise<MarcaConProductos | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.portada());
+
+  const marca = await prisma.marca.findFirst({
+    where: { slug, activo: true },
+    select: { id: true, nombre: true, logoUrl: true },
+  });
+  if (marca === null) return null;
+
+  const productos = await prisma.producto.findMany({
+    where: { activo: true, marcaId: marca.id },
+    orderBy: [{ destacado: "desc" }, { creadoEn: "desc" }],
+    include: INCLUIR_EN_REJILLA,
+  });
+
+  return {
+    nombre: marca.nombre,
+    logo: marca.logoUrl,
+    productos: await aRejilla(productos),
+  };
+}
+
+/** Marcas con pagina propia, para `generateStaticParams`. Corre en build. */
+export async function slugsDeMarcas(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.catalogo());
+
+  const filas = await prisma.marca.findMany({
+    where: { activo: true, productos: { some: { activo: true } } },
+    select: { slug: true },
+  });
+  return filas.map((fila) => fila.slug);
+}
+
+// ── Listados: categoria y busqueda ─────────────────────────────────────────
+
+export interface CategoriaDeListado {
+  slug: string;
+  nombre: string;
+  descripcion: string | null;
+  tituloSeo: string | null;
+  descripcionSeo: string | null;
+  padre: { slug: string; nombre: string } | null;
+  hijas: { slug: string; nombre: string }[];
+}
+
+/** Una categoria activa con su padre y sus hijas. Etiqueta `navegacion`, como el menu. */
+export async function categoriaPorSlug(slug: string): Promise<CategoriaDeListado | null> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(etiquetas.navegacion());
+
+  return prisma.categoria.findFirst({
+    where: { slug, activo: true },
+    select: {
+      slug: true,
+      nombre: true,
+      descripcion: true,
+      tituloSeo: true,
+      descripcionSeo: true,
+      padre: { select: { slug: true, nombre: true } },
+      hijas: {
+        where: { activo: true },
+        orderBy: [{ orden: "asc" }, { nombre: "asc" }],
+        select: { slug: true, nombre: true },
+      },
+    },
+  });
+}
+
+/** Categorias activas, para `generateStaticParams`. */
+export async function slugsDeCategorias(): Promise<string[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(etiquetas.navegacion());
+
+  const filas = await prisma.categoria.findMany({
+    where: { activo: true },
+    select: { slug: true },
+  });
+  return filas.map((fila) => fila.slug);
+}
+
+/** Productos de la categoria y de sus hijas: una camiseta de "Boxers" tambien es de "Hombres". */
+function enCategoria(slug: string): Prisma.ProductoWhereInput {
+  return {
+    categoria: { activo: true, OR: [{ slug }, { padre: { slug } }] },
+  };
+}
+
+export interface Facetas {
+  tallas: string[];
+  /** Colores con stock, con la escritura con que los guarda la variante. */
+  colores: string[];
+  marcas: { slug: string; nombre: string }[];
+  /**
+   * Precio mas bajo y mas alto de la categoria en soles enteros (el minimo
+   * redondeado hacia abajo y el maximo hacia arriba, para que el rango
+   * completo incluya a todos). `null` si hay menos de dos precios distintos:
+   * sin rango que recorrer, no hay barra.
+   */
+  precio: { min: number; max: number } | null;
+}
+
+/**
+ * Tallas y colores con stock, marcas y limites de precio que existen en la
+ * categoria: solo se ofrecen filtros que devuelven algo. Etiquetas
+ * `categoria:{slug}` y `portada` (guardar cualquier producto invalida
+ * `portada`).
+ */
+export async function facetasDeCategoria(slug: string): Promise<Facetas> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.categoria(slug), etiquetas.portada());
+
+  const productos = await prisma.producto.findMany({
+    where: { activo: true, ...enCategoria(slug) },
+    select: {
+      precio: true,
+      marca: { select: { slug: true, nombre: true, activo: true } },
+      variantes: {
+        where: { activo: true, stock: { gt: 0 } },
+        select: { talla: true, color: true },
+      },
+    },
+  });
+
+  const tallas = new Set<string>();
+  // Clave en minusculas: "negro" y "Negro" son el mismo color en el filtro.
+  const colores = new Map<string, string>();
+  const marcas = new Map<string, string>();
+  let masBarato = Number.POSITIVE_INFINITY;
+  let masCaro = Number.NEGATIVE_INFINITY;
+  for (const p of productos) {
+    for (const v of p.variantes) {
+      tallas.add(v.talla.toUpperCase());
+      const clave = v.color.toLowerCase();
+      if (!colores.has(clave)) colores.set(clave, v.color);
+    }
+    if (p.marca?.activo) marcas.set(p.marca.slug, p.marca.nombre);
+    masBarato = Math.min(masBarato, Number(p.precio));
+    masCaro = Math.max(masCaro, Number(p.precio));
+  }
+  const min = Math.floor(masBarato);
+  const max = Math.ceil(masCaro);
+  return {
+    tallas: [...tallas].sort(compararTallas),
+    colores: [...colores.values()].sort((a, b) => a.localeCompare(b, "es")),
+    marcas: [...marcas]
+      .map(([slugMarca, nombre]) => ({ slug: slugMarca, nombre }))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, "es")),
+    precio: Number.isFinite(min) && Number.isFinite(max) && max > min ? { min, max } : null,
+  };
+}
+
+/** Tope de un listado: suficiente para el catalogo actual sin paginar. */
+const TOPE_LISTADO = 120;
+
+function condicionesDeFiltros(f: FiltrosListado): Prisma.ProductoWhereInput[] {
+  const y: Prisma.ProductoWhereInput[] = [];
+  if (f.sub) y.push({ categoria: { slug: f.sub, activo: true } });
+  if (f.marca) y.push({ marca: { slug: f.marca, activo: true } });
+  if (f.ofertas) y.push({ precioLista: { not: null } });
+  if (f.precioMin !== null || f.precioMax !== null) {
+    y.push({
+      precio: {
+        ...(f.precioMin !== null ? { gte: f.precioMin } : {}),
+        ...(f.precioMax !== null ? { lte: f.precioMax } : {}),
+      },
+    });
+  }
+  // Talla, color y "solo en stock" se piden de una sola variante: "talla M en
+  // Negro" tiene que existir como una misma fila, no una M y un Negro sueltos.
+  if (f.talla || f.color || f.stock) {
+    y.push({
+      variantes: {
+        some: {
+          activo: true,
+          stock: { gt: 0 },
+          ...(f.talla ? { talla: { equals: f.talla, mode: "insensitive" as const } } : {}),
+          ...(f.color ? { color: { equals: f.color, mode: "insensitive" as const } } : {}),
+        },
+      },
+    });
+  }
+  return y;
+}
+
+function ordenDe(f: FiltrosListado): Prisma.ProductoOrderByWithRelationInput[] {
+  if (f.orden === "precio-asc") return [{ precio: "asc" }, { nombre: "asc" }];
+  if (f.orden === "precio-desc") return [{ precio: "desc" }, { nombre: "asc" }];
+  return [{ destacado: "desc" }, { creadoEn: "desc" }];
+}
+
+/**
+ * Listado de una categoria con filtros. Cada combinacion de filtros es su
+ * propia entrada de cache bajo la misma etiqueta: el visitante no toca la base.
+ */
+export async function productosDeCategoria(
+  slug: string,
+  filtros: FiltrosListado,
+): Promise<ProductoDeRejilla[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.categoria(slug), etiquetas.portada());
+
+  const productos = await prisma.producto.findMany({
+    where: {
+      activo: true,
+      AND: [enCategoria(slug), ...condicionesDeFiltros(filtros)],
+    },
+    orderBy: ordenDe(filtros),
+    take: TOPE_LISTADO,
+    include: INCLUIR_EN_REJILLA,
+  });
+  return aRejilla(productos);
+}
+
+/**
+ * Busqueda: cada palabra tiene que aparecer en el slug del producto (sin
+ * tildes), en su nombre, o en el slug de su marca o categoria. "boxer fila"
+ * encuentra los boxers de Fila. Cache corta por termino: no se invalida por
+ * evento, caduca sola.
+ */
+export async function buscarProductos(terminos: string[]): Promise<ProductoDeRejilla[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(etiquetas.catalogo());
+
+  if (terminos.length === 0) return [];
+  const productos = await prisma.producto.findMany({
+    where: {
+      activo: true,
+      categoria: { activo: true },
+      AND: terminos.map((t) => ({
+        OR: [
+          { slug: { contains: t } },
+          { nombre: { contains: t, mode: "insensitive" as const } },
+          { marca: { slug: { contains: t } } },
+          { categoria: { slug: { contains: t } } },
+        ],
+      })),
+    },
+    orderBy: [{ destacado: "desc" }, { creadoEn: "desc" }],
+    take: TOPE_LISTADO,
+    include: INCLUIR_EN_REJILLA,
+  });
+  return aRejilla(productos);
+}
+
 export interface ProductoDeFicha {
   slug: string;
   nombre: string;
@@ -206,7 +498,11 @@ export interface ProductoDeFicha {
   etiqueta: string | null;
   tituloSeo: string | null;
   descripcionSeo: string | null;
-  categoria: { slug: string; nombre: string; padre: { slug: string; nombre: string } | null };
+  categoria: {
+    slug: string;
+    nombre: string;
+    padre: { slug: string; nombre: string } | null;
+  };
   imagenes: { url: string; alt: string }[];
   precio: number;
   precioLista: number | null;
@@ -234,14 +530,25 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
     where: { slug, activo: true },
     include: {
       categoria: {
-        select: { slug: true, nombre: true, padre: { select: { slug: true, nombre: true } } },
+        select: {
+          slug: true,
+          nombre: true,
+          padre: { select: { slug: true, nombre: true } },
+        },
       },
       marca: { select: { nombre: true } },
       imagenes: { orderBy: { orden: "asc" } },
       variantes: {
         where: { activo: true },
         orderBy: [{ talla: "asc" }, { color: "asc" }],
-        select: { id: true, talla: true, color: true, sku: true, stock: true, activo: true },
+        select: {
+          id: true,
+          talla: true,
+          color: true,
+          sku: true,
+          stock: true,
+          activo: true,
+        },
       },
     },
   });
@@ -264,10 +571,12 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
     tituloSeo: producto.tituloSeo,
     descripcionSeo: producto.descripcionSeo,
     categoria: producto.categoria,
-    imagenes: producto.imagenes.map((imagen) => ({
-      url: imagen.url,
-      alt: imagen.alt ?? producto.nombre,
-    })),
+    imagenes: producto.imagenes
+      .filter((imagen) => urlDeFoto(imagen.url) !== "")
+      .map((imagen) => ({
+        url: imagen.url,
+        alt: imagen.alt ?? producto.nombre,
+      })),
     precio: precio.precio,
     precioLista: precio.precioLista,
     descuentoPct: precio.descuentoPct,
@@ -344,7 +653,11 @@ export async function varianteParaCarrito(varianteId: string): Promise<VarianteD
           nombre: true,
           precio: true,
           precioLista: true,
-          imagenes: { orderBy: { orden: "asc" }, take: 1, select: { url: true } },
+          imagenes: {
+            orderBy: { orden: "asc" },
+            take: 1,
+            select: { url: true },
+          },
         },
       },
     },
@@ -364,7 +677,7 @@ export async function varianteParaCarrito(varianteId: string): Promise<VarianteD
     nombre: producto.nombre,
     talla: variante.talla,
     color: variante.color,
-    imagenUrl: producto.imagenes[0]?.url ?? "",
+    imagenUrl: urlDeFoto(producto.imagenes[0]?.url),
     precio: precio.precio,
     precioLista: precio.precioLista,
     stock: variante.stock,
@@ -392,7 +705,13 @@ export async function metodosDeEnvio(): Promise<MetodoDeEnvio[]> {
   const metodos = await prisma.metodoEnvio.findMany({
     where: { activo: true },
     orderBy: { orden: "asc" },
-    select: { id: true, nombre: true, costo: true, gratisDesde: true, departamentos: true },
+    select: {
+      id: true,
+      nombre: true,
+      costo: true,
+      gratisDesde: true,
+      departamentos: true,
+    },
   });
 
   return metodos.map((metodo) => ({
@@ -416,5 +735,9 @@ export async function marcas(limite = 10): Promise<MarcaDeFicha[]> {
     take: limite,
   });
 
-  return marcas.map((marca) => ({ slug: marca.slug, nombre: marca.nombre, logo: marca.logoUrl }));
+  return marcas.map((marca) => ({
+    slug: marca.slug,
+    nombre: marca.nombre,
+    logo: marca.logoUrl,
+  }));
 }

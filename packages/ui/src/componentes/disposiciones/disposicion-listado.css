@@ -1,0 +1,19 @@
+/* Movil: filtros arriba, productos debajo. */
+.ui-disposicion-listado {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Escritorio: columna lateral con los filtros; los productos a la derecha.
+   La columna y el panel de filtros llegan hasta la altura del listado. */
+@media (min-width: 64rem) {
+  .ui-disposicion-listado {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: var(--espacio-8);
+    align-items: stretch;
+  }
+  .ui-disposicion-listado__filtros > * {
+    block-size: 100%;
+  }
+}

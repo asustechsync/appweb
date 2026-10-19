@@ -1,10 +1,6 @@
-import "../estilos.css";
+import { MONEDA } from "@appweb/core/formato";
 
-const FORMATO = new Intl.NumberFormat("es-PE", {
-  style: "currency",
-  currency: "PEN",
-  minimumFractionDigits: 2,
-});
+import "../estilos.css";
 
 export interface PropsPrecio {
   valor: number;
@@ -18,7 +14,7 @@ export interface PropsPrecio {
 /** Parte el precio en simbolo y cifra respetando el orden de la configuracion regional. */
 function partesDelPrecio(valor: number) {
   const partes: { tipo: "simbolo" | "cifra"; texto: string }[] = [];
-  for (const parte of FORMATO.formatToParts(valor)) {
+  for (const parte of MONEDA.formatToParts(valor)) {
     // El espacio entre simbolo y cifra lo pone el CSS, no el texto.
     if (parte.type === "literal" && parte.value.trim() === "") continue;
 
@@ -41,7 +37,7 @@ export function Precio({ valor, antes, tamano = "md", separarSimbolo = false }: 
       {separarSimbolo ? (
         <span
           className="ui-precio__actual ui-precio__actual--separado"
-          aria-label={FORMATO.format(valor)}
+          aria-label={MONEDA.format(valor)}
         >
           {partesDelPrecio(valor).map((parte, indice) => (
             <span
@@ -54,9 +50,9 @@ export function Precio({ valor, antes, tamano = "md", separarSimbolo = false }: 
           ))}
         </span>
       ) : (
-        <span className="ui-precio__actual">{FORMATO.format(valor)}</span>
+        <span className="ui-precio__actual">{MONEDA.format(valor)}</span>
       )}
-      {antes ? <span className="ui-precio__antes">{FORMATO.format(antes)}</span> : null}
+      {antes ? <span className="ui-precio__antes">{MONEDA.format(antes)}</span> : null}
     </span>
   );
 }

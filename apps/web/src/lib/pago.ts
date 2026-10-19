@@ -1,3 +1,4 @@
+import { entorno } from "@appweb/api/entorno";
 import { PagoManual, type MedioPago } from "@appweb/core/puertos";
 
 /**
@@ -7,11 +8,12 @@ import { PagoManual, type MedioPago } from "@appweb/core/puertos";
  * esta es la UNICA linea que cambia — el checkout y la pagina del pedido
  * siguen hablando con la interfaz `PasarelaPago` sin saber cual hay detras.
  */
+const e = entorno();
 export const pasarela = new PagoManual({
-  ...(process.env["YAPE_NUMERO"] ? { numeroYape: process.env["YAPE_NUMERO"] } : {}),
-  ...(process.env["PLIN_NUMERO"] ? { numeroPlin: process.env["PLIN_NUMERO"] } : {}),
-  ...(process.env["CUENTA_BANCARIA"] ? { cuentaBancaria: process.env["CUENTA_BANCARIA"] } : {}),
-  ...(process.env["TITULAR_CUENTA"] ? { titular: process.env["TITULAR_CUENTA"] } : {}),
+  ...(e.YAPE_NUMERO ? { numeroYape: e.YAPE_NUMERO } : {}),
+  ...(e.PLIN_NUMERO ? { numeroPlin: e.PLIN_NUMERO } : {}),
+  ...(e.CUENTA_BANCARIA ? { cuentaBancaria: e.CUENTA_BANCARIA } : {}),
+  ...(e.TITULAR_CUENTA ? { titular: e.TITULAR_CUENTA } : {}),
 });
 
 /** El enum de Prisma va en mayusculas; `PasarelaPago` habla el `MedioPago` de core. */

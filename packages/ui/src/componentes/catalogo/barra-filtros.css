@@ -1,0 +1,128 @@
+/* Filtros del listado. Base movil: cada grupo es un titulo y debajo sus opciones
+   en una fila desplazable. Desde escritorio, es un panel en la columna lateral
+   con grupos colapsables (details/summary: funciona sin JavaScript). */
+.ui-barra-filtros {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  margin-block: var(--espacio-4) var(--espacio-5);
+}
+.ui-barra-filtros__grupo {
+  min-inline-size: 0;
+}
+.ui-barra-filtros__titulo {
+  display: block;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+  text-transform: uppercase;
+  cursor: default;
+  list-style: none;
+}
+.ui-barra-filtros__titulo::-webkit-details-marker {
+  display: none;
+}
+.ui-barra-filtros__titulo::after {
+  content: none;
+}
+.ui-barra-filtros__opciones {
+  display: flex;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-block: var(--espacio-1);
+}
+.ui-barra-filtros__opciones::-webkit-scrollbar {
+  display: none;
+}
+.ui-barra-filtros__opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  white-space: nowrap;
+  transition: border-color var(--transicion-rapida);
+}
+.ui-barra-filtros__opcion:hover {
+  border-color: var(--color-bordeFuerte);
+}
+.ui-barra-filtros__opcion[aria-current="true"] {
+  border-color: var(--color-acentoFuerte);
+  background: var(--color-acento);
+  color: var(--color-acentoTexto);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-barra-filtros__opcion[aria-current="true"]::before {
+  content: "✓";
+}
+
+@media (min-width: 48rem) {
+  .ui-barra-filtros__opciones {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
+/* Escritorio: panel de la columna lateral. Cada grupo colapsa con su flecha. */
+@media (min-width: 64rem) {
+  .ui-barra-filtros {
+    gap: 0;
+    margin-block: 0;
+    padding: var(--espacio-4);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-bloque);
+    background: var(--color-fondo);
+    box-shadow: var(--sombra-md);
+  }
+  .ui-barra-filtros__grupo {
+    padding-block: var(--espacio-3);
+    border-block-start: 1px solid var(--color-borde);
+  }
+  .ui-barra-filtros__grupo[open] {
+    padding-block-end: var(--espacio-4);
+  }
+  .ui-barra-filtros__titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-3);
+    padding-block: var(--espacio-1);
+    color: var(--color-texto);
+    font-size: var(--tipo-tamano-sm);
+    text-transform: none;
+    cursor: pointer;
+    list-style: none;
+  }
+  .ui-barra-filtros__titulo::after {
+    content: "";
+    flex: none;
+    inline-size: 7px;
+    block-size: 7px;
+    border-inline-end: 1.5px solid currentColor;
+    border-block-end: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform var(--transicion-rapida);
+  }
+  .ui-barra-filtros__grupo[open] > .ui-barra-filtros__titulo::after {
+    transform: translateY(2px) rotate(-135deg);
+  }
+  .ui-barra-filtros__opciones {
+    margin-block-start: var(--espacio-3);
+  }
+}
+
+/* Grupo con barra deslizable (precio): mismo aire que las opciones. */
+.ui-barra-filtros__rango {
+  padding-block: var(--espacio-2) var(--espacio-1);
+}
+@media (min-width: 64rem) {
+  .ui-barra-filtros__rango {
+    margin-block-start: var(--espacio-3);
+  }
+}

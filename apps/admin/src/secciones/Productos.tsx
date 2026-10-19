@@ -19,8 +19,7 @@ import {
 import { useTRPC } from "@/lib/trpc";
 
 import { EditorProducto } from "./EditorProducto";
-
-export const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
+import { MONEDA } from "@appweb/core/formato";
 
 type Filtro = "TODOS" | "VISIBLES" | "OCULTOS";
 

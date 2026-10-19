@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 
-import { PaginaInformativa } from "@appweb/ui";
+import { datosTienda } from "@appweb/api/tienda";
+import { EnlaceDestacado, PaginaInformativa } from "@appweb/ui";
+
+import { whatsappMayorista } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: "Ventas al por mayor | SOCKS",
+  title: "Ventas al por mayor",
   description: "Dotación para empresas, colegios y revendedores en volumen.",
 };
 
-// TODO: reemplazar por el numero de WhatsApp real de ventas mayoristas.
-const WHATSAPP_MAYORISTA = "51900000000";
-
 export default function PaginaMayorista() {
+  const whatsapp = whatsappMayorista();
+  const { correo } = datosTienda();
   return (
     <PaginaInformativa titulo="Ventas al por mayor">
       <p>
@@ -31,16 +33,15 @@ export default function PaginaMayorista() {
         de entrega y forma de pago para tu pedido.
       </p>
 
-      <a
-        className="ui-pagina-informativa__cta"
-        href={`https://wa.me/${WHATSAPP_MAYORISTA}?text=${encodeURIComponent(
-          "Hola, quisiera cotizar una compra al por mayor.",
-        )}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Cotizar por WhatsApp
-      </a>
+      {whatsapp ? (
+        <EnlaceDestacado href={whatsapp} externo>
+          Cotizar por WhatsApp
+        </EnlaceDestacado>
+      ) : (
+        <p>
+          Escríbenos a <a href={`mailto:${correo}`}>{correo}</a>.
+        </p>
+      )}
     </PaginaInformativa>
   );
 }

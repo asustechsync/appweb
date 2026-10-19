@@ -1,12 +1,7 @@
-import Image from "next/image";
+import { FotoProducto } from "../catalogo/FotoProducto";
 
 import "../estilos.css";
-
-const FORMATO = new Intl.NumberFormat("es-PE", {
-  style: "currency",
-  currency: "PEN",
-  minimumFractionDigits: 2,
-});
+import { MONEDA } from "@appweb/core/formato";
 
 export interface ArticuloResumen {
   id: string;
@@ -30,7 +25,14 @@ export function ArticulosResumen({ articulos }: PropsArticulosResumen) {
       {articulos.map((articulo) => (
         <li key={articulo.id} className="ui-articulos-resumen__item">
           <span className="ui-articulos-resumen__imagen">
-            <Image src={articulo.imagenUrl} alt="" width={112} height={112} sizes="56px" />
+            <FotoProducto
+              src={articulo.imagenUrl}
+              alt=""
+              width={112}
+              height={112}
+              sizes="56px"
+              leyenda={false}
+            />
             <span className="ui-articulos-resumen__cantidad">
               <span className="ui-solo-lectores">Cantidad: </span>
               {articulo.cantidad}
@@ -42,7 +44,7 @@ export function ArticulosResumen({ articulos }: PropsArticulosResumen) {
               {articulo.color} · Talla {articulo.talla}
             </span>
           </span>
-          <span className="ui-articulos-resumen__total">{FORMATO.format(articulo.total)}</span>
+          <span className="ui-articulos-resumen__total">{MONEDA.format(articulo.total)}</span>
         </li>
       ))}
     </ul>

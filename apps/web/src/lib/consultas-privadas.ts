@@ -9,6 +9,7 @@
  * exactamente el tipo de error que esto evita de raiz.
  */
 
+import { urlDeFoto } from "@appweb/core";
 import { prisma } from "@appweb/db";
 
 export interface DireccionDeUsuario {
@@ -118,7 +119,7 @@ export async function pedidoDelUsuario(
       color: item.color,
       precioUnitario: Number(item.precioUnitario),
       cantidad: item.cantidad,
-      imagenUrl: item.variante.producto.imagenes[0]?.url ?? null,
+      imagenUrl: urlDeFoto(item.variante.producto.imagenes[0]?.url) || null,
     })),
   };
 }

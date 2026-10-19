@@ -117,6 +117,8 @@ export const tokens = {
     fondoFoto: "#F6F6F7",
     escenaInicio: "#D4D6D9",
     escenaFin: "#EFF0F2",
+    // Fondo de la web en escritorio: sustituye el cielo de escena a partir del quiebre lg.
+    fondoEscritorio: "#EFF1F3",
     vidrio: "rgb(62 66 72 / 0.5)",
     vidrioBorde: "rgb(255 255 255 / 0.24)",
     textoVidrio: "#FFFFFF",

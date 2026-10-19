@@ -20,9 +20,7 @@ import {
 import { useTRPC } from "@/lib/trpc";
 
 import { DetallePedido } from "./DetallePedido";
-
-export const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
-export const FECHA = new Intl.DateTimeFormat("es-PE", { dateStyle: "medium", timeStyle: "short" });
+import { FECHA_HORA, MONEDA } from "@appweb/core/formato";
 
 /** Ambar mientras espera a alguien, verde cuando termino bien, rojo si se cayo. */
 export function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "error" | "neutro" {
@@ -139,7 +137,7 @@ export function Pedidos({ puedeGestionar }: { puedeGestionar: boolean }) {
               {pedido.cliente} · {pedido.email}
             </span>
             <span>
-              {FECHA.format(new Date(pedido.creadoEn))} · {pedido.lineas}{" "}
+              {FECHA_HORA.format(new Date(pedido.creadoEn))} · {pedido.lineas}{" "}
               {pedido.lineas === 1 ? "producto" : "productos"} · {pedido.departamento}
             </span>
             <span>

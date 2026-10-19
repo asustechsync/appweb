@@ -18,10 +18,9 @@ import {
   Tarjeta,
 } from "@appweb/ui";
 
-import { revalidarCatalogo } from "@/lib/revalidar";
+import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
-
-const FECHA = new Intl.DateTimeFormat("es-PE", { dateStyle: "medium", timeStyle: "short" });
+import { FECHA_HORA } from "@appweb/core/formato";
 
 type Filtro = "BAJO" | "TODAS";
 
@@ -190,7 +189,7 @@ function MovimientosVariante({ variante, umbral, onVolver }: PropsMovimientosVar
         setError(null);
         setCantidad("");
         setNota("");
-        const tiendaAlDia = await revalidarCatalogo(r.revalidar.productos, r.revalidar.catalogo);
+        const tiendaAlDia = await revalidarTienda(r.revalidar);
         setAviso(
           `Listo: ahora hay ${r.stockNuevo} en stock.` +
             (tiendaAlDia ? "" : " La tienda tardará unos minutos en mostrarlo."),
@@ -293,7 +292,7 @@ function MovimientosVariante({ variante, umbral, onVolver }: PropsMovimientosVar
               </span>
               {m.nota ? <span>{m.nota}</span> : null}
               <span>
-                {m.usuario ?? "Sistema"} · {FECHA.format(new Date(m.creadoEn))}
+                {m.usuario ?? "Sistema"} · {FECHA_HORA.format(new Date(m.creadoEn))}
               </span>
             </FilaLista>
           ))

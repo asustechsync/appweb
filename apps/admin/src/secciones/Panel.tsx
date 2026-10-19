@@ -11,6 +11,7 @@ import {
   IconoCarrito,
   IconoConfiguracion,
   IconoEtiqueta,
+  IconoLibro,
   IconoMoneda,
   IconoPedidos,
   IconoUbicacion,
@@ -23,13 +24,16 @@ import { Ajustes } from "./Ajustes";
 import { Envios } from "./Envios";
 import { Pedidos } from "./Pedidos";
 import { Productos } from "./Productos";
+import { Reclamos } from "./Reclamos";
 import { Resumen } from "./Resumen";
 import { Stock } from "./Stock";
 import { Usuarios } from "./Usuarios";
+import { URL_TIENDA } from "@appweb/api/urls";
 
 const ETIQUETAS: Record<string, string> = {
   resumen: "Resumen",
   pedidos: "Pedidos",
+  reclamos: "Reclamos",
   envios: "Envíos",
   stock: "Stock",
   productos: "Productos",
@@ -40,6 +44,7 @@ const ETIQUETAS: Record<string, string> = {
 const ICONOS: Record<string, ReactNode> = {
   resumen: <IconoMoneda />,
   pedidos: <IconoPedidos />,
+  reclamos: <IconoLibro />,
   envios: <IconoUbicacion />,
   stock: <IconoEtiqueta />,
   productos: <IconoCarrito />,
@@ -85,7 +90,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
 
   async function salir() {
     await fetch("/api/sesion", { method: "DELETE" });
-    window.location.href = `${process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000"}/ingresar`;
+    window.location.href = `${URL_TIENDA}/ingresar`;
   }
 
   // En escritorio no hay pantalla de menu: sin seccion se ve la primera.
@@ -96,6 +101,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
   const contadores: Record<string, number> = {
     pedidos: avisos.porConfirmar,
     envios: avisos.porDespachar,
+    reclamos: avisos.reclamosPendientes,
   };
   function etiqueta(id: string): string {
     const texto = ETIQUETAS[id] ?? id;
@@ -111,7 +117,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
       nombreUsuario={nombre}
       rolUsuario={rol}
       onSalir={salir}
-      hrefTienda={process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000"}
+      hrefTienda={URL_TIENDA}
     >
       {avisos.nuevo && secciones.includes("pedidos") ? (
         <Alerta tono="exito">
@@ -134,6 +140,8 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         <Resumen />
       ) : visible === "pedidos" ? (
         <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
+      ) : visible === "reclamos" ? (
+        <Reclamos />
       ) : visible === "envios" ? (
         <Envios puedeTarifas={puede(rol, "gestionar_ajustes")} />
       ) : visible === "productos" ? (

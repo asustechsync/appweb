@@ -31,10 +31,11 @@ import {
   TarjetaPedido,
 } from "@appweb/ui";
 
-import { revalidarCatalogo, type ProductoTocado } from "@/lib/revalidar";
+import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 
-import { FECHA, MONEDA, tonoDeEstado } from "./Pedidos";
+import { tonoDeEstado } from "./Pedidos";
+import { FECHA_HORA, MONEDA, mensajeDeFallo } from "@appweb/core/formato";
 
 function tonoDePago(estado: EstadoPago): "exito" | "alerta" | "error" | "neutro" {
   if (estado === "CONFIRMADO") return "exito";
@@ -81,7 +82,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
 
   async function alTerminar(mensaje: string, productos: ProductoTocado[]) {
     setError(null);
-    const tiendaAlDia = await revalidarCatalogo(productos);
+    const tiendaAlDia = await revalidarTienda({ productos });
     setAviso(
       tiendaAlDia
         ? mensaje
@@ -100,7 +101,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
 
   function alFallar(fallo: unknown) {
     setAviso(null);
-    setError(fallo instanceof Error ? fallo.message : "No se pudo completar la acción.");
+    setError(mensajeDeFallo(fallo));
   }
 
   const confirmar = useMutation(
@@ -164,7 +165,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
         <p>
           <Insignia tono={tonoDeEstado(p.estado)}>{ETIQUETAS[p.estado]}</Insignia>{" "}
           <Insignia tono="neutro">{ETIQUETAS_MEDIO_PAGO[p.medioPago]}</Insignia>{" "}
-          {FECHA.format(new Date(p.creadoEn))}
+          {FECHA_HORA.format(new Date(p.creadoEn))}
         </p>
         <LineaEstados pasos={pasosDelPedido(p.estado)} />
       </Tarjeta>
@@ -350,7 +351,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
             </span>
             {pago.confirmadoPor && pago.confirmadoEn ? (
               <span>
-                Confirmó {pago.confirmadoPor} · {FECHA.format(new Date(pago.confirmadoEn))}
+                Confirmó {pago.confirmadoPor} · {FECHA_HORA.format(new Date(pago.confirmadoEn))}
               </span>
             ) : null}
             {pago.comprobanteUrl ? (
@@ -370,7 +371,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
             </span>
             {h.nota ? <span>{h.nota}</span> : null}
             <span>
-              {h.usuario ?? "Sistema"} · {FECHA.format(new Date(h.creadoEn))}
+              {h.usuario ?? "Sistema"} · {FECHA_HORA.format(new Date(h.creadoEn))}
             </span>
           </FilaLista>
         ))}

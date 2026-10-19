@@ -1,0 +1,59 @@
+/* Galeria de fotos del panel. Base movil: dos columnas; desde md, cuatro. */
+.ui-galeria-editable {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
+}
+.ui-galeria-editable__foto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  margin: 0;
+}
+.ui-galeria-editable__foto img,
+.ui-galeria-editable__agregar {
+  aspect-ratio: 1;
+  inline-size: 100%;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondoFoto);
+}
+.ui-galeria-editable__foto img {
+  object-fit: cover;
+}
+.ui-galeria-editable__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+.ui-galeria-editable__agregar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-style: dashed;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  cursor: pointer;
+}
+.ui-galeria-editable__agregar:hover {
+  color: var(--color-texto);
+  border-color: var(--color-bordeFuerte);
+}
+.ui-galeria-editable__agregar[aria-disabled] {
+  cursor: progress;
+}
+/* El input queda oculto: el recuadro entero es la zona para elegir archivos. */
+.ui-galeria-editable__agregar input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}
+
+@media (min-width: 48rem) {
+  .ui-galeria-editable {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

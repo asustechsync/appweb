@@ -41,6 +41,7 @@ export const SECCIONES: SeccionDeNavegacion[] = [
       { etiqueta: "Cambios y devoluciones", href: "/ayuda/cambios-y-devoluciones" },
       { etiqueta: "Preguntas frecuentes", href: "/ayuda/preguntas-frecuentes" },
       { etiqueta: "Contacto", href: "/ayuda/contacto" },
+      { etiqueta: "Libro de Reclamaciones", href: "/libro-de-reclamaciones" },
     ],
   },
   { tipo: "enlace", etiqueta: "Envío GRATIS desde S/99", href: "/envios" },

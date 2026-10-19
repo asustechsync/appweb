@@ -1,6 +1,7 @@
 export { tokens, tokensOscuro, type Tokens } from "./tokens";
 export { GUION_TEMA, TEMA_LLAVE, type Tema } from "./tema";
 export { GuionTemaInicial } from "./GuionTemaInicial";
+export { DocumentoRaiz } from "./DocumentoRaiz";
 
 // Iconos que las paginas necesitan pasar como prop (ej. NavegacionSecciones).
 // El resto de los iconos son detalle interno de cada primitivo y no hace
@@ -31,6 +32,8 @@ export {
   IconoConfiguracion,
   IconoPremio,
   IconoFavorito,
+  IconoLibro,
+  IconoBuscar,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -49,6 +52,12 @@ export {
 } from "./componentes/navegacion/Header";
 export { Ubicacion, type PropsUbicacion } from "./componentes/navegacion/Ubicacion";
 export { BotonWhatsApp, type PropsBotonWhatsApp } from "./componentes/navegacion/BotonWhatsApp";
+export {
+  PiePagina,
+  type PropsPiePagina,
+  type GrupoDePie,
+  type EnlaceDePie,
+} from "./componentes/navegacion/PiePagina";
 export { Buscador, type PropsBuscador } from "./componentes/navegacion/Buscador";
 export { AccionesCuenta, type PropsAccionesCuenta } from "./componentes/navegacion/AccionesCuenta";
 export {
@@ -91,7 +100,20 @@ export {
 } from "./componentes/formularios/BloqueFormulario";
 export { Precio, type PropsPrecio } from "./componentes/catalogo/Precio";
 export { TarjetaProducto, type PropsTarjetaProducto } from "./componentes/catalogo/TarjetaProducto";
+export { FotoProducto, type PropsFotoProducto } from "./componentes/catalogo/FotoProducto";
 export { TarjetaMarca, type PropsTarjetaMarca } from "./componentes/catalogo/TarjetaMarca";
+export {
+  BarraResultados,
+  separarOrden,
+  type PropsBarraResultados,
+} from "./componentes/catalogo/BarraResultados";
+export {
+  BarraFiltros,
+  type PropsBarraFiltros,
+  type GrupoDeFiltro,
+  type OpcionDeFiltro,
+  type RangoDeFiltro,
+} from "./componentes/catalogo/BarraFiltros";
 export { BannerOferta, type PropsBannerOferta } from "./componentes/catalogo/BannerOferta";
 export { BannerPromo, type PropsBannerPromo } from "./componentes/portada/BannerPromo";
 export {
@@ -117,8 +139,15 @@ export {
 export { FichaProducto, type PropsFichaProducto } from "./componentes/catalogo/FichaProducto";
 export { Acordeon, type PropsAcordeon, type SeccionDeAcordeon } from "./componentes/base/Acordeon";
 export {
+  DisposicionListado,
+  type PropsDisposicionListado,
+} from "./componentes/disposiciones/DisposicionListado";
+export {
   PaginaInformativa,
+  TablaInformativa,
+  EnlaceDestacado,
   type PropsPaginaInformativa,
+  type PropsEnlaceDestacado,
 } from "./componentes/disposiciones/PaginaInformativa";
 export {
   LayoutProducto,
@@ -165,9 +194,15 @@ export {
 } from "./componentes/compra/LineaEstados";
 export {
   BloqueDetalle,
+  MontoDetalle,
   FilaDetalles,
   type PropsBloqueDetalle,
 } from "./componentes/paneles/BloqueDetalle";
+export {
+  GaleriaEditable,
+  type PropsGaleriaEditable,
+  type ImagenEditable,
+} from "./componentes/paneles/GaleriaEditable";
 export { EstadoVacio, type PropsEstadoVacio } from "./componentes/base/EstadoVacio";
 export { Cargando, type PropsCargando } from "./componentes/base/Cargando";
 export { Formulario, type PropsFormulario } from "./componentes/formularios/Formulario";
@@ -194,6 +229,7 @@ export {
 } from "./componentes/formularios/TarjetaSeleccionable";
 export {
   SeccionCheckout,
+  DatosSeccion,
   type PropsSeccionCheckout,
 } from "./componentes/compra/SeccionCheckout";
 export {

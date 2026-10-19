@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PaginaInformativa } from "@appweb/ui";
 
 export const metadata: Metadata = {
-  title: "Envíos | SOCKS",
+  title: "Envíos",
   description: "Costos y tiempos de envío a Lima, Callao y el resto del Perú.",
 };
 

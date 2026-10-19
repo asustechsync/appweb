@@ -1,7 +1,8 @@
 # Reglas del proyecto
 
 Tienda de basicos: boxers, medias y accesorios. Tres apps, cuatro paquetes,
-quince tablas (diez al arrancar, mas Marca, Pago, HistorialPedido, Cupon y Banner).
+dieciseis tablas (diez al arrancar, mas Marca, Pago, HistorialPedido, Cupon,
+Banner y Reclamo).
 
 ## Las tres clases de velocidad
 
@@ -31,12 +32,23 @@ Antes de crear una pantalla, decide su clase. La clase decide render y cache.
 7. **El precio y la direccion se congelan en el pedido.** `ItemPedido` guarda
    nombre, talla, color y precio; `Pedido` copia la direccion. Si mañana
    cambian, la venta de ayer no se altera.
-8. **Dos fuentes, cargadas solo en el layout raiz:** Manrope
-   (`--tipo-familia-texto`) y Poppins (`--tipo-familia-titulos`). Ningun
+8. **Dos fuentes, declaradas solo en `packages/ui/src/DocumentoRaiz.tsx`:**
+   Manrope (`--tipo-familia-texto`) y Poppins (`--tipo-familia-titulos`). Los
+   layouts raiz de las dos apps solo envuelven `<DocumentoRaiz>`. Ningun
    layout ni pagina carga fuentes propias.
 9. **Los iconos se crean como `.svg`** en `packages/ui/src/iconos/fuente/<categoria>/`
    y se generan con `npm run ui:iconos`. `iconos/generados/` no se edita a mano.
    Solo `marcas/` puede tener colores propios; el resto usa `currentColor`.
+
+10. **Cada cosa se define en un solo sitio.** Nada de copias locales:
+    - Montos, fechas, `numeroDesdeTexto`, `mensajeDeFallo` -> `@appweb/core/formato`.
+    - Variables de entorno del servidor -> `entorno()` de `@appweb/api/entorno`
+      (se validan al arrancar en `src/instrumentation.ts`). Nunca `process.env`
+      suelto; excepciones documentadas: `@appweb/db` y `next.config.ts`.
+    - URLs de tienda y panel -> `@appweb/api/urls`.
+    - Correo -> `@appweb/api/correo`. Datos del proveedor -> `@appweb/api/tienda`.
+    - Cache de la tienda desde el panel -> `revalidarTienda()` de `apps/admin/src/lib/revalidar.ts`.
+    - Las paginas no escriben clases `ui-...`: si hace falta, primitivo nuevo.
 
 ## Donde va cada archivo
 
@@ -45,7 +57,7 @@ Si si, va en `packages/`. Si no, va en `apps/`.
 
 ## Base de datos
 
-- Quince tablas hoy. Antes de añadir una, pregunta: *si la añado dentro
+- Dieciseis tablas hoy. Antes de añadir una, pregunta: *si la añado dentro
   de tres meses, ¿tendre los datos que necesita?* Si la respuesta es si,
   dejala fuera.
 - El SQL que Prisma no expresa (indices parciales, tsvector) se escribe a mano

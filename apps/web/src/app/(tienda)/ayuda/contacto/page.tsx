@@ -1,33 +1,32 @@
 import type { Metadata } from "next";
 
-import { PaginaInformativa } from "@appweb/ui";
+import { datosTienda } from "@appweb/api/tienda";
+import { EnlaceDestacado, PaginaInformativa } from "@appweb/ui";
+
+import { whatsappTienda } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: "Contacto | SOCKS",
+  title: "Contacto",
   description: "Canales de atención al cliente.",
 };
 
-// TODO: reemplazar por el numero de WhatsApp y correo reales de atencion.
-const WHATSAPP_ATENCION = "51900000000";
-const CORREO_ATENCION = "contacto@socks.pe";
-
+/** WhatsApp y correo salen de WHATSAPP_TIENDA y TIENDA_CORREO: los mismos de toda la tienda. */
 export default function PaginaContacto() {
+  const whatsapp = whatsappTienda();
+  const { correo } = datosTienda();
   return (
     <PaginaInformativa titulo="Contacto">
       <p>Escríbenos por el canal que prefieras. Atendemos de lunes a sábado, 9am – 7pm.</p>
 
-      <a
-        className="ui-pagina-informativa__cta"
-        href={`https://wa.me/${WHATSAPP_ATENCION}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Escribir por WhatsApp
-      </a>
+      {whatsapp ? (
+        <EnlaceDestacado href={whatsapp} externo>
+          Escribir por WhatsApp
+        </EnlaceDestacado>
+      ) : null}
 
       <h2>Correo</h2>
       <p>
-        <a href={`mailto:${CORREO_ATENCION}`}>{CORREO_ATENCION}</a>
+        <a href={`mailto:${correo}`}>{correo}</a>
       </p>
     </PaginaInformativa>
   );

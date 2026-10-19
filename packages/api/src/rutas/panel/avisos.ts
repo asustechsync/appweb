@@ -1,6 +1,6 @@
 /**
- * Avisos del panel: cuantos pedidos esperan a alguien. El panel la consulta
- * cada minuto, asi que son dos `count` y nada mas.
+ * Avisos del panel: cuantos pedidos y reclamos esperan a alguien. El panel la
+ * consulta cada minuto, asi que son unos `count` y nada mas.
  *
  * Cada numero sale solo si el rol puede actuar sobre el: un ALMACEN no ve
  * cuantos pagos faltan confirmar, un VENDEDOR no ve la cola de despacho.
@@ -17,8 +17,9 @@ export const avisos = router({
     const { rol } = ctx.sesion;
     const verVentas = puede(rol, "ver_ventas");
     const despachar = puede(rol, "despachar_envios");
+    const atender = puede(rol, "atender_reclamos");
 
-    const [porConfirmar, ultimo, porDespachar] = await Promise.all([
+    const [porConfirmar, ultimo, porDespachar, reclamosPendientes] = await Promise.all([
       verVentas ? ctx.prisma.pedido.count({ where: { estado: "PENDIENTE_PAGO" } }) : 0,
       verVentas
         ? ctx.prisma.pedido.findFirst({
@@ -28,11 +29,13 @@ export const avisos = router({
           })
         : null,
       despachar ? ctx.prisma.pedido.count({ where: { estado: "PAGADO" } }) : 0,
+      atender ? ctx.prisma.reclamo.count({ where: { estado: "PENDIENTE" } }) : 0,
     ]);
 
     return {
       porConfirmar,
       porDespachar,
+      reclamosPendientes,
       /** El pedido pendiente mas reciente: el panel lo compara para avisar "llego uno". */
       ultimoPendiente: ultimo
         ? { codigo: ultimo.codigo, creadoEn: ultimo.creadoEn.toISOString() }

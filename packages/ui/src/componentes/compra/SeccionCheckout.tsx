@@ -36,3 +36,8 @@ export function SeccionCheckout({
     </section>
   );
 }
+
+/** Datos ya conocidos dentro de una seccion (nombre, correo, telefono), uno por linea. */
+export function DatosSeccion({ children }: { children: ReactNode }) {
+  return <p className="ui-seccion-checkout__datos">{children}</p>;
+}

@@ -21,6 +21,7 @@ import {
   Campo,
   Cargando,
   CodigoPromocional,
+  DatosSeccion,
   DisposicionCompra,
   EstadoVacio,
   FilaCampos,
@@ -50,17 +51,12 @@ import {
   type ContactoCheckout,
   type NivelCheckout,
 } from "./acciones";
+import { MONEDA } from "@appweb/core/formato";
 
 export interface PropsCheckoutCliente {
   metodos: MetodoDeEnvio[];
   mediosDePago: { valor: MedioPago; etiqueta: string; descripcion: string }[];
 }
-
-const FORMATO = new Intl.NumberFormat("es-PE", {
-  style: "currency",
-  currency: "PEN",
-  minimumFractionDigits: 2,
-});
 
 /**
  * Isla cliente del checkout: contacto, direccion, envio, comprobante y pago,
@@ -421,7 +417,13 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
           onConfirmar={confirmar}
           textoContinuar="Confirmar pedido"
           confirmando={enviando}
-          nota="Despachamos tu pedido cuando confirmemos el pago."
+          nota={
+            <>
+              Despachamos tu pedido cuando confirmemos el pago. Al confirmar aceptas los{" "}
+              <Link href="/terminos">Términos y condiciones</Link> y la{" "}
+              <Link href="/privacidad">Política de privacidad</Link>.
+            </>
+          }
         />
       }
     >
@@ -433,13 +435,13 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
         descripcion="Te avisaremos del estado de tu pedido."
         accion={<Link href="/mi-cuenta">Editar</Link>}
       >
-        <p className="ui-seccion-checkout__datos">
+        <DatosSeccion>
           <strong>{contacto.nombre}</strong>
           <span>{contacto.email}</span>
           <span>
             {contacto.telefono ?? "Sin teléfono: agrégalo en Mi cuenta para coordinar la entrega."}
           </span>
-        </p>
+        </DatosSeccion>
       </SeccionCheckout>
 
       <SeccionCheckout
@@ -574,13 +576,13 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
                 onChange={() => setMetodoId(metodo.id)}
                 disabled={!llega}
                 icono={<IconoPedidos tamano={20} />}
-                extra={costo === 0 ? "Gratis" : FORMATO.format(costo)}
+                extra={costo === 0 ? "Gratis" : MONEDA.format(costo)}
               >
                 <strong>{metodo.nombre}</strong>
                 {!llega ? (
                   <span>No llega a {departamentoDestino}</span>
                 ) : metodo.gratisDesde !== null && costo > 0 ? (
-                  <span>Gratis desde {FORMATO.format(metodo.gratisDesde)}</span>
+                  <span>Gratis desde {MONEDA.format(metodo.gratisDesde)}</span>
                 ) : null}
               </TarjetaSeleccionable>
             );

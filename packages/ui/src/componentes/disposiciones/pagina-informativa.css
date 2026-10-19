@@ -7,16 +7,19 @@
   font-size: var(--tipo-tamano-2xl);
   margin-block-end: var(--espacio-6);
 }
-.ui-pagina-informativa h2 {
+/* Solo hijos directos: un formulario dentro del articulo (Libro de
+   Reclamaciones) trae sus propios <p> de error y alertas, y no deben heredar
+   el color suave del texto corrido. */
+.ui-pagina-informativa > h2 {
   font-size: var(--tipo-tamano-lg);
   margin-block: var(--espacio-6) var(--espacio-2);
 }
-.ui-pagina-informativa p {
+.ui-pagina-informativa > p {
   color: var(--color-textoSuave);
   line-height: var(--tipo-altura-suelta);
   margin-block-end: var(--espacio-3);
 }
-.ui-pagina-informativa ul {
+.ui-pagina-informativa > ul {
   display: flex;
   flex-direction: column;
   gap: var(--espacio-2);

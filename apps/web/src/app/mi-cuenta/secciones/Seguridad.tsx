@@ -19,6 +19,7 @@ import {
 import { evaluarClave } from "@appweb/core";
 
 import { useTRPC } from "@/lib/trpc";
+import { mensajeDeFallo } from "@appweb/core/formato";
 
 export function Seguridad() {
   const trpc = useTRPC();
@@ -39,7 +40,7 @@ export function Seguridad() {
       },
       onError: (fallo: unknown) => {
         setAviso(null);
-        setError(fallo instanceof Error ? fallo.message : "No se pudo cambiar la clave.");
+        setError(mensajeDeFallo(fallo, "No se pudo cambiar la clave."));
       },
     }),
   );

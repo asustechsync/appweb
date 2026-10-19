@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PaginaInformativa } from "@appweb/ui";
 
 export const metadata: Metadata = {
-  title: "Preguntas frecuentes | SOCKS",
+  title: "Preguntas frecuentes",
   description: "Respuestas sobre pago, envío, tallas y devoluciones.",
 };
 

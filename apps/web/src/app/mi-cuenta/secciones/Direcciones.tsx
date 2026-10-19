@@ -18,6 +18,7 @@ import {
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
+import { mensajeDeFallo } from "@appweb/core/formato";
 
 export function Direcciones() {
   const trpc = useTRPC();
@@ -39,7 +40,7 @@ export function Direcciones() {
   }
 
   function alFallar(fallo: unknown) {
-    setError(fallo instanceof Error ? fallo.message : "No se pudo completar la acción.");
+    setError(mensajeDeFallo(fallo));
   }
 
   const crear = useMutation(

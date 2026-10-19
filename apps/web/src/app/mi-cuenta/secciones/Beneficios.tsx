@@ -5,8 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Alerta, Cargando, IconoEtiqueta, IconoMoneda, IconoPremio, MenuCuenta } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
-
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
+import { MONEDA } from "@appweb/core/formato";
 
 /**
  * Nivel de recompensa del cliente: en cual esta, cuanto lleva comprado y

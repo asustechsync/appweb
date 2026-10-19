@@ -76,6 +76,7 @@ export const tokensNativos = {
     fondoFoto: "#F6F6F7",
     escenaInicio: "#D4D6D9",
     escenaFin: "#EFF0F2",
+    fondoEscritorio: "#EFF1F3",
     vidrio: "rgb(62 66 72 / 0.5)",
     vidrioBorde: "rgb(255 255 255 / 0.24)",
     textoVidrio: "#FFFFFF",

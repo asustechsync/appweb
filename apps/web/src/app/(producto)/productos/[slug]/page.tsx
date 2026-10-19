@@ -38,7 +38,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // el sufijo dos veces. Sin tituloSeo si usamos la plantilla.
   const title = producto.tituloSeo !== null ? { absolute: producto.tituloSeo } : producto.nombre;
 
-  return descripcion !== null ? { title, description: descripcion } : { title };
+  // Al compartir la ficha por WhatsApp se ve la foto del producto, no la
+  // imagen general de la tienda.
+  const foto = producto.imagenes[0];
+  const openGraph = foto ? { images: [{ url: foto.url, alt: foto.alt }] } : undefined;
+
+  return {
+    title,
+    ...(descripcion !== null ? { description: descripcion } : {}),
+    ...(openGraph ? { openGraph } : {}),
+  };
 }
 
 export default async function PaginaProducto({ params }: Props) {

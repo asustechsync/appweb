@@ -7,7 +7,7 @@
  * hay plantilla HTML que mantener.
  */
 
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
+import { FECHA_LARGA, MONEDA } from "../formato";
 
 export interface TextoCorreo {
   asunto: string;
@@ -71,6 +71,84 @@ export function correoPedidoNuevoTienda(datos: {
       "",
       "Confírmalo en el panel cuando veas el pago:",
       datos.enlacePanel,
+    ].join("\n"),
+  };
+}
+
+/**
+ * Constancia que la norma exige mandar al consumidor apenas registra su hoja:
+ * es su copia del reclamo, con numero, fecha y el plazo de respuesta.
+ */
+export function correoReclamoRegistrado(datos: {
+  nombre: string;
+  codigo: string;
+  tipo: string;
+  creadoEn: Date;
+  vence: Date;
+  detalle: string;
+  pedido: string;
+  proveedor: string;
+}): TextoCorreo {
+  return {
+    asunto: `Constancia de tu ${datos.tipo.toLowerCase()} N.° ${datos.codigo}`,
+    cuerpo: [
+      `Hola, ${datos.nombre}:`,
+      "",
+      `Registramos tu ${datos.tipo.toLowerCase()} en el Libro de Reclamaciones de ${datos.proveedor}.`,
+      "",
+      `Hoja N.°: ${datos.codigo}`,
+      `Fecha: ${FECHA_LARGA.format(datos.creadoEn)}`,
+      "",
+      "Detalle:",
+      datos.detalle,
+      "",
+      "Lo que pides:",
+      datos.pedido,
+      "",
+      `Te responderemos a este correo a más tardar el ${FECHA_LARGA.format(datos.vence)} (15 días hábiles).`,
+      "",
+      "La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el INDECOPI.",
+    ].join("\n"),
+  };
+}
+
+export function correoReclamoNuevoTienda(datos: {
+  codigo: string;
+  tipo: string;
+  nombre: string;
+  vence: Date;
+  enlacePanel: string;
+}): TextoCorreo {
+  return {
+    asunto: `${datos.tipo} N.° ${datos.codigo} en el Libro de Reclamaciones`,
+    cuerpo: [
+      `${datos.nombre} registró un(a) ${datos.tipo.toLowerCase()}.`,
+      "",
+      `Hay que responder a más tardar el ${FECHA_LARGA.format(datos.vence)}. El plazo es legal y no se prorroga.`,
+      "",
+      "Respóndelo desde el panel:",
+      datos.enlacePanel,
+    ].join("\n"),
+  };
+}
+
+export function correoReclamoRespondido(datos: {
+  nombre: string;
+  codigo: string;
+  tipo: string;
+  respuesta: string;
+  proveedor: string;
+}): TextoCorreo {
+  return {
+    asunto: `Respuesta a tu ${datos.tipo.toLowerCase()} N.° ${datos.codigo}`,
+    cuerpo: [
+      `Hola, ${datos.nombre}:`,
+      "",
+      `Esta es la respuesta de ${datos.proveedor} a tu ${datos.tipo.toLowerCase()} N.° ${datos.codigo}:`,
+      "",
+      datos.respuesta,
+      "",
+      "Si no estás conforme, puedes acudir al INDECOPI.",
     ].join("\n"),
   };
 }

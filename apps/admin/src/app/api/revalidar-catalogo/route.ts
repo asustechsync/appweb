@@ -2,8 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { COOKIE_SESION } from "@appweb/api";
-
-const URL_TIENDA = process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000";
+import { URL_TIENDA } from "@appweb/api/urls";
 
 /**
  * Reenvía a la tienda la lista de productos cuyo stock cambió: la caché que

@@ -19,3 +19,6 @@ next-env.d.ts
 
 .vercel
 coverage/
+
+# Fotos subidas en desarrollo sin Supabase (packages/api/src/almacen.ts).
+apps/web/public/subidas/

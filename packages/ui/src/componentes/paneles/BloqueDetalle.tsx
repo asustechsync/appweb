@@ -33,3 +33,8 @@ export function BloqueDetalle({ titulo, icono, children, destacado }: PropsBloqu
 export function FilaDetalles({ children }: { children: ReactNode }) {
   return <div className="ui-bloque-detalle-fila">{children}</div>;
 }
+
+/** El monto destacado de un bloque, p. ej. el total a pagar en "Cómo pagar". */
+export function MontoDetalle({ children }: { children: ReactNode }) {
+  return <span className="ui-bloque-detalle__monto">{children}</span>;
+}

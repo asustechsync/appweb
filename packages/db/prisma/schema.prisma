@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  ESQUEMA — quince tablas en seis dominios:
+//  ESQUEMA — dieciseis tablas en siete dominios:
 //
 //      Cuenta      usuarios, direcciones
 //      Catalogo    categorias, marcas, productos, variantes, imagenes_producto
@@ -7,11 +7,14 @@
 //      Stock       movimientos_stock
 //      Venta       pedidos, items_pedido, pagos, historial_pedido
 //      Promo/envio cupones, metodos_envio
+//      Atencion    reclamos
 //
 //  Diez son del arranque. Marca, Pago, HistorialPedido y Cupon se añadieron
 //  porque guardan datos imposibles de reconstruir si llegan tarde (quien pago
 //  con que operacion, quien cambio cada estado); Banner saca el contenido de
-//  portada de Categoria.
+//  portada de Categoria. Reclamo es el Libro de Reclamaciones que la ley exige
+//  desde la primera venta: una hoja que no se guardo el dia que llego no se
+//  recupera despues.
 //
 //  Orden de columnas dentro de cada modelo: identidad, contenido, relaciones,
 //  montos o precio, SEO, estado, fechas. El orden fisico en la base es el de
@@ -101,6 +104,7 @@ model Usuario {
   pagosConfirmados Pago[]            @relation("PagoConfirmadoPor")
   cambiosDePedido  HistorialPedido[] @relation("CambioHechoPor")
   movimientosStock MovimientoStock[] @relation("MovimientoHechoPor")
+  reclamosRespondidos Reclamo[]      @relation("ReclamoRespondidoPor")
 
   @@index([rol])
   @@map("usuarios")
@@ -534,4 +538,68 @@ model MetodoEnvio {
   editadoEn   DateTime @updatedAt
 
   @@map("metodos_envio")
+}
+
+// ═══ ATENCION ══════════════════════════════════════════════════════════════
+
+enum TipoReclamo {
+  RECLAMO
+  QUEJA
+}
+
+enum TipoBien {
+  PRODUCTO
+  SERVICIO
+}
+
+enum EstadoReclamo {
+  PENDIENTE
+  RESPONDIDO
+}
+
+// Hoja del Libro de Reclamaciones virtual. Se conserva al menos dos años y
+// nunca se borra ni se edita: el consumidor recibe su copia por correo y lo
+// que dice la base tiene que coincidir con esa copia. Los datos del
+// consumidor van COPIADOS (puede reclamar sin cuenta) y la respuesta se
+// escribe una sola vez. Plazo y numero de hoja: `@appweb/core` (reclamos/).
+model Reclamo {
+  // Identidad. `numero` es el correlativo que exige la norma.
+  id     String      @id @default(cuid())
+  numero Int         @unique @default(autoincrement())
+  tipo   TipoReclamo
+
+  // Consumidor
+  nombre          String
+  tipoDocumento   TipoDocumento
+  numeroDocumento String
+  domicilio       String
+  telefono        String
+  email           String
+  // Menor de edad: la hoja va a nombre de su padre, madre o apoderado.
+  menorDeEdad     Boolean       @default(false)
+  apoderado       String?
+
+  // Bien contratado
+  tipoBien        TipoBien
+  pedidoCodigo    String?
+  monto           Decimal? @db.Decimal(10, 2)
+  descripcionBien String
+
+  // Reclamo
+  detalle String
+  pedido  String
+
+  // Respuesta del proveedor
+  estado          EstadoReclamo @default(PENDIENTE)
+  respuesta       String?
+  respondidoPorId String?
+  respondidoEn    DateTime?
+
+  // Fechas
+  creadoEn DateTime @default(now())
+
+  respondidoPor Usuario? @relation("ReclamoRespondidoPor", fields: [respondidoPorId], references: [id])
+
+  @@index([estado, creadoEn])
+  @@map("reclamos")
 }

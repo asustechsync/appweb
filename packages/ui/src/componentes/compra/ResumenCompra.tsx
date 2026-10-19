@@ -6,6 +6,7 @@ import { Boton } from "../base/Boton";
 import { Precio } from "../catalogo/Precio";
 
 import "../estilos.css";
+import { MONEDA } from "@appweb/core/formato";
 
 /** Estructuralmente igual a `TotalesCompra` de @appweb/core, que es quien lo
     calcula. Se declara aqui porque el paquete visual no depende de core. */
@@ -36,12 +37,6 @@ export interface PropsResumenCompra {
   textoContinuar?: string;
   confirmando?: boolean;
 }
-
-const FORMATO = new Intl.NumberFormat("es-PE", {
-  style: "currency",
-  currency: "PEN",
-  minimumFractionDigits: 2,
-});
 
 /**
  * Resumen de la compra: cifras y paso a pagar.
@@ -81,7 +76,7 @@ export function ResumenCompra({
 
       {faltaEnvioGratis !== null ? (
         <p className="ui-resumen-compra__envio-gratis">
-          Te faltan <strong>{FORMATO.format(faltaEnvioGratis)}</strong> para el envío gratis.
+          Te faltan <strong>{MONEDA.format(faltaEnvioGratis)}</strong> para el envío gratis.
         </p>
       ) : costoEnvio === 0 ? (
         <p className="ui-resumen-compra__envio-gratis ui-resumen-compra__envio-gratis--logrado">
@@ -97,20 +92,20 @@ export function ResumenCompra({
               ({unidades} {unidades === 1 ? "unidad" : "unidades"})
             </span>
           </dt>
-          <dd>{FORMATO.format(subtotal)}</dd>
+          <dd>{MONEDA.format(subtotal)}</dd>
         </div>
 
         {descuento > 0 ? (
           <div className="ui-resumen-compra__descuento">
             <dt>Descuento</dt>
-            <dd>−{FORMATO.format(descuento)}</dd>
+            <dd>−{MONEDA.format(descuento)}</dd>
           </div>
         ) : null}
 
         {costoEnvio !== null ? (
           <div>
             <dt>Envío</dt>
-            <dd>{costoEnvio === 0 ? "Gratis" : FORMATO.format(costoEnvio)}</dd>
+            <dd>{costoEnvio === 0 ? "Gratis" : MONEDA.format(costoEnvio)}</dd>
           </div>
         ) : null}
       </dl>
@@ -121,7 +116,7 @@ export function ResumenCompra({
       </div>
       {descuento > 0 ? (
         <p className="ui-resumen-compra__ahorro">
-          Ahorras <strong>{FORMATO.format(descuento)}</strong> en este pedido
+          Ahorras <strong>{MONEDA.format(descuento)}</strong> en este pedido
         </p>
       ) : null}
 

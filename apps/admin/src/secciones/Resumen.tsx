@@ -15,9 +15,7 @@ import {
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
-
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
-const FECHA = new Intl.DateTimeFormat("es-PE", { dateStyle: "medium" });
+import { FECHA, MONEDA } from "@appweb/core/formato";
 
 /** Ambar mientras espera algo, verde cuando ya avanzo. */
 function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {

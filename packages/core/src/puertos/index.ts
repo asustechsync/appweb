@@ -17,3 +17,4 @@ export { PagoManual } from "./pago-manual";
 export type { Facturacion, SolicitudComprobante, ResultadoComprobante } from "./facturacion";
 export type { Notificaciones, Mensaje, CanalAviso } from "./notificaciones";
 export { CorreoConsola, CorreoResend } from "./correo";
+export { type AlmacenArchivos, AlmacenSupabase } from "./almacen-archivos";

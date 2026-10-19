@@ -21,6 +21,14 @@
   background-repeat: no-repeat;
 }
 
+/* Escritorio: el cielo se cambia por el gris liso de la web. Movil conserva la escena. */
+@media (min-width: 64rem) {
+  .ui-fondo-escena {
+    background-color: var(--color-fondoEscritorio);
+    background-image: none;
+  }
+}
+
 .ui-solo-lectores {
   position: absolute;
   inline-size: 1px;

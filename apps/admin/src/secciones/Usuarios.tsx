@@ -21,6 +21,7 @@ import {
 import { useTRPC } from "@/lib/trpc";
 
 import { DetalleUsuario } from "./DetalleUsuario";
+import { mensajeDeFallo } from "@appweb/core/formato";
 
 const ETIQUETA_ROL: Record<Rol, string> = {
   CLIENTE: "Cliente",
@@ -75,7 +76,7 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
 
   function alFallar(fallo: unknown) {
     setAviso(null);
-    setError(fallo instanceof Error ? fallo.message : "No se pudo completar la acción.");
+    setError(mensajeDeFallo(fallo));
   }
 
   const crear = useMutation(

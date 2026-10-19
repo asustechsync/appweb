@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import { Beneficio, type PropsBeneficio } from "./Beneficio";
 import { Carrusel } from "./Carrusel";
+import { CarruselMarcas } from "./CarruselMarcas";
 import { CarruselBanners, type BannerDeslizable } from "./CarruselBanners";
+import type { PropsTarjetaMarca } from "../catalogo/TarjetaMarca";
 import { TarjetaProducto, type PropsTarjetaProducto } from "../catalogo/TarjetaProducto";
 
 import "./escaparate-portada.css";
@@ -15,6 +17,8 @@ export interface PropsEscaparatePortada {
   ofertas?: PropsTarjetaProducto[];
   /** Promociones del carrusel superior, en orden. Sin banners no se muestra. */
   banners?: BannerDePortada[];
+  /** Marcas con productos visibles. Sin marcas no se pinta la seccion (ni su ancla #marcas). */
+  marcas?: PropsTarjetaMarca[];
 }
 
 /** Categorias, como la lista de alertas de un panel. */
@@ -75,6 +79,7 @@ export function EscaparatePortada({
   productos,
   ofertas = [],
   banners = [],
+  marcas = [],
 }: PropsEscaparatePortada) {
   const bannersPortada: BannerDeslizable[] = banners.map((banner, i) => ({
     ...banner,
@@ -163,7 +168,12 @@ export function EscaparatePortada({
         </section>
 
         {ofertas.length > 0 ? (
-          <section className="ui-escaparate__ofertas" aria-labelledby="escaparate-ofertas-flash">
+          // `id="ofertas"`: destino del enlace "Ofertas" de la cabecera (/#ofertas).
+          <section
+            id="ofertas"
+            className="ui-escaparate__ofertas"
+            aria-labelledby="escaparate-ofertas-flash"
+          >
             <h2 id="escaparate-ofertas-flash" className="ui-escaparate__capsula">
               Ofertas flash
             </h2>
@@ -182,6 +192,20 @@ export function EscaparatePortada({
                 </div>
               ))}
             </Carrusel>
+          </section>
+        ) : null}
+
+        {marcas.length > 0 ? (
+          // `id="marcas"`: destino del enlace "Marcas" de la cabecera (/#marcas).
+          <section
+            id="marcas"
+            className="ui-escaparate__marcas"
+            aria-labelledby="escaparate-marcas"
+          >
+            <h2 id="escaparate-marcas" className="ui-escaparate__capsula">
+              Marcas
+            </h2>
+            <CarruselMarcas marcas={marcas} orientacion="horizontal" />
           </section>
         ) : null}
 

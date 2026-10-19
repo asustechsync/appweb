@@ -12,19 +12,43 @@
 
 import { verificarTokenSesion } from "@appweb/core";
 
+import { entorno } from "./entorno";
+
 import type { Sesion } from "./trpc";
 
 export const COOKIE_SESION = "appweb_sesion";
 
+/**
+ * Opciones de la cookie, las mismas al escribirla (tienda) y al borrarla (las
+ * dos apps): un `delete` con otro dominio no borra nada.
+ *
+ * En produccion la tienda y el panel viven en subdominios distintos
+ * (tutienda.pe y panel.tutienda.pe). Sin `COOKIE_DOMINIO=.tutienda.pe` la
+ * cookie queda atada al subdominio que la escribio y el panel nunca la ve. En
+ * local no hace falta: las cookies ignoran el puerto.
+ */
+export function opcionesCookieSesion() {
+  const { COOKIE_DOMINIO: dominio, produccion } = entorno();
+  return {
+    httpOnly: true,
+    secure: produccion,
+    sameSite: "lax" as const,
+    path: "/",
+    ...(dominio ? { domain: dominio } : {}),
+  };
+}
+
+/** Clave con la que se firman la sesion y los enlaces de recuperacion. */
+export function secretoSesion(): string {
+  const secreto = entorno().AUTH_SECRETO;
+  if (!secreto) throw new Error("Falta AUTH_SECRETO en el entorno. Revisa .env.local.");
+  return secreto;
+}
+
 export function sesionDesdeToken(token: string | undefined): Sesion | null {
   if (!token) return null;
 
-  const secreto = process.env["AUTH_SECRETO"];
-  if (!secreto) {
-    throw new Error("Falta AUTH_SECRETO en el entorno. Revisa .env.local.");
-  }
-
-  return verificarTokenSesion(token, secreto);
+  return verificarTokenSesion(token, secretoSesion());
 }
 
 /** Saca el token de una cabecera `Cookie` cruda, para los route handlers. */

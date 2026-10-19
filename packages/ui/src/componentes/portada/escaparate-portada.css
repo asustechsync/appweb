@@ -2,6 +2,7 @@
      slide   slide      slide    (3 banners en fundido)
      tallas  categorias coleccion
      ofertas ofertas    ofertas   (4 tarjetas)
+     marcas  marcas     marcas    (franja de marcas)
      confianza (todo el ancho)
    La fila de bloques sube y se monta sobre el borde del slide. */
 
@@ -334,8 +335,20 @@ a.ui-escaparate__contador:focus-visible {
 .ui-escaparate__ofertas {
   order: 5;
 }
-.ui-escaparate__confianza {
+.ui-escaparate__marcas {
   order: 6;
+  min-inline-size: 0;
+  /* El ancla queda bajo la cabecera fija: deja aire al saltar desde /#marcas. */
+  scroll-margin-block-start: var(--espacio-24);
+}
+.ui-escaparate__confianza {
+  order: 7;
+}
+
+/* Marcas: tres a la vista en movil, cuatro en tablet y seis en escritorio. */
+.ui-escaparate__marcas .ui-carrusel-marcas--horizontal .ui-carrusel-marcas__pista > *,
+.ui-escaparate__marcas .ui-carrusel-marcas--horizontal .ui-carrusel-marcas__copia > * {
+  flex-basis: calc((100% - 2 * var(--espacio-2)) / 3);
 }
 
 /* Fila de ofertas: una columna en movil, dos desde 48rem y cuatro desde 64rem. */
@@ -383,9 +396,15 @@ a.ui-escaparate__contador:focus-visible {
 
   .ui-escaparate__banda,
   .ui-escaparate__ofertas,
+  .ui-escaparate__marcas,
   .ui-escaparate__coleccion,
   .ui-escaparate__confianza {
     grid-column: 1 / -1;
+  }
+
+  .ui-escaparate__marcas .ui-carrusel-marcas--horizontal .ui-carrusel-marcas__pista > *,
+  .ui-escaparate__marcas .ui-carrusel-marcas--horizontal .ui-carrusel-marcas__copia > * {
+    flex-basis: calc((100% - 3 * var(--espacio-2)) / 4);
   }
 
   .ui-escaparate__ofertas .ui-carrusel {
@@ -412,6 +431,7 @@ a.ui-escaparate__contador:focus-visible {
 
   .ui-escaparate__banda,
   .ui-escaparate__ofertas,
+  .ui-escaparate__marcas,
   .ui-escaparate__tallas,
   .ui-escaparate__categorias,
   .ui-escaparate__coleccion,
@@ -439,9 +459,18 @@ a.ui-escaparate__contador:focus-visible {
     grid-column: 1 / -1;
     grid-row: 3;
   }
-  .ui-escaparate__confianza {
+  .ui-escaparate__marcas {
     grid-column: 1 / -1;
     grid-row: 4;
+  }
+  .ui-escaparate__confianza {
+    grid-column: 1 / -1;
+    grid-row: 5;
+  }
+
+  .ui-escaparate__marcas .ui-carrusel-marcas--horizontal .ui-carrusel-marcas__pista > *,
+  .ui-escaparate__marcas .ui-carrusel-marcas--horizontal .ui-carrusel-marcas__copia > * {
+    flex-basis: calc((100% - 5 * var(--espacio-2)) / 6);
   }
 
   .ui-escaparate__ofertas .ui-carrusel {

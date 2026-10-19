@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 
 import { IconoPapelera } from "../../iconos";
 import { Precio } from "../catalogo/Precio";
 import { SelectorCantidad } from "../formularios/SelectorCantidad";
+
+import { FotoProducto } from "../catalogo/FotoProducto";
 
 import "../estilos.css";
 
@@ -61,7 +62,15 @@ export function LineaDeCarrito({
     <article className="ui-linea-carrito">
       <div className="ui-linea-carrito__producto">
         <Link className="ui-linea-carrito__imagen" href={href} tabIndex={-1} aria-hidden="true">
-          <Image src={imagenUrl} alt="" width={200} height={200} sizes="112px" loading="lazy" />
+          <FotoProducto
+            src={imagenUrl}
+            alt=""
+            width={200}
+            height={200}
+            sizes="112px"
+            loading="lazy"
+            leyenda={false}
+          />
         </Link>
 
         <div className="ui-linea-carrito__datos">

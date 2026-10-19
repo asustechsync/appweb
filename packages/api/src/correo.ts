@@ -1,17 +1,21 @@
 import { CorreoConsola, CorreoResend, type Notificaciones } from "@appweb/core/puertos";
 
+import { entorno } from "./entorno";
+
 /**
- * Instancia unica del correo, como `pasarela` en ./pago.ts.
+ * Instancia unica del correo para la tienda, el panel y la app movil.
  *
  * Con RESEND_API_KEY envia de verdad; sin ella imprime cada correo en la
  * terminal de `npm run dev`. Cambiar de proveedor es cambiar esta linea.
  */
-export const correo: Notificaciones = process.env["RESEND_API_KEY"]
-  ? new CorreoResend({
-      apiKey: process.env["RESEND_API_KEY"],
-      remitente: process.env["CORREO_REMITENTE"] ?? "Tienda <onboarding@resend.dev>",
-    })
-  : new CorreoConsola();
+function crearCorreo(): Notificaciones {
+  const { RESEND_API_KEY: apiKey, CORREO_REMITENTE: remitente } = entorno();
+  return apiKey
+    ? new CorreoResend({ apiKey, remitente: remitente ?? "Tienda <onboarding@resend.dev>" })
+    : new CorreoConsola();
+}
+
+export const correo: Notificaciones = crearCorreo();
 
 /**
  * Envia sin frenar a quien llama: un correo que falla no puede tumbar un
@@ -25,6 +29,3 @@ export async function enviarCorreo(destino: string, asunto: string, cuerpo: stri
     console.error(`Correo a ${destino} falló:`, error);
   }
 }
-
-export const URL_TIENDA = process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000";
-export const URL_PANEL = process.env["NEXT_PUBLIC_ADMIN_URL"] ?? "http://localhost:3001";

@@ -22,6 +22,8 @@ export interface PropsPaginaTienda {
   carritoJuntoAlBuscador?: boolean;
   /** Enlace wa.me de la tienda: muestra el boton flotante de WhatsApp. */
   whatsapp?: string | null;
+  /** Pie de pagina (PiePagina). Queda pegado abajo aunque el contenido sea corto. */
+  pie?: ReactNode;
 }
 
 /**
@@ -36,10 +38,12 @@ export function PaginaTienda({
   fondo = "escena",
   carritoJuntoAlBuscador = false,
   whatsapp = null,
+  pie,
 }: PropsPaginaTienda) {
   const clases = ["ui-pagina-tienda"];
   clases.push(fondo === "liso" ? "ui-pagina-tienda--lisa" : "ui-fondo-escena");
   if (cabecera === "solo-escritorio") clases.push("ui-pagina-tienda--sin-cabecera-movil");
+  if (pie) clases.push("ui-pagina-tienda--con-pie");
 
   return (
     <div className={clases.join(" ")}>
@@ -49,6 +53,7 @@ export function PaginaTienda({
         carritoJuntoAlBuscador={carritoJuntoAlBuscador}
       />
       {children}
+      {pie}
       {whatsapp ? <BotonWhatsApp href={whatsapp} /> : null}
     </div>
   );

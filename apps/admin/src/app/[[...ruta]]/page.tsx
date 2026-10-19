@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 import { COOKIE_SESION, sesionDesdeToken } from "@appweb/api";
 import { puede, seccionesDelPanel } from "@appweb/core";
@@ -6,6 +7,7 @@ import { EstadoVacio } from "@appweb/ui";
 
 import { Proveedores } from "@/app/Proveedores";
 import { Panel } from "@/secciones/Panel";
+import { URL_TIENDA } from "@appweb/api/urls";
 
 /**
  * Unica ruta del panel: todo lo demas navega en el cliente.
@@ -21,13 +23,15 @@ import { Panel } from "@/secciones/Panel";
 // el panel entero vive detras de una sesion y nunca se sirve cacheado.
 export const instant = false;
 
-const URL_TIENDA = process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000";
-
 interface Props {
   params: Promise<{ ruta?: string[] }>;
 }
 
 export default async function PaginaPanel({ params }: Props) {
+  // Verificar el token usa `Date.now()` (vence a los 30 dias). Con cache
+  // components, Next exige declarar antes que esto se resuelve en cada visita:
+  // `connection()` lo marca asi, y la cookie ya lo era.
+  await connection();
   const { ruta } = await params;
 
   const almacen = await cookies();

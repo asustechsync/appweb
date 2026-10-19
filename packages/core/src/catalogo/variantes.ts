@@ -57,7 +57,7 @@ function claveDeOrden(talla: string): [number, number, string] {
   return [3, 0, normalizada];
 }
 
-function compararTallas(a: string, b: string): number {
+export function compararTallas(a: string, b: string): number {
   const [grupoA, numeroA, textoA] = claveDeOrden(a);
   const [grupoB, numeroB, textoB] = claveDeOrden(b);
 

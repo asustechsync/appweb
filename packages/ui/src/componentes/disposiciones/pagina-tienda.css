@@ -1,6 +1,12 @@
 .ui-pagina-tienda {
   min-block-size: 100svh;
 }
+/* Con pie: columna flexible para que el pie (margin-block-start: auto) baje
+   hasta el borde inferior cuando el contenido no llena la pantalla. */
+.ui-pagina-tienda--con-pie {
+  display: flex;
+  flex-direction: column;
+}
 .ui-pagina-tienda--lisa {
   background: var(--color-fondo);
 }

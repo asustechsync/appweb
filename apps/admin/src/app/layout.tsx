@@ -1,22 +1,6 @@
-import { Manrope, Poppins } from "next/font/google";
-
-import { GuionTemaInicial } from "@appweb/ui";
+import { DocumentoRaiz } from "@appweb/ui";
 
 import "./globals.css";
-
-/** Las mismas dos familias que la tienda (ver apps/web/src/app/layout.tsx). */
-const manrope = Manrope({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--fuente-texto",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--fuente-titulos",
-  weight: ["400", "500", "600"],
-});
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
@@ -33,15 +17,8 @@ const poppins = Poppins({
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const metadata = { title: "Panel" };
+export const metadata = { title: "Panel", robots: { index: false, follow: false } };
 
 export default function LayoutPanel({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="es-PE" suppressHydrationWarning>
-      <head>
-        <GuionTemaInicial />
-      </head>
-      <body className={`${manrope.variable} ${poppins.variable}`}>{children}</body>
-    </html>
-  );
+  return <DocumentoRaiz>{children}</DocumentoRaiz>;
 }

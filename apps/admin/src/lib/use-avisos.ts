@@ -50,10 +50,17 @@ export function useAvisos() {
 
   const porConfirmar = consulta.data?.porConfirmar ?? 0;
   const porDespachar = consulta.data?.porDespachar ?? 0;
+  const reclamosPendientes = consulta.data?.reclamosPendientes ?? 0;
 
   useEffect(() => {
     document.title = porConfirmar > 0 ? `(${porConfirmar}) Panel` : "Panel";
   }, [porConfirmar]);
 
-  return { porConfirmar, porDespachar, nuevo, descartar: () => setNuevo(null) };
+  return {
+    porConfirmar,
+    porDespachar,
+    reclamosPendientes,
+    nuevo,
+    descartar: () => setNuevo(null),
+  };
 }

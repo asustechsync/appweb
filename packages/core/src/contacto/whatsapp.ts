@@ -9,7 +9,7 @@
  * lo mismo.
  */
 
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
+import { MONEDA } from "../formato";
 
 /**
  * Numero en el formato de wa.me: solo digitos y con codigo de pais.

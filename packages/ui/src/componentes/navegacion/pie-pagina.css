@@ -1,0 +1,53 @@
+/* Pie de la tienda. Base movil: una columna; desde md los grupos en fila. */
+.ui-pie-pagina {
+  margin-block-start: auto;
+  padding-block: var(--espacio-8) var(--espacio-6);
+  border-block-start: 1px solid var(--color-borde);
+  background: var(--color-fondo);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-pie-pagina__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+}
+.ui-pie-pagina__titulo {
+  margin-block-end: var(--espacio-2);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-pie-pagina__grupo ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+.ui-pie-pagina a:hover {
+  color: var(--color-texto);
+}
+.ui-pie-pagina__libro {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  align-self: flex-start;
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-pie-pagina__leyenda {
+  margin-block-start: var(--espacio-6);
+  font-size: var(--tipo-tamano-xs);
+}
+
+@media (min-width: 48rem) {
+  .ui-pie-pagina__cuerpo {
+    flex-direction: row;
+    gap: var(--espacio-12);
+  }
+  .ui-pie-pagina__libro {
+    margin-inline-start: auto;
+  }
+}

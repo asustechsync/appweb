@@ -10,6 +10,7 @@ import { z } from "zod";
 import { errorNumeroDocumento, TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
 import { ESTADOS_PEDIDO } from "../pedidos/estados";
+import { ESTADOS_RECLAMO, TIPOS_BIEN, TIPOS_RECLAMO } from "../reclamos/libro";
 import { TIPOS_MOVIMIENTO_MANUAL } from "../stock/manual";
 import { ROLES } from "../usuarios/permisos";
 import { REQUISITOS_CLAVE } from "../usuarios/requisitos-clave";
@@ -364,6 +365,81 @@ export const esquemaCheckout = z.object({
   cupon: z.string().trim().max(30).optional(),
 });
 
+// ── Libro de Reclamaciones ─────────────────────────────────────────────────
+
+/**
+ * Hoja de reclamacion. Los campos son los que pide la norma: quien reclama,
+ * sobre que bien, si es reclamo o queja, el detalle y lo que pide. Si es menor
+ * de edad, la hoja va a nombre de su padre, madre o apoderado.
+ */
+export const esquemaReclamo = z
+  .object({
+    tipo: z.enum(TIPOS_RECLAMO, { error: "Elige reclamo o queja" }),
+    nombre: z.string().trim().min(3, "Escribe tu nombre completo").max(120),
+    tipoDocumento: z.enum(TIPOS_DOCUMENTO, { error: "Elige el tipo de documento" }),
+    numeroDocumento: z.string().trim(),
+    domicilio: z.string().trim().min(5, "Escribe tu domicilio").max(200),
+    telefono: z
+      .string()
+      .trim()
+      .regex(/^\d{6,15}$/, "Solo números, entre 6 y 15 dígitos"),
+    email: z.email("Escribe un correo válido").toLowerCase(),
+    menorDeEdad: z.boolean().default(false),
+    apoderado: z.string().trim().max(120).optional(),
+    tipoBien: z.enum(TIPOS_BIEN, { error: "Elige producto o servicio" }),
+    pedidoCodigo: z.string().trim().max(30).optional(),
+    monto: z
+      .number({ error: "Escribe un monto válido" })
+      .min(0, "El monto no puede ser negativo")
+      .max(99999)
+      .optional(),
+    descripcionBien: z
+      .string()
+      .trim()
+      .min(3, "Describe el producto o servicio")
+      .max(300, "Máximo 300 caracteres"),
+    detalle: z
+      .string()
+      .trim()
+      .min(10, "Cuéntanos qué pasó (mínimo 10 caracteres)")
+      .max(3000, "Máximo 3000 caracteres"),
+    pedido: z
+      .string()
+      .trim()
+      .min(5, "Escribe qué solución esperas")
+      .max(1000, "Máximo 1000 caracteres"),
+    acepta: z.literal(true, { error: "Confirma que los datos son correctos" }),
+  })
+  .superRefine((datos, contexto) => {
+    const error = errorNumeroDocumento(datos.tipoDocumento, datos.numeroDocumento);
+    if (error) contexto.addIssue({ code: "custom", path: ["numeroDocumento"], message: error });
+    if (datos.menorDeEdad && (datos.apoderado ?? "").length < 3) {
+      contexto.addIssue({
+        code: "custom",
+        path: ["apoderado"],
+        message: "Escribe el nombre de tu padre, madre o apoderado",
+      });
+    }
+  });
+
+export const esquemaFiltroReclamos = z.object({
+  /** Sin estado: todos. */
+  estado: z.enum(ESTADOS_RECLAMO).optional(),
+});
+
+export const esquemaIdReclamo = z.object({
+  reclamoId: z.string().min(1),
+});
+
+export const esquemaRespuestaReclamo = z.object({
+  reclamoId: z.string().min(1),
+  respuesta: z
+    .string()
+    .trim()
+    .min(20, "Explica la respuesta y lo que se hizo (mínimo 20 caracteres)")
+    .max(3000, "Máximo 3000 caracteres"),
+});
+
 export type DatosRegistro = z.infer<typeof esquemaRegistro>;
 export type DatosAutorregistro = z.infer<typeof esquemaAutorregistro>;
 export type DatosIngreso = z.infer<typeof esquemaIngreso>;
@@ -374,3 +450,4 @@ export type DatosProducto = z.infer<typeof esquemaProducto>;
 export type DatosVarianteNueva = z.infer<typeof esquemaVarianteNueva>;
 export type DatosMovimientoStock = z.infer<typeof esquemaMovimientoStock>;
 export type DatosCheckout = z.infer<typeof esquemaCheckout>;
+export type DatosReclamo = z.infer<typeof esquemaReclamo>;

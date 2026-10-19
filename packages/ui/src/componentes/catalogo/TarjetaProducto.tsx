@@ -1,9 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { IconoEstrellaRellena, IconoFlash, IconoFlechaIzquierda, IconoLlama } from "../../iconos";
 import { ContadorOferta } from "./ContadorOferta";
 import { Precio } from "./Precio";
+
+import { FotoProducto } from "./FotoProducto";
 
 import "../estilos.css";
 import "./tarjeta-oferta.css";
@@ -103,16 +104,15 @@ export function TarjetaProducto({
     return (
       <Link className="ui-tarjeta-oferta" href={`/productos/${slug}`}>
         <span className="ui-tarjeta-oferta__imagen">
-          {imagenUrl ? (
-            <Image
-              src={imagenUrl}
-              alt={nombre}
-              width={400}
-              height={400}
-              sizes="(min-width: 64rem) 160px, 40vw"
-              loading="lazy"
-            />
-          ) : null}
+          <FotoProducto
+            src={imagenUrl}
+            alt={nombre}
+            width={400}
+            height={400}
+            sizes="(min-width: 64rem) 160px, 40vw"
+            loading="lazy"
+            leyenda={false}
+          />
         </span>
         <span className="ui-tarjeta-oferta__contenido">
           <span className="ui-tarjeta-oferta__nombre">{nombre}</span>
@@ -168,20 +168,15 @@ export function TarjetaProducto({
         </Link>
       ) : null}
       <span className="ui-tarjeta-producto__imagen">
-        {/* Sin imagen queda el fondo del recuadro: `next/image` con src vacio
-            lanza en tiempo de ejecucion, y un producto sin foto no puede
-            tumbar el listado entero. */}
-        {imagenUrl ? (
-          <Image
-            src={imagenUrl}
-            alt={nombre}
-            width={400}
-            height={400}
-            sizes={portada ? ANCHOS.portada : ANCHOS[contexto === "portada" ? "rejilla" : contexto]}
-            loading={portada ? "eager" : "lazy"}
-            fetchPriority={portada ? "high" : undefined}
-          />
-        ) : null}
+        <FotoProducto
+          src={imagenUrl}
+          alt={nombre}
+          width={400}
+          height={400}
+          sizes={portada ? ANCHOS.portada : ANCHOS[contexto === "portada" ? "rejilla" : contexto]}
+          loading={portada ? "eager" : "lazy"}
+          {...(portada ? { fetchPriority: "high" as const } : {})}
+        />
         {/* Esquina izquierda: Nuevo. Oferta va en la info. */}
         {!portada && esNuevo ? (
           <span className="ui-tarjeta-producto__esquina">

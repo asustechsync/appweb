@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { FotoProducto } from "./FotoProducto";
+
 import "../estilos.css";
 
 export interface ImagenGaleria {
@@ -18,14 +19,13 @@ export interface PropsGaleriaProducto {
  */
 export function GaleriaProducto({ imagenes }: PropsGaleriaProducto) {
   const principal = imagenes[0];
-  if (principal === undefined) return null;
 
   return (
     <div className="ui-galeria-producto">
       <div className="ui-galeria-producto__principal">
-        <Image
-          src={principal.url}
-          alt={principal.alt}
+        <FotoProducto
+          src={principal?.url}
+          alt={principal?.alt ?? ""}
           width={800}
           height={800}
           /* Columna de ~660px menos su padding en escritorio; a pantalla

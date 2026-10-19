@@ -12,6 +12,18 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "-w", "@appweb/admin"],
       "port": 3001
+    },
+    {
+      "name": "web-produccion",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "-w", "@appweb/web"],
+      "port": 3000
+    },
+    {
+      "name": "admin-produccion",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "-w", "@appweb/admin"],
+      "port": 3001
     }
   ]
 }

@@ -14,6 +14,7 @@ export {
 } from "./catalogo/precios";
 
 export {
+  compararTallas,
   opcionesDeCompra,
   type VarianteElegible,
   type ColorElegible,
@@ -21,6 +22,33 @@ export {
 } from "./catalogo/variantes";
 
 export { IMAGEN_DEMO, slugDesdeTexto, skuDeVariante, varianteRepetida } from "./catalogo/gestion";
+
+export {
+  ORDENES,
+  ETIQUETAS_ORDEN,
+  SIN_FILTROS,
+  MIN_LETRAS_BUSQUEDA,
+  filtrosDesdeUrl,
+  urlDeFiltros,
+  hayFiltros,
+  terminosDeBusqueda,
+  ordenarPorPrecio,
+  type Orden,
+  type FiltrosListado,
+} from "./catalogo/filtros";
+
+export {
+  TIPOS_IMAGEN,
+  MAX_BYTES_IMAGEN,
+  MAX_IMAGENES_POR_PRODUCTO,
+  revisarImagen,
+  mensajeDeRechazoImagen,
+  rutaDeImagen,
+  esImagenDemo,
+  urlDeFoto,
+  type TipoImagen,
+  type RechazoImagen,
+} from "./catalogo/imagenes";
 
 // Carrito
 export {
@@ -130,8 +158,35 @@ export {
   correoRecuperacion,
   correoPedidoRecibido,
   correoPedidoNuevoTienda,
+  correoReclamoRegistrado,
+  correoReclamoNuevoTienda,
+  correoReclamoRespondido,
   type TextoCorreo,
 } from "./notificaciones/mensajes";
+
+// Libro de Reclamaciones
+export {
+  TIPOS_RECLAMO,
+  ETIQUETAS_TIPO_RECLAMO,
+  DESCRIPCION_TIPO_RECLAMO,
+  TIPOS_BIEN,
+  ETIQUETAS_TIPO_BIEN,
+  ESTADOS_RECLAMO,
+  ETIQUETAS_ESTADO_RECLAMO,
+  DIAS_HABILES_RESPUESTA,
+  codigoReclamo,
+  venceReclamo,
+  diasParaVencer,
+  revisarRespuesta,
+  mensajeDeRechazoReclamo,
+  type TipoReclamo,
+  type TipoBien,
+  type EstadoReclamo,
+  type RechazoReclamo,
+} from "./reclamos/libro";
+
+// Seguridad
+export { LimiteDeIntentos, mensajeDeEspera, type RevisionIntento } from "./seguridad/intentos";
 
 // Panel
 export {

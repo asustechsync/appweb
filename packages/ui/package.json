@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens": "./src/tokens.ts",
+    "./marca": "./src/marca.ts",
     "./base-web.css": "./src/base-web.css",
     "./theme.css": "./src/theme.css"
   },
@@ -19,6 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@appweb/core": "*",
     "flag-icons": "^7.5.0"
   },
   "peerDependencies": {

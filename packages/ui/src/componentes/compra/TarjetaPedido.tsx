@@ -1,8 +1,9 @@
-import Image from "next/image";
-
 import { Precio } from "../catalogo/Precio";
 
+import { FotoProducto } from "../catalogo/FotoProducto";
+
 import "../estilos.css";
+import { MONEDA } from "@appweb/core/formato";
 
 export interface ItemDePedido {
   nombreProducto: string;
@@ -24,12 +25,6 @@ export interface PropsTarjetaPedido {
   titulo?: string;
 }
 
-const FORMATO = new Intl.NumberFormat("es-PE", {
-  style: "currency",
-  currency: "PEN",
-  minimumFractionDigits: 2,
-});
-
 /** Recibo de un pedido ya cerrado: solo lectura, sin controles. */
 export function TarjetaPedido({
   items,
@@ -46,18 +41,23 @@ export function TarjetaPedido({
       <ul className="ui-tarjeta-pedido__items">
         {items.map((item, indice) => (
           <li key={indice} className="ui-tarjeta-pedido__item">
-            {item.imagenUrl ? (
-              <span className="ui-tarjeta-pedido__imagen">
-                <Image src={item.imagenUrl} alt="" width={112} height={112} sizes="56px" />
-              </span>
-            ) : null}
+            <span className="ui-tarjeta-pedido__imagen">
+              <FotoProducto
+                src={item.imagenUrl}
+                alt=""
+                width={112}
+                height={112}
+                sizes="56px"
+                leyenda={false}
+              />
+            </span>
             <div className="ui-tarjeta-pedido__datos">
               <p className="ui-tarjeta-pedido__nombre">{item.nombreProducto}</p>
               <p className="ui-tarjeta-pedido__variante">
                 {item.color} · Talla {item.talla}
               </p>
               <p className="ui-tarjeta-pedido__variante">
-                {item.cantidad} × {FORMATO.format(item.precioUnitario)}
+                {item.cantidad} × {MONEDA.format(item.precioUnitario)}
               </p>
             </div>
             <Precio valor={item.precioUnitario * item.cantidad} tamano="sm" />
@@ -68,17 +68,17 @@ export function TarjetaPedido({
       <dl className="ui-tarjeta-pedido__cifras">
         <div>
           <dt>Subtotal</dt>
-          <dd>{FORMATO.format(subtotal)}</dd>
+          <dd>{MONEDA.format(subtotal)}</dd>
         </div>
         {descuento > 0 ? (
           <div className="ui-tarjeta-pedido__descuento">
             <dt>Descuento</dt>
-            <dd>−{FORMATO.format(descuento)}</dd>
+            <dd>−{MONEDA.format(descuento)}</dd>
           </div>
         ) : null}
         <div>
           <dt>Envío</dt>
-          <dd>{costoEnvio === 0 ? "Gratis" : FORMATO.format(costoEnvio)}</dd>
+          <dd>{costoEnvio === 0 ? "Gratis" : MONEDA.format(costoEnvio)}</dd>
         </div>
       </dl>
 

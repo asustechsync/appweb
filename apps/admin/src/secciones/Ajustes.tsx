@@ -20,17 +20,11 @@ import {
   Tarjeta,
 } from "@appweb/ui";
 
-import { revalidarPortada } from "@/lib/revalidar";
+import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
-
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
+import { MONEDA, numeroDesdeTexto } from "@appweb/core/formato";
 
 type Pestana = "BANNERS" | "CUPONES" | "NIVELES";
-
-/** "12,50" -> 12.5; vacio -> NaN, que zod rechaza con su mensaje. */
-function aNumero(texto: string): number {
-  return texto.trim() === "" ? Number.NaN : Number(texto.trim().replace(",", "."));
-}
 
 /**
  * Ajustes de la tienda: los banners del carrusel de la portada, los cupones
@@ -144,7 +138,7 @@ function FormularioBanner({
   const guardar = useMutation(
     trpc.panel.promociones.guardarBanner.mutationOptions({
       onSuccess: async () => {
-        await revalidarPortada();
+        await revalidarTienda({ portada: true });
         void queryClient.invalidateQueries(trpc.panel.promociones.pathFilter());
         onListo();
       },
@@ -164,7 +158,7 @@ function FormularioBanner({
           texto,
           accion,
           href,
-          orden: Math.trunc(aNumero(orden || "0")),
+          orden: Math.trunc(numeroDesdeTexto(orden || "0")),
           activo,
         });
       }}
@@ -323,9 +317,9 @@ function FormularioCupon({ cupon, onListo }: { cupon: CuponDelPanel | null; onLi
         guardar.mutate({
           ...(cupon ? { cuponId: cupon.id } : {}),
           codigo,
-          porcentaje: aNumero(porcentaje),
-          minimoCompra: minimo.trim() === "" ? null : aNumero(minimo),
-          usosMaximos: usosMaximos.trim() === "" ? null : Math.trunc(aNumero(usosMaximos)),
+          porcentaje: numeroDesdeTexto(porcentaje),
+          minimoCompra: minimo.trim() === "" ? null : numeroDesdeTexto(minimo),
+          usosMaximos: usosMaximos.trim() === "" ? null : Math.trunc(numeroDesdeTexto(usosMaximos)),
           desde: desde === "" ? null : desde,
           hasta: hasta === "" ? null : hasta,
           activo,

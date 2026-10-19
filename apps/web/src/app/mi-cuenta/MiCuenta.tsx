@@ -24,6 +24,7 @@ import { Direcciones } from "./secciones/Direcciones";
 import { Pedidos } from "./secciones/Pedidos";
 import { Perfil } from "./secciones/Perfil";
 import { Seguridad } from "./secciones/Seguridad";
+import { URL_PANEL } from "@appweb/api/urls";
 
 const SECCIONES = [
   { id: "perfil", etiqueta: "Perfil" },
@@ -84,7 +85,7 @@ export interface PropsMiCuenta {
  */
 export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
   const [activa, setActiva] = useState(seccionInicial);
-  const hrefPanel = puede(rol, "entrar_panel") ? (process.env["NEXT_PUBLIC_ADMIN_URL"] ?? "") : "";
+  const hrefPanel = puede(rol, "entrar_panel") ? URL_PANEL : "";
 
   useEffect(() => {
     function alNavegar() {

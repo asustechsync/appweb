@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PaginaInformativa } from "@appweb/ui";
 
 export const metadata: Metadata = {
-  title: "Cambios y devoluciones | SOCKS",
+  title: "Cambios y devoluciones",
   description: "Condiciones para cambiar o devolver un producto.",
 };
 

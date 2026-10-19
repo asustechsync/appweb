@@ -24,3 +24,35 @@ export function PaginaInformativa({ titulo, children }: PropsPaginaInformativa) 
     </Contenedor>
   );
 }
+
+/**
+ * Tabla dentro de una pagina informativa (guia de tallas). En movil se
+ * desplaza en horizontal dentro de su recuadro, sin mover la pagina.
+ */
+export function TablaInformativa({ children }: { children: ReactNode }) {
+  return (
+    <div className="ui-pagina-informativa__tabla-envoltorio">
+      <table>{children}</table>
+    </div>
+  );
+}
+
+export interface PropsEnlaceDestacado {
+  href: string;
+  children: ReactNode;
+  /** Abre en otra pestaña (WhatsApp, sitios externos). */
+  externo?: boolean;
+}
+
+/** Llamado a la accion de una pagina informativa: "Escribir por WhatsApp". */
+export function EnlaceDestacado({ href, children, externo = false }: PropsEnlaceDestacado) {
+  return (
+    <a
+      className="ui-pagina-informativa__cta"
+      href={href}
+      {...(externo ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      {children}
+    </a>
+  );
+}

@@ -1,6 +1,6 @@
 .ui-migas {
-  /* Arriba menos aire: las migas quedan pegadas a la cabecera. */
-  padding-block: var(--espacio-1) var(--espacio-3);
+  /* Aire arriba y abajo: las migas se separan de la cabecera y del contenido. */
+  padding-block: var(--espacio-5) var(--espacio-6);
   font-family: var(--tipo-familia-texto);
   font-size: var(--tipo-tamano-sm);
 }

@@ -1,0 +1,18 @@
+/* Aviso de "Sin imagen": llena el recuadro de la foto, con la medida del contenedor. */
+.ui-sin-imagen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-1);
+  inline-size: 100%;
+  block-size: 100%;
+  aspect-ratio: 1;
+  border: 1px dashed var(--color-bordeFuerte);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+  text-align: center;
+}

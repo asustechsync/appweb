@@ -11,7 +11,13 @@
 
 import { TRPCError } from "@trpc/server";
 
-import { IMAGEN_DEMO, planMovimientoManual, skuDeVariante, varianteRepetida } from "@appweb/core";
+import {
+  esImagenDemo,
+  IMAGEN_DEMO,
+  planMovimientoManual,
+  skuDeVariante,
+  varianteRepetida,
+} from "@appweb/core";
 import {
   esquemaCambioActivoVariante,
   esquemaEdicionProducto,
@@ -21,6 +27,7 @@ import {
 import { Prisma } from "@appweb/db";
 import { z } from "zod";
 
+import { almacen } from "../../almacen";
 import { aplicarMovimientos, rechazar, type ProductoTocado } from "../../stock";
 import { exige, router } from "../../trpc";
 
@@ -123,7 +130,7 @@ export const productos = router({
       const p = await ctx.prisma.producto.findUnique({
         where: { id: input.productoId },
         include: {
-          imagenes: { orderBy: { orden: "asc" }, select: { url: true, alt: true } },
+          imagenes: { orderBy: { orden: "asc" }, select: { id: true, url: true, alt: true } },
           variantes: {
             orderBy: [{ talla: "asc" }, { color: "asc" }],
             select: { id: true, talla: true, color: true, sku: true, stock: true, activo: true },
@@ -147,7 +154,8 @@ export const productos = router({
           destacado: p.destacado,
           activo: p.activo,
         },
-        imagenes: p.imagenes,
+        // La de relleno no se lista: no es una foto que se pueda quitar ni ordenar.
+        imagenes: p.imagenes.filter((i) => !esImagenDemo(i.url)),
         variantes: p.variantes,
       };
     }),
@@ -269,6 +277,85 @@ export const productos = router({
         productos: [
           { slug: variante.producto.slug, slugCategoria: variante.producto.categoria.slug },
         ],
+        catalogo: false,
+      };
+      return { revalidar };
+    }),
+  /**
+   * Quita una foto del producto y la borra del almacen. Si era la ultima, el
+   * producto vuelve a la imagen de relleno: la ficha nunca queda sin imagen.
+   */
+  quitarImagen: gestionar
+    .input(z.object({ imagenId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const imagen = await ctx.prisma.imagenProducto.findUnique({
+        where: { id: input.imagenId },
+        select: {
+          id: true,
+          url: true,
+          producto: {
+            select: { id: true, slug: true, nombre: true, categoria: { select: { slug: true } } },
+          },
+        },
+      });
+      if (imagen === null) rechazar("Esa foto no existe.", "NOT_FOUND");
+
+      const { producto } = imagen;
+      await ctx.prisma.$transaction(async (tx) => {
+        await tx.imagenProducto.delete({ where: { id: imagen.id } });
+        const quedan = await tx.imagenProducto.count({ where: { productoId: producto.id } });
+        if (quedan === 0) {
+          await tx.imagenProducto.create({
+            data: { productoId: producto.id, url: IMAGEN_DEMO, alt: producto.nombre, orden: 0 },
+          });
+        }
+      });
+      // Despues de la base: si el almacen falla, queda un archivo huerfano,
+      // nunca una foto en la ficha que apunta a un archivo borrado.
+      await almacen.borrar(imagen.url).catch((error) => {
+        console.error("No se pudo borrar la foto del almacén:", error);
+      });
+
+      const revalidar: Revalidar = {
+        productos: [{ slug: producto.slug, slugCategoria: producto.categoria.slug }],
+        catalogo: false,
+      };
+      return { revalidar };
+    }),
+
+  /** Pone una foto primero: es la que sale en la tarjeta del catalogo. */
+  imagenPrincipal: gestionar
+    .input(z.object({ imagenId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const imagen = await ctx.prisma.imagenProducto.findUnique({
+        where: { id: input.imagenId },
+        select: {
+          id: true,
+          producto: {
+            select: {
+              id: true,
+              slug: true,
+              categoria: { select: { slug: true } },
+              imagenes: { orderBy: { orden: "asc" }, select: { id: true } },
+            },
+          },
+        },
+      });
+      if (imagen === null) rechazar("Esa foto no existe.", "NOT_FOUND");
+
+      const { producto } = imagen;
+      const orden = [
+        imagen.id,
+        ...producto.imagenes.map((i) => i.id).filter((id) => id !== imagen.id),
+      ];
+      await ctx.prisma.$transaction(
+        orden.map((id, posicion) =>
+          ctx.prisma.imagenProducto.update({ where: { id }, data: { orden: posicion } }),
+        ),
+      );
+
+      const revalidar: Revalidar = {
+        productos: [{ slug: producto.slug, slugCategoria: producto.categoria.slug }],
         catalogo: false,
       };
       return { revalidar };

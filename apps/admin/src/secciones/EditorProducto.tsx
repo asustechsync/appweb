@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { slugDesdeTexto } from "@appweb/core";
+import { MAX_IMAGENES_POR_PRODUCTO, slugDesdeTexto, TIPOS_IMAGEN } from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -16,23 +16,15 @@ import {
   FilaLista,
   FilaUnida,
   Formulario,
+  GaleriaEditable,
   Insignia,
   Tarjeta,
 } from "@appweb/ui";
 
-import { revalidarCatalogo } from "@/lib/revalidar";
+import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
-
-const URL_TIENDA = process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000";
-
-/** "29,90" o "29.90" -> 29.9. Vacio -> NaN, que zod rechaza con su mensaje. */
-function aNumero(texto: string): number {
-  return texto.trim() === "" ? Number.NaN : Number(texto.trim().replace(",", "."));
-}
-
-function mensajeDe(fallo: unknown): string {
-  return fallo instanceof Error ? fallo.message : "No se pudo completar la acción.";
-}
+import { mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
+import { URL_TIENDA } from "@appweb/api/urls";
 
 interface DatosFormulario {
   nombre: string;
@@ -115,6 +107,9 @@ export function EditorProducto({
         onCreado={onCreado}
       />
       {productoId !== null && detalle.data ? (
+        <FotosProducto productoId={productoId} imagenes={detalle.data.imagenes} />
+      ) : null}
+      {productoId !== null && detalle.data ? (
         <VariantesProducto
           productoId={productoId}
           variantes={detalle.data.variantes}
@@ -128,6 +123,105 @@ export function EditorProducto({
         </Tarjeta>
       )}
     </>
+  );
+}
+
+// ── Fotos ───────────────────────────────────────────────────────────────────
+
+/** En local las fotos quedan en la tienda ("/subidas/..."): el panel les antepone su dominio. */
+function urlVisible(url: string): string {
+  return url.startsWith("/") ? `${URL_TIENDA}${url}` : url;
+}
+
+/**
+ * Fotos del producto. Se suben una por una al route handler /api/imagenes
+ * (multipart, no tRPC); quitar y elegir la principal van por tRPC. Cada cambio
+ * regenera la ficha y los listados del producto en la tienda.
+ */
+function FotosProducto({
+  productoId,
+  imagenes,
+}: {
+  productoId: string;
+  imagenes: { id: string; url: string; alt: string | null }[];
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const [subiendo, setSubiendo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  async function alTerminar(mensaje: string, productos: ProductoTocado[]) {
+    const tiendaAlDia = await revalidarTienda({ productos });
+    setAviso(tiendaAlDia ? mensaje : `${mensaje} La tienda tardará unos minutos en mostrarlo.`);
+    void queryClient.invalidateQueries(trpc.panel.productos.pathFilter());
+  }
+
+  const quitar = useMutation(
+    trpc.panel.productos.quitarImagen.mutationOptions({
+      onSuccess: (r) => alTerminar("Foto quitada.", r.revalidar.productos),
+      onError: (fallo) => setError(mensajeDeFallo(fallo)),
+    }),
+  );
+  const principal = useMutation(
+    trpc.panel.productos.imagenPrincipal.mutationOptions({
+      onSuccess: (r) => alTerminar("Foto principal actualizada.", r.revalidar.productos),
+      onError: (fallo) => setError(mensajeDeFallo(fallo)),
+    }),
+  );
+
+  async function subir(archivos: File[]) {
+    setError(null);
+    setAviso(null);
+    setSubiendo(true);
+    const tocados: ProductoTocado[] = [];
+    let subidas = 0;
+    // Una por una: si la tercera falla, las dos primeras ya quedaron.
+    for (const archivo of archivos) {
+      const datos = new FormData();
+      datos.set("productoId", productoId);
+      datos.set("archivo", archivo);
+      try {
+        const respuesta = await fetch("/api/imagenes", { method: "POST", body: datos });
+        const cuerpo = (await respuesta.json()) as { error?: string; revalidar?: ProductoTocado };
+        if (!respuesta.ok || !cuerpo.revalidar) {
+          setError(`${archivo.name}: ${cuerpo.error ?? "no se pudo subir."}`);
+          break;
+        }
+        tocados.push(cuerpo.revalidar);
+        subidas += 1;
+      } catch {
+        setError(`${archivo.name}: no se pudo subir. Revisa tu conexión.`);
+        break;
+      }
+    }
+    setSubiendo(false);
+    if (subidas > 0) {
+      await alTerminar(
+        subidas === 1 ? "Foto subida." : `${subidas} fotos subidas.`,
+        tocados.slice(0, 1),
+      );
+    }
+  }
+
+  return (
+    <Tarjeta titulo="Fotos">
+      {error ? <Alerta tono="error">{error}</Alerta> : null}
+      {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
+      {imagenes.length === 0 ? (
+        <p>Todavía usa la imagen de relleno. Sube al menos una foto antes de mostrarlo.</p>
+      ) : null}
+      <GaleriaEditable
+        imagenes={imagenes.map((i) => ({ ...i, url: urlVisible(i.url) }))}
+        onSubir={(archivos) => void subir(archivos)}
+        onQuitar={(imagenId) => quitar.mutate({ imagenId })}
+        onPrincipal={(imagenId) => principal.mutate({ imagenId })}
+        ocupado={subiendo || quitar.isPending || principal.isPending}
+        maximo={MAX_IMAGENES_POR_PRODUCTO}
+        aceptar={Object.keys(TIPOS_IMAGEN).join(",")}
+      />
+      <p>JPG, PNG o WEBP de hasta 5 MB. La primera es la que sale en el catálogo.</p>
+    </Tarjeta>
   );
 }
 
@@ -179,8 +273,8 @@ function FormularioProducto({
       slug,
       categoriaId,
       marcaId: marcaId === "" ? null : marcaId,
-      precio: aNumero(precio),
-      precioLista: precioLista.trim() === "" ? null : aNumero(precioLista),
+      precio: numeroDesdeTexto(precio),
+      precioLista: precioLista.trim() === "" ? null : numeroDesdeTexto(precioLista),
       descripcionCorta,
       descripcion,
       etiqueta,
@@ -194,7 +288,7 @@ function FormularioProducto({
     revalidar: { productos: { slug: string; slugCategoria: string }[]; catalogo: boolean },
   ) {
     setError(null);
-    const tiendaAlDia = await revalidarCatalogo(revalidar.productos, revalidar.catalogo);
+    const tiendaAlDia = await revalidarTienda(revalidar);
     setAviso(tiendaAlDia ? mensaje : `${mensaje} La tienda tardará unos minutos en mostrarlo.`);
     void queryClient.invalidateQueries(trpc.panel.productos.pathFilter());
     void queryClient.invalidateQueries(trpc.panel.stock.pathFilter());
@@ -202,7 +296,7 @@ function FormularioProducto({
 
   function alFallar(fallo: unknown) {
     setAviso(null);
-    setError(mensajeDe(fallo));
+    setError(mensajeDeFallo(fallo));
   }
 
   const crear = useMutation(
@@ -381,7 +475,7 @@ function VariantesProducto({ productoId, variantes, avisoInicial }: PropsVariant
     revalidar: { productos: { slug: string; slugCategoria: string }[]; catalogo: boolean },
   ) {
     setError(null);
-    await revalidarCatalogo(revalidar.productos, revalidar.catalogo);
+    await revalidarTienda(revalidar);
     setAviso(mensaje);
     void queryClient.invalidateQueries(trpc.panel.productos.pathFilter());
     void queryClient.invalidateQueries(trpc.panel.stock.pathFilter());
@@ -389,7 +483,7 @@ function VariantesProducto({ productoId, variantes, avisoInicial }: PropsVariant
 
   function alFallar(fallo: unknown) {
     setAviso(null);
-    setError(mensajeDe(fallo));
+    setError(mensajeDeFallo(fallo));
   }
 
   const agregar = useMutation(
@@ -456,7 +550,12 @@ function VariantesProducto({ productoId, variantes, avisoInicial }: PropsVariant
         ancho="completo"
         onSubmit={(evento) => {
           evento.preventDefault();
-          agregar.mutate({ productoId, talla, color, stockInicial: aNumero(stockInicial) });
+          agregar.mutate({
+            productoId,
+            talla,
+            color,
+            stockInicial: numeroDesdeTexto(stockInicial),
+          });
         }}
       >
         <FilaUnida iguales>

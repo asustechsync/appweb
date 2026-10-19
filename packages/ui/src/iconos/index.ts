@@ -14,6 +14,7 @@ export { IconoTicket } from "./generados/IconoTicket";
 // contacto
 export { IconoCorreo } from "./generados/IconoCorreo";
 export { IconoGlobo } from "./generados/IconoGlobo";
+export { IconoLibro } from "./generados/IconoLibro";
 export { IconoPregunta } from "./generados/IconoPregunta";
 export { IconoSoporte } from "./generados/IconoSoporte";
 export { IconoTelefono } from "./generados/IconoTelefono";

@@ -19,11 +19,13 @@ import {
 } from "@appweb/core";
 import { esquemaCheckout, esquemaDireccion, esquemaLineaCarrito } from "@appweb/core/tipos";
 import { nivelDeUsuario } from "@appweb/api";
+import { enviarCorreo } from "@appweb/api/correo";
+import { entorno } from "@appweb/api/entorno";
+import { URL_PANEL, URL_TIENDA } from "@appweb/api/urls";
 import { prisma } from "@appweb/db";
 
 import { buscarReglaCupon } from "@/lib/cupones";
 import { direccionesDelUsuario, type DireccionDeUsuario } from "@/lib/consultas-privadas";
-import { enviarCorreo, URL_PANEL, URL_TIENDA } from "@/lib/notificaciones";
 import { pasarela } from "@/lib/pago";
 import { leerSesion } from "@/lib/sesion";
 
@@ -340,7 +342,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     });
     await enviarCorreo(usuario.email, alCliente.asunto, alCliente.cuerpo);
 
-    const tienda = process.env["NOTIFICAR_PEDIDOS_A"];
+    const tienda = entorno().avisosPedidos;
     if (tienda) {
       const aviso = correoPedidoNuevoTienda({
         codigo: pedido.codigo,

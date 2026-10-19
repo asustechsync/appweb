@@ -1,0 +1,132 @@
+/* Barra deslizable de dos manijas: dos <input type="range"> encimados sobre una
+   misma pista. Los inputs no reciben el puntero (`pointer-events: none`); solo
+   las manijas, asi se pueden agarrar las dos aunque esten superpuestas. */
+.ui-filtro-rango {
+  --filtro-rango-manija: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+/* Cajas para escribir el minimo y el maximo, con un guion en medio. */
+.ui-filtro-rango__cajas {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+.ui-filtro-rango__caja {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-filtro-rango__caja:focus-within {
+  border-color: var(--color-acentoFuerte);
+}
+.ui-filtro-rango__prefijo {
+  flex: none;
+  color: var(--color-textoSuave);
+}
+.ui-filtro-rango__valor {
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+.ui-filtro-rango__guion {
+  flex: none;
+  color: var(--color-textoSuave);
+}
+.ui-filtro-rango__barra {
+  position: relative;
+  block-size: 20px;
+}
+/* La pista se acorta media manija por cada lado: asi los porcentajes caen
+   justo bajo el centro de cada manija. */
+.ui-filtro-rango__pista {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: calc(var(--filtro-rango-manija) / 2);
+  block-size: 4px;
+  transform: translateY(-50%);
+  border-radius: var(--radio-completo);
+  background: var(--color-neutro-200);
+}
+.ui-filtro-rango__pista::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--inicio);
+  inset-inline-end: calc(100% - var(--fin));
+  border-radius: inherit;
+  background: var(--color-acentoFuerte);
+}
+.ui-filtro-rango__manija {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.ui-filtro-rango__manija--arriba {
+  z-index: 1;
+}
+.ui-filtro-rango__manija::-webkit-slider-runnable-track {
+  block-size: 100%;
+  background: transparent;
+  -webkit-appearance: none;
+}
+.ui-filtro-rango__manija::-moz-range-track {
+  background: transparent;
+}
+.ui-filtro-rango__manija::-webkit-slider-thumb {
+  inline-size: var(--filtro-rango-manija);
+  block-size: var(--filtro-rango-manija);
+  margin-block-start: 1px;
+  border: 2px solid var(--color-acentoFuerte);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-sm);
+  cursor: grab;
+  pointer-events: auto;
+  -webkit-appearance: none;
+}
+.ui-filtro-rango__manija::-moz-range-thumb {
+  box-sizing: border-box;
+  inline-size: var(--filtro-rango-manija);
+  block-size: var(--filtro-rango-manija);
+  border: 2px solid var(--color-acentoFuerte);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-sm);
+  cursor: grab;
+  pointer-events: auto;
+}
+.ui-filtro-rango__manija:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+.ui-filtro-rango__manija:focus-visible {
+  outline: none;
+}
+.ui-filtro-rango__manija:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}
+.ui-filtro-rango__manija:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}

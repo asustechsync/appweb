@@ -20,11 +20,9 @@ import {
   Tarjeta,
 } from "@appweb/ui";
 
-import { revalidarEnvios } from "@/lib/revalidar";
+import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
-
-const MONEDA = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
-const FECHA = new Intl.DateTimeFormat("es-PE", { dateStyle: "medium", timeStyle: "short" });
+import { FECHA_HORA, MONEDA, numeroDesdeTexto } from "@appweb/core/formato";
 
 type Pestana = "PAGADO" | "PREPARANDO" | "ENVIADO" | "TARIFAS";
 
@@ -178,7 +176,7 @@ function ColaDeEtapa({
             </span>
             <span>
               {p.telefono ? `${p.telefono} · ` : ""}
-              {p.metodo} · {FECHA.format(new Date(p.creadoEn))}
+              {p.metodo} · {FECHA_HORA.format(new Date(p.creadoEn))}
             </span>
             <span>
               {p.cobrarAlEntregar ? <Insignia tono="alerta">Cobrar al entregar</Insignia> : null}
@@ -246,11 +244,6 @@ interface MetodoDeEnvio {
   departamentos: string[];
   activo: boolean;
   orden: number;
-}
-
-/** "12,50" -> 12.5; vacio -> NaN, que zod rechaza con su mensaje. */
-function aNumero(texto: string): number {
-  return texto.trim() === "" ? Number.NaN : Number(texto.trim().replace(",", "."));
 }
 
 function Tarifas() {
@@ -330,7 +323,7 @@ function FormularioMetodo({
   const guardar = useMutation(
     trpc.panel.envios.guardarMetodo.mutationOptions({
       onSuccess: async () => {
-        await revalidarEnvios();
+        await revalidarTienda({ envios: true });
         void queryClient.invalidateQueries(trpc.panel.envios.pathFilter());
         onListo();
       },
@@ -346,11 +339,11 @@ function FormularioMetodo({
         guardar.mutate({
           ...(metodo ? { metodoId: metodo.id } : {}),
           nombre,
-          costo: aNumero(costo),
-          gratisDesde: gratisDesde.trim() === "" ? null : aNumero(gratisDesde),
+          costo: numeroDesdeTexto(costo),
+          gratisDesde: gratisDesde.trim() === "" ? null : numeroDesdeTexto(gratisDesde),
           departamentos: departamentosDesdeTexto(departamentos),
           activo,
-          orden: Math.trunc(aNumero(orden || "0")),
+          orden: Math.trunc(numeroDesdeTexto(orden || "0")),
         });
       }}
     >

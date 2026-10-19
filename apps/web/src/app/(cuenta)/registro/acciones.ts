@@ -1,9 +1,10 @@
 "use server";
 
-import { hashClave, nombreDesdeCorreo } from "@appweb/core";
+import { hashClave, mensajeDeEspera, nombreDesdeCorreo } from "@appweb/core";
 import { esquemaAutorregistro } from "@appweb/core/tipos";
 import { prisma } from "@appweb/db";
 
+import { ipDelCliente, limites } from "@/lib/limites";
 import { crearCookieSesion } from "@/lib/sesion";
 
 export interface ResultadoRegistro {
@@ -16,6 +17,9 @@ export async function registrar(datos: unknown): Promise<ResultadoRegistro> {
   if (!analizado.success) {
     return { ok: false, error: analizado.error.issues[0]?.message ?? "Revisa los datos." };
   }
+
+  const cupo = limites.registroPorIp.consumir(await ipDelCliente());
+  if (!cupo.permitido) return { ok: false, error: mensajeDeEspera(cupo.reintentarEnMs) };
 
   const { email, clave, telefono } = analizado.data;
   const nombre = nombreDesdeCorreo(email);
