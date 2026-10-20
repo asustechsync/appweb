@@ -214,6 +214,8 @@ model Producto {
   descripcionCorta String?
   // Insignia corta sobre la imagen: "Nuevo", "Mas vendido". Texto libre.
   etiqueta         String?
+  // Muestra "Envío gratis" sobre la foto de la tarjeta. Lo marca el panel a mano.
+  envioGratis      Boolean  @default(false)
   // Datos tecnicos que no justifican columna: material, composicion, cuidado.
   // Ejemplo: { "material": "Algodon pima", "composicion": "85% algodon, 15% elastano" }
   specs            Json?

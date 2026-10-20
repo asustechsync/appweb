@@ -53,6 +53,7 @@ function datosDeProducto(datos: z.infer<typeof esquemaProducto>) {
     descripcionCorta: datos.descripcionCorta || null,
     descripcion: datos.descripcion || null,
     etiqueta: datos.etiqueta || null,
+    envioGratis: datos.envioGratis,
     destacado: datos.destacado,
     activo: datos.activo,
   };
@@ -151,6 +152,7 @@ export const productos = router({
           descripcionCorta: p.descripcionCorta ?? "",
           descripcion: p.descripcion ?? "",
           etiqueta: p.etiqueta ?? "",
+          envioGratis: p.envioGratis,
           destacado: p.destacado,
           activo: p.activo,
         },

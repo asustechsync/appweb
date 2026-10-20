@@ -61,6 +61,8 @@
   --color-nuevoTexto: #0b6a94;
   --color-disponibleFondo: #d8f3e5;
   --color-disponibleTexto: #17704a;
+  --color-envioFondo: #e7e2fa;
+  --color-envioTexto: #4b3a8c;
   --color-fondoImagen: #dee9fa;
   --color-fondoImagenFin: #ffffff;
   --color-fondo: #ffffff;
@@ -117,6 +119,7 @@
   --tipo-familia-texto: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --tipo-familia-titulos: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   --tipo-familia-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --tipo-tamano-mini: 10px;
   --tipo-tamano-etiqueta: 11px;
   --tipo-tamano-xs: 12px;
   --tipo-tamano-sm: 14px;
@@ -227,6 +230,8 @@
     --color-nuevoTexto: #86cdee;
     --color-disponibleFondo: #1e3d30;
     --color-disponibleTexto: #7ed9a6;
+    --color-envioFondo: #2a2547;
+    --color-envioTexto: #c4bbf5;
     --color-fondoImagen: #27272a;
     --color-fondoFoto: #2c2c30;
     --color-fondoPortada: #121212;
@@ -295,6 +300,8 @@
   --color-nuevoTexto: #86cdee;
   --color-disponibleFondo: #1e3d30;
   --color-disponibleTexto: #7ed9a6;
+  --color-envioFondo: #2a2547;
+  --color-envioTexto: #c4bbf5;
   --color-fondoImagen: #27272a;
   --color-fondoFoto: #2c2c30;
   --color-fondoPortada: #121212;

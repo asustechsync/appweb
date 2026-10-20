@@ -99,6 +99,9 @@ export const tokens = {
     // Disponible en menta: el estado normal, que no debe llamar la atencion.
     disponibleFondo: "#D8F3E5",
     disponibleTexto: "#17704A",
+    // Envio gratis en lavanda: distinto de disponible (menta) y de nuevo (celeste).
+    envioFondo: "#E7E2FA",
+    envioTexto: "#4B3A8C",
     // Degradado pastel detras del producto en la tarjeta de ofertas: de arriba a abajo.
     fondoImagen: "#DEE9FA",
     fondoImagenFin: "#FFFFFF",
@@ -192,6 +195,7 @@ export const tokens = {
       mono: "'IBM Plex Mono', ui-monospace, Consolas, monospace",
     },
     tamano: {
+      mini: 10,
       etiqueta: 11,
       xs: 12,
       sm: 14,
@@ -314,6 +318,8 @@ export const tokensOscuro = {
     nuevoTexto: "#86CDEE",
     disponibleFondo: "#1E3D30",
     disponibleTexto: "#7ED9A6",
+    envioFondo: "#2A2547",
+    envioTexto: "#C4BBF5",
     fondoImagen: "#27272A",
     fondoFoto: "#2C2C30",
     fondoPortada: "#121212",

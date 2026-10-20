@@ -300,6 +300,7 @@ export const esquemaProducto = z
     descripcionCorta: textoOpcional(160, "El resumen admite hasta 160 caracteres"),
     descripcion: textoOpcional(4000, "La descripción es demasiado larga"),
     etiqueta: textoOpcional(20, "La insignia admite hasta 20 caracteres"),
+    envioGratis: z.boolean().default(false),
     destacado: z.boolean().default(false),
     activo: z.boolean().default(true),
   })

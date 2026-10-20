@@ -29,6 +29,7 @@ export interface ProductoDeRejilla {
   precioLista: number | null;
   descuentoPct: number | null;
   etiqueta: string | null;
+  envioGratis: boolean;
   disponible: boolean;
   /** Unidades que quedan y % de lo ingresado que sigue en almacen (tarjeta de oferta). */
   stockRestante?: number | null;
@@ -178,6 +179,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
       etiqueta: p.etiqueta,
+      envioGratis: p.envioGratis,
       disponible: disponibilidad.hayStock,
       stockRestante: nivel.restante,
       stockPct: nivel.porcentaje,
@@ -235,6 +237,7 @@ async function aRejilla(productos: ProductoConRejilla[]): Promise<ProductoDeReji
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
       etiqueta: producto.etiqueta,
+      envioGratis: producto.envioGratis,
       disponible: disponibilidad.hayStock,
       stockRestante: nivel.restante,
       stockPct: nivel.porcentaje,

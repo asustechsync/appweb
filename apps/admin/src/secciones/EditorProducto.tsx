@@ -36,6 +36,7 @@ interface DatosFormulario {
   descripcionCorta: string;
   descripcion: string;
   etiqueta: string;
+  envioGratis: boolean;
   destacado: boolean;
   activo: boolean;
 }
@@ -51,6 +52,7 @@ const VACIO: DatosFormulario = {
   descripcionCorta: "",
   descripcion: "",
   etiqueta: "",
+  envioGratis: false,
   destacado: false,
   activo: false,
 };
@@ -261,6 +263,7 @@ function FormularioProducto({
   const [descripcionCorta, setDescripcionCorta] = useState(inicial.descripcionCorta);
   const [descripcion, setDescripcion] = useState(inicial.descripcion);
   const [etiqueta, setEtiqueta] = useState(inicial.etiqueta);
+  const [envioGratis, setEnvioGratis] = useState(inicial.envioGratis);
   const [destacado, setDestacado] = useState(inicial.destacado);
   const [activo, setActivo] = useState(inicial.activo);
 
@@ -278,6 +281,7 @@ function FormularioProducto({
       descripcionCorta,
       descripcion,
       etiqueta,
+      envioGratis,
       destacado,
       activo,
     };
@@ -411,6 +415,12 @@ function FormularioProducto({
           valor={etiqueta}
           onCambio={setEtiqueta}
           placeholder="Nuevo, Más vendido…"
+        />
+        <Casilla
+          id="producto-envio-gratis"
+          etiqueta="Envío gratis (muestra la etiqueta sobre la foto)"
+          marcada={envioGratis}
+          onCambio={setEnvioGratis}
         />
         <Casilla
           id="producto-destacado"

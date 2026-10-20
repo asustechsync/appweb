@@ -40,6 +40,8 @@ export interface PropsTarjetaProducto {
   descuentoPct?: number | null;
   /** Insignia libre sobre la imagen: "Nuevo", "Más vendido". */
   etiqueta?: string | null;
+  /** Muestra "Envio gratis" sobre la foto, abajo. Sin el, no hay etiqueta. */
+  envioGratis?: boolean;
   marca?: string | null;
   /** Ya calculado por `resolverDisponibilidad` de @appweb/core. */
   disponible: boolean;
@@ -80,7 +82,7 @@ function NotaDeTarjeta({
     return (
       <span className={`${clase} ${clase}--sin-resenas`}>
         <IconoEstrella tamano={12} />
-        Sin opiniones
+        <span className="ui-solo-lectores">Sin opiniones</span>
       </span>
     );
   }
@@ -135,6 +137,7 @@ export function TarjetaProducto({
   entrega,
   descuentoPct,
   etiqueta,
+  envioGratis = false,
   marca,
   disponible,
   contexto = "rejilla",
@@ -239,17 +242,22 @@ export function TarjetaProducto({
         {descuentoPct ? (
           <span className="ui-tarjeta-producto__insignia">-{descuentoPct}%</span>
         ) : null}
-        {!portada && etiqueta ? (
-          <span
-            className={[
-              "ui-tarjeta-producto__etiqueta",
-              etiquetaEnInfo ? "ui-tarjeta-producto__etiqueta--info" : "",
-              esNuevo ? "ui-tarjeta-producto__etiqueta--nuevo" : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            {etiqueta}
+        {!portada && (envioGratis || etiqueta) ? (
+          <span className="ui-tarjeta-producto__apilado">
+            {envioGratis ? <span className="ui-tarjeta-producto__envio">Envío gratis</span> : null}
+            {etiqueta ? (
+              <span
+                className={[
+                  "ui-tarjeta-producto__etiqueta",
+                  etiquetaEnInfo ? "ui-tarjeta-producto__etiqueta--info" : "",
+                  esNuevo ? "ui-tarjeta-producto__etiqueta--nuevo" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {etiqueta}
+              </span>
+            ) : null}
           </span>
         ) : null}
       </span>
@@ -264,7 +272,19 @@ export function TarjetaProducto({
             {entrega}
           </span>
         ) : null}
-        {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
+        {portada ? (
+          marca ? (
+            <span className="ui-tarjeta-producto__marca">{marca}</span>
+          ) : null
+        ) : (
+          <span className="ui-tarjeta-producto__fila-marca">
+            {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
+            <NotaDeTarjeta
+              clase="ui-tarjeta-producto__calificacion"
+              calificacion={calificacion ?? SIN_RESENAS}
+            />
+          </span>
+        )}
         {portada ? (
           <Link className="ui-tarjeta-producto__nombre-enlace" href={`/productos/${slug}`}>
             <span className="ui-tarjeta-producto__nombre">{nombre}</span>
@@ -272,12 +292,6 @@ export function TarjetaProducto({
         ) : (
           <span className="ui-tarjeta-producto__nombre">{nombre}</span>
         )}
-        {!portada ? (
-          <NotaDeTarjeta
-            clase="ui-tarjeta-producto__calificacion"
-            calificacion={calificacion ?? SIN_RESENAS}
-          />
-        ) : null}
         {/* Etiqueta de la info: top. El hueco se reserva siempre (aunque el producto
             no la tenga) para que todas las tarjetas de un listado midan igual. Cada
             listado decide si lo muestra; en el catalogo queda oculto. */}
@@ -308,7 +322,14 @@ export function TarjetaProducto({
           </span>
         ) : null}
         {!portada && disponible && tallas && tallas.length > 0 ? (
-          <span className="ui-tarjeta-producto__tallas-texto">Tallas: {tallas.join(", ")}</span>
+          <span className="ui-tarjeta-producto__tallas-texto">
+            <span className="ui-solo-lectores">Tallas:</span>
+            {tallas.map((talla) => (
+              <span key={talla} className="ui-tarjeta-producto__talla">
+                {talla}
+              </span>
+            ))}
+          </span>
         ) : null}
         {!portada && !disponible ? (
           <span className="ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado">
