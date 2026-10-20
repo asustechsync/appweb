@@ -1,6 +1,15 @@
 import Link from "next/link";
 
-import { IconoEstrellaRellena, IconoFlash, IconoFlechaIzquierda, IconoLlama } from "../../iconos";
+import { CALIFICACION, MONEDA } from "@appweb/core/formato";
+
+import {
+  IconoCamion,
+  IconoEstrella,
+  IconoEstrellaRellena,
+  IconoFlash,
+  IconoFlechaIzquierda,
+  IconoLlama,
+} from "../../iconos";
 import { ContadorOferta } from "./ContadorOferta";
 import { Precio } from "./Precio";
 
@@ -20,6 +29,13 @@ export interface PropsTarjetaProducto {
   precio: number;
   /** Precio tachado. `null`/omitido si no hay oferta. */
   precioLista?: number | null;
+  /**
+   * Precio pagando por transferencia, ya resuelto en @appweb/core. Si llega,
+   * es el precio principal y `precio` pasa a la linea "Normal".
+   */
+  precioTransferencia?: number | null;
+  /** Aviso de entrega ya redactado: "Llega gratis el miércoles". Sin el, no hay linea. */
+  entrega?: string | null;
   /** Ya calculado por `resolverPrecio` de @appweb/core; esta tarjeta no calcula nada. */
   descuentoPct?: number | null;
   /** Insignia libre sobre la imagen: "Nuevo", "Más vendido". */
@@ -38,14 +54,51 @@ export interface PropsTarjetaProducto {
   stockRestante?: number | null;
   /** Solo en `oferta`: % de lo ingresado que sigue en almacen (0-100); sin el, no hay barra. */
   stockPct?: number | null;
+  /**
+   * Nota de las reseñas publicadas, ya resumida por `resumenCalificacion` de
+   * @appweb/core. `null` = sin reseñas: la tarjeta dice "Sin opiniones".
+   */
+  calificacion?: { promedio: number; total: number } | null;
 }
 
+/** Lo que muestra la tarjeta de un producto que aun no tiene reseñas. */
+const SIN_RESENAS = { promedio: 0, total: 0 };
+
 /**
- * Calificacion provisional: aun no hay resenas en la base, asi que todas las
- * tarjetas muestran el mismo valor. Cuando exista el dato, pasa a ser una
- * prop calculada en packages/core, no un numero fijo aqui.
+ * Estrella, nota y cuantas reseñas la respaldan: "★ 4.7 (12)". Sin reseñas,
+ * estrella vacia y "Sin opiniones": ningun numero que se lea como mala nota
+ * ni una nota que nadie puso.
  */
-const CALIFICACION_PROVISIONAL = "4.9";
+function NotaDeTarjeta({
+  clase,
+  calificacion,
+}: {
+  clase: string;
+  calificacion: { promedio: number; total: number };
+}) {
+  if (calificacion.total === 0) {
+    return (
+      <span className={`${clase} ${clase}--sin-resenas`}>
+        <IconoEstrella tamano={12} />
+        Sin opiniones
+      </span>
+    );
+  }
+
+  const nota = CALIFICACION.format(calificacion.promedio);
+  const opiniones = calificacion.total === 1 ? "opinión" : "opiniones";
+  return (
+    <span className={clase}>
+      <IconoEstrellaRellena tamano={12} />
+      <span aria-hidden="true">
+        <span className={`${clase}-nota`}>{nota}</span> ({calificacion.total})
+      </span>
+      <span className="ui-solo-lectores">
+        Calificación {nota} de 5, {calificacion.total} {opiniones}
+      </span>
+    </span>
+  );
+}
 
 /**
  * Ancho real de la tarjeta en cada contexto, para que el navegador no baje
@@ -78,6 +131,8 @@ export function TarjetaProducto({
   imagenUrl,
   precio,
   precioLista,
+  precioTransferencia,
+  entrega,
   descuentoPct,
   etiqueta,
   marca,
@@ -87,6 +142,7 @@ export function TarjetaProducto({
   terminaEn,
   stockRestante,
   stockPct,
+  calificacion,
 }: PropsTarjetaProducto) {
   const portada = presentacion === "portada";
   const claveEtiqueta = etiqueta?.trim().toLowerCase();
@@ -116,13 +172,10 @@ export function TarjetaProducto({
         </span>
         <span className="ui-tarjeta-oferta__contenido">
           <span className="ui-tarjeta-oferta__nombre">{nombre}</span>
-          <span
-            className="ui-tarjeta-oferta__calificacion"
-            aria-label={`Calificacion ${CALIFICACION_PROVISIONAL}`}
-          >
-            <IconoEstrellaRellena tamano={12} />
-            {CALIFICACION_PROVISIONAL}
-          </span>
+          <NotaDeTarjeta
+            clase="ui-tarjeta-oferta__calificacion"
+            calificacion={calificacion ?? SIN_RESENAS}
+          />
           <span className="ui-tarjeta-oferta__precio">
             <Precio valor={precio} antes={precioLista ?? null} tamano="md" />
           </span>
@@ -188,11 +241,13 @@ export function TarjetaProducto({
         ) : null}
         {!portada && etiqueta ? (
           <span
-            className={
-              etiquetaEnInfo
-                ? "ui-tarjeta-producto__etiqueta ui-tarjeta-producto__etiqueta--info"
-                : "ui-tarjeta-producto__etiqueta"
-            }
+            className={[
+              "ui-tarjeta-producto__etiqueta",
+              etiquetaEnInfo ? "ui-tarjeta-producto__etiqueta--info" : "",
+              esNuevo ? "ui-tarjeta-producto__etiqueta--nuevo" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
             {etiqueta}
           </span>
@@ -203,22 +258,13 @@ export function TarjetaProducto({
         {portada && categoria ? (
           <span className="ui-tarjeta-producto__etiqueta">{categoria}</span>
         ) : null}
-        {portada ? (
-          marca ? (
-            <span className="ui-tarjeta-producto__marca">{marca}</span>
-          ) : null
-        ) : (
-          <span className="ui-tarjeta-producto__marca-fila">
-            {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
-            <span
-              className="ui-tarjeta-producto__calificacion"
-              aria-label={`Calificacion ${CALIFICACION_PROVISIONAL}`}
-            >
-              <IconoEstrellaRellena tamano={12} />
-              {CALIFICACION_PROVISIONAL}
-            </span>
+        {!portada && entrega ? (
+          <span className="ui-tarjeta-producto__entrega">
+            <IconoCamion tamano={14} />
+            {entrega}
           </span>
-        )}
+        ) : null}
+        {marca ? <span className="ui-tarjeta-producto__marca">{marca}</span> : null}
         {portada ? (
           <Link className="ui-tarjeta-producto__nombre-enlace" href={`/productos/${slug}`}>
             <span className="ui-tarjeta-producto__nombre">{nombre}</span>
@@ -226,6 +272,12 @@ export function TarjetaProducto({
         ) : (
           <span className="ui-tarjeta-producto__nombre">{nombre}</span>
         )}
+        {!portada ? (
+          <NotaDeTarjeta
+            clase="ui-tarjeta-producto__calificacion"
+            calificacion={calificacion ?? SIN_RESENAS}
+          />
+        ) : null}
         {/* Etiqueta de la info: top. El hueco se reserva siempre (aunque el producto
             no la tenga) para que todas las tarjetas de un listado midan igual. Cada
             listado decide si lo muestra; en el catalogo queda oculto. */}
@@ -255,24 +307,31 @@ export function TarjetaProducto({
             ))}
           </span>
         ) : null}
-        {!portada ? (
-          <span
-            className={
-              disponible
-                ? "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--disponible"
-                : "ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado"
-            }
-          >
-            {disponible ? "Disponible" : "Agotado"}
+        {!portada && disponible && tallas && tallas.length > 0 ? (
+          <span className="ui-tarjeta-producto__tallas-texto">Tallas: {tallas.join(", ")}</span>
+        ) : null}
+        {!portada && !disponible ? (
+          <span className="ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado">
+            Agotado
           </span>
         ) : null}
 
         {/* `?? null`: precioLista opcional puede llegar como `undefined`, y
             exactOptionalPropertyTypes distingue "prop omitida" de "prop en
             undefined". Precio si acepta null. */}
-        <span className="ui-tarjeta-producto__precio-fila">
-          <Precio valor={precio} antes={precioLista ?? null} tamano={portada ? "lg" : "md"} />
-        </span>
+        {!portada && precioTransferencia != null ? (
+          <span className="ui-tarjeta-producto__precio-fila ui-tarjeta-producto__precio-fila--transferencia">
+            <span className="ui-tarjeta-producto__precio-etiqueta">Transferencia</span>
+            <Precio valor={precioTransferencia} antes={precioLista ?? null} tamano="md" />
+            <span className="ui-tarjeta-producto__precio-normal">
+              Normal {MONEDA.format(precio)}
+            </span>
+          </span>
+        ) : (
+          <span className="ui-tarjeta-producto__precio-fila">
+            <Precio valor={precio} antes={precioLista ?? null} tamano={portada ? "lg" : "md"} />
+          </span>
+        )}
       </div>
     </>
   );

@@ -1,14 +1,16 @@
 import { cacheLife, cacheTag } from "next/cache";
 
 import {
+  autorDeResena,
   compararTallas,
   urlDeFoto,
   opcionesDeCompra,
   resolverDisponibilidad,
   resolverNivelStock,
   resolverPrecio,
+  resumenCalificacion,
 } from "@appweb/core";
-import type { FiltrosListado, OpcionDeTalla } from "@appweb/core";
+import type { FiltrosListado, OpcionDeTalla, ResumenCalificacion } from "@appweb/core";
 import { type Prisma, prisma } from "@appweb/db";
 import type { BannerDePortada } from "@appweb/ui";
 
@@ -31,6 +33,27 @@ export interface ProductoDeRejilla {
   /** Unidades que quedan y % de lo ingresado que sigue en almacen (tarjeta de oferta). */
   stockRestante?: number | null;
   stockPct?: number | null;
+  /** Nota de las reseñas publicadas. `null` si aun no hay ninguna. */
+  calificacion: ResumenCalificacion | null;
+}
+
+/**
+ * Nota de cada producto: cuantas reseñas publicadas tiene y la suma de sus
+ * estrellas, en una sola consulta agrupada. El promedio lo saca
+ * `resumenCalificacion` de @appweb/core.
+ */
+async function calificacionPorProducto(
+  ids: string[],
+): Promise<Map<string, ResumenCalificacion | null>> {
+  const filas = await prisma.resena.groupBy({
+    by: ["productoId"],
+    where: { productoId: { in: ids }, estado: "APROBADA" },
+    _count: { _all: true },
+    _sum: { estrellas: true },
+  });
+  return new Map(
+    filas.map((f) => [f.productoId, resumenCalificacion(f._count._all, f._sum.estrellas ?? 0)]),
+  );
 }
 
 /** Lo ingresado por producto: la suma de las entradas de MovimientoStock, no una columna. */
@@ -127,7 +150,11 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     },
   });
 
-  const ingresado = await ingresadoPorProducto(productos.map((p) => p.id));
+  const ids = productos.map((p) => p.id);
+  const [ingresado, calificaciones] = await Promise.all([
+    ingresadoPorProducto(ids),
+    calificacionPorProducto(ids),
+  ]);
 
   const resueltos = productos.map((p): ProductoDeRejilla | null => {
     const precio = resolverPrecio({
@@ -154,6 +181,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
       disponible: disponibilidad.hayStock,
       stockRestante: nivel.restante,
       stockPct: nivel.porcentaje,
+      calificacion: calificaciones.get(p.id) ?? null,
     };
   });
 
@@ -180,7 +208,11 @@ type ProductoConRejilla = Awaited<
  * exactamente lo mismo para el mismo producto.
  */
 async function aRejilla(productos: ProductoConRejilla[]): Promise<ProductoDeRejilla[]> {
-  const ingresado = await ingresadoPorProducto(productos.map((p) => p.id));
+  const ids = productos.map((p) => p.id);
+  const [ingresado, calificaciones] = await Promise.all([
+    ingresadoPorProducto(ids),
+    calificacionPorProducto(ids),
+  ]);
 
   return productos.map((producto): ProductoDeRejilla => {
     const precio = resolverPrecio({
@@ -206,6 +238,7 @@ async function aRejilla(productos: ProductoConRejilla[]): Promise<ProductoDeReji
       disponible: disponibilidad.hayStock,
       stockRestante: nivel.restante,
       stockPct: nivel.porcentaje,
+      calificacion: calificaciones.get(producto.id) ?? null,
     };
   });
 }
@@ -511,7 +544,22 @@ export interface ProductoDeFicha {
   stockBajo: boolean;
   stockTotal: number;
   opciones: OpcionDeTalla[];
+  calificacion: ResumenCalificacion | null;
+  /** Las reseñas publicadas mas recientes. */
+  resenas: ResenaDeFicha[];
 }
+
+export interface ResenaDeFicha {
+  id: string;
+  autor: string;
+  estrellas: number;
+  comentario: string | null;
+  /** ISO 8601. */
+  fecha: string;
+}
+
+/** Cuantas opiniones muestra la ficha. La nota cuenta todas. */
+const TOPE_RESENAS_FICHA = 20;
 
 /**
  * Ficha completa de un producto. Etiqueta `producto:{slug}`: el panel guarda
@@ -561,6 +609,24 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
   });
   const disponibilidad = resolverDisponibilidad(producto.variantes);
 
+  // Etiqueta `producto:{slug}`: publicar o retirar una reseña en el panel
+  // regenera esta ficha (ver `etiquetasDeProducto`).
+  const [calificaciones, resenas] = await Promise.all([
+    calificacionPorProducto([producto.id]),
+    prisma.resena.findMany({
+      where: { productoId: producto.id, estado: "APROBADA" },
+      orderBy: { creadoEn: "desc" },
+      take: TOPE_RESENAS_FICHA,
+      select: {
+        id: true,
+        estrellas: true,
+        comentario: true,
+        creadoEn: true,
+        usuario: { select: { nombre: true, apellidoPaterno: true, email: true } },
+      },
+    }),
+  ]);
+
   return {
     slug: producto.slug,
     nombre: producto.nombre,
@@ -592,6 +658,14 @@ export async function productoPorSlug(slug: string): Promise<ProductoDeFicha | n
         sku: variante.sku,
       })),
     ),
+    calificacion: calificaciones.get(producto.id) ?? null,
+    resenas: resenas.map((r) => ({
+      id: r.id,
+      autor: autorDeResena(r.usuario),
+      estrellas: r.estrellas,
+      comentario: r.comentario,
+      fecha: r.creadoEn.toISOString(),
+    })),
   };
 }
 

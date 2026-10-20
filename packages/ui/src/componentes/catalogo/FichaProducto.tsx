@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { CALIFICACION } from "@appweb/core/formato";
+
 import { IconoEstrellaRellena, IconoGaleria, IconoMensaje, IconoVerificado } from "../../iconos";
 import { GaleriaProducto, type ImagenGaleria } from "./GaleriaProducto";
 import { Precio } from "./Precio";
@@ -10,7 +12,7 @@ import "../estilos.css";
 export interface PropsFichaProducto {
   nombre: string;
   marca?: string | null;
-  /** Nota media de 0 a 5. Sin dato real aun: la pagina pasa un valor de ejemplo. */
+  /** Nota media de 1 a 5 de las reseñas publicadas. Sin reseñas, se omite. */
   calificacion?: number;
   totalOpiniones?: number;
   /** Opiniones con fotos. */
@@ -83,9 +85,7 @@ export function FichaProducto({
         {calificacion !== undefined ? (
           <div className="ui-ficha-producto__opiniones">
             <IconoEstrellaRellena className="ui-ficha-producto__estrella" tamano={18} />
-            <span className="ui-ficha-producto__nota">
-              {calificacion.toFixed(1).replace(".", ",")}
-            </span>
+            <span className="ui-ficha-producto__nota">{CALIFICACION.format(calificacion)}</span>
             {totalOpiniones !== undefined ? (
               <span className="ui-ficha-producto__dato">
                 <IconoMensaje tamano={18} />({totalOpiniones})

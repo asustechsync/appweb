@@ -35,6 +35,8 @@
 @import "./catalogo/galeria-producto.css";
 @import "./catalogo/selector-variantes.css";
 @import "./catalogo/ficha-producto.css";
+@import "./catalogo/estrellas.css";
+@import "./catalogo/lista-resenas.css";
 @import "./base/acordeon.css";
 @import "./disposiciones/pagina-informativa.css";
 @import "./disposiciones/disposicion-listado.css";
@@ -53,6 +55,7 @@
 @import "./formularios/bloque-formulario.css";
 @import "./disposiciones/disposicion-acceso.css";
 @import "./formularios/campo.css";
+@import "./formularios/selector-estrellas.css";
 @import "./formularios/casilla.css";
 @import "./base/boton.css";
 @import "./base/alerta.css";

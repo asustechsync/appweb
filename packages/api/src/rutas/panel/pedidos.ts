@@ -15,7 +15,9 @@
 import { TRPCError } from "@trpc/server";
 
 import {
+  correoCalificaTuCompra,
   ESTADOS_PEDIDO,
+  estaAnonimizada,
   mensajeDeRechazoPedido,
   movimientosDelCambio,
   notaDeCambio,
@@ -35,8 +37,10 @@ import {
 import { Prisma, type PrismaClient } from "@appweb/db";
 import type { z } from "zod";
 
+import { enviarCorreo } from "../../correo";
 import { aplicarMovimientos, esStockNegativo, rechazar, type Transaccion } from "../../stock";
 import { exige, router } from "../../trpc";
+import { URL_TIENDA } from "../../urls";
 
 const ver = exige("ver_ventas");
 const gestionar = exige("cambiar_estado_pedido");
@@ -112,72 +116,107 @@ export async function ejecutarCambioEstado(
   input: z.infer<typeof esquemaCambioEstadoPedido>,
   revisar: (entrada: EntradaCambioEstado) => RechazoPedido | null,
 ) {
+  let resultado: Awaited<ReturnType<typeof cambiarEnTransaccion>>;
   try {
-    return await prisma.$transaction(async (tx) => {
-      const pedido = await tx.pedido.findUnique({
-        where: { id: input.pedidoId },
-        include: { items: true },
-      });
-      if (!pedido) throw new TRPCError({ code: "NOT_FOUND", message: "Ese pedido no existe." });
-
-      const hacia = input.estado;
-      const rechazo = revisar({ desde: pedido.estado, hacia, medio: pedido.medioPago });
-      if (rechazo !== null) rechazar(mensajeDeRechazoPedido(rechazo));
-
-      const movimientos = movimientosDelCambio(pedido.estado, hacia, pedido.items, pedido.id);
-      if (movimientos.some((m) => m.delta < 0)) await comprobarStock(tx, pedido.items);
-
-      const ahora = new Date();
-      await moverEstado(tx, pedido.id, pedido.estado, {
-        estado: hacia,
-        ...(hacia === "ENVIADO"
-          ? {
-              enviadoEn: ahora,
-              transportista: input.transportista || null,
-              codigoSeguimiento: input.codigoSeguimiento || null,
-            }
-          : {}),
-        ...(hacia === "ENTREGADO" ? { entregadoEn: ahora } : {}),
-      });
-
-      if (hacia === "CANCELADO") {
-        // El pago que se esperaba ya no se acepta. Uno confirmado se deja
-        // como esta: devolver la plata es un paso aparte y manual.
-        await tx.pago.updateMany({
-          where: { pedidoId: pedido.id, estado: "PENDIENTE" },
-          data: { estado: "RECHAZADO" },
-        });
-      }
-
-      if (hacia === "ENTREGADO" && pedido.medioPago === "CONTRA_ENTREGA") {
-        // Contra entrega: el cobro llega con el paquete.
-        await tx.pago.updateMany({
-          where: { pedidoId: pedido.id, estado: "PENDIENTE" },
-          data: {
-            estado: "CONFIRMADO",
-            confirmadoPorId: actorId,
-            confirmadoEn: ahora,
-          },
-        });
-      }
-
-      const tocados = await aplicarMovimientos(tx, movimientos);
-
-      await tx.historialPedido.create({
-        data: {
-          pedidoId: pedido.id,
-          estadoAnterior: pedido.estado,
-          estadoNuevo: hacia,
-          usuarioId: actorId,
-          nota: notaDeCambio(hacia, { nota: input.nota ?? null }),
-        },
-      });
-
-      return { codigo: pedido.codigo, productosTocados: tocados };
-    });
+    resultado = await cambiarEnTransaccion(prisma, actorId, input, revisar);
   } catch (error) {
     traducirError(error);
   }
+
+  // Fuera de la transaccion: un correo que falla no deshace la entrega.
+  const { entregado, ...respuesta } = resultado;
+  if (entregado && !estaAnonimizada(entregado.email)) {
+    const { asunto, cuerpo } = correoCalificaTuCompra({
+      nombre: entregado.nombre,
+      codigo: respuesta.codigo,
+      productos: entregado.productos,
+      enlace: `${URL_TIENDA}/mi-cuenta/resenas`,
+    });
+    await enviarCorreo(entregado.email, asunto, cuerpo);
+  }
+  return respuesta;
+}
+
+async function cambiarEnTransaccion(
+  prisma: PrismaClient,
+  actorId: string,
+  input: z.infer<typeof esquemaCambioEstadoPedido>,
+  revisar: (entrada: EntradaCambioEstado) => RechazoPedido | null,
+) {
+  return prisma.$transaction(async (tx) => {
+    const pedido = await tx.pedido.findUnique({
+      where: { id: input.pedidoId },
+      include: { items: true, usuario: { select: { nombre: true, email: true } } },
+    });
+    if (!pedido) throw new TRPCError({ code: "NOT_FOUND", message: "Ese pedido no existe." });
+
+    const hacia = input.estado;
+    const rechazo = revisar({ desde: pedido.estado, hacia, medio: pedido.medioPago });
+    if (rechazo !== null) rechazar(mensajeDeRechazoPedido(rechazo));
+
+    const movimientos = movimientosDelCambio(pedido.estado, hacia, pedido.items, pedido.id);
+    if (movimientos.some((m) => m.delta < 0)) await comprobarStock(tx, pedido.items);
+
+    const ahora = new Date();
+    await moverEstado(tx, pedido.id, pedido.estado, {
+      estado: hacia,
+      ...(hacia === "ENVIADO"
+        ? {
+            enviadoEn: ahora,
+            transportista: input.transportista || null,
+            codigoSeguimiento: input.codigoSeguimiento || null,
+          }
+        : {}),
+      ...(hacia === "ENTREGADO" ? { entregadoEn: ahora } : {}),
+    });
+
+    if (hacia === "CANCELADO") {
+      // El pago que se esperaba ya no se acepta. Uno confirmado se deja
+      // como esta: devolver la plata es un paso aparte y manual.
+      await tx.pago.updateMany({
+        where: { pedidoId: pedido.id, estado: "PENDIENTE" },
+        data: { estado: "RECHAZADO" },
+      });
+    }
+
+    if (hacia === "ENTREGADO" && pedido.medioPago === "CONTRA_ENTREGA") {
+      // Contra entrega: el cobro llega con el paquete.
+      await tx.pago.updateMany({
+        where: { pedidoId: pedido.id, estado: "PENDIENTE" },
+        data: {
+          estado: "CONFIRMADO",
+          confirmadoPorId: actorId,
+          confirmadoEn: ahora,
+        },
+      });
+    }
+
+    const tocados = await aplicarMovimientos(tx, movimientos);
+
+    await tx.historialPedido.create({
+      data: {
+        pedidoId: pedido.id,
+        estadoAnterior: pedido.estado,
+        estadoNuevo: hacia,
+        usuarioId: actorId,
+        nota: notaDeCambio(hacia, { nota: input.nota ?? null }),
+      },
+    });
+
+    return {
+      codigo: pedido.codigo,
+      productosTocados: tocados,
+      // Al entregar se le pide su opinion al cliente (ver `ejecutarCambioEstado`).
+      entregado:
+        hacia === "ENTREGADO"
+          ? {
+              nombre: pedido.usuario.nombre,
+              email: pedido.usuario.email,
+              productos: [...new Set(pedido.items.map((i) => i.nombreProducto))],
+            }
+          : null,
+    };
+  });
 }
 
 export const pedidos = router({

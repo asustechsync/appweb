@@ -1,0 +1,55 @@
+.ui-selector-estrellas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.ui-selector-estrellas__leyenda {
+  padding: 0;
+  margin-block-end: var(--espacio-1);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-selector-estrellas__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+}
+.ui-selector-estrellas__opcion {
+  position: relative;
+  display: inline-flex;
+  padding: 0.125rem;
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+}
+.ui-selector-estrellas__opcion svg {
+  flex: none;
+  max-inline-size: none;
+}
+.ui-selector-estrellas__opcion:hover .ui-selector-estrellas__vacia {
+  color: var(--color-calificacion);
+}
+/* El radio esta oculto: el foco se ve en la estrella. */
+.ui-selector-estrellas__opcion:has(input:focus-visible) {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 1px;
+}
+.ui-selector-estrellas[disabled] .ui-selector-estrellas__opcion {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ui-selector-estrellas__llena {
+  color: var(--color-calificacion);
+}
+.ui-selector-estrellas__vacia {
+  color: var(--color-textoTenue);
+}
+.ui-selector-estrellas__texto {
+  margin-inline-start: var(--espacio-2);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}

@@ -34,6 +34,7 @@ export {
   IconoFavorito,
   IconoLibro,
   IconoBuscar,
+  IconoEstrella,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -137,6 +138,12 @@ export {
   type OpcionDeCompra,
 } from "./componentes/catalogo/SelectorVariantes";
 export { FichaProducto, type PropsFichaProducto } from "./componentes/catalogo/FichaProducto";
+export { Estrellas, type PropsEstrellas } from "./componentes/catalogo/Estrellas";
+export {
+  ListaResenas,
+  type PropsListaResenas,
+  type ResenaPublicada,
+} from "./componentes/catalogo/ListaResenas";
 export { Acordeon, type PropsAcordeon, type SeccionDeAcordeon } from "./componentes/base/Acordeon";
 export {
   DisposicionListado,
@@ -212,6 +219,10 @@ export {
 } from "./componentes/disposiciones/DisposicionAcceso";
 export { Campo, type PropsCampo } from "./componentes/formularios/Campo";
 export { CampoTexto, type PropsCampoTexto } from "./componentes/formularios/CampoTexto";
+export {
+  SelectorEstrellas,
+  type PropsSelectorEstrellas,
+} from "./componentes/formularios/SelectorEstrellas";
 export { Casilla, type PropsCasilla } from "./componentes/formularios/Casilla";
 export { AccesoSocial } from "./componentes/navegacion/AccesoSocial";
 export { FilaCampos, type PropsFilaCampos } from "./componentes/formularios/FilaCampos";

@@ -1,7 +1,7 @@
 .ui-rejilla-productos {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--espacio-4);
+  gap: var(--espacio-2);
 }
 @media (min-width: 40rem) {
   .ui-rejilla-productos {

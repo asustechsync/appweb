@@ -161,6 +161,7 @@ export {
   correoReclamoRegistrado,
   correoReclamoNuevoTienda,
   correoReclamoRespondido,
+  correoCalificaTuCompra,
   type TextoCorreo,
 } from "./notificaciones/mensajes";
 
@@ -184,6 +185,25 @@ export {
   type EstadoReclamo,
   type RechazoReclamo,
 } from "./reclamos/libro";
+
+// Reseñas
+export {
+  ESTADOS_RESENA,
+  DECISIONES_RESENA,
+  ETIQUETAS_ESTADO_RESENA,
+  MIN_ESTRELLAS,
+  MAX_ESTRELLAS,
+  MAX_LETRAS_COMENTARIO,
+  ESTADOS_QUE_HABILITAN_RESENA,
+  revisarResena,
+  mensajeDeRechazoResena,
+  resumenCalificacion,
+  autorDeResena,
+  type EstadoResena,
+  type DecisionResena,
+  type RechazoResena,
+  type ResumenCalificacion,
+} from "./resenas/resenas";
 
 // Seguridad
 export { LimiteDeIntentos, mensajeDeEspera, type RevisionIntento } from "./seguridad/intentos";

@@ -9,9 +9,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { Contenedor, Migas } from "@appweb/ui";
+import { URL_TIENDA } from "@appweb/api/urls";
+import { Contenedor, ListaResenas, Migas } from "@appweb/ui";
 
-import { productoPorSlug, slugsDeProductos } from "@/lib/consultas";
+import { type ProductoDeFicha, productoPorSlug, slugsDeProductos } from "@/lib/consultas";
 
 import { FichaProductoCliente } from "./FichaProductoCliente";
 import { SeccionesFicha } from "./secciones-ficha";
@@ -86,9 +87,70 @@ export default async function PaginaProducto({ params }: Props) {
           stockBajo={producto.stockBajo}
           stockTotal={producto.stockTotal}
           opciones={producto.opciones}
+          {...(producto.calificacion
+            ? {
+                calificacion: producto.calificacion.promedio,
+                totalOpiniones: producto.calificacion.total,
+              }
+            : {})}
           extras={<SeccionesFicha />}
         />
+        <ListaResenas calificacion={producto.calificacion} resenas={producto.resenas} />
       </Contenedor>
+      <script
+        type="application/ld+json"
+        // JSON.stringify no escapa "<": sin esto, un comentario con "</script>"
+        // cerraria la etiqueta antes de tiempo.
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: datos propios, escapados arriba.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(datosEstructurados(producto)).replace(/</g, "\\u003c"),
+        }}
+      />
     </main>
   );
+}
+
+/**
+ * Datos del producto para Google (schema.org/Product). Con reseñas publicadas
+ * lleva la nota media: es lo que permite que las estrellas salgan en los
+ * resultados de busqueda.
+ */
+function datosEstructurados(producto: ProductoDeFicha) {
+  const url = `${URL_TIENDA}/productos/${producto.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: producto.nombre,
+    url,
+    ...(producto.descripcionCorta ? { description: producto.descripcionCorta } : {}),
+    ...(producto.marca ? { brand: { "@type": "Brand", name: producto.marca } } : {}),
+    image: producto.imagenes.map((imagen) => new URL(imagen.url, URL_TIENDA).toString()),
+    offers: {
+      "@type": "Offer",
+      url,
+      price: producto.precio.toFixed(2),
+      priceCurrency: "PEN",
+      availability: producto.disponible
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+    },
+    ...(producto.calificacion
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: producto.calificacion.promedio,
+            reviewCount: producto.calificacion.total,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: producto.resenas.map((resena) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: resena.autor },
+            datePublished: resena.fecha.slice(0, 10),
+            reviewRating: { "@type": "Rating", ratingValue: resena.estrellas, bestRating: 5 },
+            ...(resena.comentario ? { reviewBody: resena.comentario } : {}),
+          })),
+        }
+      : {}),
+  };
 }

@@ -132,6 +132,28 @@ export function correoReclamoNuevoTienda(datos: {
   };
 }
 
+/** Al entregar un pedido: se le pide la opinion a quien ya tiene el producto. */
+export function correoCalificaTuCompra(datos: {
+  nombre: string;
+  codigo: string;
+  productos: string[];
+  enlace: string;
+}): TextoCorreo {
+  return {
+    asunto: `¿Qué te pareció tu pedido ${datos.codigo}?`,
+    cuerpo: [
+      `Hola, ${datos.nombre}:`,
+      "",
+      `Tu pedido ${datos.codigo} ya fue entregado. Cuéntanos qué te pareció:`,
+      "",
+      ...datos.productos.map((producto) => `· ${producto}`),
+      "",
+      "Califícalos aquí (toma un minuto y ayuda a otros clientes a elegir):",
+      datos.enlace,
+    ].join("\n"),
+  };
+}
+
 export function correoReclamoRespondido(datos: {
   nombre: string;
   codigo: string;

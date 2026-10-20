@@ -18,24 +18,28 @@ export const avisos = router({
     const verVentas = puede(rol, "ver_ventas");
     const despachar = puede(rol, "despachar_envios");
     const atender = puede(rol, "atender_reclamos");
+    const moderar = puede(rol, "moderar_resenas");
 
-    const [porConfirmar, ultimo, porDespachar, reclamosPendientes] = await Promise.all([
-      verVentas ? ctx.prisma.pedido.count({ where: { estado: "PENDIENTE_PAGO" } }) : 0,
-      verVentas
-        ? ctx.prisma.pedido.findFirst({
-            where: { estado: "PENDIENTE_PAGO" },
-            orderBy: { creadoEn: "desc" },
-            select: { codigo: true, creadoEn: true },
-          })
-        : null,
-      despachar ? ctx.prisma.pedido.count({ where: { estado: "PAGADO" } }) : 0,
-      atender ? ctx.prisma.reclamo.count({ where: { estado: "PENDIENTE" } }) : 0,
-    ]);
+    const [porConfirmar, ultimo, porDespachar, reclamosPendientes, resenasPendientes] =
+      await Promise.all([
+        verVentas ? ctx.prisma.pedido.count({ where: { estado: "PENDIENTE_PAGO" } }) : 0,
+        verVentas
+          ? ctx.prisma.pedido.findFirst({
+              where: { estado: "PENDIENTE_PAGO" },
+              orderBy: { creadoEn: "desc" },
+              select: { codigo: true, creadoEn: true },
+            })
+          : null,
+        despachar ? ctx.prisma.pedido.count({ where: { estado: "PAGADO" } }) : 0,
+        atender ? ctx.prisma.reclamo.count({ where: { estado: "PENDIENTE" } }) : 0,
+        moderar ? ctx.prisma.resena.count({ where: { estado: "PENDIENTE" } }) : 0,
+      ]);
 
     return {
       porConfirmar,
       porDespachar,
       reclamosPendientes,
+      resenasPendientes,
       /** El pedido pendiente mas reciente: el panel lo compara para avisar "llego uno". */
       ultimoPendiente: ultimo
         ? { codigo: ultimo.codigo, creadoEn: ultimo.creadoEn.toISOString() }

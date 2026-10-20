@@ -11,6 +11,13 @@ import { errorNumeroDocumento, TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
 import { ESTADOS_PEDIDO } from "../pedidos/estados";
 import { ESTADOS_RECLAMO, TIPOS_BIEN, TIPOS_RECLAMO } from "../reclamos/libro";
+import {
+  DECISIONES_RESENA,
+  ESTADOS_RESENA,
+  MAX_ESTRELLAS,
+  MAX_LETRAS_COMENTARIO,
+  MIN_ESTRELLAS,
+} from "../resenas/resenas";
 import { TIPOS_MOVIMIENTO_MANUAL } from "../stock/manual";
 import { ROLES } from "../usuarios/permisos";
 import { REQUISITOS_CLAVE } from "../usuarios/requisitos-clave";
@@ -440,6 +447,31 @@ export const esquemaRespuestaReclamo = z.object({
     .max(3000, "Máximo 3000 caracteres"),
 });
 
+/** Reseña que escribe el cliente desde su cuenta. El comentario es opcional. */
+export const esquemaResena = z.object({
+  productoId: z.string().min(1),
+  estrellas: z
+    .number({ error: "Elige de 1 a 5 estrellas" })
+    .int()
+    .min(MIN_ESTRELLAS, "Elige de 1 a 5 estrellas")
+    .max(MAX_ESTRELLAS, "Elige de 1 a 5 estrellas"),
+  comentario: z
+    .string()
+    .trim()
+    .max(MAX_LETRAS_COMENTARIO, `Máximo ${MAX_LETRAS_COMENTARIO} caracteres`)
+    .optional(),
+});
+
+export const esquemaFiltroResenas = z.object({
+  /** Sin estado: todas. */
+  estado: z.enum(ESTADOS_RESENA).optional(),
+});
+
+export const esquemaModeracionResena = z.object({
+  resenaId: z.string().min(1),
+  estado: z.enum(DECISIONES_RESENA),
+});
+
 export type DatosRegistro = z.infer<typeof esquemaRegistro>;
 export type DatosAutorregistro = z.infer<typeof esquemaAutorregistro>;
 export type DatosIngreso = z.infer<typeof esquemaIngreso>;
@@ -451,3 +483,4 @@ export type DatosVarianteNueva = z.infer<typeof esquemaVarianteNueva>;
 export type DatosMovimientoStock = z.infer<typeof esquemaMovimientoStock>;
 export type DatosCheckout = z.infer<typeof esquemaCheckout>;
 export type DatosReclamo = z.infer<typeof esquemaReclamo>;
+export type DatosResena = z.infer<typeof esquemaResena>;

@@ -10,6 +10,7 @@ import {
   EstadoVacio,
   IconoCarrito,
   IconoConfiguracion,
+  IconoEstrella,
   IconoEtiqueta,
   IconoLibro,
   IconoMoneda,
@@ -25,6 +26,7 @@ import { Envios } from "./Envios";
 import { Pedidos } from "./Pedidos";
 import { Productos } from "./Productos";
 import { Reclamos } from "./Reclamos";
+import { Resenas } from "./Resenas";
 import { Resumen } from "./Resumen";
 import { Stock } from "./Stock";
 import { Usuarios } from "./Usuarios";
@@ -34,6 +36,7 @@ const ETIQUETAS: Record<string, string> = {
   resumen: "Resumen",
   pedidos: "Pedidos",
   reclamos: "Reclamos",
+  resenas: "Reseñas",
   envios: "Envíos",
   stock: "Stock",
   productos: "Productos",
@@ -45,6 +48,7 @@ const ICONOS: Record<string, ReactNode> = {
   resumen: <IconoMoneda />,
   pedidos: <IconoPedidos />,
   reclamos: <IconoLibro />,
+  resenas: <IconoEstrella />,
   envios: <IconoUbicacion />,
   stock: <IconoEtiqueta />,
   productos: <IconoCarrito />,
@@ -102,6 +106,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
     pedidos: avisos.porConfirmar,
     envios: avisos.porDespachar,
     reclamos: avisos.reclamosPendientes,
+    resenas: avisos.resenasPendientes,
   };
   function etiqueta(id: string): string {
     const texto = ETIQUETAS[id] ?? id;
@@ -142,6 +147,8 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
       ) : visible === "reclamos" ? (
         <Reclamos />
+      ) : visible === "resenas" ? (
+        <Resenas />
       ) : visible === "envios" ? (
         <Envios puedeTarifas={puede(rol, "gestionar_ajustes")} />
       ) : visible === "productos" ? (

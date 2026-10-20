@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  ESQUEMA — dieciseis tablas en siete dominios:
+//  ESQUEMA — diecisiete tablas en ocho dominios:
 //
 //      Cuenta      usuarios, direcciones
 //      Catalogo    categorias, marcas, productos, variantes, imagenes_producto
@@ -8,13 +8,15 @@
 //      Venta       pedidos, items_pedido, pagos, historial_pedido
 //      Promo/envio cupones, metodos_envio
 //      Atencion    reclamos
+//      Opinion     resenas
 //
 //  Diez son del arranque. Marca, Pago, HistorialPedido y Cupon se añadieron
 //  porque guardan datos imposibles de reconstruir si llegan tarde (quien pago
 //  con que operacion, quien cambio cada estado); Banner saca el contenido de
 //  portada de Categoria. Reclamo es el Libro de Reclamaciones que la ley exige
 //  desde la primera venta: una hoja que no se guardo el dia que llego no se
-//  recupera despues.
+//  recupera despues. Resena es lo que opina quien compro: si no se le pregunta
+//  cuando recibe el paquete, esa opinion no se recupera meses despues.
 //
 //  Orden de columnas dentro de cada modelo: identidad, contenido, relaciones,
 //  montos o precio, SEO, estado, fechas. El orden fisico en la base es el de
@@ -105,6 +107,8 @@ model Usuario {
   cambiosDePedido  HistorialPedido[] @relation("CambioHechoPor")
   movimientosStock MovimientoStock[] @relation("MovimientoHechoPor")
   reclamosRespondidos Reclamo[]      @relation("ReclamoRespondidoPor")
+  resenasModeradas    Resena[]       @relation("ResenaModeradaPor")
+  resenas             Resena[]       @relation("ResenaEscritaPor")
 
   @@index([rol])
   @@map("usuarios")
@@ -235,6 +239,7 @@ model Producto {
   marca     Marca?           @relation(fields: [marcaId], references: [id])
   imagenes  ImagenProducto[]
   variantes Variante[]
+  resenas   Resena[]
 
   // El indice que sostiene el listado de categoria de Clase A.
   @@index([categoriaId, activo])
@@ -602,4 +607,43 @@ model Reclamo {
 
   @@index([estado, creadoEn])
   @@map("reclamos")
+}
+
+// ═══ OPINION ═══════════════════════════════════════════════════════════════
+
+enum EstadoResena {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+}
+
+// Opinion de un cliente sobre un producto que recibio. Una por cliente y
+// producto; se ve en la tienda solo despues de que el panel la aprueba. Quien
+// puede escribirla y como se resume la nota: `@appweb/core` (resenas/).
+model Resena {
+  // Identidad
+  id         String @id @default(cuid())
+  productoId String
+  usuarioId  String
+  // Contenido. Estrellas de 1 a 5 (CHECK en prisma/sql/restricciones.sql).
+  estrellas  Int
+  comentario String?
+  // Moderacion
+  estado        EstadoResena @default(PENDIENTE)
+  moderadoPorId String?
+  moderadoEn    DateTime?
+  // Fechas
+  creadoEn  DateTime @default(now())
+  editadoEn DateTime @updatedAt
+
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  usuario     Usuario  @relation("ResenaEscritaPor", fields: [usuarioId], references: [id])
+  moderadoPor Usuario? @relation("ResenaModeradaPor", fields: [moderadoPorId], references: [id])
+
+  @@unique([usuarioId, productoId])
+  // Opiniones publicadas de una ficha, de la mas nueva a la mas vieja.
+  @@index([productoId, estado, creadoEn])
+  // Cola de moderacion del panel.
+  @@index([estado, creadoEn])
+  @@map("resenas")
 }

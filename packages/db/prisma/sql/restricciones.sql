@@ -26,7 +26,11 @@ BEGIN
       ('metodos_envio',    'metodos_envio_costos_validos',
        $c$"costo" >= 0 AND ("gratisDesde" IS NULL OR "gratisDesde" >= 0)$c$),
       ('reclamos',         'reclamos_respuesta_coherente',
-       $c$("estado" = 'PENDIENTE' AND "respuesta" IS NULL) OR ("estado" = 'RESPONDIDO' AND "respuesta" IS NOT NULL AND "respondidoEn" IS NOT NULL)$c$)
+       $c$("estado" = 'PENDIENTE' AND "respuesta" IS NULL) OR ("estado" = 'RESPONDIDO' AND "respuesta" IS NOT NULL AND "respondidoEn" IS NOT NULL)$c$),
+      ('resenas',          'resenas_estrellas_validas',
+       $c$"estrellas" BETWEEN 1 AND 5$c$),
+      ('resenas',          'resenas_moderacion_coherente',
+       $c$"estado" = 'PENDIENTE' OR "moderadoEn" IS NOT NULL$c$)
     ) AS t(tabla, nombre, condicion)
   LOOP
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = regla.nombre) THEN

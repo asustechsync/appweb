@@ -31,7 +31,12 @@ export async function POST(peticion: Request) {
   const sesion = sesionDesdeToken(almacen.get(COOKIE_SESION)?.value);
   if (!sesion) return NextResponse.json({ error: "Sesión requerida." }, { status: 401 });
 
-  const permitido = ["cambiar_estado_pedido", "ajustar_stock", "gestionar_productos"] as const;
+  const permitido = [
+    "cambiar_estado_pedido",
+    "ajustar_stock",
+    "gestionar_productos",
+    "moderar_resenas",
+  ] as const;
   if (!permitido.some((accion) => puede(sesion.rol, accion))) {
     return NextResponse.json({ error: "No tienes permiso." }, { status: 403 });
   }

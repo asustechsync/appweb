@@ -77,6 +77,13 @@
 .ui-tarjeta-oferta__calificacion svg {
   color: var(--color-calificacion);
 }
+.ui-tarjeta-oferta__calificacion-nota {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-tarjeta-oferta__calificacion--sin-resenas svg {
+  color: var(--color-textoTenue);
+}
 
 .ui-tarjeta-oferta__estado {
   color: var(--color-textoTenue);

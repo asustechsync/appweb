@@ -9,8 +9,19 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { hashClave, REQUISITOS_CLAVE, verificarClave, NIVELES } from "@appweb/core";
-import { esquemaDireccion, esquemaPerfil } from "@appweb/core/tipos";
+import {
+  ESTADOS_QUE_HABILITAN_RESENA,
+  hashClave,
+  mensajeDeRechazoResena,
+  NIVELES,
+  REQUISITOS_CLAVE,
+  revisarResena,
+  urlDeFoto,
+  verificarClave,
+  type EstadoResena,
+} from "@appweb/core";
+import { esquemaDireccion, esquemaPerfil, esquemaResena } from "@appweb/core/tipos";
+import { Prisma } from "@appweb/db";
 
 import { nivelDeUsuario } from "../../clientes";
 import { privado, router } from "../../trpc";
@@ -180,6 +191,138 @@ export const cuenta = router({
         cantidad: item.cantidad,
       })),
     };
+  }),
+
+  // ── Reseñas ──────────────────────────────────────────────────────────────
+
+  /**
+   * Productos que el cliente ya recibio, el mas reciente arriba, con la
+   * reseña que dejo de cada uno (o `null` si aun no opina).
+   */
+  porResenar: privado.query(async ({ ctx }) => {
+    const [items, resenas] = await Promise.all([
+      ctx.prisma.itemPedido.findMany({
+        where: {
+          pedido: {
+            usuarioId: ctx.sesion.usuarioId,
+            estado: { in: [...ESTADOS_QUE_HABILITAN_RESENA] },
+          },
+          variante: { producto: { activo: true } },
+        },
+        orderBy: { pedido: { creadoEn: "desc" } },
+        take: 200,
+        select: {
+          variante: {
+            select: {
+              producto: {
+                select: {
+                  id: true,
+                  slug: true,
+                  nombre: true,
+                  imagenes: { orderBy: { orden: "asc" }, take: 1, select: { url: true } },
+                },
+              },
+            },
+          },
+        },
+      }),
+      ctx.prisma.resena.findMany({
+        where: { usuarioId: ctx.sesion.usuarioId },
+        select: { productoId: true, estrellas: true, comentario: true, estado: true },
+      }),
+    ]);
+
+    const porProducto = new Map(resenas.map((r) => [r.productoId, r]));
+    const vistos = new Set<string>();
+    const productos = [];
+    for (const { variante } of items) {
+      const p = variante.producto;
+      if (vistos.has(p.id)) continue;
+      vistos.add(p.id);
+      const resena = porProducto.get(p.id);
+      productos.push({
+        productoId: p.id,
+        slug: p.slug,
+        nombre: p.nombre,
+        imagenUrl: urlDeFoto(p.imagenes[0]?.url),
+        resena: resena
+          ? {
+              estrellas: resena.estrellas,
+              comentario: resena.comentario,
+              estado: resena.estado as EstadoResena,
+            }
+          : null,
+      });
+    }
+    return productos;
+  }),
+
+  /**
+   * Escribe o reescribe la reseña de un producto recibido. Vuelve a quedar en
+   * revision: lo que se publica siempre paso por el panel.
+   */
+  guardarResena: privado.input(esquemaResena).mutation(async ({ ctx, input }) => {
+    const usuarioId = ctx.sesion.usuarioId;
+    const [compras, actual] = await Promise.all([
+      ctx.prisma.itemPedido.count({
+        where: {
+          pedido: { usuarioId, estado: { in: [...ESTADOS_QUE_HABILITAN_RESENA] } },
+          variante: { productoId: input.productoId },
+        },
+      }),
+      ctx.prisma.resena.findUnique({
+        where: { usuarioId_productoId: { usuarioId, productoId: input.productoId } },
+        select: { estado: true },
+      }),
+    ]);
+
+    const rechazo = revisarResena({
+      compro: compras > 0,
+      estadoActual: (actual?.estado as EstadoResena | undefined) ?? null,
+    });
+    if (rechazo) {
+      throw new TRPCError({
+        code: rechazo === "sin_compra" ? "FORBIDDEN" : "CONFLICT",
+        message: mensajeDeRechazoResena(rechazo),
+      });
+    }
+
+    const datos = {
+      estrellas: input.estrellas,
+      comentario: input.comentario ? input.comentario : null,
+      estado: "PENDIENTE" as const,
+      moderadoPorId: null,
+      moderadoEn: null,
+    };
+
+    if (actual === null) {
+      try {
+        await ctx.prisma.resena.create({
+          data: { ...datos, usuarioId, productoId: input.productoId },
+        });
+      } catch (error) {
+        // Doble envio: la otra peticion ya creo la reseña.
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+          throw new TRPCError({ code: "CONFLICT", message: "Ya guardamos tu reseña." });
+        }
+        throw error;
+      }
+    } else {
+      // Con el estado en el filtro: si el panel la publico entre la lectura y
+      // esta escritura, no se reescribe una reseña ya publicada.
+      const { count } = await ctx.prisma.resena.updateMany({
+        where: { usuarioId, productoId: input.productoId, estado: { not: "APROBADA" } },
+        data: datos,
+      });
+      if (count === 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: mensajeDeRechazoResena("ya_publicada"),
+        });
+      }
+    }
+
+    return { ok: true };
   }),
 
   // ── Direcciones ──────────────────────────────────────────────────────────

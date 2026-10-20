@@ -51,6 +51,7 @@ export function useAvisos() {
   const porConfirmar = consulta.data?.porConfirmar ?? 0;
   const porDespachar = consulta.data?.porDespachar ?? 0;
   const reclamosPendientes = consulta.data?.reclamosPendientes ?? 0;
+  const resenasPendientes = consulta.data?.resenasPendientes ?? 0;
 
   useEffect(() => {
     document.title = porConfirmar > 0 ? `(${porConfirmar}) Panel` : "Panel";
@@ -60,6 +61,7 @@ export function useAvisos() {
     porConfirmar,
     porDespachar,
     reclamosPendientes,
+    resenasPendientes,
     nuevo,
     descartar: () => setNuevo(null),
   };

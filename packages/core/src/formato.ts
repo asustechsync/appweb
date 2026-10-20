@@ -20,6 +20,12 @@ export const MONEDA = new Intl.NumberFormat("es-PE", {
   minimumFractionDigits: 2,
 });
 
+/** Nota de las reseñas, siempre con un decimal: 4.0, 4.7 */
+export const CALIFICACION = new Intl.NumberFormat("es-PE", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
 /** 18 oct 2026 */
 export const FECHA = new Intl.DateTimeFormat("es-PE", { dateStyle: "medium", timeZone: ZONA });
 

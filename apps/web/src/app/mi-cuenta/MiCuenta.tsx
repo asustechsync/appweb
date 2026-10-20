@@ -6,6 +6,7 @@ import { puede, type Rol } from "@appweb/core";
 import {
   DisposicionCuenta,
   IconoEscudo,
+  IconoEstrella,
   IconoConfiguracion,
   IconoPedidos,
   IconoSoporte,
@@ -23,6 +24,7 @@ import { Favoritos } from "./secciones/Favoritos";
 import { Direcciones } from "./secciones/Direcciones";
 import { Pedidos } from "./secciones/Pedidos";
 import { Perfil } from "./secciones/Perfil";
+import { Resenas } from "./secciones/Resenas";
 import { Seguridad } from "./secciones/Seguridad";
 import { URL_PANEL } from "@appweb/api/urls";
 
@@ -30,6 +32,7 @@ const SECCIONES = [
   { id: "perfil", etiqueta: "Perfil" },
   { id: "direcciones", etiqueta: "Direcciones" },
   { id: "pedidos", etiqueta: "Pedidos" },
+  { id: "resenas", etiqueta: "Reseñas" },
   { id: "beneficios", etiqueta: "Beneficios" },
   { id: "favoritos", etiqueta: "Favoritos" },
   { id: "seguridad", etiqueta: "Seguridad" },
@@ -52,6 +55,7 @@ const GRUPOS_MENU: GrupoMenuCuenta[] = [
       },
       { id: "seguridad", etiqueta: "Seguridad", icono: <IconoEscudo />, seccion: "seguridad" },
       { id: "pedidos", etiqueta: "Mis pedidos", icono: <IconoPedidos />, seccion: "pedidos" },
+      { id: "resenas", etiqueta: "Mis reseñas", icono: <IconoEstrella />, seccion: "resenas" },
       { id: "favoritos", etiqueta: "Favoritos", icono: <IconoFavorito />, seccion: "favoritos" },
       { id: "beneficios", etiqueta: "Beneficios", icono: <IconoPremio />, seccion: "beneficios" },
     ],
@@ -143,6 +147,8 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
         <Direcciones />
       ) : visible === "pedidos" ? (
         <Pedidos />
+      ) : visible === "resenas" ? (
+        <Resenas />
       ) : visible === "favoritos" ? (
         <Favoritos />
       ) : visible === "beneficios" ? (

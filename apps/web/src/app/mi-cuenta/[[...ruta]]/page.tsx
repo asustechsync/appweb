@@ -24,6 +24,7 @@ const SECCIONES = [
   "perfil",
   "direcciones",
   "pedidos",
+  "resenas",
   "beneficios",
   "favoritos",
   "seguridad",

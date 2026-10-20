@@ -1,0 +1,16 @@
+.ui-estrellas {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  line-height: 1;
+}
+.ui-estrellas svg {
+  flex: none;
+  max-inline-size: none;
+}
+.ui-estrellas__llena {
+  color: var(--color-calificacion);
+}
+.ui-estrellas__vacia {
+  color: var(--color-textoTenue);
+}

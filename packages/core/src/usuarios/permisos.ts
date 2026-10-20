@@ -21,6 +21,7 @@ export type Accion =
   | "ver_ventas"
   | "cambiar_estado_pedido"
   | "atender_reclamos"
+  | "moderar_resenas"
   | "despachar_envios"
   | "ajustar_stock"
   | "gestionar_productos"
@@ -30,7 +31,14 @@ export type Accion =
 const PERMISOS: Record<Rol, readonly Accion[]> = {
   CLIENTE: ["comprar"],
 
-  VENDEDOR: ["comprar", "entrar_panel", "ver_ventas", "cambiar_estado_pedido", "atender_reclamos"],
+  VENDEDOR: [
+    "comprar",
+    "entrar_panel",
+    "ver_ventas",
+    "cambiar_estado_pedido",
+    "atender_reclamos",
+    "moderar_resenas",
+  ],
 
   ALMACEN: ["comprar", "entrar_panel", "despachar_envios", "ajustar_stock"],
 
@@ -40,6 +48,7 @@ const PERMISOS: Record<Rol, readonly Accion[]> = {
     "ver_ventas",
     "cambiar_estado_pedido",
     "atender_reclamos",
+    "moderar_resenas",
     "despachar_envios",
     "ajustar_stock",
     "gestionar_productos",
@@ -64,6 +73,7 @@ export function seccionesDelPanel(rol: Rol): string[] {
   secciones.push("resumen");
   if (puede(rol, "ver_ventas")) secciones.push("pedidos");
   if (puede(rol, "atender_reclamos")) secciones.push("reclamos");
+  if (puede(rol, "moderar_resenas")) secciones.push("resenas");
   if (puede(rol, "despachar_envios")) secciones.push("envios");
   if (puede(rol, "ajustar_stock")) secciones.push("stock");
   if (puede(rol, "gestionar_productos")) secciones.push("productos");

@@ -6,6 +6,7 @@ import { pedidos } from "./rutas/panel/pedidos";
 import { productos } from "./rutas/panel/productos";
 import { promociones } from "./rutas/panel/promociones";
 import { reclamos } from "./rutas/panel/reclamos";
+import { resenas } from "./rutas/panel/resenas";
 import { stock } from "./rutas/panel/stock";
 import { usuarios } from "./rutas/panel/usuarios";
 import { router } from "./trpc";
@@ -28,7 +29,7 @@ export { subirImagenProducto, type ResultadoSubida } from "./imagenes";
  *   catalogo  -> publico       listados y ficha
  *   carrito   -> publico       lineas y totales
  *   cuenta    -> privado       pedidos y direcciones del cliente
- *   panel     -> exige(...)    productos, pedidos, reclamos, envios, usuarios
+ *   panel     -> exige(...)    productos, pedidos, reclamos, reseñas, envios, usuarios
  */
 export const enrutador = router({
   cuenta,
@@ -38,6 +39,7 @@ export const enrutador = router({
     envios,
     pedidos,
     reclamos,
+    resenas,
     productos,
     stock,
     usuarios,

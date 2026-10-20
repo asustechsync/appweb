@@ -3,6 +3,7 @@
 export type { PropsIcono } from "./tipos";
 
 // comercio
+export { IconoCamion } from "./generados/IconoCamion";
 export { IconoCarrito } from "./generados/IconoCarrito";
 export { IconoEtiqueta } from "./generados/IconoEtiqueta";
 export { IconoFavorito } from "./generados/IconoFavorito";
