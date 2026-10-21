@@ -377,10 +377,13 @@
   -webkit-box-orient: vertical;
 }
 /* Cada talla en su cuadrito. */
-.ui-tarjeta-producto__tallas-texto {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--espacio-1);
+.ui-tarjeta-producto__sku {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-mini);
 }
 .ui-tarjeta-producto__talla {
   display: inline-grid;

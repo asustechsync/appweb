@@ -25,6 +25,8 @@ export interface PropsTarjetaProducto {
   categoria?: string | null;
   categoriaSlug?: string;
   tallas?: string[];
+  /** SKU que se muestra en el catalogo, en una sola linea. */
+  sku?: string | null;
   imagenUrl: string;
   precio: number;
   /** Precio tachado. `null`/omitido si no hay oferta. */
@@ -130,6 +132,7 @@ export function TarjetaProducto({
   categoria,
   categoriaSlug,
   tallas,
+  sku,
   imagenUrl,
   precio,
   precioLista,
@@ -321,16 +324,7 @@ export function TarjetaProducto({
             ))}
           </span>
         ) : null}
-        {!portada && disponible && tallas && tallas.length > 0 ? (
-          <span className="ui-tarjeta-producto__tallas-texto">
-            <span className="ui-solo-lectores">Tallas:</span>
-            {tallas.map((talla) => (
-              <span key={talla} className="ui-tarjeta-producto__talla">
-                {talla}
-              </span>
-            ))}
-          </span>
-        ) : null}
+        {!portada && sku ? <span className="ui-tarjeta-producto__sku">SKU {sku}</span> : null}
         {!portada && !disponible ? (
           <span className="ui-tarjeta-producto__estado ui-tarjeta-producto__estado--agotado">
             Agotado

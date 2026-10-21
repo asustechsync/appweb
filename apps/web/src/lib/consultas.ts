@@ -23,6 +23,8 @@ export interface ProductoDeRejilla {
   categoria: string;
   categoriaSlug?: string;
   tallas?: string[];
+  /** SKU de la primera variante con stock (o de la primera, si no hay). */
+  sku?: string | null;
   marca: string | null;
   imagenUrl: string;
   precio: number;
@@ -144,7 +146,7 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
     include: {
       imagenes: { orderBy: { orden: "asc" }, take: 1 },
       variantes: {
-        select: { stock: true, activo: true, talla: true, color: true },
+        select: { stock: true, activo: true, talla: true, color: true, sku: true },
       },
       categoria: { select: { nombre: true } },
       marca: { select: { nombre: true } },
@@ -190,11 +192,17 @@ export async function productosEnOferta(limite = 10): Promise<ProductoDeRejilla[
   return resueltos.filter((p): p is ProductoDeRejilla => p !== null);
 }
 
+/** SKU que muestra la tarjeta: el de la primera variante con stock, o el de la primera. */
+function skuDeMuestra(variantes: { sku: string; stock: number; activo: boolean }[]): string | null {
+  const elegida = variantes.find((v) => v.activo && v.stock > 0) ?? variantes[0];
+  return elegida?.sku ?? null;
+}
+
 /** Lo que una tarjeta de producto necesita leer de la base. */
 const INCLUIR_EN_REJILLA = {
   imagenes: { orderBy: { orden: "asc" as const }, take: 1 },
   variantes: {
-    select: { stock: true, activo: true, talla: true, color: true },
+    select: { stock: true, activo: true, talla: true, color: true, sku: true },
   },
   categoria: { select: { nombre: true, slug: true } },
   marca: { select: { nombre: true } },
@@ -231,6 +239,7 @@ async function aRejilla(productos: ProductoConRejilla[]): Promise<ProductoDeReji
       categoria: producto.categoria.nombre,
       categoriaSlug: producto.categoria.slug,
       tallas: disponibilidad.tallas,
+      sku: skuDeMuestra(producto.variantes),
       marca: producto.marca?.nombre ?? null,
       imagenUrl: urlDeFoto(producto.imagenes[0]?.url),
       precio: precio.precio,
