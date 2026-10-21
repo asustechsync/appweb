@@ -70,6 +70,7 @@
 
 /* Cuenta y panel (Clase C). */
 @import "./disposiciones/disposicion-cuenta.css";
+@import "./disposiciones/barra-superior-panel.css";
 @import "./navegacion/menu-cuenta.css";
 @import "./base/tarjeta.css";
 @import "./paneles/fila-lista.css";

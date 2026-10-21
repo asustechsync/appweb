@@ -35,6 +35,10 @@
   gap: var(--espacio-3);
 }
 
+.ui-disposicion-cuenta__marca {
+  padding-block: var(--espacio-2);
+}
+
 .ui-disposicion-cuenta__tarjeta-usuario {
   position: relative;
   overflow: hidden;

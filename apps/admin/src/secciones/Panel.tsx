@@ -25,6 +25,7 @@ import {
   IconoPromociones,
   IconoTicket,
   IconoVentas,
+  Logo,
 } from "@appweb/ui";
 
 import { useAvisos } from "@/lib/use-avisos";
@@ -150,6 +151,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
       iconosGrupo={ICONOS_GRUPO}
       seccionActiva={activa}
       onSeccion={ir}
+      marcaLateral={<Logo href={URL_TIENDA} />}
       nombreUsuario={nombre}
       rolUsuario={rol}
       onSalir={salir}

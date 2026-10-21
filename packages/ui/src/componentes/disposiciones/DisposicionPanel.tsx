@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { IconoLuna } from "../../iconos";
 import { AlternarTema } from "../base/AlternarTema";
+import { BarraSuperiorPanel } from "./BarraSuperiorPanel";
 import { DisposicionCuenta } from "./DisposicionCuenta";
 import { MenuCuenta, type GrupoMenuCuenta } from "../navegacion/MenuCuenta";
 import "../estilos.css";
@@ -33,6 +34,8 @@ export interface PropsDisposicionPanel {
   rolUsuario: string;
   onSalir?: () => void;
   hrefTienda?: string;
+  /** Marca del lateral (el logo); sustituye la tarjeta del usuario. */
+  marcaLateral?: ReactNode;
   children: ReactNode;
 }
 
@@ -57,6 +60,7 @@ export function DisposicionPanel({
   rolUsuario,
   onSalir,
   hrefTienda,
+  marcaLateral,
   children,
 }: PropsDisposicionPanel) {
   const visible = seccionActiva || (secciones[0]?.id ?? "");
@@ -65,8 +69,6 @@ export function DisposicionPanel({
   return (
     <div className="ui-pagina-tienda ui-fondo-escena">
       <DisposicionCuenta
-        titulo="Panel de administración"
-        subtitulo={`Hola, ${nombreUsuario}`}
         nombreUsuario={nombreUsuario}
         rolUsuario={rolUsuario}
         secciones={secciones.map((seccion) => ({
@@ -78,6 +80,7 @@ export function DisposicionPanel({
           ...(seccion.grupo ? {} : { icono: seccion.icono }),
         }))}
         {...(iconosGrupo ? { iconosGrupo } : {})}
+        {...(marcaLateral ? { marcaLateral } : {})}
         seccionActiva={visible}
         onSeccion={onSeccion}
         {...(onSalir ? { onSalir } : {})}
@@ -110,6 +113,12 @@ export function DisposicionPanel({
           />
         }
       >
+        <BarraSuperiorPanel
+          secciones={secciones}
+          onSeccion={onSeccion}
+          nombreUsuario={nombreUsuario}
+          rolUsuario={rolUsuario}
+        />
         {children}
       </DisposicionCuenta>
     </div>

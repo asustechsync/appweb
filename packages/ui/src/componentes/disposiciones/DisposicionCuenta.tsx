@@ -24,7 +24,8 @@ export interface SeccionDeCuenta {
 }
 
 export interface PropsDisposicionCuenta {
-  titulo: string;
+  /** Sin titulo ni subtitulo no se pinta la cabecera. */
+  titulo?: string;
   subtitulo?: string;
   nombreUsuario: string;
   rolUsuario?: string;
@@ -38,6 +39,11 @@ export interface PropsDisposicionCuenta {
   hrefPanel?: string;
   /** Enlace bajo las pestañas (p. ej. "Volver a la tienda" en el panel). */
   enlaceLateral?: { href: string; etiqueta: string };
+  /**
+   * Sustituye la tarjeta del usuario por la marca (p. ej. el logo en el panel).
+   * Sin el, el lateral muestra la tarjeta del usuario de siempre.
+   */
+  marcaLateral?: ReactNode;
   /**
    * Menu de ajustes para movil (normalmente un `MenuCuenta`). Con el, en movil
    * la cuenta es de dos pantallas: el menu, o una seccion con flecha de volver.
@@ -75,6 +81,7 @@ export function DisposicionCuenta({
   onSalir,
   hrefPanel,
   enlaceLateral,
+  marcaLateral,
   menuMovil,
   enMenu = false,
   tituloSeccion,
@@ -137,31 +144,37 @@ export function DisposicionCuenta({
         ) : null}
         {menuMovil ? <div className="ui-disposicion-cuenta__menu-movil">{menuMovil}</div> : null}
 
-        <header className="ui-disposicion-cuenta__cabecera">
-          <h1>{titulo}</h1>
-          {subtitulo ? <p>{subtitulo}</p> : null}
-        </header>
+        {titulo || subtitulo ? (
+          <header className="ui-disposicion-cuenta__cabecera">
+            {titulo ? <h1>{titulo}</h1> : null}
+            {subtitulo ? <p>{subtitulo}</p> : null}
+          </header>
+        ) : null}
 
         <div className="ui-disposicion-cuenta__cuerpo">
           <aside className="ui-disposicion-cuenta__lateral">
-            <div className="ui-disposicion-cuenta__tarjeta-usuario">
-              <div className="ui-disposicion-cuenta__portada" aria-hidden="true" />
-              <div className="ui-disposicion-cuenta__cuerpo-usuario">
-                <span className="ui-disposicion-cuenta__avatar" aria-hidden="true">
-                  {nombreUsuario.trim().charAt(0).toUpperCase() || "?"}
-                </span>
-                <span className="ui-disposicion-cuenta__usuario-texto">
-                  <span className="ui-disposicion-cuenta__nombre">{nombreUsuario}</span>
-                  <span className="ui-disposicion-cuenta__usuario-insignias">
-                    {rolUsuario ? <Insignia tono="marca">{rolUsuario}</Insignia> : null}
-                    <span className="ui-disposicion-cuenta__activa">
-                      <i aria-hidden="true" />
-                      Activa
+            {marcaLateral ? (
+              <div className="ui-disposicion-cuenta__marca">{marcaLateral}</div>
+            ) : (
+              <div className="ui-disposicion-cuenta__tarjeta-usuario">
+                <div className="ui-disposicion-cuenta__portada" aria-hidden="true" />
+                <div className="ui-disposicion-cuenta__cuerpo-usuario">
+                  <span className="ui-disposicion-cuenta__avatar" aria-hidden="true">
+                    {nombreUsuario.trim().charAt(0).toUpperCase() || "?"}
+                  </span>
+                  <span className="ui-disposicion-cuenta__usuario-texto">
+                    <span className="ui-disposicion-cuenta__nombre">{nombreUsuario}</span>
+                    <span className="ui-disposicion-cuenta__usuario-insignias">
+                      {rolUsuario ? <Insignia tono="marca">{rolUsuario}</Insignia> : null}
+                      <span className="ui-disposicion-cuenta__activa">
+                        <i aria-hidden="true" />
+                        Activa
+                      </span>
                     </span>
                   </span>
-                </span>
+                </div>
               </div>
-            </div>
+            )}
 
             <nav
               className={

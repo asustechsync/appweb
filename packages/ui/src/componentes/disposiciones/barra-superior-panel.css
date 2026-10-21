@@ -1,0 +1,125 @@
+/* Barra superior del panel — movil primero: el buscador ocupa el ancho y el
+   nombre del usuario se esconde; desde `sm` se suma el texto del usuario. */
+
+.ui-barra-panel {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin-block-end: var(--espacio-4);
+}
+
+.ui-barra-panel__buscador {
+  position: relative;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  max-inline-size: 28rem;
+}
+.ui-barra-panel__buscador .ui-buscador {
+  inline-size: 100%;
+}
+
+.ui-barra-panel__resultados {
+  position: absolute;
+  inset-block-start: calc(100% + var(--espacio-2));
+  inset-inline: 0;
+  z-index: 10;
+  margin: 0;
+  padding: var(--espacio-2);
+  list-style: none;
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+}
+.ui-barra-panel__resultados button {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  inline-size: 100%;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  text-align: start;
+  cursor: pointer;
+}
+.ui-barra-panel__resultados button:hover {
+  background: var(--color-fondo);
+}
+.ui-barra-panel__resultado-icono {
+  display: inline-flex;
+  color: var(--color-textoSuave);
+}
+.ui-barra-panel__resultado-grupo {
+  margin-inline-start: auto;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-barra-panel__sin-resultados {
+  padding: var(--espacio-2) var(--espacio-3);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-barra-panel__campana {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  inline-size: var(--control-alto);
+  block-size: var(--control-alto);
+  margin-inline-start: auto;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-difusa);
+  color: var(--color-texto);
+  cursor: pointer;
+}
+.ui-barra-panel__campana-aviso {
+  position: absolute;
+  inset-block-start: calc(var(--espacio-2) * -1);
+  inset-inline-end: calc(var(--espacio-2) * -1);
+}
+
+.ui-barra-panel__usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  flex: 0 0 auto;
+}
+.ui-barra-panel__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--control-alto);
+  block-size: var(--control-alto);
+  border-radius: 50%;
+  background: var(--color-marca-500);
+  color: var(--color-superficie);
+  font-family: var(--tipo-familia-titulos);
+  font-weight: 600;
+}
+.ui-barra-panel__usuario-texto {
+  display: none;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.ui-barra-panel__nombre {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: 600;
+}
+.ui-barra-panel__rol {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+
+@media (min-width: 640px) {
+  .ui-barra-panel__usuario-texto {
+    display: flex;
+  }
+}
