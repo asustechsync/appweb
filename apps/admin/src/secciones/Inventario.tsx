@@ -41,11 +41,11 @@ function tonoDeStock(stock: number, umbral: number): "error" | "alerta" | "exito
 }
 
 /**
- * Seccion de stock: cuanto queda de cada talla y color, y los tres
+ * Seccion de inventario: cuanto queda de cada talla y color, y los tres
  * movimientos que se registran a mano (ingreso, ajuste por conteo, merma).
  * Las ventas y devoluciones no se registran aqui: las deja el pedido.
  */
-export function Stock() {
+export function Inventario() {
   const trpc = useTRPC();
   const [filtro, setFiltro] = useState<Filtro>("BAJO");
   const [busqueda, setBusqueda] = useState("");
@@ -78,7 +78,7 @@ export function Stock() {
   const bajas = (lista.data?.variantes ?? []).filter((v) => v.activa && v.stock <= umbral).length;
 
   return (
-    <Tarjeta titulo="Stock">
+    <Tarjeta titulo="Inventario">
       <Campo
         id="busqueda-stock"
         etiqueta="Buscar por producto, color o SKU"

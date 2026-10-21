@@ -65,20 +65,45 @@ export function accionesDe(rol: Rol): readonly Accion[] {
   return PERMISOS[rol];
 }
 
-/** Secciones del panel que este rol debe ver en el menu. */
+/**
+ * Menu del panel, en orden: de lo que se usa a diario a lo que se configura
+ * una vez. Cada seccion la ve quien tenga su accion; las que tienen grupo
+ * cuelgan de el, y las que no (el inicio) van sueltas arriba.
+ *
+ * `apartado` es el titulo pequeño que separa el menu en bloques: "Menú" para
+ * lo que se usa a diario y "Preferencias" para lo que se configura.
+ */
+const SECCIONES_PANEL = [
+  { id: "inicio", apartado: "Menú", accion: "entrar_panel" },
+  { id: "pedidos", apartado: "Menú", grupo: "Ventas", accion: "ver_ventas" },
+  { id: "envios", apartado: "Menú", grupo: "Ventas", accion: "despachar_envios" },
+  { id: "productos", apartado: "Menú", grupo: "Catálogo", accion: "gestionar_productos" },
+  { id: "inventario", apartado: "Menú", grupo: "Catálogo", accion: "ajustar_stock" },
+  { id: "clientes", apartado: "Menú", grupo: "Cuentas", accion: "gestionar_usuarios" },
+  { id: "equipo", apartado: "Menú", grupo: "Cuentas", accion: "gestionar_usuarios" },
+  { id: "niveles", apartado: "Menú", grupo: "Cuentas", accion: "gestionar_ajustes" },
+  { id: "resenas", apartado: "Menú", grupo: "Opiniones", accion: "moderar_resenas" },
+  { id: "reclamos", apartado: "Menú", grupo: "Opiniones", accion: "atender_reclamos" },
+  { id: "cupones", apartado: "Menú", grupo: "Promociones", accion: "gestionar_ajustes" },
+  { id: "portada", apartado: "Menú", grupo: "Promociones", accion: "gestionar_ajustes" },
+  { id: "tienda", apartado: "Preferencias", grupo: "Configuración", accion: "gestionar_ajustes" },
+] as const satisfies readonly { id: string; apartado: string; grupo?: string; accion: Accion }[];
+
+/** Secciones del panel que este rol debe ver en el menu, en orden. */
 export function seccionesDelPanel(rol: Rol): string[] {
-  const secciones: string[] = [];
-  if (!puede(rol, "entrar_panel")) return secciones;
+  if (!puede(rol, "entrar_panel")) return [];
+  return SECCIONES_PANEL.filter((seccion) => puede(rol, seccion.accion)).map(
+    (seccion) => seccion.id,
+  );
+}
 
-  secciones.push("resumen");
-  if (puede(rol, "ver_ventas")) secciones.push("pedidos");
-  if (puede(rol, "atender_reclamos")) secciones.push("reclamos");
-  if (puede(rol, "moderar_resenas")) secciones.push("resenas");
-  if (puede(rol, "despachar_envios")) secciones.push("envios");
-  if (puede(rol, "ajustar_stock")) secciones.push("stock");
-  if (puede(rol, "gestionar_productos")) secciones.push("productos");
-  if (puede(rol, "gestionar_usuarios")) secciones.push("usuarios");
-  if (puede(rol, "gestionar_ajustes")) secciones.push("ajustes");
+/** Grupo del menu al que pertenece una seccion. */
+export function grupoDeSeccion(id: string): string | undefined {
+  const seccion = SECCIONES_PANEL.find((candidata) => candidata.id === id);
+  return seccion && "grupo" in seccion ? seccion.grupo : undefined;
+}
 
-  return secciones;
+/** Apartado del menu ("Menú", "Preferencias") al que pertenece una seccion. */
+export function apartadoDeSeccion(id: string): string | undefined {
+  return SECCIONES_PANEL.find((candidata) => candidata.id === id)?.apartado;
 }

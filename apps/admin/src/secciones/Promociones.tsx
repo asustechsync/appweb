@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { NIVELES } from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -24,28 +23,23 @@ import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 import { MONEDA, numeroDesdeTexto } from "@appweb/core/formato";
 
-type Pestana = "BANNERS" | "CUPONES" | "NIVELES";
+/** Seccion "Portada" del grupo Promociones: los banners del carrusel. */
+export function Portada() {
+  return (
+    <Tarjeta titulo="Portada y banners">
+      <Banners />
+    </Tarjeta>
+  );
+}
 
 /**
- * Ajustes de la tienda: los banners del carrusel de la portada, los cupones
- * de descuento y los niveles de recompensa (estos ultimos solo se leen: se
- * definen en `NIVELES` de @appweb/core).
+ * Seccion "Cupones" del grupo Promociones: los cupones de descuento. Los
+ * niveles de recompensa tienen su propia seccion en Cuentas.
  */
-export function Ajustes() {
-  const [pestana, setPestana] = useState<Pestana>("BANNERS");
+export function Promociones() {
   return (
-    <Tarjeta titulo="Promociones y portada">
-      <Pestanas
-        etiqueta="Qué ajustar"
-        opciones={[
-          { id: "BANNERS", etiqueta: "Banners" },
-          { id: "CUPONES", etiqueta: "Cupones" },
-          { id: "NIVELES", etiqueta: "Niveles" },
-        ]}
-        activa={pestana}
-        onCambio={(id) => setPestana(id as Pestana)}
-      />
-      {pestana === "BANNERS" ? <Banners /> : pestana === "CUPONES" ? <Cupones /> : <Niveles />}
+    <Tarjeta titulo="Cupones">
+      <Cupones />
     </Tarjeta>
   );
 }
@@ -383,36 +377,5 @@ function FormularioCupon({ cupon, onListo }: { cupon: CuponDelPanel | null; onLi
         Cancelar
       </Boton>
     </Formulario>
-  );
-}
-
-// ── Niveles ─────────────────────────────────────────────────────────────────
-
-/** Solo lectura: los niveles se definen en el codigo para que web, panel y movil coincidan. */
-function Niveles() {
-  return (
-    <>
-      <p>
-        El nivel de cada cliente se calcula con lo que ya compró (pedidos pagados en adelante). Su
-        descuento se aplica solo en el checkout y no se suma a un cupón.
-      </p>
-      {NIVELES.map((n) => (
-        <FilaLista key={n.id}>
-          <strong>
-            {n.nombre} · {n.desde > 0 ? `desde ${MONEDA.format(n.desde)}` : "al registrarse"}
-          </strong>
-          <span>{n.beneficio}</span>
-          <span>
-            <Insignia tono={n.descuentoPct > 0 ? "exito" : "neutro"}>
-              {n.descuentoPct > 0 ? `${n.descuentoPct}% de descuento` : "Sin descuento"}
-            </Insignia>
-          </span>
-        </FilaLista>
-      ))}
-      <Alerta tono="info">
-        Para cambiar umbrales o descuentos se edita NIVELES en
-        packages/core/src/clientes/niveles.ts.
-      </Alerta>
-    </>
   );
 }

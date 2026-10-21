@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { nivelPorCompras } from "../clientes/niveles";
 import { descuentoDeCupon, normalizarCodigo, revisarCupon, type ReglaCupon } from "./cupones";
 import { calcularTotales, redondear, type LineaCarrito } from "./totales";
 
@@ -140,24 +139,6 @@ describe("cupones", () => {
 
   it("redondea el descuento a centimos", () => {
     expect(descuentoDeCupon(33.33, { codigo: "X", porcentaje: 10 })).toBe(3.33);
-  });
-});
-
-describe("niveles", () => {
-  it("sube de nivel segun lo comprado", () => {
-    expect(nivelPorCompras(0).nivel.id).toBe("BRONCE");
-    expect(nivelPorCompras(299.99).nivel.id).toBe("BRONCE");
-    expect(nivelPorCompras(300).nivel.id).toBe("PLATA");
-    expect(nivelPorCompras(5000).nivel.id).toBe("ORO");
-  });
-
-  it("dice cuanto falta y el avance hacia el siguiente", () => {
-    const plata = nivelPorCompras(550);
-    expect(plata.siguiente?.nivel.id).toBe("ORO");
-    expect(plata.siguiente?.falta).toBe(250);
-    expect(plata.progresoPct).toBe(50);
-    expect(nivelPorCompras(900).siguiente).toBeNull();
-    expect(nivelPorCompras(900).progresoPct).toBe(100);
   });
 });
 

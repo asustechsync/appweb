@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  ESQUEMA — diecisiete tablas en ocho dominios:
+//  ESQUEMA — dieciocho tablas en ocho dominios:
 //
-//      Cuenta      usuarios, direcciones
+//      Cuenta      usuarios, direcciones, niveles
 //      Catalogo    categorias, marcas, productos, variantes, imagenes_producto
 //      Contenido   banners
 //      Stock       movimientos_stock
@@ -17,6 +17,8 @@
 //  desde la primera venta: una hoja que no se guardo el dia que llego no se
 //  recupera despues. Resena es lo que opina quien compro: si no se le pregunta
 //  cuando recibe el paquete, esa opinion no se recupera meses despues.
+//  Nivel no guarda datos de clientes sino la regla del programa: sale del
+//  codigo para que el panel ajuste montos y descuentos sin desplegar.
 //
 //  Orden de columnas dentro de cada modelo: identidad, contenido, relaciones,
 //  montos o precio, SEO, estado, fechas. El orden fisico en la base es el de
@@ -527,6 +529,29 @@ model Cupon {
   editadoEn    DateTime  @updatedAt
 
   @@map("cupones")
+}
+
+// Niveles de recompensa (Básico, Bronce, Plata, Oro, Platino). Son cinco
+// filas fijas: el panel edita monto, pedidos y descuento de cada uno, pero no
+// crea ni borra niveles. El nivel de cada cliente no se guarda: se calcula con
+// sus pedidos contra estas filas (`nivelPorCompras` de @appweb/core).
+model Nivel {
+  // "BASICO" | "BRONCE" | "PLATA" | "ORO" | "PLATINO"
+  id             String   @id
+  nombre         String
+  // Desde cuanto comprado (S/) se alcanza. Básico siempre en 0; cada nivel
+  // por encima del anterior (lo valida `revisarNiveles` de @appweb/core).
+  desde          Decimal  @db.Decimal(10, 2)
+  // Pedidos que hacen falta ademas del monto: una sola compra grande no basta.
+  pedidosMinimos Int      @default(0)
+  // Descuento automatico en cada compra, de 0 a 100. No se suma al cupon.
+  descuentoPct   Int
+  // Lo que ve el cliente en "Mi cuenta": el descuento y el obsequio.
+  beneficio      String
+  orden          Int
+  editadoEn      DateTime @updatedAt
+
+  @@map("niveles")
 }
 
 model MetodoEnvio {

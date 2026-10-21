@@ -5,24 +5,29 @@ export type { PropsIcono } from "./tipos";
 // comercio
 export { IconoCamion } from "./generados/IconoCamion";
 export { IconoCarrito } from "./generados/IconoCarrito";
+export { IconoCatalogo } from "./generados/IconoCatalogo";
 export { IconoEnvio } from "./generados/IconoEnvio";
 export { IconoEtiqueta } from "./generados/IconoEtiqueta";
 export { IconoFavorito } from "./generados/IconoFavorito";
 export { IconoMarca } from "./generados/IconoMarca";
 export { IconoMoneda } from "./generados/IconoMoneda";
 export { IconoPedidos } from "./generados/IconoPedidos";
+export { IconoPromociones } from "./generados/IconoPromociones";
 export { IconoTicket } from "./generados/IconoTicket";
+export { IconoVentas } from "./generados/IconoVentas";
 
 // contacto
 export { IconoCorreo } from "./generados/IconoCorreo";
 export { IconoGlobo } from "./generados/IconoGlobo";
 export { IconoLibro } from "./generados/IconoLibro";
+export { IconoOpiniones } from "./generados/IconoOpiniones";
 export { IconoPregunta } from "./generados/IconoPregunta";
 export { IconoSoporte } from "./generados/IconoSoporte";
 export { IconoTelefono } from "./generados/IconoTelefono";
 
 // cuenta
 export { IconoCandado } from "./generados/IconoCandado";
+export { IconoClientes } from "./generados/IconoClientes";
 export { IconoConfiguracion } from "./generados/IconoConfiguracion";
 export { IconoEscudo } from "./generados/IconoEscudo";
 export { IconoPerfil } from "./generados/IconoPerfil";
@@ -59,4 +64,5 @@ export { IconoFlechaAbajo } from "./generados/IconoFlechaAbajo";
 export { IconoFlechaArriba } from "./generados/IconoFlechaArriba";
 export { IconoFlechaDerecha } from "./generados/IconoFlechaDerecha";
 export { IconoFlechaIzquierda } from "./generados/IconoFlechaIzquierda";
+export { IconoInicio } from "./generados/IconoInicio";
 export { IconoOpciones } from "./generados/IconoOpciones";

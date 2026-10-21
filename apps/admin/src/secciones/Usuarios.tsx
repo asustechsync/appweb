@@ -30,16 +30,27 @@ const ETIQUETA_ROL: Record<Rol, string> = {
   ADMIN: "Administrador",
 };
 
-const OPCIONES_ROL = ROLES.map((rol) => ({ valor: rol, etiqueta: ETIQUETA_ROL[rol] }));
+const OPCIONES_ROL = ROLES.map((rol) => ({
+  valor: rol,
+  etiqueta: ETIQUETA_ROL[rol],
+}));
 
 /**
- * Seccion de usuarios: alta de cuentas, cambio de rol y baja.
+ * Cuentas del panel, en dos secciones: "clientes" (rol CLIENTE, se registran
+ * solos) y "equipo" (el resto, que se crea aqui con su rol). Si a alguien le
+ * cambian el rol, pasa de una lista a la otra.
  *
  * Ninguna regla se decide aqui — quien puede cambiar que lo resuelve
  * @appweb/api con `exige("gestionar_usuarios")` y @appweb/core con
  * `revisarCambioRol`. Esta pantalla solo muestra el mensaje que le devuelven.
  */
-export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
+export function Usuarios({
+  usuarioIdActual,
+  alcance,
+}: {
+  usuarioIdActual: string;
+  alcance: "clientes" | "equipo";
+}) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -61,14 +72,17 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
       provocar una consulta por tecla. */
   const visibles = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
-    if (termino === "" || lista.data === undefined) return lista.data ?? [];
+    const delAlcance = (lista.data ?? []).filter(
+      (usuario) => (usuario.rol === "CLIENTE") === (alcance === "clientes"),
+    );
+    if (termino === "") return delAlcance;
 
-    return lista.data.filter(
+    return delAlcance.filter(
       (usuario) =>
         usuario.nombre.toLowerCase().includes(termino) ||
         usuario.email.toLowerCase().includes(termino),
     );
-  }, [busqueda, lista.data]);
+  }, [busqueda, lista.data, alcance]);
 
   function refrescar() {
     void queryClient.invalidateQueries(trpc.panel.usuarios.pathFilter());
@@ -136,82 +150,84 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
       {error ? <Alerta tono="error">{error}</Alerta> : null}
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
 
-      <Tarjeta
-        titulo="Crear cuenta"
-        acciones={
-          <Boton variante="secundario" onClick={() => setCreando((valor) => !valor)}>
-            {creando ? "Cancelar" : "+ Nueva cuenta"}
-          </Boton>
-        }
-      >
-        {creando ? (
-          <Formulario
-            onSubmit={(evento) => {
-              evento.preventDefault();
-              crear.mutate({
-                nombre,
-                email,
-                clave,
-                rol: rolNuevo as Rol,
-                ...(telefono.trim() === "" ? {} : { telefono }),
-              });
-            }}
-          >
-            <Campo
-              id="nuevo-nombre"
-              etiqueta="Nombre"
-              valor={nombre}
-              onCambio={setNombre}
-              requerido
-            />
-            <Campo
-              id="nuevo-email"
-              etiqueta="Correo"
-              tipo="email"
-              valor={email}
-              onCambio={setEmail}
-              requerido
-            />
-            <Campo
-              id="nueva-clave"
-              etiqueta="Clave"
-              tipo="password"
-              valor={clave}
-              onCambio={setClave}
-              placeholder="Mínimo 8 caracteres"
-              requerido
-            />
-            <Campo
-              id="nuevo-telefono"
-              etiqueta="Teléfono (opcional)"
-              tipo="tel"
-              bandera="pe"
-              prefijo="+51"
-              valor={telefono}
-              onCambio={setTelefono}
-              placeholder="9XXXXXXXX"
-            />
-            <CampoSelect
-              id="nuevo-rol"
-              etiqueta="Rol"
-              valor={rolNuevo}
-              opciones={OPCIONES_ROL}
-              onCambio={setRolNuevo}
-            />
-            <Boton tipo="submit" disabled={crear.isPending}>
-              {crear.isPending ? "Creando…" : "Crear cuenta"}
+      {alcance === "equipo" ? (
+        <Tarjeta
+          titulo="Crear cuenta"
+          acciones={
+            <Boton variante="secundario" onClick={() => setCreando((valor) => !valor)}>
+              {creando ? "Cancelar" : "+ Nueva cuenta"}
             </Boton>
-          </Formulario>
-        ) : (
-          <p>
-            Las cuentas del equipo se crean aquí con su rol. El público se registra por su cuenta
-            como cliente.
-          </p>
-        )}
-      </Tarjeta>
+          }
+        >
+          {creando ? (
+            <Formulario
+              onSubmit={(evento) => {
+                evento.preventDefault();
+                crear.mutate({
+                  nombre,
+                  email,
+                  clave,
+                  rol: rolNuevo as Rol,
+                  ...(telefono.trim() === "" ? {} : { telefono }),
+                });
+              }}
+            >
+              <Campo
+                id="nuevo-nombre"
+                etiqueta="Nombre"
+                valor={nombre}
+                onCambio={setNombre}
+                requerido
+              />
+              <Campo
+                id="nuevo-email"
+                etiqueta="Correo"
+                tipo="email"
+                valor={email}
+                onCambio={setEmail}
+                requerido
+              />
+              <Campo
+                id="nueva-clave"
+                etiqueta="Clave"
+                tipo="password"
+                valor={clave}
+                onCambio={setClave}
+                placeholder="Mínimo 8 caracteres"
+                requerido
+              />
+              <Campo
+                id="nuevo-telefono"
+                etiqueta="Teléfono (opcional)"
+                tipo="tel"
+                bandera="pe"
+                prefijo="+51"
+                valor={telefono}
+                onCambio={setTelefono}
+                placeholder="9XXXXXXXX"
+              />
+              <CampoSelect
+                id="nuevo-rol"
+                etiqueta="Rol"
+                valor={rolNuevo}
+                opciones={OPCIONES_ROL}
+                onCambio={setRolNuevo}
+              />
+              <Boton tipo="submit" disabled={crear.isPending}>
+                {crear.isPending ? "Creando…" : "Crear cuenta"}
+              </Boton>
+            </Formulario>
+          ) : (
+            <p>
+              Las cuentas del equipo se crean aquí con su rol. El público se registra por su cuenta
+              como cliente.
+            </p>
+          )}
+        </Tarjeta>
+      ) : null}
 
       <Tarjeta
-        titulo="Cuentas"
+        titulo={alcance === "clientes" ? "Clientes" : "Equipo"}
         acciones={
           <Campo
             id="busqueda-usuarios"
@@ -227,7 +243,14 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
         ) : lista.isError ? (
           <Alerta tono="error">{lista.error.message}</Alerta>
         ) : visibles.length === 0 ? (
-          <EstadoVacio titulo="Sin resultados" texto="Ninguna cuenta coincide con esa búsqueda." />
+          <EstadoVacio
+            titulo="Sin resultados"
+            texto={
+              busqueda.trim() === ""
+                ? "Todavía no hay cuentas aquí."
+                : "Ninguna cuenta coincide con esa búsqueda."
+            }
+          />
         ) : (
           visibles.map((usuario) => {
             const esUnoMismo = usuario.id === usuarioIdActual;
@@ -245,7 +268,10 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
                       valor={usuario.rol}
                       opciones={OPCIONES_ROL}
                       onCambio={(rol) =>
-                        cambiarRol.mutate({ usuarioId: usuario.id, rol: rol as Rol })
+                        cambiarRol.mutate({
+                          usuarioId: usuario.id,
+                          rol: rol as Rol,
+                        })
                       }
                       disabled={esUnoMismo || eliminada || trabajando}
                     />
@@ -256,7 +282,10 @@ export function Usuarios({ usuarioIdActual }: { usuarioIdActual: string }) {
                       variante="secundario"
                       disabled={esUnoMismo || eliminada || trabajando}
                       onClick={() =>
-                        cambiarActivo.mutate({ usuarioId: usuario.id, activo: !usuario.activo })
+                        cambiarActivo.mutate({
+                          usuarioId: usuario.id,
+                          activo: !usuario.activo,
+                        })
                       }
                     >
                       {usuario.activo ? "Desactivar" : "Activar"}

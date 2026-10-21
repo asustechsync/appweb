@@ -58,10 +58,41 @@
   flex-direction: column;
   gap: var(--espacio-2);
 }
+.ui-menu-cuenta__apartado {
+  padding: var(--espacio-2) var(--espacio-1) 0;
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
 .ui-menu-cuenta__titulo {
   padding-inline: var(--espacio-1);
   font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-fuerte);
+}
+/* Titulo de un grupo desplegable: toda la fila abre y cierra. */
+.ui-menu-cuenta__desplegar {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  inline-size: 100%;
+  padding: var(--espacio-2) 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--tipo-peso-medio);
+  text-align: start;
+  cursor: pointer;
+}
+.ui-menu-cuenta__flecha {
+  color: var(--color-textoSuave);
+  transition: transform var(--transicion-rapida);
+}
+.ui-menu-cuenta__flecha--abierta {
+  transform: rotate(180deg);
 }
 .ui-menu-cuenta__lista {
   display: flex;

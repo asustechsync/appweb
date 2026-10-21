@@ -1,6 +1,7 @@
 import { cuenta } from "./rutas/cuenta";
 import { avisos } from "./rutas/panel/avisos";
 import { envios } from "./rutas/panel/envios";
+import { niveles } from "./rutas/panel/niveles";
 import { resumen } from "./rutas/panel/resumen";
 import { pedidos } from "./rutas/panel/pedidos";
 import { productos } from "./rutas/panel/productos";
@@ -20,7 +21,7 @@ export {
   sesionDesdeToken,
   tokenDeCabeceraCookie,
 } from "./sesion";
-export { nivelDeUsuario } from "./clientes";
+export { nivelDeUsuario, nivelesVigentes } from "./clientes";
 export { subirImagenProducto, type ResultadoSubida } from "./imagenes";
 
 /**
@@ -44,6 +45,7 @@ export const enrutador = router({
     stock,
     usuarios,
     promociones,
+    niveles,
   }),
 });
 

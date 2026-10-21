@@ -2,7 +2,8 @@
 -- Idempotente: cada una se crea solo si todavia no existe, asi que se puede
 -- correr las veces que haga falta. La migracion
 -- 20261011140000_banners_fechas_specs_restricciones crea las mismas (y
--- 20261019120000_libro_reclamaciones, la de reclamos).
+-- 20261019120000_libro_reclamaciones, la de reclamos; 20261021140000_niveles
+-- y 20261021160000_niveles_cinco, las de niveles).
 DO $$
 DECLARE
   regla record;
@@ -30,7 +31,11 @@ BEGIN
       ('resenas',          'resenas_estrellas_validas',
        $c$"estrellas" BETWEEN 1 AND 5$c$),
       ('resenas',          'resenas_moderacion_coherente',
-       $c$"estado" = 'PENDIENTE' OR "moderadoEn" IS NOT NULL$c$)
+       $c$"estado" = 'PENDIENTE' OR "moderadoEn" IS NOT NULL$c$),
+      ('niveles',          'niveles_valores_validos',
+       $c$"desde" >= 0 AND "descuentoPct" BETWEEN 0 AND 100$c$),
+      ('niveles',          'niveles_pedidos_validos',
+       $c$"pedidosMinimos" >= 0$c$)
     ) AS t(tabla, nombre, condicion)
   LOOP
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = regla.nombre) THEN

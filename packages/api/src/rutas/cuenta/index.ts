@@ -13,7 +13,6 @@ import {
   ESTADOS_QUE_HABILITAN_RESENA,
   hashClave,
   mensajeDeRechazoResena,
-  NIVELES,
   REQUISITOS_CLAVE,
   revisarResena,
   urlDeFoto,
@@ -23,7 +22,7 @@ import {
 import { esquemaDireccion, esquemaPerfil, esquemaResena } from "@appweb/core/tipos";
 import { Prisma } from "@appweb/db";
 
-import { nivelDeUsuario } from "../../clientes";
+import { nivelDeUsuario, nivelesVigentes } from "../../clientes";
 import { privado, router } from "../../trpc";
 
 const esquemaClave = z.object({
@@ -127,8 +126,11 @@ export const cuenta = router({
 
   /** Nivel de recompensa: en cual esta, cuanto lleva y cuanto le falta. */
   nivel: privado.query(async ({ ctx }) => {
-    const estado = await nivelDeUsuario(ctx.prisma, ctx.sesion.usuarioId);
-    return { ...estado, niveles: NIVELES };
+    const [estado, niveles] = await Promise.all([
+      nivelDeUsuario(ctx.prisma, ctx.sesion.usuarioId),
+      nivelesVigentes(ctx.prisma),
+    ]);
+    return { ...estado, niveles };
   }),
 
   pedidos: privado.query(async ({ ctx }) => {

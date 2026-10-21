@@ -161,6 +161,98 @@
   flex-direction: column;
   gap: var(--espacio-1);
 }
+/* Titulo pequeño que separa el menu del panel en apartados ("Menú",
+   "Preferencias"); el primero no necesita aire arriba. */
+.ui-disposicion-cuenta__apartado {
+  padding: var(--espacio-4) var(--espacio-4) var(--espacio-1);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ui-disposicion-cuenta__apartado:first-child {
+  padding-block-start: 0;
+}
+
+/* Grupo desplegable de pestañas (panel): titulo con icono y flecha, y debajo
+   sus secciones con sangria y una linea guia a la izquierda. */
+.ui-disposicion-cuenta__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+.ui-disposicion-cuenta__grupo-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  margin-inline-start: var(--espacio-6);
+  padding-inline-start: var(--espacio-2);
+  border-inline-start: 1px solid var(--color-borde);
+}
+.ui-disposicion-cuenta__grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: none;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background var(--transicion-rapida),
+    color var(--transicion-rapida);
+}
+.ui-disposicion-cuenta__grupo-titulo:hover {
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+.ui-disposicion-cuenta__grupo-titulo--activo {
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-disposicion-cuenta__grupo-flecha {
+  flex: none;
+  margin-inline-start: auto;
+  transition: transform var(--transicion-rapida);
+}
+.ui-disposicion-cuenta__contador + .ui-disposicion-cuenta__grupo-flecha {
+  margin-inline-start: 0;
+}
+.ui-disposicion-cuenta__grupo-flecha--abierta {
+  transform: rotate(180deg);
+}
+.ui-disposicion-cuenta__pestana-icono {
+  display: inline-flex;
+  flex: none;
+}
+.ui-disposicion-cuenta__pestana-icono svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+.ui-disposicion-cuenta__contador {
+  display: inline-flex;
+  margin-inline-start: auto;
+}
+/* En el panel la activa es una tarjeta clara con borde, no el bloque oscuro
+   de /mi-cuenta. */
+.ui-disposicion-cuenta__pestanas--agrupadas .ui-disposicion-cuenta__pestana {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  border: 1px solid transparent;
+}
+.ui-disposicion-cuenta__pestanas--agrupadas .ui-disposicion-cuenta__pestana--activa {
+  border-color: var(--color-borde);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-sm);
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-fuerte);
+}
 .ui-disposicion-cuenta__pestana {
   padding: var(--espacio-2) var(--espacio-4);
   border: 0;

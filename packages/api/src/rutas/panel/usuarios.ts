@@ -31,6 +31,7 @@ import {
   esquemaUsuarioPanel,
 } from "@appweb/core/tipos";
 
+import { nivelDeUsuario } from "../../clientes";
 import { exige, router } from "../../trpc";
 
 const gestionar = exige("gestionar_usuarios");
@@ -167,10 +168,8 @@ export const usuarios = router({
     });
     if (u === null) throw new TRPCError({ code: "NOT_FOUND", message: "Esa cuenta no existe." });
 
-    const comprado = await ctx.prisma.pedido.aggregate({
-      where: { usuarioId: u.id, estado: { in: ["PAGADO", "PREPARANDO", "ENVIADO", "ENTREGADO"] } },
-      _sum: { total: true },
-    });
+    // Mismo calculo que el checkout: el nivel que se ve aqui es el que descuenta.
+    const estadoNivel = await nivelDeUsuario(ctx.prisma, u.id);
 
     return {
       id: u.id,
@@ -185,7 +184,8 @@ export const usuarios = router({
       tieneDocumento: u.numeroDocumento !== null,
       totalPedidos: u._count.pedidos,
       direcciones: u._count.direcciones,
-      totalComprado: Number(comprado._sum.total ?? 0),
+      totalComprado: estadoNivel.totalComprado,
+      nivel: estadoNivel.nivel.nombre,
       pedidos: u.pedidos.map((p) => ({
         id: p.id,
         codigo: p.codigo,

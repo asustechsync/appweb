@@ -18,6 +18,7 @@ import {
   MAX_LETRAS_COMENTARIO,
   MIN_ESTRELLAS,
 } from "../resenas/resenas";
+import { IDS_NIVEL, MAX_BENEFICIO, revisarNiveles } from "../clientes/niveles";
 import { TIPOS_MOVIMIENTO_MANUAL } from "../stock/manual";
 import { ROLES } from "../usuarios/permisos";
 import { REQUISITOS_CLAVE } from "../usuarios/requisitos-clave";
@@ -253,6 +254,36 @@ export const esquemaCupon = z
   .refine((c) => c.desde === null || c.hasta === null || c.desde <= c.hasta, {
     message: "La fecha final tiene que ser posterior a la inicial",
     path: ["hasta"],
+  });
+
+// ── Niveles ────────────────────────────────────────────────────────────────
+
+/** Los cinco niveles tal como los guarda el panel. Las reglas entre niveles
+    (orden, umbrales crecientes) las revisa `revisarNiveles`. */
+export const esquemaNiveles = z
+  .object({
+    niveles: z.array(
+      z.object({
+        id: z.enum(IDS_NIVEL),
+        nombre: z.string().trim().min(1, "Escribe el nombre").max(30),
+        desde: z.number({ error: "Escribe el monto" }).min(0).max(999999),
+        pedidosMinimos: z
+          .number({ error: "Escribe los pedidos" })
+          .int("Usa un número entero")
+          .min(0, "Mínimo 0")
+          .max(1000),
+        descuentoPct: z
+          .number({ error: "Escribe el descuento" })
+          .int("Usa un número entero")
+          .min(0, "Mínimo 0%")
+          .max(100, "Máximo 100%"),
+        beneficio: z.string().trim().min(1, "Escribe el beneficio").max(MAX_BENEFICIO),
+      }),
+    ),
+  })
+  .superRefine((datos, contexto) => {
+    const motivo = revisarNiveles(datos.niveles);
+    if (motivo !== null) contexto.addIssue({ code: "custom", message: motivo });
   });
 
 // ── Direccion ──────────────────────────────────────────────────────────────

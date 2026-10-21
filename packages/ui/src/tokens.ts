@@ -87,6 +87,12 @@ export const tokens = {
     agotado: "#B92A1F",
     favorito: "#EF7A1E",
     calificacion: "#F2A93B",
+    // Niveles de recompensa: la escalera y las tarjetas del panel.
+    nivelBasico: "#B9B2A6",
+    nivelBronce: "#A9784A",
+    nivelPlata: "#8E949A",
+    nivelOro: "#C99A2E",
+    nivelPlatino: "#3F4248",
     envioGratis: "#0F9D70",
     // Mismas etiquetas pastel en otras tonalidades: ambar y menta.
     tendenciaFondo: "#FDEBD6",
@@ -325,6 +331,7 @@ export const tokensOscuro = {
     fondoPortada: "#121212",
     escenaInicio: "#26282B",
     escenaFin: "#151617",
+    fondoEscritorio: "#151617",
     vidrio: "rgb(255 255 255 / 0.08)",
     vidrioBorde: "rgb(255 255 255 / 0.14)",
     textoVidrio: "#F2F2F2",
@@ -340,6 +347,11 @@ export const tokensOscuro = {
     fondoBoton: "#2A2A2F",
     fondoImagenFin: "#1F1F22",
     calificacion: "#F4BB5C",
+    nivelBasico: "#8A857C",
+    nivelBronce: "#C79A6E",
+    nivelPlata: "#B8BDC3",
+    nivelOro: "#E0B850",
+    nivelPlatino: "#E4E6EA",
 
     exito: "#3ED68C",
     exitoClaro: "#8FE388",

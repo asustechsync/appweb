@@ -2,58 +2,86 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-import { puede, type Rol } from "@appweb/core";
+import { apartadoDeSeccion, grupoDeSeccion, puede, type Rol } from "@appweb/core";
 import {
   Alerta,
   Boton,
   DisposicionPanel,
   EstadoVacio,
+  IconoCamion,
   IconoCarrito,
+  IconoCatalogo,
+  IconoClientes,
   IconoConfiguracion,
+  IconoEscudo,
   IconoEstrella,
   IconoEtiqueta,
+  IconoGaleria,
+  IconoInicio,
   IconoLibro,
-  IconoMoneda,
+  IconoOpiniones,
   IconoPedidos,
-  IconoUbicacion,
-  IconoUsuario,
+  IconoPremio,
+  IconoPromociones,
+  IconoTicket,
+  IconoVentas,
 } from "@appweb/ui";
 
 import { useAvisos } from "@/lib/use-avisos";
 
-import { Ajustes } from "./Ajustes";
 import { Envios } from "./Envios";
+import { Inventario } from "./Inventario";
+import { Niveles } from "./Niveles";
+import { Portada, Promociones } from "./Promociones";
 import { Pedidos } from "./Pedidos";
 import { Productos } from "./Productos";
 import { Reclamos } from "./Reclamos";
 import { Resenas } from "./Resenas";
 import { Resumen } from "./Resumen";
-import { Stock } from "./Stock";
 import { Usuarios } from "./Usuarios";
 import { URL_TIENDA } from "@appweb/api/urls";
 
+// El orden y el grupo de cada seccion los decide `seccionesDelPanel` de
+// @appweb/core; aqui solo se le pone nombre e icono.
 const ETIQUETAS: Record<string, string> = {
-  resumen: "Resumen",
+  inicio: "Inicio",
   pedidos: "Pedidos",
-  reclamos: "Reclamos",
-  resenas: "Reseñas",
   envios: "Envíos",
-  stock: "Stock",
   productos: "Productos",
-  usuarios: "Usuarios",
-  ajustes: "Ajustes",
+  inventario: "Inventario",
+  clientes: "Clientes",
+  resenas: "Reseñas",
+  reclamos: "Reclamos",
+  cupones: "Cupones",
+  portada: "Portada",
+  equipo: "Equipo y roles",
+  niveles: "Niveles",
+  tienda: "Datos de la tienda",
 };
 
 const ICONOS: Record<string, ReactNode> = {
-  resumen: <IconoMoneda />,
+  inicio: <IconoInicio />,
   pedidos: <IconoPedidos />,
-  reclamos: <IconoLibro />,
-  resenas: <IconoEstrella />,
-  envios: <IconoUbicacion />,
-  stock: <IconoEtiqueta />,
+  envios: <IconoCamion />,
   productos: <IconoCarrito />,
-  usuarios: <IconoUsuario />,
-  ajustes: <IconoConfiguracion />,
+  inventario: <IconoEtiqueta />,
+  clientes: <IconoClientes />,
+  resenas: <IconoEstrella />,
+  reclamos: <IconoLibro />,
+  cupones: <IconoTicket tamano={20} />,
+  portada: <IconoGaleria tamano={20} />,
+  equipo: <IconoEscudo />,
+  niveles: <IconoPremio />,
+};
+
+/** En el lateral el icono va en el titulo del grupo, no en cada seccion. */
+const ICONOS_GRUPO: Record<string, ReactNode> = {
+  Ventas: <IconoVentas />,
+  Catálogo: <IconoCatalogo />,
+  Cuentas: <IconoClientes />,
+  Opiniones: <IconoOpiniones />,
+  Promociones: <IconoPromociones />,
+  Configuración: <IconoConfiguracion />,
 };
 
 export interface PropsPanel {
@@ -98,25 +126,28 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
   }
 
   // En escritorio no hay pantalla de menu: sin seccion se ve la primera.
-  const visible = activa || (secciones[0] ?? "resumen");
+  const visible = activa || (secciones[0] ?? "inicio");
 
   const avisos = useAvisos();
-  /** El numero junto al nombre de la seccion: lo que espera a alguien. */
+  /** La insignia junto al nombre de la seccion: lo que espera a alguien. */
   const contadores: Record<string, number> = {
     pedidos: avisos.porConfirmar,
     envios: avisos.porDespachar,
     reclamos: avisos.reclamosPendientes,
     resenas: avisos.resenasPendientes,
   };
-  function etiqueta(id: string): string {
-    const texto = ETIQUETAS[id] ?? id;
-    const n = contadores[id] ?? 0;
-    return n > 0 ? `${texto} (${n})` : texto;
-  }
 
   return (
     <DisposicionPanel
-      secciones={secciones.map((id) => ({ id, etiqueta: etiqueta(id), icono: ICONOS[id] }))}
+      secciones={secciones.map((id) => ({
+        id,
+        etiqueta: ETIQUETAS[id] ?? id,
+        icono: ICONOS[id],
+        grupo: grupoDeSeccion(id),
+        apartado: apartadoDeSeccion(id),
+        contador: contadores[id],
+      }))}
+      iconosGrupo={ICONOS_GRUPO}
       seccionActiva={activa}
       onSeccion={ir}
       nombreUsuario={nombre}
@@ -141,7 +172,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
           </Boton>
         </Alerta>
       ) : null}
-      {visible === "resumen" ? (
+      {visible === "inicio" ? (
         <Resumen />
       ) : visible === "pedidos" ? (
         <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
@@ -153,12 +184,18 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         <Envios puedeTarifas={puede(rol, "gestionar_ajustes")} />
       ) : visible === "productos" ? (
         <Productos />
-      ) : visible === "stock" ? (
-        <Stock />
-      ) : visible === "usuarios" ? (
-        <Usuarios usuarioIdActual={usuarioId} />
-      ) : visible === "ajustes" ? (
-        <Ajustes />
+      ) : visible === "inventario" ? (
+        <Inventario />
+      ) : visible === "clientes" ? (
+        <Usuarios key="clientes" usuarioIdActual={usuarioId} alcance="clientes" />
+      ) : visible === "equipo" ? (
+        <Usuarios key="equipo" usuarioIdActual={usuarioId} alcance="equipo" />
+      ) : visible === "niveles" ? (
+        <Niveles />
+      ) : visible === "cupones" ? (
+        <Promociones />
+      ) : visible === "portada" ? (
+        <Portada />
       ) : (
         <EstadoVacio
           titulo={ETIQUETAS[visible] ?? visible}

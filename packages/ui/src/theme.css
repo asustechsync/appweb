@@ -52,6 +52,11 @@
   --color-agotado: #b92a1f;
   --color-favorito: #ef7a1e;
   --color-calificacion: #f2a93b;
+  --color-nivelBasico: #b9b2a6;
+  --color-nivelBronce: #a9784a;
+  --color-nivelPlata: #8e949a;
+  --color-nivelOro: #c99a2e;
+  --color-nivelPlatino: #3f4248;
   --color-envioGratis: #0f9d70;
   --color-tendenciaFondo: #fdebd6;
   --color-tendenciaTexto: #b4540a;
@@ -237,6 +242,7 @@
     --color-fondoPortada: #121212;
     --color-escenaInicio: #26282b;
     --color-escenaFin: #151617;
+    --color-fondoEscritorio: #151617;
     --color-vidrio: rgb(255 255 255 / 0.08);
     --color-vidrioBorde: rgb(255 255 255 / 0.14);
     --color-textoVidrio: #f2f2f2;
@@ -252,6 +258,11 @@
     --color-fondoBoton: #2a2a2f;
     --color-fondoImagenFin: #1f1f22;
     --color-calificacion: #f4bb5c;
+    --color-nivelBasico: #8a857c;
+    --color-nivelBronce: #c79a6e;
+    --color-nivelPlata: #b8bdc3;
+    --color-nivelOro: #e0b850;
+    --color-nivelPlatino: #e4e6ea;
     --color-exito: #3ed68c;
     --color-exitoClaro: #8fe388;
     --color-alerta: #eab143;
@@ -307,6 +318,7 @@
   --color-fondoPortada: #121212;
   --color-escenaInicio: #26282b;
   --color-escenaFin: #151617;
+  --color-fondoEscritorio: #151617;
   --color-vidrio: rgb(255 255 255 / 0.08);
   --color-vidrioBorde: rgb(255 255 255 / 0.14);
   --color-textoVidrio: #f2f2f2;
@@ -322,6 +334,11 @@
   --color-fondoBoton: #2a2a2f;
   --color-fondoImagenFin: #1f1f22;
   --color-calificacion: #f4bb5c;
+  --color-nivelBasico: #8a857c;
+  --color-nivelBronce: #c79a6e;
+  --color-nivelPlata: #b8bdc3;
+  --color-nivelOro: #e0b850;
+  --color-nivelPlatino: #e4e6ea;
   --color-exito: #3ed68c;
   --color-exitoClaro: #8fe388;
   --color-alerta: #eab143;

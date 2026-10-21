@@ -70,7 +70,20 @@ export {
 } from "./carrito/cupones";
 
 // Clientes
-export { NIVELES, nivelPorCompras, type Nivel, type EstadoNivel } from "./clientes/niveles";
+export {
+  IDS_NIVEL,
+  MAX_BENEFICIO,
+  NIVELES_INICIALES,
+  clientesPorNivel,
+  impactoDeNiveles,
+  nivelPorCompras,
+  revisarNiveles,
+  textoQueFalta,
+  type Compras,
+  type EstadoNivel,
+  type IdNivel,
+  type Nivel,
+} from "./clientes/niveles";
 
 // Envios
 export { cubreDepartamento, departamentosDesdeTexto } from "./envios/zonas";
@@ -224,6 +237,8 @@ export {
   puede,
   accionesDe,
   seccionesDelPanel,
+  grupoDeSeccion,
+  apartadoDeSeccion,
   ROLES,
   type Rol,
   type Accion,

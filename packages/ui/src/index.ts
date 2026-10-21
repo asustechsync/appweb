@@ -13,6 +13,14 @@ export {
   IconoMoneda,
   IconoMarca,
   IconoTicket,
+  IconoCamion,
+  IconoGaleria,
+  IconoInicio,
+  IconoClientes,
+  IconoVentas,
+  IconoCatalogo,
+  IconoOpiniones,
+  IconoPromociones,
   IconoCarrito,
   IconoPapelera,
   IconoOpciones,
@@ -271,6 +279,18 @@ export { TarjetaInfo, type PropsTarjetaInfo } from "./componentes/paneles/Tarjet
 export { FilaTarjetas, type PropsFilaTarjetas } from "./componentes/paneles/FilaTarjetas";
 export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/TarjetaMetrica";
 export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";
+export {
+  EscaleraNiveles,
+  ProgresoNivel,
+  PuntoNivel,
+  RejillaNiveles,
+  TarjetaNivel,
+  type PropsEscaleraNiveles,
+  type PropsProgresoNivel,
+  type PropsTarjetaNivel,
+  type TonoNivel,
+  type TramoNivel,
+} from "./componentes/paneles/EscaleraNiveles";
 export { FilaLista, type PropsFilaLista } from "./componentes/paneles/FilaLista";
 export { Insignia, type PropsInsignia } from "./componentes/base/Insignia";
 export {

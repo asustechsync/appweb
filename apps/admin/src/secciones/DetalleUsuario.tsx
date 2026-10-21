@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { ETIQUETAS, evaluarClave, nivelPorCompras, type EstadoPedido } from "@appweb/core";
+import { ETIQUETAS, evaluarClave, type EstadoPedido } from "@appweb/core";
 import {
   Alerta,
   BloqueDetalle,
@@ -91,7 +91,7 @@ export function DetalleUsuario({
               {u.totalPedidos} {u.totalPedidos === 1 ? "pedido" : "pedidos"}
             </p>
             <p>Comprado: {MONEDA.format(u.totalComprado)}</p>
-            <p>Nivel: {nivelPorCompras(u.totalComprado).nivel.nombre}</p>
+            <p>Nivel: {u.nivel}</p>
             <p>
               {u.direcciones} {u.direcciones === 1 ? "dirección guardada" : "direcciones guardadas"}
             </p>
