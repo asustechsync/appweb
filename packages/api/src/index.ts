@@ -1,11 +1,16 @@
 import { cuenta } from "./rutas/cuenta";
 import { avisos } from "./rutas/panel/avisos";
+import { categorias, marcas } from "./rutas/panel/categorias";
+import { devoluciones } from "./rutas/panel/devoluciones";
 import { envios } from "./rutas/panel/envios";
 import { niveles } from "./rutas/panel/niveles";
 import { resumen } from "./rutas/panel/resumen";
+import { packs } from "./rutas/panel/packs";
+import { pagos } from "./rutas/panel/pagos";
 import { pedidos } from "./rutas/panel/pedidos";
 import { productos } from "./rutas/panel/productos";
 import { promociones } from "./rutas/panel/promociones";
+import { proveedores } from "./rutas/panel/proveedores";
 import { reclamos } from "./rutas/panel/reclamos";
 import { resenas } from "./rutas/panel/resenas";
 import { stock } from "./rutas/panel/stock";
@@ -39,9 +44,15 @@ export const enrutador = router({
     avisos,
     envios,
     pedidos,
+    pagos,
+    devoluciones,
     reclamos,
     resenas,
     productos,
+    categorias,
+    marcas,
+    proveedores,
+    packs,
     stock,
     usuarios,
     promociones,

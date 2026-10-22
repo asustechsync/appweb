@@ -56,15 +56,11 @@ export function MenuCuenta({
   onSeccion,
   onSalir,
 }: PropsMenuCuenta) {
-  const [abiertos, setAbiertos] = useState<Set<string>>(() => new Set());
+  // Un solo grupo desplegado a la vez: abrir otro cierra el anterior.
+  const [abierto, setAbierto] = useState<string | null>(null);
 
   function alternar(titulo: string) {
-    setAbiertos((previos) => {
-      const siguientes = new Set(previos);
-      if (siguientes.has(titulo)) siguientes.delete(titulo);
-      else siguientes.add(titulo);
-      return siguientes;
-    });
+    setAbierto((previo) => (previo === titulo ? null : titulo));
   }
 
   return (
@@ -91,7 +87,7 @@ export function MenuCuenta({
       {grupos.map((grupo, indice) => {
         const titulo = grupo.titulo;
         const desplegable = grupo.desplegable === true && titulo !== undefined;
-        const abierto = !desplegable || abiertos.has(titulo);
+        const desplegado = !desplegable || abierto === titulo;
         const idLista = `menu-cuenta-grupo-${indice}`;
         const tituloApartado =
           grupo.apartado && grupo.apartado !== grupos[indice - 1]?.apartado ? grupo.apartado : null;
@@ -103,7 +99,7 @@ export function MenuCuenta({
                 <button
                   type="button"
                   className="ui-menu-cuenta__desplegar"
-                  aria-expanded={abierto}
+                  aria-expanded={desplegado}
                   aria-controls={idLista}
                   onClick={() => alternar(titulo)}
                 >
@@ -113,13 +109,13 @@ export function MenuCuenta({
                     </span>
                   ) : null}
                   <span className="ui-menu-cuenta__etiqueta">{titulo}</span>
-                  {!abierto && grupo.pendientes ? (
+                  {!desplegado && grupo.pendientes ? (
                     <span className="ui-menu-cuenta__valor">{grupo.pendientes}</span>
                   ) : null}
                   <IconoFlechaAbajo
                     tamano={16}
                     className={
-                      abierto
+                      desplegado
                         ? "ui-menu-cuenta__flecha ui-menu-cuenta__flecha--abierta"
                         : "ui-menu-cuenta__flecha"
                     }
@@ -129,7 +125,25 @@ export function MenuCuenta({
             ) : titulo ? (
               <h2 className="ui-menu-cuenta__titulo">{titulo}</h2>
             ) : null}
-            {abierto ? (
+            {desplegable ? (
+              <div
+                className={
+                  desplegado
+                    ? "ui-menu-cuenta__despliegue ui-menu-cuenta__despliegue--abierto"
+                    : "ui-menu-cuenta__despliegue"
+                }
+              >
+                {/* Cerrada sigue en el arbol para poder animarla: `inert` la saca del
+                    foco y de los lectores de pantalla. */}
+                <ul id={idLista} className="ui-menu-cuenta__lista" inert={!desplegado}>
+                  {grupo.opciones.map((opcion) => (
+                    <li key={opcion.id}>
+                      <FilaMenu opcion={opcion} onSeccion={onSeccion} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
               <ul id={idLista} className="ui-menu-cuenta__lista">
                 {grupo.opciones.map((opcion) => (
                   <li key={opcion.id}>
@@ -137,7 +151,7 @@ export function MenuCuenta({
                   </li>
                 ))}
               </ul>
-            ) : null}
+            )}
           </section>
         );
       })}

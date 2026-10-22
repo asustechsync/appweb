@@ -6,13 +6,17 @@ export type { PropsIcono } from "./tipos";
 export { IconoCamion } from "./generados/IconoCamion";
 export { IconoCarrito } from "./generados/IconoCarrito";
 export { IconoCatalogo } from "./generados/IconoCatalogo";
+export { IconoCategoria } from "./generados/IconoCategoria";
+export { IconoDevolucion } from "./generados/IconoDevolucion";
 export { IconoEnvio } from "./generados/IconoEnvio";
 export { IconoEtiqueta } from "./generados/IconoEtiqueta";
 export { IconoFavorito } from "./generados/IconoFavorito";
 export { IconoMarca } from "./generados/IconoMarca";
 export { IconoMoneda } from "./generados/IconoMoneda";
+export { IconoPack } from "./generados/IconoPack";
 export { IconoPedidos } from "./generados/IconoPedidos";
 export { IconoPromociones } from "./generados/IconoPromociones";
+export { IconoProveedor } from "./generados/IconoProveedor";
 export { IconoTicket } from "./generados/IconoTicket";
 export { IconoVentas } from "./generados/IconoVentas";
 
@@ -38,6 +42,7 @@ export { IconoUbicacion } from "./generados/IconoUbicacion";
 export { IconoUsuario } from "./generados/IconoUsuario";
 
 // interfaz
+export { IconoCalendario } from "./generados/IconoCalendario";
 export { IconoCamara } from "./generados/IconoCamara";
 export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
 export { IconoEstrella } from "./generados/IconoEstrella";

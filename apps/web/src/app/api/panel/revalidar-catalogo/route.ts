@@ -16,8 +16,10 @@ const esquema = z.object({
   catalogo: z.boolean().default(false),
   /** Cambiaron las tarifas de envio: las lee el checkout. */
   envios: z.boolean().default(false),
-  /** Cambiaron los banners del carrusel. */
+  /** Cambiaron los banners del carrusel o la fila de marcas. */
   portada: z.boolean().default(false),
+  /** Cambio el arbol de categorias: el menu de la cabecera. */
+  navegacion: z.boolean().default(false),
 });
 
 /**
@@ -50,6 +52,12 @@ export async function POST(peticion: Request) {
     analizado.data.productos.flatMap((p) => etiquetasDeProducto(p.slug, p.slugCategoria)),
   );
   if (analizado.data.catalogo) porRegenerar.add(etiquetas.catalogo());
+  if (analizado.data.navegacion) {
+    if (!puede(sesion.rol, "gestionar_productos")) {
+      return NextResponse.json({ error: "No tienes permiso." }, { status: 403 });
+    }
+    porRegenerar.add(etiquetas.navegacion());
+  }
   if (analizado.data.envios) {
     if (!puede(sesion.rol, "gestionar_ajustes")) {
       return NextResponse.json({ error: "No tienes permiso." }, { status: 403 });

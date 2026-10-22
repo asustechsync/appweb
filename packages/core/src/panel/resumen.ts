@@ -7,6 +7,7 @@
  * movil respondan siempre lo mismo.
  */
 
+import { desdeIso, hoyIso } from "../calendario";
 import type { EstadoPedido } from "../pedidos/estados";
 
 /** Solo estos estados son plata que entro: lo demas todavia puede caerse. */
@@ -29,17 +30,6 @@ export const ESTADOS_PENDIENTES: readonly EstadoPedido[] = ["PENDIENTE_PAGO", "P
  */
 export const UMBRAL_STOCK_BAJO = 5;
 
-/** Ventana por defecto del resumen: los ultimos 7 dias contra los 7 previos. */
-export const DIAS_VENTANA = 7;
-
-/** Medianoche de hace `dias` dias: el dia en curso cuenta entero. */
-export function inicioDeHace(dias: number): Date {
-  const fecha = new Date();
-  fecha.setDate(fecha.getDate() - dias);
-  fecha.setHours(0, 0, 0, 0);
-  return fecha;
-}
-
 /**
  * Cambio porcentual entre dos periodos, redondeado.
  *
@@ -54,4 +44,112 @@ export function variacion(actual: number, anterior: number): number {
 /** Cuantos dias lleva esperando algo creado en `desde`. */
 export function diasDesde(desde: Date, ahora = new Date()): number {
   return Math.floor((ahora.getTime() - desde.getTime()) / 86_400_000);
+}
+
+// ── Periodos de las metricas ────────────────────────────────────────────────
+
+/** Los tres cortes que elige el panel sobre las tarjetas del resumen. */
+export const PERIODOS = ["dia", "semana", "mes"] as const;
+export type Periodo = (typeof PERIODOS)[number];
+
+export const ETIQUETAS_PERIODO: Record<Periodo, string> = {
+  dia: "Día",
+  semana: "Semana",
+  mes: "Mes",
+};
+
+export interface VentanaResumen {
+  /** Inicio del periodo actual. */
+  desde: Date;
+  /** Fin (exclusivo) del periodo actual. `null` = llega hasta ahora. */
+  hasta: Date | null;
+  /** El periodo contra el que se compara: [previoDesde, previoHasta). */
+  previoDesde: Date;
+  previoHasta: Date;
+  titulo: string;
+  /** Texto bajo cada cifra: "vs. semana pasada". */
+  contexto: string;
+}
+
+/**
+ * Que fechas cubre cada periodo y contra cual se compara.
+ *
+ *   · Dia    — de hoy a esta hora contra el mismo tramo de ayer.
+ *   · Semana — de lunes a hoy contra el mismo tramo de la semana pasada.
+ *   · Mes    — del dia 1 a hoy contra el mismo tramo del mes pasado.
+ *
+ * Dia, semana y mes se comparan por el mismo tramo transcurrido: las 10 de la
+ * mañana no se miden contra todo el dia de ayer, que siempre ganaria.
+ */
+export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen {
+  const hoy = new Date(ahora);
+  hoy.setHours(0, 0, 0, 0);
+
+  if (periodo === "dia") {
+    const previoDesde = new Date(hoy);
+    previoDesde.setDate(hoy.getDate() - 1);
+    const transcurrido = ahora.getTime() - hoy.getTime();
+    return {
+      desde: hoy,
+      hasta: null,
+      previoDesde,
+      previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, hoy.getTime())),
+      titulo: "Hoy",
+      contexto: "vs. ayer",
+    };
+  }
+
+  if (periodo === "semana") {
+    // Lunes como primer dia: getDay() da domingo = 0.
+    const desde = new Date(hoy);
+    desde.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
+    const previoDesde = new Date(desde);
+    previoDesde.setDate(desde.getDate() - 7);
+    const transcurrido = ahora.getTime() - desde.getTime();
+    return {
+      desde,
+      hasta: null,
+      previoDesde,
+      previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, desde.getTime())),
+      titulo: "Esta semana",
+      contexto: "vs. semana pasada",
+    };
+  }
+
+  const desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  const previoDesde = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+  const transcurrido = ahora.getTime() - desde.getTime();
+  return {
+    desde,
+    hasta: null,
+    previoDesde,
+    // Marzo tiene mas dias que febrero: el tramo nunca pasa del inicio de este mes.
+    previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, desde.getTime())),
+    titulo: "Este mes",
+    contexto: "vs. mes pasado",
+  };
+}
+
+/**
+ * Un dia concreto contra el dia anterior. Un dia pasado se mide entero; hoy se
+ * mide hasta esta hora contra el mismo tramo de ayer, como el periodo "Dia".
+ * Una fecha futura o invalida cuenta como hoy: no hay ventas que mostrar.
+ */
+export function ventanaDeFecha(iso: string, ahora = new Date()): VentanaResumen {
+  const elegida = desdeIso(iso);
+  if (elegida === null || iso >= hoyIso(ahora)) return ventanaDe("dia", ahora);
+
+  const hasta = new Date(elegida);
+  hasta.setDate(elegida.getDate() + 1);
+  const previoDesde = new Date(elegida);
+  previoDesde.setDate(elegida.getDate() - 1);
+
+  return {
+    desde: elegida,
+    hasta,
+    previoDesde,
+    previoHasta: elegida,
+    titulo: new Intl.DateTimeFormat("es-PE", { dateStyle: "long" }).format(elegida),
+    contexto: "vs. el día anterior",
+  };
 }

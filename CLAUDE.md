@@ -1,8 +1,8 @@
 # Reglas del proyecto
 
 Tienda de basicos: boxers, medias y accesorios. Tres apps, cuatro paquetes,
-diecisiete tablas (diez al arrancar, mas Marca, Pago, HistorialPedido, Cupon,
-Banner, Reclamo y Resena).
+veintitres tablas (diez al arrancar, mas Marca, Pago, HistorialPedido, Cupon,
+Banner, Reclamo, Resena, Nivel, Proveedor, Compra, ItemCompra, Pack e ItemPack).
 
 ## Las tres clases de velocidad
 
@@ -57,7 +57,7 @@ Si si, va en `packages/`. Si no, va en `apps/`.
 
 ## Base de datos
 
-- Diecisiete tablas hoy. Antes de añadir una, pregunta: *si la añado dentro
+- Veintitres tablas hoy. Antes de añadir una, pregunta: *si la añado dentro
   de tres meses, ¿tendre los datos que necesita?* Si la respuesta es si,
   dejala fuera.
 - El SQL que Prisma no expresa (indices parciales, tsvector) se escribe a mano

@@ -37,7 +37,7 @@ import { useTRPC } from "@/lib/trpc";
 import { tonoDeEstado } from "./Pedidos";
 import { FECHA_HORA, MONEDA, mensajeDeFallo } from "@appweb/core/formato";
 
-function tonoDePago(estado: EstadoPago): "exito" | "alerta" | "error" | "neutro" {
+export function tonoDePago(estado: EstadoPago): "exito" | "alerta" | "error" | "neutro" {
   if (estado === "CONFIRMADO") return "exito";
   if (estado === "PENDIENTE") return "alerta";
   if (estado === "RECHAZADO") return "error";

@@ -16,6 +16,9 @@
 }
 .ui-barra-panel__buscador .ui-buscador {
   inline-size: 100%;
+  /* Mismo alto que el buscador de la cabecera de la tienda. */
+  block-size: var(--espacio-12);
+  box-sizing: border-box;
 }
 
 .ui-barra-panel__resultados {

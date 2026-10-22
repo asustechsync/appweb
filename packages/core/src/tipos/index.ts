@@ -9,7 +9,9 @@ import { z } from "zod";
 
 import { errorNumeroDocumento, TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
+import { PERIODOS } from "../panel/resumen";
 import { ESTADOS_PEDIDO } from "../pedidos/estados";
+import { ESTADOS_PAGO } from "../pedidos/gestion";
 import { ESTADOS_RECLAMO, TIPOS_BIEN, TIPOS_RECLAMO } from "../reclamos/libro";
 import {
   DECISIONES_RESENA,
@@ -191,6 +193,63 @@ export const esquemaCambioEstadoPedido = z.object({
   codigoSeguimiento: z.string().trim().max(60).optional(),
 });
 
+// ── Resumen (panel) ────────────────────────────────────────────────────────
+
+/** Periodo de las tarjetas de metricas. Sin el, el dia de hoy. Con `fecha`
+    (aaaa-mm-dd), ese dia manda sobre el periodo. */
+export const esquemaResumen = z.object({
+  periodo: z.enum(PERIODOS).default("dia"),
+  fecha: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida")
+    .optional(),
+});
+
+// ── Pagos y devoluciones (panel) ──────────────────────────────────────────
+
+export const esquemaFiltroPagos = z.object({
+  /** Sin estado: todos. */
+  estado: z.enum(ESTADOS_PAGO).optional(),
+});
+
+export const esquemaRechazarPago = z.object({
+  pedidoId: z.string().min(1),
+  pagoId: z.string().min(1),
+  motivo: z
+    .string()
+    .trim()
+    .min(1, "Escribe por qué se rechaza el pago")
+    .max(200, "El motivo es demasiado largo"),
+});
+
+export const esquemaBuscarPedido = z.object({
+  codigo: z.string().trim().min(1, "Escribe el código del pedido").max(30),
+});
+
+export const esquemaDevolucion = z.object({
+  pedidoId: z.string().min(1),
+  lineas: z
+    .array(
+      z.object({
+        varianteId: z.string().min(1),
+        cantidad: z.number().int().min(0).max(999),
+        /** Cambio: la variante que se envia a cambio. */
+        reemplazoVarianteId: z.string().min(1).optional(),
+      }),
+    )
+    .max(100),
+  reembolso: z
+    .number({ error: "Escribe el monto a reembolsar" })
+    .min(0, "El reembolso no puede ser negativo")
+    .max(99999),
+  referencia: z.string().trim().max(40, "El número de operación es demasiado largo").optional(),
+  motivo: z
+    .string()
+    .trim()
+    .min(1, "Escribe el motivo de la devolución")
+    .max(200, "El motivo es demasiado largo"),
+});
+
 // ── Envios (panel) ─────────────────────────────────────────────────────────
 
 /** Metodo de envio. Sin `metodoId` se crea uno nuevo. */
@@ -361,6 +420,114 @@ export const esquemaVarianteNueva = z.object({
 export const esquemaCambioActivoVariante = z.object({
   varianteId: z.string().min(1),
   activo: z.boolean(),
+});
+
+const esquemaSlug = z
+  .string()
+  .trim()
+  .min(2, "La dirección web es demasiado corta")
+  .max(80, "La dirección web es demasiado larga")
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Solo minúsculas, números y guiones");
+
+const esquemaOrden = z.number().int("El orden es un número entero").min(0).max(9999);
+
+const urlOpcional = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(
+    (u) => u === "" || u.startsWith("/") || u.startsWith("https://"),
+    "Escribe una URL https://",
+  )
+  .optional();
+
+/** Categoria. Sin `categoriaId` se crea una nueva. */
+export const esquemaCategoria = z.object({
+  categoriaId: z.string().min(1).optional(),
+  nombre: z.string().trim().min(2, "Escribe el nombre").max(60, "El nombre es demasiado largo"),
+  slug: esquemaSlug,
+  padreId: z.string().min(1).nullable(),
+  descripcion: textoOpcional(500, "La descripción es demasiado larga"),
+  imagenUrl: urlOpcional,
+  tituloSeo: textoOpcional(70, "El título SEO admite hasta 70 caracteres"),
+  descripcionSeo: textoOpcional(160, "La descripción SEO admite hasta 160 caracteres"),
+  orden: esquemaOrden,
+  destacado: z.boolean().default(false),
+  activo: z.boolean().default(true),
+});
+
+/** Marca. Sin `marcaId` se crea una nueva. */
+export const esquemaMarca = z.object({
+  marcaId: z.string().min(1).optional(),
+  nombre: z.string().trim().min(2, "Escribe el nombre").max(60, "El nombre es demasiado largo"),
+  slug: esquemaSlug,
+  descripcion: textoOpcional(500, "La descripción es demasiado larga"),
+  logoUrl: urlOpcional,
+  tituloSeo: textoOpcional(70, "El título SEO admite hasta 70 caracteres"),
+  descripcionSeo: textoOpcional(160, "La descripción SEO admite hasta 160 caracteres"),
+  orden: esquemaOrden,
+  destacado: z.boolean().default(false),
+  activo: z.boolean().default(true),
+});
+
+/** Proveedor. Sin `proveedorId` se crea uno nuevo. */
+export const esquemaProveedor = z.object({
+  proveedorId: z.string().min(1).optional(),
+  nombre: z.string().trim().min(2, "Escribe el nombre").max(80, "El nombre es demasiado largo"),
+  ruc: z
+    .string()
+    .trim()
+    .regex(/^(\d{11})?$/, "El RUC tiene 11 dígitos")
+    .optional(),
+  contacto: textoOpcional(80, "El contacto es demasiado largo"),
+  telefono: z
+    .string()
+    .trim()
+    .regex(/^(\d{6,15})?$/, "Solo números, entre 6 y 15 dígitos")
+    .optional(),
+  email: z.union([z.literal(""), z.email("Escribe un correo válido")]).optional(),
+  nota: textoOpcional(300, "La nota es demasiado larga"),
+  activo: z.boolean().default(true),
+});
+
+/** Ingreso de mercaderia. Lo demas lo revisa `revisarCompra`. */
+export const esquemaCompra = z.object({
+  proveedorId: z.string().min(1, "Elige el proveedor"),
+  documento: textoOpcional(40, "El documento es demasiado largo"),
+  nota: textoOpcional(200, "La nota es demasiado larga"),
+  lineas: z
+    .array(
+      z.object({
+        varianteId: z.string().min(1),
+        cantidad: z.number().int("La cantidad es un número entero").min(1).max(100000),
+        costoUnitario: z.number({ error: "Escribe el costo" }).min(0).max(99999),
+      }),
+    )
+    .min(1, "Agrega al menos una prenda")
+    .max(200),
+});
+
+export const esquemaIdProveedor = z.object({ proveedorId: z.string().min(1) });
+
+/** Pack o combo. Sin `packId` se crea uno nuevo. Lo demas, `revisarPack`. */
+export const esquemaPack = z.object({
+  packId: z.string().min(1).optional(),
+  nombre: z.string().trim().min(3, "Escribe el nombre").max(80, "El nombre es demasiado largo"),
+  slug: esquemaSlug,
+  descripcion: textoOpcional(500, "La descripción es demasiado larga"),
+  precio: z
+    .number({ error: "Escribe el precio" })
+    .positive("El precio tiene que ser mayor que cero")
+    .max(99999),
+  activo: z.boolean().default(true),
+  componentes: z
+    .array(
+      z.object({
+        varianteId: z.string().min(1),
+        cantidad: z.number().int().min(1).max(50),
+      }),
+    )
+    .max(30),
 });
 
 // ── Stock (panel) ──────────────────────────────────────────────────────────

@@ -8,6 +8,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./calendario": "./src/calendario.ts",
     "./formato": "./src/formato.ts",
     "./puertos": "./src/puertos/index.ts",
     "./tipos": "./src/tipos/index.ts"

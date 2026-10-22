@@ -12,15 +12,16 @@
 
 import {
   diasDesde,
-  DIAS_VENTANA,
   ESTADOS_PENDIENTES,
   ESTADOS_VENTA,
-  inicioDeHace,
   puede,
   UMBRAL_STOCK_BAJO,
   variacion,
+  ventanaDe,
+  ventanaDeFecha,
   type EstadoPedido,
 } from "@appweb/core";
+import { esquemaResumen } from "@appweb/core/tipos";
 
 import { exige, router } from "../../trpc";
 
@@ -30,17 +31,17 @@ const entrar = exige("entrar_panel");
 const TOPE_LISTA = 5;
 
 export const resumen = router({
-  datos: entrar.query(async ({ ctx }) => {
+  datos: entrar.input(esquemaResumen).query(async ({ ctx, input }) => {
     const { rol } = ctx.sesion;
     const verVentas = puede(rol, "ver_ventas");
     const verStock = puede(rol, "ajustar_stock");
 
-    const desdeVentana = inicioDeHace(DIAS_VENTANA);
-    const desdeVentanaPrevia = inicioDeHace(DIAS_VENTANA * 2);
+    const periodo = input.fecha ? ventanaDeFecha(input.fecha) : ventanaDe(input.periodo);
 
     const estadosVenta = [...ESTADOS_VENTA];
-    const ventana = { gte: desdeVentana };
-    const ventanaPrevia = { gte: desdeVentanaPrevia, lt: desdeVentana };
+    // Un dia pasado tiene fin; los periodos en curso llegan hasta ahora.
+    const ventana = { gte: periodo.desde, ...(periodo.hasta ? { lt: periodo.hasta } : {}) };
+    const ventanaPrevia = { gte: periodo.previoDesde, lt: periodo.previoHasta };
 
     // Todo en un viaje: ninguna de estas consultas depende de otra.
     const [
@@ -118,7 +119,8 @@ export const resumen = router({
     const ahora = new Date();
 
     return {
-      dias: DIAS_VENTANA,
+      titulo: periodo.titulo,
+      contexto: periodo.contexto,
       alertas: {
         pedidosPendientes: pedidosPendientes.map((pedido) => ({
           id: pedido.id,

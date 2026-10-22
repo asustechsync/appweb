@@ -1,0 +1,18 @@
+// GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
+// Fuente: src/iconos/fuente/comercio/pack.svg
+import type { PropsIcono } from "../tipos";
+
+export function IconoPack({ tamano = 16, className }: PropsIcono) {
+  return (
+    <svg
+      width={tamano}
+      height={tamano}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M8.5 2.25c1.4 0 2.66.74 3.5 1.86a4.37 4.37 0 0 1 3.5-1.86 2.75 2.75 0 0 1 2.34 4.2h1.41c.97 0 1.75.78 1.75 1.75v2c0 .82-.56 1.5-1.31 1.7v6.85A2.75 2.75 0 0 1 16.94 21.5H7.06a2.75 2.75 0 0 1-2.75-2.75V11.9A1.75 1.75 0 0 1 3 10.2v-2c0-.97.78-1.75 1.75-1.75h1.41A2.75 2.75 0 0 1 8.5 2.25Zm2.75 9.95H5.81v6.55c0 .69.56 1.25 1.25 1.25h4.19v-7.8Zm1.5 7.8h4.19c.69 0 1.25-.56 1.25-1.25V12.2h-5.44V20Zm-1.5-12.05H4.75a.25.25 0 0 0-.25.25v2c0 .14.11.25.25.25h6.5v-2.5Zm1.5 2.5h6.5a.25.25 0 0 0 .25-.25v-2a.25.25 0 0 0-.25-.25h-6.5v2.5ZM8.5 3.75a1.25 1.25 0 0 0 0 2.5h2.6C10.8 4.85 9.75 3.75 8.5 3.75Zm4.4 2.5h2.6a1.25 1.25 0 0 0 0-2.5c-1.25 0-2.3 1.1-2.6 2.5Z" />
+    </svg>
+  );
+}

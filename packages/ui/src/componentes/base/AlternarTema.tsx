@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { IconoLuna, IconoSol } from "../../iconos";
-import { TEMA_LLAVE, type Tema } from "../../tema";
+import { escribirCookieTema, TEMA_LLAVE, type Tema } from "../../tema";
 
 import "../estilos.css";
 
@@ -44,6 +44,7 @@ export function AlternarTema({ variante = "boton" }: PropsAlternarTema) {
   function alternar() {
     const siguiente: Tema = tema === "oscuro" ? "claro" : "oscuro";
     document.documentElement.dataset["tema"] = siguiente;
+    escribirCookieTema(siguiente);
     try {
       localStorage.setItem(TEMA_LLAVE, siguiente);
     } catch {

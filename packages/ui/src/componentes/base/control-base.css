@@ -8,6 +8,7 @@
   .ui-campo__input,
   .ui-campo__grupo,
   .ui-selector-lista__disparador,
+  .ui-selector-calendario__disparador,
   .ui-selector-buscable__disparador,
   .ui-selector-pais__disparador
 ) {
@@ -21,6 +22,7 @@
 :is(
   .ui-campo__input,
   .ui-selector-lista__disparador,
+  .ui-selector-calendario__disparador,
   .ui-selector-buscable__disparador,
   .ui-selector-pais__disparador
 ) {
@@ -33,6 +35,7 @@
 :is(
   .ui-campo__input,
   .ui-selector-lista__disparador,
+  .ui-selector-calendario__disparador,
   .ui-selector-buscable__disparador,
   .ui-selector-pais__disparador
 ):focus {
@@ -43,6 +46,7 @@
 :is(
   .ui-campo__input,
   .ui-selector-lista__disparador,
+  .ui-selector-calendario__disparador,
   .ui-selector-buscable__disparador,
   .ui-selector-pais__disparador
 ):disabled {

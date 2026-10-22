@@ -119,6 +119,8 @@ export const tokens = {
     // superficie, que ya no es blanco puro.
     fondo: "#FFFFFF",
     fondoSutil: "#ECECED",
+    // Gris plano de la opcion seleccionada en el menu del panel.
+    fondoSeleccion: "#F0F0F0",
     // Fondo de la portada: gris con un toque azulado.
     fondoPortada: "#F1F5F9",
     // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.
@@ -302,6 +304,7 @@ export const tokensOscuro = {
     },
     fondo: "#121212",
     fondoSutil: "#1C1C1F",
+    fondoSeleccion: "#26262B",
     superficie: "#1E1E22",
     borde: "#303035",
     bordeFuerte: "#414148",

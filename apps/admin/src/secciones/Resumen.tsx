@@ -1,10 +1,20 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
-import { ETIQUETAS, type EstadoPedido } from "@appweb/core";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+
+import {
+  ETIQUETAS,
+  ETIQUETAS_PERIODO,
+  PERIODOS,
+  type EstadoPedido,
+  type Periodo,
+} from "@appweb/core";
 import {
   Alerta,
+  CampoSelectorLista,
+  SelectorCalendario,
   Cargando,
   EstadoVacio,
   FilaLista,
@@ -27,8 +37,8 @@ function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
 /**
  * Resumen del panel, en tres niveles y en ese orden:
  *
- *   1. Lo que necesita atencion hoy — pedidos parados y stock por acabarse.
- *   2. Como va el negocio — cuatro numeros contra la semana anterior.
+ *   1. Como va el negocio — cuatro numeros contra la semana anterior.
+ *   2. Lo que necesita atencion hoy — pedidos parados y stock por acabarse.
  *   3. Que paso ultimamente — ultimos pedidos y ultimas altas.
  *
  * Los bloques que el rol no puede ver llegan vacios desde la API; aqui solo
@@ -36,17 +46,86 @@ function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
  */
 export function Resumen() {
   const trpc = useTRPC();
-  const datos = useQuery(trpc.panel.resumen.datos.queryOptions());
+  const [periodo, setPeriodo] = useState<Periodo>("dia");
+  // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
+  const [fecha, setFecha] = useState("");
+  // El periodo cambia solo las cifras: se conserva lo anterior mientras llegan
+  // las nuevas para que el resumen no parpadee a "Cargando".
+  const datos = useQuery({
+    ...trpc.panel.resumen.datos.queryOptions({ periodo, ...(fecha ? { fecha } : {}) }),
+    placeholderData: keepPreviousData,
+  });
 
   if (datos.isPending) return <Cargando texto="Cargando el resumen…" />;
   if (datos.isError) return <Alerta tono="error">{datos.error.message}</Alerta>;
 
-  const { alertas, metricas, ultimosPedidos, ultimosUsuarios, dias } = datos.data;
-  const contexto = `vs. ${dias} días previos`;
+  const { alertas, metricas, ultimosPedidos, ultimosUsuarios, titulo, contexto } = datos.data;
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
   return (
     <>
+      {metricas ? (
+        <Tarjeta
+          titulo={titulo}
+          sinMarco
+          acciones={
+            <>
+              <CampoSelectorLista
+                id="periodo-metricas"
+                etiqueta="Periodo de las métricas"
+                etiquetaOculta
+                ancho="amplio"
+                // Con un dia del calendario elegido, ningun periodo esta activo.
+                valor={fecha ? "" : periodo}
+                placeholder="Periodo"
+                opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
+                onCambio={(valor) => {
+                  setFecha("");
+                  setPeriodo(valor as Periodo);
+                }}
+              />
+              <SelectorCalendario
+                id="fecha-metricas"
+                etiqueta="Elegir un día"
+                etiquetaOculta
+                placeholder="Elegir día"
+                valor={fecha}
+                onCambio={setFecha}
+                limpiable
+                alineacion="fin"
+              />
+            </>
+          }
+        >
+          <RejillaMetricas>
+            <TarjetaMetrica
+              etiqueta="Ventas"
+              valor={MONEDA.format(metricas.ventas)}
+              cambio={metricas.cambioVentas}
+              contexto={contexto}
+            />
+            <TarjetaMetrica
+              etiqueta="Pedidos"
+              valor={String(metricas.pedidos)}
+              cambio={metricas.cambioPedidos}
+              contexto={contexto}
+            />
+            <TarjetaMetrica
+              etiqueta="Ticket promedio"
+              valor={MONEDA.format(metricas.ticket)}
+              cambio={metricas.cambioTicket}
+              contexto={contexto}
+            />
+            <TarjetaMetrica
+              etiqueta="Clientes nuevos"
+              valor={String(metricas.clientesNuevos)}
+              cambio={metricas.cambioClientesNuevos}
+              contexto={contexto}
+            />
+          </RejillaMetricas>
+        </Tarjeta>
+      ) : null}
+
       {hayAlertas ? (
         <>
           {alertas.pedidosPendientes.length > 0 ? (
@@ -92,37 +171,6 @@ export function Resumen() {
             </Tarjeta>
           ) : null}
         </>
-      ) : null}
-
-      {metricas ? (
-        <Tarjeta titulo={`Últimos ${dias} días`}>
-          <RejillaMetricas>
-            <TarjetaMetrica
-              etiqueta="Ventas"
-              valor={MONEDA.format(metricas.ventas)}
-              cambio={metricas.cambioVentas}
-              contexto={contexto}
-            />
-            <TarjetaMetrica
-              etiqueta="Pedidos"
-              valor={String(metricas.pedidos)}
-              cambio={metricas.cambioPedidos}
-              contexto={contexto}
-            />
-            <TarjetaMetrica
-              etiqueta="Ticket promedio"
-              valor={MONEDA.format(metricas.ticket)}
-              cambio={metricas.cambioTicket}
-              contexto={contexto}
-            />
-            <TarjetaMetrica
-              etiqueta="Clientes nuevos"
-              valor={String(metricas.clientesNuevos)}
-              cambio={metricas.cambioClientesNuevos}
-              contexto={contexto}
-            />
-          </RejillaMetricas>
-        </Tarjeta>
       ) : null}
 
       {ultimosPedidos.length > 0 ? (

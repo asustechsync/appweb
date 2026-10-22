@@ -50,6 +50,12 @@ export interface PropsDisposicionCuenta {
    * Desde `lg` no se usa y queda el lateral de siempre.
    */
   menuMovil?: ReactNode;
+  /**
+   * Barra sobre el contenido (p. ej. el buscador del panel). Con ella, la marca
+   * del lateral sube a la misma fila, sobre el menu: las dos columnas arrancan
+   * a la misma altura.
+   */
+  barraSuperior?: ReactNode;
   /** En movil, mostrar el menu en vez de la seccion. */
   enMenu?: boolean;
   /** Titulo de la barra movil cuando se ve una seccion. */
@@ -83,6 +89,7 @@ export function DisposicionCuenta({
   enlaceLateral,
   marcaLateral,
   menuMovil,
+  barraSuperior,
   enMenu = false,
   tituloSeccion,
   onVolver,
@@ -92,25 +99,19 @@ export function DisposicionCuenta({
   const enlace =
     enlaceLateral ?? (hrefPanel ? { href: hrefPanel, etiqueta: "Panel de administracion" } : null);
 
-  // Los grupos empiezan cerrados salvo el de la seccion activa, y ese se abre
-  // solo cada vez que la seccion cambia (p. ej. al llegar desde un aviso).
+  // Un solo grupo abierto a la vez: abrir otro cierra el anterior. Empieza
+  // abierto el de la seccion activa, y ese pasa a ser el abierto cada vez que
+  // la seccion cambia (p. ej. al llegar desde un aviso).
   const bloques = agruparSecciones(secciones);
   const hayGrupos = bloques.some((bloque) => bloque.grupo);
   const grupoActivo = secciones.find((seccion) => seccion.id === seccionActiva)?.grupo;
-  const [abiertos, setAbiertos] = useState<Set<string>>(
-    () => new Set(grupoActivo ? [grupoActivo] : []),
-  );
+  const [grupoAbierto, setGrupoAbierto] = useState<string | null>(grupoActivo ?? null);
   useEffect(() => {
-    if (grupoActivo) setAbiertos((previos) => new Set(previos).add(grupoActivo));
+    if (grupoActivo) setGrupoAbierto(grupoActivo);
   }, [grupoActivo]);
 
   function alternar(grupo: string) {
-    setAbiertos((previos) => {
-      const siguientes = new Set(previos);
-      if (siguientes.has(grupo)) siguientes.delete(grupo);
-      else siguientes.add(grupo);
-      return siguientes;
-    });
+    setGrupoAbierto((previo) => (previo === grupo ? null : grupo));
   }
   const clase = menuMovil
     ? `ui-disposicion-cuenta ui-disposicion-cuenta--con-menu ${enMenu ? "ui-disposicion-cuenta--en-menu" : ""}`
@@ -151,9 +152,18 @@ export function DisposicionCuenta({
           </header>
         ) : null}
 
+        {barraSuperior ? (
+          <div className="ui-disposicion-cuenta__barra-superior">
+            {marcaLateral ? (
+              <div className="ui-disposicion-cuenta__barra-marca">{marcaLateral}</div>
+            ) : null}
+            <div className="ui-disposicion-cuenta__barra-contenido">{barraSuperior}</div>
+          </div>
+        ) : null}
+
         <div className="ui-disposicion-cuenta__cuerpo">
           <aside className="ui-disposicion-cuenta__lateral">
-            {marcaLateral ? (
+            {barraSuperior ? null : marcaLateral ? (
               <div className="ui-disposicion-cuenta__marca">{marcaLateral}</div>
             ) : (
               <div className="ui-disposicion-cuenta__tarjeta-usuario">
@@ -238,7 +248,7 @@ export function DisposicionCuenta({
                     </Fragment>
                   );
 
-                const abierto = abiertos.has(grupo);
+                const abierto = grupoAbierto === grupo;
                 const idLista = `grupo-cuenta-${indice}`;
                 // Cerrado, el grupo suma los pendientes de sus secciones para
                 // que ningun aviso quede escondido.
@@ -280,11 +290,23 @@ export function DisposicionCuenta({
                           }
                         />
                       </button>
-                      {abierto ? (
-                        <div id={idLista} className="ui-disposicion-cuenta__grupo-lista">
+                      <div
+                        className={
+                          abierto
+                            ? "ui-disposicion-cuenta__despliegue ui-disposicion-cuenta__despliegue--abierto"
+                            : "ui-disposicion-cuenta__despliegue"
+                        }
+                      >
+                        {/* Cerrada sigue en el arbol para poder animarla: `inert` la saca
+                            del foco y de los lectores de pantalla. */}
+                        <div
+                          id={idLista}
+                          className="ui-disposicion-cuenta__grupo-lista"
+                          inert={!abierto}
+                        >
                           {pestanas}
                         </div>
-                      ) : null}
+                      </div>
                     </div>
                   </Fragment>
                 );

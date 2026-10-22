@@ -1,3 +1,4 @@
+import { IconoFlechaAbajo, IconoFlechaArriba } from "../../iconos";
 import "./tarjeta-metrica.css";
 
 export interface PropsTarjetaMetrica {
@@ -31,7 +32,21 @@ export function TarjetaMetrica({ etiqueta, valor, cambio, contexto }: PropsTarje
           </span>
         )}
       </header>
-      <p className="ui-tarjeta-metrica__valor">{valor}</p>
+      <div className="ui-tarjeta-metrica__fila">
+        <p className="ui-tarjeta-metrica__valor">{valor}</p>
+        {cambio === undefined ? null : (
+          <span
+            className={
+              sube
+                ? "ui-tarjeta-metrica__flecha ui-tarjeta-metrica__flecha--sube"
+                : "ui-tarjeta-metrica__flecha ui-tarjeta-metrica__flecha--baja"
+            }
+            aria-hidden="true"
+          >
+            {sube ? <IconoFlechaArriba /> : <IconoFlechaAbajo />}
+          </span>
+        )}
+      </div>
       {contexto ? <p className="ui-tarjeta-metrica__contexto">{contexto}</p> : null}
     </article>
   );

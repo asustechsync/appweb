@@ -1,10 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  ESQUEMA — dieciocho tablas en ocho dominios:
+//  ESQUEMA — veintitres tablas en nueve dominios:
 //
 //      Cuenta      usuarios, direcciones, niveles
-//      Catalogo    categorias, marcas, productos, variantes, imagenes_producto
+//      Catalogo    categorias, marcas, productos, variantes, imagenes_producto,
+//                  packs, items_pack
 //      Contenido   banners
 //      Stock       movimientos_stock
+//      Compra      proveedores, compras, items_compra
 //      Venta       pedidos, items_pedido, pagos, historial_pedido
 //      Promo/envio cupones, metodos_envio
 //      Atencion    reclamos
@@ -19,6 +21,10 @@
 //  cuando recibe el paquete, esa opinion no se recupera meses despues.
 //  Nivel no guarda datos de clientes sino la regla del programa: sale del
 //  codigo para que el panel ajuste montos y descuentos sin desplegar.
+//  Proveedor, Compra e ItemCompra guardan a quien se compro y a cuanto: sin
+//  ellas no hay costo, y el costo de lo ya comprado no se recupera despues.
+//  Pack e ItemPack los pidio el negocio: un pack es una receta de variantes
+//  con precio propio, y su stock sale del de sus componentes.
 //
 //  Orden de columnas dentro de cada modelo: identidad, contenido, relaciones,
 //  montos o precio, SEO, estado, fechas. El orden fisico en la base es el de
@@ -76,41 +82,42 @@ enum Genero {
 
 model Usuario {
   // Acceso
-  id    String @id @default(cuid())
-  email String @unique
-  clave String
-  rol   Rol    @default(CLIENTE)
+  id              String         @id @default(cuid())
+  email           String         @unique
+  clave           String
+  rol             Rol            @default(CLIENTE)
   // Persona
   nombre          String
   apellidoPaterno String?
   apellidoMaterno String?
   apodo           String?
   telefono        String?
-  fechaNacimiento DateTime? @db.Date
+  fechaNacimiento DateTime?      @db.Date
   genero          Genero?
   // Documento (para el comprobante)
   tipoDocumento   TipoDocumento?
   numeroDocumento String?
   // Estado
-  activo Boolean @default(true)
+  activo          Boolean        @default(true)
   // Fechas
-  creadoEn       DateTime  @default(now())
+  creadoEn        DateTime       @default(now())
   // Cambios del perfil. Iniciar sesion NO lo mueve (ver ingresar/acciones.ts).
-  editadoEn      DateTime  @updatedAt
+  editadoEn       DateTime       @updatedAt
   // Ultimo inicio de sesion: seguridad y clientes inactivos. `null` = nunca
   // entro desde que existe la columna.
-  ultimoAccesoEn DateTime?
+  ultimoAccesoEn  DateTime?
 
-  direcciones Direccion[]
-  pedidos     Pedido[]
+  direcciones         Direccion[]
+  pedidos             Pedido[]
   // Auditoria: a quien se le atribuye cada pago confirmado, cada cambio de
   // estado y cada movimiento de stock. Quedan aunque el empleado cambie de rol.
-  pagosConfirmados Pago[]            @relation("PagoConfirmadoPor")
-  cambiosDePedido  HistorialPedido[] @relation("CambioHechoPor")
-  movimientosStock MovimientoStock[] @relation("MovimientoHechoPor")
-  reclamosRespondidos Reclamo[]      @relation("ReclamoRespondidoPor")
-  resenasModeradas    Resena[]       @relation("ResenaModeradaPor")
-  resenas             Resena[]       @relation("ResenaEscritaPor")
+  pagosConfirmados    Pago[]            @relation("PagoConfirmadoPor")
+  cambiosDePedido     HistorialPedido[] @relation("CambioHechoPor")
+  movimientosStock    MovimientoStock[] @relation("MovimientoHechoPor")
+  compras             Compra[]          @relation("CompraRegistradaPor")
+  reclamosRespondidos Reclamo[]         @relation("ReclamoRespondidoPor")
+  resenasModeradas    Resena[]          @relation("ResenaModeradaPor")
+  resenas             Resena[]          @relation("ResenaEscritaPor")
 
   @@index([rol])
   @@map("usuarios")
@@ -118,8 +125,8 @@ model Usuario {
 
 model Direccion {
   // Identidad
-  id        String @id @default(cuid())
-  usuarioId String
+  id           String   @id @default(cuid())
+  usuarioId    String
   // Quien recibe el paquete, que no siempre es el titular de la cuenta.
   destinatario String?
   telefono     String?
@@ -131,10 +138,10 @@ model Direccion {
   referencia   String?
   // Estado. Una sola principal por usuario: indice parcial en
   // prisma/sql/direccion-principal.sql.
-  principal Boolean @default(false)
+  principal    Boolean  @default(false)
   // Fechas
-  creadoEn  DateTime @default(now())
-  editadoEn DateTime @updatedAt
+  creadoEn     DateTime @default(now())
+  editadoEn    DateTime @updatedAt
 
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
@@ -146,24 +153,24 @@ model Direccion {
 
 model Categoria {
   // Identidad
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  nombre      String
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  nombre         String
   // Contenido
-  descripcion String?
-  imagenUrl   String?
+  descripcion    String?
+  imagenUrl      String?
   // Arbol
-  padreId     String?
+  padreId        String?
   // SEO
   tituloSeo      String?
   descripcionSeo String?
   // Estado
-  destacado Boolean @default(false)
-  orden     Int     @default(0)
-  activo    Boolean @default(true)
+  destacado      Boolean  @default(false)
+  orden          Int      @default(0)
+  activo         Boolean  @default(true)
   // Fechas
-  creadoEn  DateTime @default(now())
-  editadoEn DateTime @updatedAt
+  creadoEn       DateTime @default(now())
+  editadoEn      DateTime @updatedAt
 
   padre     Categoria?  @relation("Arbol", fields: [padreId], references: [id])
   hijas     Categoria[] @relation("Arbol")
@@ -179,22 +186,22 @@ model Categoria {
 // "Qiling" y "QILING" partan el catalogo en dos.
 model Marca {
   // Identidad
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  nombre      String  @unique
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  nombre         String   @unique
   // Contenido
-  descripcion String?
-  logoUrl     String?
+  descripcion    String?
+  logoUrl        String?
   // SEO
   tituloSeo      String?
   descripcionSeo String?
   // Estado
-  destacado Boolean @default(false)
-  orden     Int     @default(0)
-  activo    Boolean @default(true)
+  destacado      Boolean  @default(false)
+  orden          Int      @default(0)
+  activo         Boolean  @default(true)
   // Fechas
-  creadoEn  DateTime @default(now())
-  editadoEn DateTime @updatedAt
+  creadoEn       DateTime @default(now())
+  editadoEn      DateTime @updatedAt
 
   productos Producto[]
 
@@ -256,22 +263,28 @@ model Producto {
 
 // Lo que se vende y se cuenta en almacen: un producto en una talla y un color.
 model Variante {
-  id         String  @id @default(cuid())
+  id         String   @id @default(cuid())
   productoId String
   // Talla y color son columnas, no un sistema generico de atributos. Para ropa
   // basica la dimension no cambia nunca, y esto ahorra cinco tablas y un join
   // en cada consulta del catalogo.
   talla      String
   color      String
-  sku        String  @unique
+  sku        String   @unique
   // Cache del saldo. La verdad es la suma de MovimientoStock; esta columna
   // existe solo para no sumar el historico en cada lectura del catalogo.
-  stock      Int     @default(0)
-  activo     Boolean @default(true)
+  stock      Int      @default(0)
+  // Cache del costo de la ultima compra. La verdad es ItemCompra; esta columna
+  // solo evita buscar la ultima compra para mostrar el margen. `null` = nunca
+  // se compro con costo registrado.
+  costo      Decimal? @db.Decimal(10, 2)
+  activo     Boolean  @default(true)
 
   producto    Producto          @relation(fields: [productoId], references: [id], onDelete: Cascade)
   movimientos MovimientoStock[]
   itemsPedido ItemPedido[]
+  itemsCompra ItemCompra[]
+  itemsPack   ItemPack[]
 
   @@unique([productoId, talla, color])
   @@index([productoId, activo])
@@ -279,16 +292,55 @@ model Variante {
 }
 
 model ImagenProducto {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   productoId String
   url        String
   alt        String?
-  orden      Int    @default(0)
+  orden      Int     @default(0)
 
   producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
 
   @@index([productoId, orden])
   @@map("imagenes_producto")
+}
+
+// Pack o combo: varias variantes que se venden juntas a un precio propio
+// ("3 boxers M a S/ 59"). No tiene stock: alcanza para tantos packs como
+// permita su componente mas escaso (`stockDePack` de @appweb/core). Al
+// venderse, cada componente sale como su propia linea del pedido con el
+// precio prorrateado, asi el stock y el margen siguen por variante.
+model Pack {
+  // Identidad
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  nombre      String
+  // Contenido
+  descripcion String?
+  // Precio del pack completo (CHECK en prisma/sql/restricciones.sql).
+  precio      Decimal  @db.Decimal(10, 2)
+  // Estado
+  activo      Boolean  @default(true)
+  // Fechas
+  creadoEn    DateTime @default(now())
+  editadoEn   DateTime @updatedAt
+
+  items ItemPack[]
+
+  @@map("packs")
+}
+
+model ItemPack {
+  id         String @id @default(cuid())
+  packId     String
+  varianteId String
+  cantidad   Int
+
+  pack     Pack     @relation(fields: [packId], references: [id], onDelete: Cascade)
+  variante Variante @relation(fields: [varianteId], references: [id])
+
+  @@unique([packId, varianteId])
+  @@index([varianteId])
+  @@map("items_pack")
 }
 
 // ═══ CONTENIDO ═════════════════════════════════════════════════════════════
@@ -333,6 +385,8 @@ model MovimientoStock {
   delta      Int
   motivo     MotivoStock
   pedidoId   String?
+  // El ingreso que dejo una compra a proveedor.
+  compraId   String?
   // Quien registro el movimiento (ingreso, ajuste, merma). `null` = el sistema,
   // por ejemplo al descontar una venta.
   usuarioId  String?
@@ -341,10 +395,12 @@ model MovimientoStock {
 
   variante Variante @relation(fields: [varianteId], references: [id])
   pedido   Pedido?  @relation(fields: [pedidoId], references: [id])
+  compra   Compra?  @relation(fields: [compraId], references: [id])
   usuario  Usuario? @relation("MovimientoHechoPor", fields: [usuarioId], references: [id])
 
   @@index([varianteId, creadoEn])
   @@index([pedidoId])
+  @@index([compraId])
   @@map("movimientos_stock")
 }
 
@@ -443,7 +499,10 @@ model ItemPedido {
   sku            String
   talla          String
   color          String
-  precioUnitario Decimal @db.Decimal(10, 2)
+  precioUnitario Decimal  @db.Decimal(10, 2)
+  // Costo de la variante al vender, congelado como el precio: si mañana se
+  // compra mas caro, el margen de esta venta no cambia. `null` = sin costo.
+  costoUnitario  Decimal? @db.Decimal(10, 2)
   cantidad       Int
 
   pedido   Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
@@ -509,6 +568,70 @@ model HistorialPedido {
   @@map("historial_pedido")
 }
 
+// ═══ COMPRA ════════════════════════════════════════════════════════════════
+
+// A quien se le compra la mercaderia.
+model Proveedor {
+  // Identidad
+  id        String   @id @default(cuid())
+  nombre    String   @unique
+  ruc       String?
+  // Contacto
+  contacto  String?
+  telefono  String?
+  email     String?
+  nota      String?
+  // Estado
+  activo    Boolean  @default(true)
+  // Fechas
+  creadoEn  DateTime @default(now())
+  editadoEn DateTime @updatedAt
+
+  compras Compra[]
+
+  @@map("proveedores")
+}
+
+// Ingreso de mercaderia de un proveedor. Solo se agrega, nunca se edita: cada
+// linea deja su MovimientoStock INGRESO y el costo al que se compro. Un error
+// se corrige con un ajuste o una merma, igual que el stock.
+model Compra {
+  id          String   @id @default(cuid())
+  proveedorId String
+  // Factura o guia del proveedor.
+  documento   String?
+  // Suma de las lineas, congelada.
+  total       Decimal  @db.Decimal(10, 2)
+  nota        String?
+  usuarioId   String
+  creadoEn    DateTime @default(now())
+
+  proveedor   Proveedor         @relation(fields: [proveedorId], references: [id])
+  usuario     Usuario           @relation("CompraRegistradaPor", fields: [usuarioId], references: [id])
+  items       ItemCompra[]
+  movimientos MovimientoStock[]
+
+  @@index([proveedorId, creadoEn])
+  @@index([creadoEn])
+  @@map("compras")
+}
+
+model ItemCompra {
+  id            String  @id @default(cuid())
+  compraId      String
+  varianteId    String
+  cantidad      Int
+  costoUnitario Decimal @db.Decimal(10, 2)
+
+  compra   Compra   @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  variante Variante @relation(fields: [varianteId], references: [id])
+
+  @@index([compraId])
+  // Historial de costos de una variante.
+  @@index([varianteId])
+  @@map("items_compra")
+}
+
 // ═══ PROMO Y ENVIO ═════════════════════════════════════════════════════════
 
 // Cupones de descuento. `Pedido.cuponCodigo` guarda el codigo usado; esta
@@ -555,19 +678,19 @@ model Nivel {
 }
 
 model MetodoEnvio {
-  id          String   @id @default(cuid())
-  nombre      String
-  costo       Decimal  @db.Decimal(10, 2)
+  id            String   @id @default(cuid())
+  nombre        String
+  costo         Decimal  @db.Decimal(10, 2)
   // Desde este subtotal el envio sale gratis. `null` = nunca.
-  gratisDesde Decimal? @db.Decimal(10, 2)
+  gratisDesde   Decimal? @db.Decimal(10, 2)
   // Departamentos a los que llega. Vacio = todo el pais. La regla vive en
   // `cubreDepartamento` de @appweb/core: "Lima y Callao" no cobra S/ 12 por
   // enviar a Cusco.
   departamentos String[] @default([])
-  activo      Boolean  @default(true)
-  orden       Int      @default(0)
-  creadoEn    DateTime @default(now())
-  editadoEn   DateTime @updatedAt
+  activo        Boolean  @default(true)
+  orden         Int      @default(0)
+  creadoEn      DateTime @default(now())
+  editadoEn     DateTime @updatedAt
 
   @@map("metodos_envio")
 }
@@ -649,19 +772,19 @@ enum EstadoResena {
 // puede escribirla y como se resume la nota: `@appweb/core` (resenas/).
 model Resena {
   // Identidad
-  id         String @id @default(cuid())
-  productoId String
-  usuarioId  String
+  id            String       @id @default(cuid())
+  productoId    String
+  usuarioId     String
   // Contenido. Estrellas de 1 a 5 (CHECK en prisma/sql/restricciones.sql).
-  estrellas  Int
-  comentario String?
+  estrellas     Int
+  comentario    String?
   // Moderacion
   estado        EstadoResena @default(PENDIENTE)
   moderadoPorId String?
   moderadoEn    DateTime?
   // Fechas
-  creadoEn  DateTime @default(now())
-  editadoEn DateTime @updatedAt
+  creadoEn      DateTime     @default(now())
+  editadoEn     DateTime     @updatedAt
 
   producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
   usuario     Usuario  @relation("ResenaEscritaPor", fields: [usuarioId], references: [id])

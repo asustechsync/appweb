@@ -1,0 +1,146 @@
+/* Selector de un dia en calendario de mes. El boton toma la superficie de los
+   demas selectores (ver base/control-base.css); aqui solo van su disposicion y
+   el panel. */
+.ui-selector-calendario {
+  position: relative;
+}
+.ui-selector-calendario__disparador {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  inline-size: 100%;
+  cursor: pointer;
+}
+.ui-selector-calendario__vacio {
+  color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
+}
+
+.ui-selector-calendario__panel {
+  position: absolute;
+  z-index: var(--z-desplegable);
+  inset-block-start: calc(100% + 4px);
+  inset-inline-start: 0;
+  inline-size: calc(var(--espacio-24) * 3);
+  max-inline-size: calc(100vw - var(--espacio-8));
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-lg);
+}
+/* Pegado al borde derecho: se abre hacia la izquierda y no se sale de la pantalla. */
+.ui-selector-calendario__panel--fin {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+}
+
+.ui-selector-calendario__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+.ui-selector-calendario__titulo {
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-fuerte);
+  color: var(--color-texto);
+}
+.ui-selector-calendario__mes-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: none;
+  color: var(--color-texto);
+  cursor: pointer;
+  transition: background var(--transicion-rapida);
+}
+.ui-selector-calendario__mes-boton:hover:not(:disabled) {
+  background: var(--color-fondoSutil);
+}
+.ui-selector-calendario__mes-boton:disabled {
+  color: var(--color-textoTenue);
+  cursor: not-allowed;
+}
+
+.ui-selector-calendario__cuadricula {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+.ui-selector-calendario__dia-semana {
+  padding-block: var(--espacio-1);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  text-align: center;
+}
+.ui-selector-calendario__dia {
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: var(--radio-md);
+  background: none;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  cursor: pointer;
+  transition:
+    background var(--transicion-rapida),
+    color var(--transicion-rapida);
+}
+.ui-selector-calendario__dia:hover:not(:disabled) {
+  background: var(--color-fondoSutil);
+}
+.ui-selector-calendario__dia:focus-visible,
+.ui-selector-calendario__accion:focus-visible,
+.ui-selector-calendario__mes-boton:focus-visible {
+  outline: 2px solid var(--campo-borde-foco, var(--color-texto));
+  outline-offset: 1px;
+}
+.ui-selector-calendario__dia--hoy {
+  border-color: var(--color-borde);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-selector-calendario__dia--elegido,
+.ui-selector-calendario__dia--elegido:hover:not(:disabled) {
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-selector-calendario__dia:disabled {
+  color: var(--color-textoTenue);
+  cursor: not-allowed;
+}
+
+.ui-selector-calendario__pie {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  padding-block-start: var(--espacio-2);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-selector-calendario__accion {
+  padding: var(--espacio-1) var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: none;
+  color: var(--color-textoSuave);
+  font: inherit;
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  cursor: pointer;
+}
+.ui-selector-calendario__accion:hover:not(:disabled) {
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
+.ui-selector-calendario__accion:disabled {
+  color: var(--color-textoTenue);
+  cursor: not-allowed;
+}

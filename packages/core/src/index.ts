@@ -23,6 +23,33 @@ export {
 
 export { IMAGEN_DEMO, slugDesdeTexto, skuDeVariante, varianteRepetida } from "./catalogo/gestion";
 
+export { creariaCiclo } from "./catalogo/arbol";
+
+export {
+  revisarCompra,
+  totalDeCompra,
+  movimientosDeCompra,
+  notaDeCompra,
+  margenDe,
+  aCentimos,
+  mensajeDeRechazoCompra,
+  type LineaCompra,
+  type RechazoCompra,
+  type Margen,
+} from "./catalogo/compras";
+
+export {
+  stockDePack,
+  precioSueltoDePack,
+  costoDePack,
+  revisarPack,
+  prorratearPack,
+  ahorroDePack,
+  mensajeDeRechazoPack,
+  type ComponentePack,
+  type RechazoPack,
+} from "./catalogo/packs";
+
 export {
   ORDENES,
   ETIQUETAS_ORDEN,
@@ -155,6 +182,28 @@ export {
   ESTADOS_DESPACHO,
 } from "./pedidos/gestion";
 
+export {
+  revisarRechazoPago,
+  notaDeRechazoPago,
+  mensajeDeRechazoPago,
+  type RechazoPago,
+} from "./pedidos/pagos";
+
+export {
+  revisarDevolucion,
+  movimientosDeDevolucion,
+  notaDeDevolucion,
+  tipoDeDevolucion,
+  esDevolucion,
+  mensajeDeRechazoDevolucion,
+  ESTADOS_CON_DEVOLUCION,
+  ETIQUETAS_DEVOLUCION,
+  type LineaDevolucion,
+  type EntradaDevolucion,
+  type RechazoDevolucion,
+  type TipoDevolucion,
+} from "./pedidos/devoluciones";
+
 export { generarCodigoPedido } from "./pedidos/codigo";
 
 // WhatsApp
@@ -226,8 +275,12 @@ export {
   ESTADOS_VENTA,
   ESTADOS_PENDIENTES,
   UMBRAL_STOCK_BAJO,
-  DIAS_VENTANA,
-  inicioDeHace,
+  PERIODOS,
+  ETIQUETAS_PERIODO,
+  ventanaDe,
+  ventanaDeFecha,
+  type Periodo,
+  type VentanaResumen,
   variacion,
   diasDesde,
 } from "./panel/resumen";

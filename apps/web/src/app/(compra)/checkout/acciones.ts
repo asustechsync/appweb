@@ -198,6 +198,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     talla: string;
     color: string;
     precioUnitario: number;
+    costoUnitario: number | null;
     cantidad: number;
     stock: number;
   }[] = [];
@@ -226,6 +227,9 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
       talla: variante.talla,
       color: variante.color,
       precioUnitario: precio.precio,
+      // Congelado como el precio (regla 7): el margen de esta venta no cambia
+      // si mañana se compra mas caro.
+      costoUnitario: variante.costo === null ? null : Number(variante.costo),
       cantidad: linea.cantidad,
       stock: variante.stock,
     });
@@ -304,6 +308,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
             talla: item.talla,
             color: item.color,
             precioUnitario: item.precioUnitario,
+            costoUnitario: item.costoUnitario,
             cantidad: item.cantidad,
           })),
         },

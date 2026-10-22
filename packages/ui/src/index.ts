@@ -11,6 +11,10 @@ export {
   IconoEtiqueta,
   IconoPregunta,
   IconoMoneda,
+  IconoDevolucion,
+  IconoCategoria,
+  IconoProveedor,
+  IconoPack,
   IconoMarca,
   IconoTicket,
   IconoCamion,
@@ -239,6 +243,10 @@ export { Pestanas, type OpcionDePestana, type PropsPestanas } from "./componente
 export { FilaOpciones, type PropsFilaOpciones } from "./componentes/formularios/FilaOpciones";
 export { SelectorPais, type PropsSelectorPais } from "./componentes/formularios/SelectorPais";
 export { SelectorFecha, type PropsSelectorFecha } from "./componentes/formularios/SelectorFecha";
+export {
+  SelectorCalendario,
+  type PropsSelectorCalendario,
+} from "./componentes/formularios/SelectorCalendario";
 export { PAISES, type Pais } from "./datos/paises";
 export { Boton, type PropsBoton } from "./componentes/base/Boton";
 export { Alerta, type PropsAlerta } from "./componentes/base/Alerta";

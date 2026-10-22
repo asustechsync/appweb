@@ -137,7 +137,23 @@ export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
           nombreUsuario={nombre}
           descripcionUsuario="Ver mis datos personales"
           seccionUsuario="perfil"
-          grupos={GRUPOS_MENU}
+          grupos={
+            hrefPanel
+              ? [
+                  {
+                    opciones: [
+                      {
+                        id: "panel",
+                        etiqueta: "Panel de administración",
+                        icono: <IconoConfiguracion />,
+                        href: hrefPanel,
+                      },
+                    ],
+                  },
+                  ...GRUPOS_MENU,
+                ]
+              : GRUPOS_MENU
+          }
           onSeccion={ir}
           onSalir={salir}
         />

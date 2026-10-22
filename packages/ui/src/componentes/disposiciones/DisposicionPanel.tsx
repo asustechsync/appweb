@@ -8,6 +8,7 @@ import { BarraSuperiorPanel } from "./BarraSuperiorPanel";
 import { DisposicionCuenta } from "./DisposicionCuenta";
 import { MenuCuenta, type GrupoMenuCuenta } from "../navegacion/MenuCuenta";
 import "../estilos.css";
+import "./panel-admin.css";
 
 export interface SeccionDePanel {
   id: string;
@@ -67,7 +68,7 @@ export function DisposicionPanel({
   const tituloSeccion = secciones.find((seccion) => seccion.id === visible)?.etiqueta;
 
   return (
-    <div className="ui-pagina-tienda ui-fondo-escena">
+    <div className="ui-pagina-tienda ui-fondo-escena ui-panel-admin">
       <DisposicionCuenta
         nombreUsuario={nombreUsuario}
         rolUsuario={rolUsuario}
@@ -93,6 +94,14 @@ export function DisposicionPanel({
         enMenu={seccionActiva === ""}
         {...(tituloSeccion ? { tituloSeccion } : {})}
         onVolver={() => onSeccion("")}
+        barraSuperior={
+          <BarraSuperiorPanel
+            secciones={secciones}
+            onSeccion={onSeccion}
+            nombreUsuario={nombreUsuario}
+            rolUsuario={rolUsuario}
+          />
+        }
         menuMovil={
           <MenuCuenta
             grupos={[
@@ -113,12 +122,6 @@ export function DisposicionPanel({
           />
         }
       >
-        <BarraSuperiorPanel
-          secciones={secciones}
-          onSeccion={onSeccion}
-          nombreUsuario={nombreUsuario}
-          rolUsuario={rolUsuario}
-        />
         {children}
       </DisposicionCuenta>
     </div>

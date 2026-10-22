@@ -3,7 +3,8 @@
 -- correr las veces que haga falta. La migracion
 -- 20261011140000_banners_fechas_specs_restricciones crea las mismas (y
 -- 20261019120000_libro_reclamaciones, la de reclamos; 20261021140000_niveles
--- y 20261021160000_niveles_cinco, las de niveles).
+-- y 20261021160000_niveles_cinco, las de niveles;
+-- 20261022120000_proveedores_compras_packs, las de costos, compras y packs).
 DO $$
 DECLARE
   regla record;
@@ -35,7 +36,19 @@ BEGIN
       ('niveles',          'niveles_valores_validos',
        $c$"desde" >= 0 AND "descuentoPct" BETWEEN 0 AND 100$c$),
       ('niveles',          'niveles_pedidos_validos',
-       $c$"pedidosMinimos" >= 0$c$)
+       $c$"pedidosMinimos" >= 0$c$),
+      ('variantes',        'variantes_costo_no_negativo',
+       $c$"costo" IS NULL OR "costo" >= 0$c$),
+      ('items_pedido',     'items_pedido_costo_no_negativo',
+       $c$"costoUnitario" IS NULL OR "costoUnitario" >= 0$c$),
+      ('packs',            'packs_precio_no_negativo',
+       $c$"precio" >= 0$c$),
+      ('items_pack',       'items_pack_cantidad_valida',
+       $c$"cantidad" > 0$c$),
+      ('compras',          'compras_total_no_negativo',
+       $c$"total" >= 0$c$),
+      ('items_compra',     'items_compra_valores_validos',
+       $c$"cantidad" > 0 AND "costoUnitario" >= 0$c$)
     ) AS t(tabla, nombre, condicion)
   LOOP
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = regla.nombre) THEN

@@ -14,6 +14,8 @@ export interface MovimientoNuevo {
   delta: number;
   motivo: MotivoStock;
   pedidoId?: string;
+  /** El ingreso que dejo una compra a proveedor. */
+  compraId?: string;
   nota?: string;
 }
 

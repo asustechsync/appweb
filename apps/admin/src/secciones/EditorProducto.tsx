@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { MAX_IMAGENES_POR_PRODUCTO, slugDesdeTexto, TIPOS_IMAGEN } from "@appweb/core";
+import { margenDe, MAX_IMAGENES_POR_PRODUCTO, slugDesdeTexto, TIPOS_IMAGEN } from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -23,7 +23,7 @@ import {
 
 import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
-import { mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
+import { MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 import { URL_TIENDA } from "@appweb/api/urls";
 
 interface DatosFormulario {
@@ -115,6 +115,7 @@ export function EditorProducto({
         <VariantesProducto
           productoId={productoId}
           variantes={detalle.data.variantes}
+          precio={detalle.data.datos.precio}
           avisoInicial={
             recienCreado ? "Producto creado. Ahora agrégale tallas, colores y stock." : null
           }
@@ -456,21 +457,37 @@ function FormularioProducto({
 interface PropsVariantesProducto {
   productoId: string;
   avisoInicial: string | null;
+  /** Precio de venta del producto: con el costo de cada variante da el margen. */
+  precio: number;
   variantes: {
     id: string;
     talla: string;
     color: string;
     sku: string;
     stock: number;
+    /** Costo de la ultima compra. Se registra en Proveedores, no aqui. */
+    costo: number | null;
     activo: boolean;
   }[];
+}
+
+/** "Costo actual S/ 8.00 · margen S/ 17.00 (68 %)", o como registrarlo. */
+function textoDeCosto(precio: number, costo: number | null): string {
+  const margen = margenDe(precio, costo);
+  if (costo === null || margen === null) return "Sin costo: se registra al ingresar una compra.";
+  return `Costo actual ${MONEDA.format(costo)} · margen ${MONEDA.format(margen.monto)} (${margen.porcentaje} %)`;
 }
 
 /**
  * Tallas y colores. El stock no se edita aqui: el inicial entra como ingreso
  * y despues todo pasa por la seccion Stock, que deja el movimiento escrito.
  */
-function VariantesProducto({ productoId, variantes, avisoInicial }: PropsVariantesProducto) {
+function VariantesProducto({
+  productoId,
+  variantes,
+  precio,
+  avisoInicial,
+}: PropsVariantesProducto) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -543,6 +560,7 @@ function VariantesProducto({ productoId, variantes, avisoInicial }: PropsVariant
               Talla {v.talla} · {v.color}
             </strong>
             <span>SKU {v.sku}</span>
+            <span>{textoDeCosto(precio, v.costo)}</span>
             <span>
               <Insignia tono={v.stock === 0 ? "error" : "neutro"}>{v.stock} en stock</Insignia>
               {!v.activo ? (

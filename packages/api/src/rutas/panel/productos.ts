@@ -134,7 +134,15 @@ export const productos = router({
           imagenes: { orderBy: { orden: "asc" }, select: { id: true, url: true, alt: true } },
           variantes: {
             orderBy: [{ talla: "asc" }, { color: "asc" }],
-            select: { id: true, talla: true, color: true, sku: true, stock: true, activo: true },
+            select: {
+              id: true,
+              talla: true,
+              color: true,
+              sku: true,
+              stock: true,
+              costo: true,
+              activo: true,
+            },
           },
         },
       });
@@ -158,7 +166,11 @@ export const productos = router({
         },
         // La de relleno no se lista: no es una foto que se pueda quitar ni ordenar.
         imagenes: p.imagenes.filter((i) => !esImagenDemo(i.url)),
-        variantes: p.variantes,
+        // El costo es el de la ultima compra (cache de ItemCompra): solo se lee.
+        variantes: p.variantes.map((v) => ({
+          ...v,
+          costo: v.costo === null ? null : Number(v.costo),
+        })),
       };
     }),
 

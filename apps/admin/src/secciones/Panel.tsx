@@ -11,17 +11,23 @@ import {
   IconoCamion,
   IconoCarrito,
   IconoCatalogo,
+  IconoCategoria,
   IconoClientes,
   IconoConfiguracion,
+  IconoDevolucion,
   IconoEscudo,
   IconoEstrella,
   IconoEtiqueta,
   IconoGaleria,
   IconoInicio,
   IconoLibro,
+  IconoMarca,
+  IconoMoneda,
   IconoOpiniones,
+  IconoPack,
   IconoPedidos,
   IconoPremio,
+  IconoProveedor,
   IconoPromociones,
   IconoTicket,
   IconoVentas,
@@ -30,12 +36,17 @@ import {
 
 import { useAvisos } from "@/lib/use-avisos";
 
+import { Categorias, Marcas } from "./Categorias";
+import { Devoluciones } from "./Devoluciones";
 import { Envios } from "./Envios";
 import { Inventario } from "./Inventario";
 import { Niveles } from "./Niveles";
 import { Portada, Promociones } from "./Promociones";
+import { Packs } from "./Packs";
+import { Pagos } from "./Pagos";
 import { Pedidos } from "./Pedidos";
 import { Productos } from "./Productos";
+import { Proveedores } from "./Proveedores";
 import { Reclamos } from "./Reclamos";
 import { Resenas } from "./Resenas";
 import { Resumen } from "./Resumen";
@@ -47,9 +58,15 @@ import { URL_TIENDA } from "@appweb/api/urls";
 const ETIQUETAS: Record<string, string> = {
   inicio: "Inicio",
   pedidos: "Pedidos",
+  pagos: "Pagos",
   envios: "Envíos",
+  devoluciones: "Devoluciones",
   productos: "Productos",
   inventario: "Inventario",
+  categorias: "Categorías",
+  marcas: "Marcas",
+  proveedores: "Proveedores",
+  packs: "Packs y combos",
   clientes: "Clientes",
   resenas: "Reseñas",
   reclamos: "Reclamos",
@@ -63,9 +80,15 @@ const ETIQUETAS: Record<string, string> = {
 const ICONOS: Record<string, ReactNode> = {
   inicio: <IconoInicio />,
   pedidos: <IconoPedidos />,
+  pagos: <IconoMoneda />,
   envios: <IconoCamion />,
+  devoluciones: <IconoDevolucion />,
   productos: <IconoCarrito />,
   inventario: <IconoEtiqueta />,
+  categorias: <IconoCategoria />,
+  marcas: <IconoMarca />,
+  proveedores: <IconoProveedor />,
+  packs: <IconoPack />,
   clientes: <IconoClientes />,
   resenas: <IconoEstrella />,
   reclamos: <IconoLibro />,
@@ -133,6 +156,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
   /** La insignia junto al nombre de la seccion: lo que espera a alguien. */
   const contadores: Record<string, number> = {
     pedidos: avisos.porConfirmar,
+    pagos: avisos.porConfirmar,
     envios: avisos.porDespachar,
     reclamos: avisos.reclamosPendientes,
     resenas: avisos.resenasPendientes,
@@ -178,6 +202,10 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         <Resumen />
       ) : visible === "pedidos" ? (
         <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
+      ) : visible === "pagos" ? (
+        <Pagos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
+      ) : visible === "devoluciones" ? (
+        <Devoluciones puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
       ) : visible === "reclamos" ? (
         <Reclamos />
       ) : visible === "resenas" ? (
@@ -188,6 +216,14 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         <Productos />
       ) : visible === "inventario" ? (
         <Inventario />
+      ) : visible === "categorias" ? (
+        <Categorias />
+      ) : visible === "marcas" ? (
+        <Marcas />
+      ) : visible === "proveedores" ? (
+        <Proveedores />
+      ) : visible === "packs" ? (
+        <Packs />
       ) : visible === "clientes" ? (
         <Usuarios key="clientes" usuarioIdActual={usuarioId} alcance="clientes" />
       ) : visible === "equipo" ? (

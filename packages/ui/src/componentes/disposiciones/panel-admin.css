@@ -1,0 +1,12 @@
+/* Panel de administracion: los bloques van solo con fondo, sin borde. Solo
+   aqui — "Mi cuenta" comparte estas tarjetas y conserva el suyo. El borde se
+   hace transparente y no se quita, para que ningun bloque cambie de tamaño.
+   Las filas de las listas (`FilaLista`) mantienen el suyo: separan registros.
+   En lugar del borde, una sombra difusa (ancha y tenue, sin contorno) los separa del fondo. */
+.ui-panel-admin .ui-tarjeta:not(.ui-tarjeta--sin-marco),
+.ui-panel-admin .ui-tarjeta-metrica,
+.ui-panel-admin .ui-tarjeta-info,
+.ui-panel-admin .ui-disposicion-cuenta__pestanas--agrupadas {
+  border-color: transparent;
+  box-shadow: var(--sombra-difusa);
+}

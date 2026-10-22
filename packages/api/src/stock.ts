@@ -50,6 +50,7 @@ export async function aplicarMovimientos(
       delta: m.delta,
       motivo: m.motivo,
       pedidoId: m.pedidoId ?? null,
+      compraId: m.compraId ?? null,
       usuarioId,
       nota: m.nota ?? null,
     })),

@@ -94,6 +94,31 @@
 .ui-menu-cuenta__flecha--abierta {
   transform: rotate(180deg);
 }
+/* Despliegue suave: la fila del grid pasa de 0 a su alto natural. El margen
+   negativo anula el `gap` del grupo mientras esta cerrado. */
+.ui-menu-cuenta__despliegue {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-block-start: calc(var(--espacio-2) * -1);
+  opacity: 0;
+  transition:
+    grid-template-rows var(--transicion-lenta),
+    margin-block-start var(--transicion-lenta),
+    opacity var(--transicion-normal);
+}
+.ui-menu-cuenta__despliegue--abierto {
+  grid-template-rows: 1fr;
+  margin-block-start: 0;
+  opacity: 1;
+}
+.ui-menu-cuenta__despliegue > * {
+  min-block-size: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-menu-cuenta__despliegue {
+    transition: none;
+  }
+}
 .ui-menu-cuenta__lista {
   display: flex;
   flex-direction: column;

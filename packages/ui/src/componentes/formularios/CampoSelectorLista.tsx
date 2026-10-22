@@ -16,6 +16,9 @@ export interface PropsCampoSelectorLista {
   etiquetaOculta?: EtiquetaOculta;
   /** Texto cuando no hay nada elegido. Por defecto, repite `etiqueta`. */
   placeholder?: string;
+  /** "amplio": ancho minimo fijo, para un selector suelto (p. ej. un periodo)
+      que no debe quedar tan justo como su texto. */
+  ancho?: "auto" | "amplio";
 }
 
 /**
@@ -32,9 +35,10 @@ export function CampoSelectorLista({
   disabled,
   etiquetaOculta,
   placeholder,
+  ancho = "auto",
 }: PropsCampoSelectorLista) {
   return (
-    <div className="ui-campo">
+    <div className={ancho === "amplio" ? "ui-campo ui-campo--amplio" : "ui-campo"}>
       <label htmlFor={id} className={claseEtiquetaOculta(etiquetaOculta)}>
         {etiqueta}
       </label>

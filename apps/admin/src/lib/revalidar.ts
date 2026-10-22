@@ -13,8 +13,10 @@ export interface CambiosEnTienda {
   catalogo?: boolean;
   /** Tarifas de envio: el checkout las tiene en cache. */
   envios?: boolean;
-  /** Banners de la portada. */
+  /** Banners de la portada y la fila de marcas. */
   portada?: boolean;
+  /** Arbol de categorias: el menu de la cabecera. */
+  navegacion?: boolean;
 }
 
 /**
@@ -26,13 +28,19 @@ export interface CambiosEnTienda {
  * devuelve `false` en vez de lanzar.
  */
 export async function revalidarTienda(cambios: CambiosEnTienda): Promise<boolean> {
-  const { productos = [], catalogo = false, envios = false, portada = false } = cambios;
-  if (productos.length === 0 && !catalogo && !envios && !portada) return true;
+  const {
+    productos = [],
+    catalogo = false,
+    envios = false,
+    portada = false,
+    navegacion = false,
+  } = cambios;
+  if (productos.length === 0 && !catalogo && !envios && !portada && !navegacion) return true;
   try {
     const respuesta = await fetch("/api/revalidar-catalogo", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ productos, catalogo, envios, portada }),
+      body: JSON.stringify({ productos, catalogo, envios, portada, navegacion }),
     });
     return respuesta.ok;
   } catch {
