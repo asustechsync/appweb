@@ -1,7 +1,7 @@
 /* Base comun de tienda y panel: misma tipografia, mismo reset, misma identidad.
    Las apps solo añaden lo que es suyo (la barra de scroll de la tienda).
 
-   `--fuente-texto` y `--fuente-titulos` los pone next/font en el layout raiz
+   `--fuente-texto`, `--fuente-titulos`, `--fuente-cifras` y `--fuente-moneda` los pone next/font en el layout raiz
    de cada app; el nombre literal queda de respaldo. */
 @import "./theme.css";
 
@@ -14,6 +14,8 @@
 body {
   --tipo-familia-texto: var(--fuente-texto), "Manrope", system-ui, sans-serif;
   --tipo-familia-titulos: var(--fuente-titulos), "Poppins", system-ui, sans-serif;
+  --tipo-familia-cifras: var(--fuente-cifras), "Satoshi", system-ui, sans-serif;
+  --tipo-familia-moneda: var(--fuente-moneda), "Bai Jamjuree", system-ui, sans-serif;
   margin: 0;
   background: var(--color-fondo);
   color: var(--color-texto);

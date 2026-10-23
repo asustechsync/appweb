@@ -192,14 +192,19 @@ export const tokens = {
   },
 
   tipo: {
-    // Dos familias para todo el proyecto, web, panel y movil. Una tercera
-    // rompe la unidad visual: si algo "necesita otra fuente", es un peso o un
-    // tamaño distinto de estas dos.
+    // Dos familias para todo el proyecto, web, panel y movil, mas una sola
+    // excepciones, ambas solo para el numero grande de las tarjetas de
+    // metricas: `cifras` (los digitos) y `moneda` (el simbolo "S/"). Fuera de eso, si algo "necesita otra fuente", es un
+    // peso o un tamaño distinto de estas.
     familia: {
       /** Cuerpo, formularios, buscador, cuenta: todo lo que se lee. */
       texto: "'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif",
       /** Titulos, precios y cifras: lo que se mira de un vistazo. */
       titulos: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      /** Digitos de la cifra grande de las tarjetas de metricas. */
+      cifras: "'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      /** Simbolo de la moneda en las cifras grandes. */
+      moneda: "'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif",
       mono: "'IBM Plex Mono', ui-monospace, Consolas, monospace",
     },
     tamano: {

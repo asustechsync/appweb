@@ -6,7 +6,7 @@
   gap: var(--espacio-5);
   padding: var(--espacio-5);
   background: var(--color-fondoSutil);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-bloque);
   border: 1px solid var(--color-borde);
 }
 

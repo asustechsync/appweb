@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ventanaDe, ventanaDeFecha } from "./resumen";
+import { serieEnTramos, ventanaDe, ventanaDeFecha } from "./resumen";
 
 // Miercoles 21 oct 2026, 15:30.
 const ahora = new Date(2026, 9, 21, 15, 30);
@@ -59,5 +59,28 @@ describe("ventana de un dia concreto", () => {
       expect(v.desde).toEqual(new Date(2026, 9, 21));
       expect(v.hasta).toBeNull();
     }
+  });
+});
+
+describe("serie en tramos", () => {
+  const desde = new Date(2026, 9, 21, 0, 0);
+  const hasta = new Date(2026, 9, 21, 8, 0);
+
+  it("suma cada registro en su tramo", () => {
+    const serie = serieEnTramos(
+      [
+        { en: new Date(2026, 9, 21, 0, 30), valor: 10 },
+        { en: new Date(2026, 9, 21, 0, 45), valor: 5 },
+        { en: new Date(2026, 9, 21, 7, 59), valor: 2 },
+      ],
+      desde,
+      hasta,
+      8,
+    );
+    expect(serie).toEqual([15, 0, 0, 0, 0, 0, 0, 2]);
+  });
+
+  it("ignora lo que cae fuera de la ventana", () => {
+    expect(serieEnTramos([{ en: hasta, valor: 9 }], desde, hasta, 4)).toEqual([0, 0, 0, 0]);
   });
 });

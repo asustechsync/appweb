@@ -4,7 +4,7 @@
   gap: var(--espacio-4);
   padding: var(--espacio-4);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-bloque);
   background: var(--color-fondo);
 }
 .ui-tarjeta__cabecera {

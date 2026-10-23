@@ -124,6 +124,8 @@
   --radio-completo: 9999px;
   --tipo-familia-texto: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --tipo-familia-titulos: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --tipo-familia-cifras: "Satoshi", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --tipo-familia-moneda: "Bai Jamjuree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --tipo-familia-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
   --tipo-tamano-mini: 10px;
   --tipo-tamano-etiqueta: 11px;

@@ -15,6 +15,7 @@ import {
   ESTADOS_PENDIENTES,
   ESTADOS_VENTA,
   puede,
+  serieEnTramos,
   UMBRAL_STOCK_BAJO,
   variacion,
   ventanaDe,
@@ -53,6 +54,8 @@ export const resumen = router({
       clientesNuevosPrevios,
       ultimosPedidos,
       ultimosUsuarios,
+      pedidosSerie,
+      altasSerie,
     ] = await Promise.all([
       verVentas
         ? ctx.prisma.pedido.findMany({
@@ -107,6 +110,16 @@ export const resumen = router({
             select: { id: true, nombre: true, email: true, creadoEn: true },
           })
         : [],
+      // Para los minigraficos: cada venta y cada alta del periodo con su hora.
+      verVentas
+        ? ctx.prisma.pedido.findMany({
+            where: { estado: { in: estadosVenta }, creadoEn: ventana },
+            select: { creadoEn: true, total: true },
+          })
+        : [],
+      verVentas
+        ? ctx.prisma.usuario.findMany({ where: { creadoEn: ventana }, select: { creadoEn: true } })
+        : [],
     ]);
 
     const ventas = Number(pedidosVentana?._sum.total ?? 0);
@@ -117,6 +130,21 @@ export const resumen = router({
     const ticketPrevio = cantidadPedidosPrevios > 0 ? ventasPrevias / cantidadPedidosPrevios : 0;
 
     const ahora = new Date();
+
+    // Un periodo en curso se reparte hasta ahora: el grafico no deja tramos
+    // futuros en cero al final.
+    const finSerie = periodo.hasta ?? ahora;
+    const serie = (registros: { en: Date; valor: number }[]) =>
+      serieEnTramos(registros, periodo.desde, finSerie);
+    const serieVentas = serie(
+      pedidosSerie.map((p) => ({ en: p.creadoEn, valor: Number(p.total) })),
+    );
+    const seriePedidos = serie(pedidosSerie.map((p) => ({ en: p.creadoEn, valor: 1 })));
+    const serieTicket = serieVentas.map((monto, i) => {
+      const cantidad = seriePedidos[i] ?? 0;
+      return cantidad > 0 ? monto / cantidad : 0;
+    });
+    const serieClientesNuevos = serie(altasSerie.map((u) => ({ en: u.creadoEn, valor: 1 })));
 
     return {
       titulo: periodo.titulo,
@@ -141,12 +169,20 @@ export const resumen = router({
         ? {
             ventas,
             cambioVentas: variacion(ventas, ventasPrevias),
+            serieVentas,
+            diferenciaVentas: ventas - ventasPrevias,
             pedidos: cantidadPedidos,
             cambioPedidos: variacion(cantidadPedidos, cantidadPedidosPrevios),
+            seriePedidos,
+            diferenciaPedidos: cantidadPedidos - cantidadPedidosPrevios,
             ticket,
             cambioTicket: variacion(ticket, ticketPrevio),
+            serieTicket,
+            diferenciaTicket: ticket - ticketPrevio,
             clientesNuevos,
             cambioClientesNuevos: variacion(clientesNuevos, clientesNuevosPrevios),
+            serieClientesNuevos,
+            diferenciaClientesNuevos: clientesNuevos - clientesNuevosPrevios,
           }
         : null,
       ultimosPedidos: ultimosPedidos.map((pedido) => ({

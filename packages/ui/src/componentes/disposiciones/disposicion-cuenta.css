@@ -43,7 +43,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-bloque);
   background: var(--color-fondo);
   box-shadow: var(--sombra-sm);
 }
@@ -195,7 +195,7 @@
 .ui-disposicion-cuenta__pestanas--agrupadas {
   padding: var(--espacio-4);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-bloque);
   background: var(--color-fondo);
 }
 /* Titulo pequeño que separa el menu del panel en apartados ("Menú",

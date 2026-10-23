@@ -3,7 +3,7 @@
   gap: var(--espacio-3);
   padding: var(--espacio-4);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-bloque);
   background: var(--color-superficie);
 }
 .ui-tarjeta-info--ilustrada {

@@ -41,6 +41,29 @@ export function variacion(actual: number, anterior: number): number {
   return Math.round(((actual - anterior) / anterior) * 100);
 }
 
+/** En cuantos tramos iguales se parte un periodo para el minigrafico de cada cifra. */
+export const TRAMOS_SERIE = 8;
+
+/**
+ * Suma `valor` de cada registro en su tramo de [desde, hasta). Lo que cae
+ * fuera de la ventana se ignora. Un periodo vacio da tramos en cero.
+ */
+export function serieEnTramos(
+  registros: { en: Date; valor: number }[],
+  desde: Date,
+  hasta: Date,
+  tramos = TRAMOS_SERIE,
+): number[] {
+  const serie = new Array<number>(tramos).fill(0);
+  const duracion = hasta.getTime() - desde.getTime();
+  if (duracion <= 0) return serie;
+  for (const { en, valor } of registros) {
+    const indice = Math.floor(((en.getTime() - desde.getTime()) / duracion) * tramos);
+    if (indice >= 0 && indice < tramos) serie[indice] = (serie[indice] ?? 0) + valor;
+  }
+  return serie;
+}
+
 /** Cuantos dias lleva esperando algo creado en `desde`. */
 export function diasDesde(desde: Date, ahora = new Date()): number {
   return Math.floor((ahora.getTime() - desde.getTime()) / 86_400_000);
@@ -67,7 +90,7 @@ export interface VentanaResumen {
   previoDesde: Date;
   previoHasta: Date;
   titulo: string;
-  /** Texto bajo cada cifra: "vs. semana pasada". */
+  /** Texto bajo cada cifra: "más que la semana pasada". */
   contexto: string;
 }
 
@@ -95,7 +118,7 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
       previoDesde,
       previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, hoy.getTime())),
       titulo: "Hoy",
-      contexto: "vs. ayer",
+      contexto: "más que ayer",
     };
   }
 
@@ -112,7 +135,7 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
       previoDesde,
       previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, desde.getTime())),
       titulo: "Esta semana",
-      contexto: "vs. semana pasada",
+      contexto: "más que la semana pasada",
     };
   }
 
@@ -126,7 +149,7 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
     // Marzo tiene mas dias que febrero: el tramo nunca pasa del inicio de este mes.
     previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, desde.getTime())),
     titulo: "Este mes",
-    contexto: "vs. mes pasado",
+    contexto: "más que el mes pasado",
   };
 }
 
@@ -150,6 +173,6 @@ export function ventanaDeFecha(iso: string, ahora = new Date()): VentanaResumen 
     previoDesde,
     previoHasta: elegida,
     titulo: new Intl.DateTimeFormat("es-PE", { dateStyle: "long" }).format(elegida),
-    contexto: "vs. el día anterior",
+    contexto: "más que el día anterior",
   };
 }

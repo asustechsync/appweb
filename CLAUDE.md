@@ -32,8 +32,11 @@ Antes de crear una pantalla, decide su clase. La clase decide render y cache.
 7. **El precio y la direccion se congelan en el pedido.** `ItemPedido` guarda
    nombre, talla, color y precio; `Pedido` copia la direccion. Si mañana
    cambian, la venta de ayer no se altera.
-8. **Dos fuentes, declaradas solo en `packages/ui/src/DocumentoRaiz.tsx`:**
-   Manrope (`--tipo-familia-texto`) y Poppins (`--tipo-familia-titulos`). Los
+8. **Cuatro fuentes, declaradas solo en `packages/ui/src/DocumentoRaiz.tsx`:**
+   Manrope (`--tipo-familia-texto`), Poppins (`--tipo-familia-titulos`), y dos
+   solo para la cifra grande de `TarjetaMetrica`: Satoshi
+   (`--tipo-familia-cifras`, los digitos; archivo en `packages/ui/src/fuentes/`)
+   y Bai Jamjuree (`--tipo-familia-moneda`, el simbolo "S/"). Los
    layouts raiz de las dos apps solo envuelven `<DocumentoRaiz>`. Ningun
    layout ni pagina carga fuentes propias.
 9. **Los iconos se crean como `.svg`** en `packages/ui/src/iconos/fuente/<categoria>/`

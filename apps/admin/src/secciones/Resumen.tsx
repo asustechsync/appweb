@@ -25,7 +25,7 @@ import {
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
-import { FECHA, MONEDA } from "@appweb/core/formato";
+import { FECHA, MONEDA, conSigno } from "@appweb/core/formato";
 
 /** Ambar mientras espera algo, verde cuando ya avanzo. */
 function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
@@ -59,7 +59,7 @@ export function Resumen() {
   if (datos.isPending) return <Cargando texto="Cargando el resumen…" />;
   if (datos.isError) return <Alerta tono="error">{datos.error.message}</Alerta>;
 
-  const { alertas, metricas, ultimosPedidos, ultimosUsuarios, titulo, contexto } = datos.data;
+  const { alertas, metricas, ultimosPedidos, ultimosUsuarios, titulo } = datos.data;
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
   return (
@@ -102,25 +102,29 @@ export function Resumen() {
               etiqueta="Ventas"
               valor={MONEDA.format(metricas.ventas)}
               cambio={metricas.cambioVentas}
-              contexto={contexto}
+              serie={metricas.serieVentas}
+              diferencia={conSigno(metricas.diferenciaVentas, MONEDA)}
             />
             <TarjetaMetrica
               etiqueta="Pedidos"
               valor={String(metricas.pedidos)}
               cambio={metricas.cambioPedidos}
-              contexto={contexto}
+              serie={metricas.seriePedidos}
+              diferencia={conSigno(metricas.diferenciaPedidos)}
             />
             <TarjetaMetrica
               etiqueta="Ticket promedio"
               valor={MONEDA.format(metricas.ticket)}
               cambio={metricas.cambioTicket}
-              contexto={contexto}
+              serie={metricas.serieTicket}
+              diferencia={conSigno(metricas.diferenciaTicket, MONEDA)}
             />
             <TarjetaMetrica
               etiqueta="Clientes nuevos"
               valor={String(metricas.clientesNuevos)}
               cambio={metricas.cambioClientesNuevos}
-              contexto={contexto}
+              serie={metricas.serieClientesNuevos}
+              diferencia={conSigno(metricas.diferenciaClientesNuevos)}
             />
           </RejillaMetricas>
         </Tarjeta>

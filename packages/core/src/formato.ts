@@ -46,6 +46,12 @@ export const FECHA_HORA_LARGA = new Intl.DateTimeFormat("es-PE", {
   timeZone: ZONA,
 });
 
+/** Una diferencia con su signo siempre visible: "+S/ 12.00", "−3". */
+export function conSigno(valor: number, formato?: Intl.NumberFormat): string {
+  const texto = formato ? formato.format(Math.abs(valor)) : String(Math.abs(valor));
+  return `${valor < 0 ? "−" : "+"}${texto}`;
+}
+
 /**
  * Lo que la persona escribe en un campo de monto o cantidad: "29,90" o
  * "29.90" -> 29.9. Vacio -> NaN, que zod rechaza con su propio mensaje.

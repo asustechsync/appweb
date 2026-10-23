@@ -71,3 +71,5 @@ export { IconoFlechaDerecha } from "./generados/IconoFlechaDerecha";
 export { IconoFlechaIzquierda } from "./generados/IconoFlechaIzquierda";
 export { IconoInicio } from "./generados/IconoInicio";
 export { IconoOpciones } from "./generados/IconoOpciones";
+export { IconoTendenciaAlza } from "./generados/IconoTendenciaAlza";
+export { IconoTendenciaBaja } from "./generados/IconoTendenciaBaja";

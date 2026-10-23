@@ -4,7 +4,7 @@
   gap: var(--espacio-3);
   padding: var(--espacio-5);
   border: 1px solid transparent;
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-bloque);
   background: var(--color-superficie);
 }
 .ui-bloque-detalle--destacado {

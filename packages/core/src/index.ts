@@ -282,6 +282,8 @@ export {
   type Periodo,
   type VentanaResumen,
   variacion,
+  serieEnTramos,
+  TRAMOS_SERIE,
   diasDesde,
 } from "./panel/resumen";
 

@@ -286,6 +286,7 @@ export { Tarjeta, type PropsTarjeta } from "./componentes/base/Tarjeta";
 export { TarjetaInfo, type PropsTarjetaInfo } from "./componentes/paneles/TarjetaInfo";
 export { FilaTarjetas, type PropsFilaTarjetas } from "./componentes/paneles/FilaTarjetas";
 export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/TarjetaMetrica";
+export { Minigrafico, type PropsMinigrafico } from "./componentes/paneles/Minigrafico";
 export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";
 export {
   EscaleraNiveles,

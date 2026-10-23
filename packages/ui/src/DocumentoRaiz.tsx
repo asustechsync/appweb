@@ -1,10 +1,13 @@
-import { Manrope, Poppins } from "next/font/google";
+import { Bai_Jamjuree, Manrope, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
 import { GuionTemaInicial } from "./GuionTemaInicial";
 
 /**
- * Las dos unicas familias del proyecto (ver `tipo.familia` en tokens.ts). Se
+ * Las familias del proyecto (ver `tipo.familia` en tokens.ts): Manrope y
+ * Poppins, mas dos solo para la cifra grande de `TarjetaMetrica`: Satoshi
+ * (digitos) y Bai Jamjuree (simbolo de moneda). Se
  * declaran aqui una sola vez para la tienda y el panel: ningun layout ni
  * pagina carga fuentes propias.
  *
@@ -25,6 +28,24 @@ const poppins = Poppins({
   weight: ["400", "500", "600"],
 });
 
+// Satoshi no esta en Google Fonts: el archivo vive en `./fuentes`. Un solo peso
+// (no hay 600: la cifra pide 600 y el navegador toma este 700),
+// solo los digitos de la cifra grande de `TarjetaMetrica`.
+const satoshi = localFont({
+  src: "./fuentes/Satoshi-Bold.woff",
+  weight: "700",
+  display: "swap",
+  variable: "--fuente-cifras",
+});
+
+// Un solo peso: solo el "S/" de la cifra grande de `TarjetaMetrica`.
+const baiJamjuree = Bai_Jamjuree({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--fuente-moneda",
+  weight: ["600"],
+});
+
 /**
  * El documento de las dos apps: idioma, guion del tema y fuentes. Cada layout
  * raiz solo lo envuelve; si cambia algo del documento, cambia para las dos.
@@ -40,7 +61,11 @@ export function DocumentoRaiz({ children }: { children: ReactNode }) {
       <head>
         <GuionTemaInicial />
       </head>
-      <body className={`${manrope.variable} ${poppins.variable}`}>{children}</body>
+      <body
+        className={`${manrope.variable} ${poppins.variable} ${satoshi.variable} ${baiJamjuree.variable}`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

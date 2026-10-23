@@ -4,18 +4,18 @@
   gap: var(--espacio-3);
   padding: var(--espacio-6) var(--espacio-4);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-xl);
+  border-radius: var(--radio-bloque);
   background: var(--color-fondo);
 }
 .ui-tarjeta-metrica__cabecera {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--espacio-2);
 }
 .ui-tarjeta-metrica__etiqueta {
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-lg);
   font-weight: var(--tipo-peso-medio);
 }
 .ui-tarjeta-metrica__cambio {
@@ -32,34 +32,57 @@
   background: color-mix(in srgb, var(--color-error) 8%, transparent);
   color: var(--color-error);
 }
-.ui-tarjeta-metrica__fila {
+.ui-tarjeta-metrica__cifra {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+/* Contexto, flecha y diferencia en una linea chica bajo la cifra. */
+.ui-tarjeta-metrica__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-1) var(--espacio-2);
 }
 .ui-tarjeta-metrica__flecha {
   display: inline-grid;
   place-items: center;
-  inline-size: var(--espacio-5);
-  block-size: var(--espacio-5);
-  border-radius: 50%;
   font-size: var(--tipo-tamano-xs);
 }
 .ui-tarjeta-metrica__flecha--sube {
-  background: color-mix(in srgb, var(--color-exito) 14%, transparent);
   color: var(--color-exito);
 }
 .ui-tarjeta-metrica__flecha--baja {
-  background: color-mix(in srgb, var(--color-error) 14%, transparent);
   color: var(--color-error);
 }
 .ui-tarjeta-metrica__valor {
-  font-family: var(--tipo-familia-titulos);
+  font-family: var(--tipo-familia-cifras);
   font-size: var(--tipo-tamano-2xl);
   font-weight: var(--tipo-peso-fuerte);
   line-height: var(--tipo-altura-apretada);
 }
+.ui-tarjeta-metrica__moneda {
+  font-family: var(--tipo-familia-moneda);
+}
 .ui-tarjeta-metrica__contexto {
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
+}
+.ui-tarjeta-metrica__diferencia {
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-tarjeta-metrica__diferencia--sube {
+  color: var(--color-exito);
+}
+.ui-tarjeta-metrica__diferencia--baja {
+  color: var(--color-error);
+}
+/* Cifra grande a la izquierda y minigrafico a su lado. */
+.ui-tarjeta-metrica__cuerpo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
 }

@@ -138,6 +138,8 @@ export const tokensNativos = {
     familia: {
       texto: "'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif",
       titulos: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      cifras: "'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      moneda: "'Bai Jamjuree', system-ui, -apple-system, 'Segoe UI', sans-serif",
       mono: "'IBM Plex Mono', ui-monospace, Consolas, monospace",
     },
     tamano: {
