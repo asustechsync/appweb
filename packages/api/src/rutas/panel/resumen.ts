@@ -2,7 +2,8 @@
  * Resumen del panel: lo que hay que mirar al entrar.
  *
  * Tres niveles, en este orden: que necesita atencion ahora (alertas), como va
- * el negocio (metricas de 7 dias contra los 7 previos) y que paso ultimamente.
+ * el negocio (metricas del periodo contra el anterior entero) y que paso
+ * ultimamente.
  *
  * Los bloques se arman segun el rol y no segun lo que pida la pantalla: un
  * ALMACEN no tiene `ver_ventas`, asi que sus metricas y sus ultimos pedidos
@@ -15,7 +16,7 @@ import {
   ESTADOS_PENDIENTES,
   ESTADOS_VENTA,
   puede,
-  serieEnTramos,
+  seriesDelResumen,
   UMBRAL_STOCK_BAJO,
   variacion,
   ventanaDe,
@@ -42,7 +43,10 @@ export const resumen = router({
     const estadosVenta = [...ESTADOS_VENTA];
     // Un dia pasado tiene fin; los periodos en curso llegan hasta ahora.
     const ventana = { gte: periodo.desde, ...(periodo.hasta ? { lt: periodo.hasta } : {}) };
+    // Se compara contra el periodo anterior entero: "hoy" contra todo "ayer".
     const ventanaPrevia = { gte: periodo.previoDesde, lt: periodo.previoHasta };
+
+    const ahora = new Date();
 
     // Todo en un viaje: ninguna de estas consultas depende de otra.
     const [
@@ -56,6 +60,8 @@ export const resumen = router({
       ultimosUsuarios,
       pedidosSerie,
       altasSerie,
+      pedidosSeriePrevia,
+      altasSeriePrevia,
     ] = await Promise.all([
       verVentas
         ? ctx.prisma.pedido.findMany({
@@ -120,6 +126,19 @@ export const resumen = router({
       verVentas
         ? ctx.prisma.usuario.findMany({ where: { creadoEn: ventana }, select: { creadoEn: true } })
         : [],
+      // Y las del periodo anterior entero, para la linea punteada.
+      verVentas
+        ? ctx.prisma.pedido.findMany({
+            where: { estado: { in: estadosVenta }, creadoEn: ventanaPrevia },
+            select: { creadoEn: true, total: true },
+          })
+        : [],
+      verVentas
+        ? ctx.prisma.usuario.findMany({
+            where: { creadoEn: ventanaPrevia },
+            select: { creadoEn: true },
+          })
+        : [],
     ]);
 
     const ventas = Number(pedidosVentana?._sum.total ?? 0);
@@ -129,26 +148,26 @@ export const resumen = router({
     const ticket = cantidadPedidos > 0 ? ventas / cantidadPedidos : 0;
     const ticketPrevio = cantidadPedidosPrevios > 0 ? ventasPrevias / cantidadPedidosPrevios : 0;
 
-    const ahora = new Date();
-
-    // Un periodo en curso se reparte hasta ahora: el grafico no deja tramos
-    // futuros en cero al final.
-    const finSerie = periodo.hasta ?? ahora;
-    const serie = (registros: { en: Date; valor: number }[]) =>
-      serieEnTramos(registros, periodo.desde, finSerie);
-    const serieVentas = serie(
-      pedidosSerie.map((p) => ({ en: p.creadoEn, valor: Number(p.total) })),
+    // Las dos lineas comparten el eje del periodo entero: la actual se corta
+    // en ahora y la anterior llega completa, asi se ve cuanto falta.
+    const series = seriesDelResumen(
+      pedidosSerie.map((p) => ({ en: p.creadoEn, total: Number(p.total) })),
+      altasSerie.map((u) => u.creadoEn),
+      periodo.desde,
+      periodo.fin,
+      ahora,
     );
-    const seriePedidos = serie(pedidosSerie.map((p) => ({ en: p.creadoEn, valor: 1 })));
-    const serieTicket = serieVentas.map((monto, i) => {
-      const cantidad = seriePedidos[i] ?? 0;
-      return cantidad > 0 ? monto / cantidad : 0;
-    });
-    const serieClientesNuevos = serie(altasSerie.map((u) => ({ en: u.creadoEn, valor: 1 })));
+    const seriesPrevias = seriesDelResumen(
+      pedidosSeriePrevia.map((p) => ({ en: p.creadoEn, total: Number(p.total) })),
+      altasSeriePrevia.map((u) => u.creadoEn),
+      periodo.previoDesde,
+      periodo.previoHasta,
+    );
 
     return {
       titulo: periodo.titulo,
       contexto: periodo.contexto,
+      etiquetaAnterior: periodo.etiquetaPrevio,
       alertas: {
         pedidosPendientes: pedidosPendientes.map((pedido) => ({
           id: pedido.id,
@@ -169,20 +188,30 @@ export const resumen = router({
         ? {
             ventas,
             cambioVentas: variacion(ventas, ventasPrevias),
-            serieVentas,
+            serieVentas: series.ventas,
+            serieVentasPrevia: seriesPrevias.ventas,
             diferenciaVentas: ventas - ventasPrevias,
             pedidos: cantidadPedidos,
             cambioPedidos: variacion(cantidadPedidos, cantidadPedidosPrevios),
-            seriePedidos,
+            seriePedidos: series.pedidos,
+            seriePedidosPrevia: seriesPrevias.pedidos,
             diferenciaPedidos: cantidadPedidos - cantidadPedidosPrevios,
             ticket,
             cambioTicket: variacion(ticket, ticketPrevio),
-            serieTicket,
+            serieTicket: series.ticket,
+            serieTicketPrevia: seriesPrevias.ticket,
             diferenciaTicket: ticket - ticketPrevio,
             clientesNuevos,
             cambioClientesNuevos: variacion(clientesNuevos, clientesNuevosPrevios),
-            serieClientesNuevos,
+            serieClientesNuevos: series.clientesNuevos,
+            serieClientesNuevosPrevia: seriesPrevias.clientesNuevos,
             diferenciaClientesNuevos: clientesNuevos - clientesNuevosPrevios,
+            anteriores: {
+              ventas: ventasPrevias,
+              pedidos: cantidadPedidosPrevios,
+              ticket: ticketPrevio,
+              clientesNuevos: clientesNuevosPrevios,
+            },
           }
         : null,
       ultimosPedidos: ultimosPedidos.map((pedido) => ({

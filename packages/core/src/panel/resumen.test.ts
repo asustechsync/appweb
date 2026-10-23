@@ -1,27 +1,55 @@
 import { describe, expect, it } from "vitest";
 
-import { serieEnTramos, ventanaDe, ventanaDeFecha } from "./resumen";
+import { acumular, serieEnTramos, seriesDelResumen, ventanaDe, ventanaDeFecha } from "./resumen";
+
+describe("series acumuladas", () => {
+  it("arranca en cero, suma los anteriores y los vacios quedan planos", () => {
+    expect(acumular([300, 0, 0, 558, 0])).toEqual([0, 300, 300, 300, 858, 858]);
+  });
+
+  it("el eje es el dia entero y la linea se corta en ahora", () => {
+    const desde = new Date(2026, 9, 21, 0, 0);
+    const fin = new Date(2026, 9, 22, 0, 0);
+    const s = seriesDelResumen(
+      [
+        { en: new Date(2026, 9, 21, 0, 30), total: 100 },
+        { en: new Date(2026, 9, 21, 2, 30), total: 300 },
+      ],
+      [new Date(2026, 9, 21, 1, 30)],
+      desde,
+      fin,
+      new Date(2026, 9, 21, 3, 15),
+    );
+    // Un tramo por hora y un 0 de arranque: a las 3:15 van 4 tramos.
+    expect(s.ventas).toEqual([0, 100, 100, 400, 400]);
+    expect(s.ticket).toEqual([0, 100, 100, 200, 200]);
+    expect(s.clientesNuevos).toEqual([0, 0, 1, 1, 1]);
+  });
+
+  it("sin corte cubre el periodo entero", () => {
+    const s = seriesDelResumen([], [], new Date(2026, 9, 20), new Date(2026, 9, 21));
+    expect(s.ventas).toHaveLength(25);
+  });
+});
 
 // Miercoles 21 oct 2026, 15:30.
 const ahora = new Date(2026, 9, 21, 15, 30);
 
 describe("ventanas del resumen", () => {
-  it("el dia compara contra el mismo tramo de ayer", () => {
+  it("el dia compara contra todo ayer", () => {
     const v = ventanaDe("dia", ahora);
     expect(v.desde).toEqual(new Date(2026, 9, 21));
     expect(v.previoDesde).toEqual(new Date(2026, 9, 20));
-    expect(v.previoHasta.getTime() - v.previoDesde.getTime()).toBe(
-      ahora.getTime() - v.desde.getTime(),
-    );
+    expect(v.previoHasta).toEqual(new Date(2026, 9, 21));
+    expect(v.etiquetaPrevio).toBe("Ayer");
+    expect(v.fin).toEqual(new Date(2026, 9, 22));
   });
 
-  it("la semana empieza el lunes y se compara por el mismo tramo", () => {
+  it("la semana empieza el lunes y se compara contra toda la anterior", () => {
     const v = ventanaDe("semana", ahora);
     expect(v.desde).toEqual(new Date(2026, 9, 19));
     expect(v.previoDesde).toEqual(new Date(2026, 9, 12));
-    expect(v.previoHasta.getTime() - v.previoDesde.getTime()).toBe(
-      ahora.getTime() - v.desde.getTime(),
-    );
+    expect(v.previoHasta).toEqual(new Date(2026, 9, 19));
   });
 
   it("un domingo cuenta como ultimo dia de la semana", () => {
@@ -29,18 +57,11 @@ describe("ventanas del resumen", () => {
     expect(ventanaDe("semana", domingo).desde).toEqual(new Date(2026, 9, 19));
   });
 
-  it("el mes empieza el dia 1 y compara contra el mismo tramo del anterior", () => {
+  it("el mes empieza el dia 1 y compara contra todo el anterior", () => {
     const v = ventanaDe("mes", ahora);
     expect(v.desde).toEqual(new Date(2026, 9, 1));
     expect(v.previoDesde).toEqual(new Date(2026, 8, 1));
-    expect(v.previoHasta.getTime() - v.previoDesde.getTime()).toBe(
-      ahora.getTime() - v.desde.getTime(),
-    );
-  });
-
-  it("el tramo previo no se pasa a este mes cuando el anterior es mas corto", () => {
-    const v = ventanaDe("mes", new Date(2026, 2, 31, 12, 0));
-    expect(v.previoHasta.getTime()).toBeLessThanOrEqual(v.desde.getTime());
+    expect(v.previoHasta).toEqual(new Date(2026, 9, 1));
   });
 });
 

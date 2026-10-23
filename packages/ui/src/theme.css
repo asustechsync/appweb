@@ -73,6 +73,7 @@
   --color-fondo: #ffffff;
   --color-fondoSutil: #ececed;
   --color-fondoSeleccion: #f0f0f0;
+  --color-fondoSegmento: #eef0f2;
   --color-fondoPortada: #f1f5f9;
   --color-fondoFoto: #f6f6f7;
   --color-escenaInicio: #d4d6d9;
@@ -218,6 +219,7 @@
     --color-fondo: #121212;
     --color-fondoSutil: #1c1c1f;
     --color-fondoSeleccion: #26262b;
+    --color-fondoSegmento: #26262b;
     --color-superficie: #1e1e22;
     --color-borde: #303035;
     --color-bordeFuerte: #414148;
@@ -295,6 +297,7 @@
   --color-fondo: #121212;
   --color-fondoSutil: #1c1c1f;
   --color-fondoSeleccion: #26262b;
+  --color-fondoSegmento: #26262b;
   --color-superficie: #1e1e22;
   --color-borde: #303035;
   --color-bordeFuerte: #414148;

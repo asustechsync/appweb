@@ -13,8 +13,8 @@ import {
 } from "@appweb/core";
 import {
   Alerta,
-  CampoSelectorLista,
   SelectorCalendario,
+  SelectorSegmentado,
   Cargando,
   EstadoVacio,
   FilaLista,
@@ -37,7 +37,7 @@ function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
 /**
  * Resumen del panel, en tres niveles y en ese orden:
  *
- *   1. Como va el negocio — cuatro numeros contra la semana anterior.
+ *   1. Como va el negocio — cuatro numeros del periodo con el anterior al pie.
  *   2. Lo que necesita atencion hoy — pedidos parados y stock por acabarse.
  *   3. Que paso ultimamente — ultimos pedidos y ultimas altas.
  *
@@ -59,7 +59,9 @@ export function Resumen() {
   if (datos.isPending) return <Cargando texto="Cargando el resumen…" />;
   if (datos.isError) return <Alerta tono="error">{datos.error.message}</Alerta>;
 
-  const { alertas, metricas, ultimosPedidos, ultimosUsuarios, titulo } = datos.data;
+  const { alertas, etiquetaAnterior, metricas, ultimosPedidos, ultimosUsuarios, titulo } =
+    datos.data;
+  const anterior = (valor: string) => ({ etiqueta: etiquetaAnterior, valor });
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
   return (
@@ -70,14 +72,10 @@ export function Resumen() {
           sinMarco
           acciones={
             <>
-              <CampoSelectorLista
-                id="periodo-metricas"
+              <SelectorSegmentado
                 etiqueta="Periodo de las métricas"
-                etiquetaOculta
-                ancho="amplio"
                 // Con un dia del calendario elegido, ningun periodo esta activo.
                 valor={fecha ? "" : periodo}
-                placeholder="Periodo"
                 opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
                 onCambio={(valor) => {
                   setFecha("");
@@ -103,28 +101,36 @@ export function Resumen() {
               valor={MONEDA.format(metricas.ventas)}
               cambio={metricas.cambioVentas}
               serie={metricas.serieVentas}
+              seriePrevia={metricas.serieVentasPrevia}
               diferencia={conSigno(metricas.diferenciaVentas, MONEDA)}
+              anterior={anterior(MONEDA.format(metricas.anteriores.ventas))}
             />
             <TarjetaMetrica
               etiqueta="Pedidos"
               valor={String(metricas.pedidos)}
               cambio={metricas.cambioPedidos}
               serie={metricas.seriePedidos}
+              seriePrevia={metricas.seriePedidosPrevia}
               diferencia={conSigno(metricas.diferenciaPedidos)}
+              anterior={anterior(String(metricas.anteriores.pedidos))}
             />
             <TarjetaMetrica
               etiqueta="Ticket promedio"
               valor={MONEDA.format(metricas.ticket)}
               cambio={metricas.cambioTicket}
               serie={metricas.serieTicket}
+              seriePrevia={metricas.serieTicketPrevia}
               diferencia={conSigno(metricas.diferenciaTicket, MONEDA)}
+              anterior={anterior(MONEDA.format(metricas.anteriores.ticket))}
             />
             <TarjetaMetrica
               etiqueta="Clientes nuevos"
               valor={String(metricas.clientesNuevos)}
               cambio={metricas.cambioClientesNuevos}
               serie={metricas.serieClientesNuevos}
+              seriePrevia={metricas.serieClientesNuevosPrevia}
               diferencia={conSigno(metricas.diferenciaClientesNuevos)}
+              anterior={anterior(String(metricas.anteriores.clientesNuevos))}
             />
           </RejillaMetricas>
         </Tarjeta>

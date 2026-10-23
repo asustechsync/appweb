@@ -283,6 +283,9 @@ export {
   type VentanaResumen,
   variacion,
   serieEnTramos,
+  acumular,
+  seriesDelResumen,
+  type SeriesResumen,
   TRAMOS_SERIE,
   diasDesde,
 } from "./panel/resumen";

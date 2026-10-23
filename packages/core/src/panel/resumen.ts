@@ -41,8 +41,12 @@ export function variacion(actual: number, anterior: number): number {
   return Math.round(((actual - anterior) / anterior) * 100);
 }
 
-/** En cuantos tramos iguales se parte un periodo para el minigrafico de cada cifra. */
-export const TRAMOS_SERIE = 8;
+/**
+ * En cuantos tramos iguales se parte un periodo para el minigrafico de cada
+ * cifra: una hora por tramo en el dia, y el mismo numero en semana y mes para
+ * que el periodo actual y el anterior caigan punto contra punto.
+ */
+export const TRAMOS_SERIE = 24;
 
 /**
  * Suma `valor` de cada registro en su tramo de [desde, hasta). Lo que cae
@@ -62,6 +66,65 @@ export function serieEnTramos(
     if (indice >= 0 && indice < tramos) serie[indice] = (serie[indice] ?? 0) + valor;
   }
   return serie;
+}
+
+/**
+ * Suma corrida: cada tramo lleva todo lo anterior, asi la linea nunca baja.
+ * Empieza con un 0 (el inicio del periodo): sin el, lo que entra en el primer
+ * tramo dejaria la linea arriba desde el principio y la subida no se veria.
+ */
+export function acumular(serie: number[]): number[] {
+  let suma = 0;
+  return [
+    0,
+    ...serie.map((valor) => {
+      suma += valor;
+      return suma;
+    }),
+  ];
+}
+
+export interface SeriesResumen {
+  ventas: number[];
+  pedidos: number[];
+  ticket: number[];
+  clientesNuevos: number[];
+}
+
+/**
+ * Las cuatro lineas de los minigraficos de un periodo, acumuladas: cada venta
+ * hace subir la linea y un tramo sin ventas la deja plana. El ticket es el
+ * promedio hasta cada tramo, asi no cae a cero cuando no entra nada.
+ *
+ * El eje es el periodo entero [desde, fin). Con `corte` (ahora) la linea se
+ * detiene en el tramo en curso: lo que falta del periodo aun no paso.
+ */
+export function seriesDelResumen(
+  pedidos: { en: Date; total: number }[],
+  altas: Date[],
+  desde: Date,
+  fin: Date,
+  corte?: Date,
+): SeriesResumen {
+  const duracion = fin.getTime() - desde.getTime();
+  // +1 por el 0 de arranque que pone `acumular`.
+  const puntos =
+    corte && duracion > 0 && corte < fin
+      ? Math.ceil(((corte.getTime() - desde.getTime()) / duracion) * TRAMOS_SERIE) + 1
+      : TRAMOS_SERIE + 1;
+  const serie = (registros: { en: Date; valor: number }[]) =>
+    acumular(serieEnTramos(registros, desde, fin)).slice(0, Math.max(puntos, 1));
+  const ventas = serie(pedidos.map((p) => ({ en: p.en, valor: p.total })));
+  const cantidad = serie(pedidos.map((p) => ({ en: p.en, valor: 1 })));
+  return {
+    ventas,
+    pedidos: cantidad,
+    ticket: ventas.map((monto, i) => {
+      const n = cantidad[i] ?? 0;
+      return n > 0 ? monto / n : 0;
+    }),
+    clientesNuevos: serie(altas.map((en) => ({ en, valor: 1 }))),
+  };
 }
 
 /** Cuantos dias lleva esperando algo creado en `desde`. */
@@ -86,9 +149,13 @@ export interface VentanaResumen {
   desde: Date;
   /** Fin (exclusivo) del periodo actual. `null` = llega hasta ahora. */
   hasta: Date | null;
-  /** El periodo contra el que se compara: [previoDesde, previoHasta). */
+  /** Donde termina el periodo entero (mañana, el lunes que viene, el dia 1): el eje del minigrafico. */
+  fin: Date;
+  /** El periodo anterior entero, contra el que se compara: [previoDesde, previoHasta). */
   previoDesde: Date;
   previoHasta: Date;
+  /** Nombre del periodo anterior para el pie de cada cifra: "Ayer". */
+  etiquetaPrevio: string;
   titulo: string;
   /** Texto bajo cada cifra: "más que la semana pasada". */
   contexto: string;
@@ -97,12 +164,12 @@ export interface VentanaResumen {
 /**
  * Que fechas cubre cada periodo y contra cual se compara.
  *
- *   · Dia    — de hoy a esta hora contra el mismo tramo de ayer.
- *   · Semana — de lunes a hoy contra el mismo tramo de la semana pasada.
- *   · Mes    — del dia 1 a hoy contra el mismo tramo del mes pasado.
+ *   · Dia    — de hoy a esta hora contra todo ayer.
+ *   · Semana — de lunes a hoy contra toda la semana pasada.
+ *   · Mes    — del dia 1 a hoy contra todo el mes pasado.
  *
- * Dia, semana y mes se comparan por el mismo tramo transcurrido: las 10 de la
- * mañana no se miden contra todo el dia de ayer, que siempre ganaria.
+ * Contra el periodo anterior entero a proposito: "hoy" se lee contra lo que
+ * se vendio ayer, y queda en rojo hasta que lo supera.
  */
 export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen {
   const hoy = new Date(ahora);
@@ -111,12 +178,15 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
   if (periodo === "dia") {
     const previoDesde = new Date(hoy);
     previoDesde.setDate(hoy.getDate() - 1);
-    const transcurrido = ahora.getTime() - hoy.getTime();
+    const fin = new Date(hoy);
+    fin.setDate(hoy.getDate() + 1);
     return {
       desde: hoy,
       hasta: null,
+      fin,
       previoDesde,
-      previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, hoy.getTime())),
+      previoHasta: hoy,
+      etiquetaPrevio: "Ayer",
       titulo: "Hoy",
       contexto: "más que ayer",
     };
@@ -128,12 +198,15 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
     desde.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
     const previoDesde = new Date(desde);
     previoDesde.setDate(desde.getDate() - 7);
-    const transcurrido = ahora.getTime() - desde.getTime();
+    const fin = new Date(desde);
+    fin.setDate(desde.getDate() + 7);
     return {
       desde,
       hasta: null,
+      fin,
       previoDesde,
-      previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, desde.getTime())),
+      previoHasta: desde,
+      etiquetaPrevio: "Semana pasada",
       titulo: "Esta semana",
       contexto: "más que la semana pasada",
     };
@@ -141,21 +214,21 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
 
   const desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
   const previoDesde = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
-  const transcurrido = ahora.getTime() - desde.getTime();
   return {
     desde,
     hasta: null,
+    fin: new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1),
     previoDesde,
-    // Marzo tiene mas dias que febrero: el tramo nunca pasa del inicio de este mes.
-    previoHasta: new Date(Math.min(previoDesde.getTime() + transcurrido, desde.getTime())),
+    previoHasta: desde,
+    etiquetaPrevio: "Mes pasado",
     titulo: "Este mes",
     contexto: "más que el mes pasado",
   };
 }
 
 /**
- * Un dia concreto contra el dia anterior. Un dia pasado se mide entero; hoy se
- * mide hasta esta hora contra el mismo tramo de ayer, como el periodo "Dia".
+ * Un dia concreto contra el dia anterior entero. Un dia pasado se mide entero;
+ * hoy se mide hasta esta hora, como el periodo "Dia".
  * Una fecha futura o invalida cuenta como hoy: no hay ventas que mostrar.
  */
 export function ventanaDeFecha(iso: string, ahora = new Date()): VentanaResumen {
@@ -170,8 +243,10 @@ export function ventanaDeFecha(iso: string, ahora = new Date()): VentanaResumen 
   return {
     desde: elegida,
     hasta,
+    fin: hasta,
     previoDesde,
     previoHasta: elegida,
+    etiquetaPrevio: "Día anterior",
     titulo: new Intl.DateTimeFormat("es-PE", { dateStyle: "long" }).format(elegida),
     contexto: "más que el día anterior",
   };

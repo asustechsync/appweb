@@ -128,7 +128,7 @@ export function SelectorCalendario({
           aria-controls={abierto ? panelId : undefined}
           onClick={() => (abierto ? setAbierto(false) : abrir())}
         >
-          <IconoCalendario tamano={16} />
+          <IconoCalendario tamano={20} />
           <span className={elegida ? undefined : "ui-selector-calendario__vacio"}>
             {elegida ? enTexto(valor) : (placeholder ?? etiqueta)}
           </span>

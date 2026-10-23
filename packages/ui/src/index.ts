@@ -240,6 +240,11 @@ export { AccesoSocial } from "./componentes/navegacion/AccesoSocial";
 export { FilaCampos, type PropsFilaCampos } from "./componentes/formularios/FilaCampos";
 export { FilaUnida, type PropsFilaUnida } from "./componentes/paneles/FilaUnida";
 export { Pestanas, type OpcionDePestana, type PropsPestanas } from "./componentes/base/Pestanas";
+export {
+  SelectorSegmentado,
+  type OpcionSegmentada,
+  type PropsSelectorSegmentado,
+} from "./componentes/formularios/SelectorSegmentado";
 export { FilaOpciones, type PropsFilaOpciones } from "./componentes/formularios/FilaOpciones";
 export { SelectorPais, type PropsSelectorPais } from "./componentes/formularios/SelectorPais";
 export { SelectorFecha, type PropsSelectorFecha } from "./componentes/formularios/SelectorFecha";

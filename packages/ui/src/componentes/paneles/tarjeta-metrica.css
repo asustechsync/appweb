@@ -32,13 +32,17 @@
   background: color-mix(in srgb, var(--color-error) 8%, transparent);
   color: var(--color-error);
 }
+.ui-tarjeta-metrica__cambio--igual {
+  background: color-mix(in srgb, var(--color-textoTenue) 8%, transparent);
+  color: var(--color-textoTenue);
+}
 .ui-tarjeta-metrica__cifra {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
   min-inline-size: 0;
 }
-/* Contexto, flecha y diferencia en una linea chica bajo la cifra. */
+/* Flecha y diferencia en color, y el periodo anterior en gris, bajo la cifra. */
 .ui-tarjeta-metrica__pie {
   display: flex;
   flex-wrap: wrap;
@@ -48,12 +52,21 @@
 .ui-tarjeta-metrica__flecha {
   display: inline-grid;
   place-items: center;
-  font-size: var(--tipo-tamano-xs);
 }
 .ui-tarjeta-metrica__flecha--sube {
   color: var(--color-exito);
 }
 .ui-tarjeta-metrica__flecha--baja {
+  color: var(--color-error);
+}
+.ui-tarjeta-metrica__diferencia {
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-tarjeta-metrica__diferencia--sube {
+  color: var(--color-exito);
+}
+.ui-tarjeta-metrica__diferencia--baja {
   color: var(--color-error);
 }
 .ui-tarjeta-metrica__valor {
@@ -69,15 +82,8 @@
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
 }
-.ui-tarjeta-metrica__diferencia {
-  font-size: var(--tipo-tamano-xs);
+.ui-tarjeta-metrica__anterior {
   font-weight: var(--tipo-peso-medio);
-}
-.ui-tarjeta-metrica__diferencia--sube {
-  color: var(--color-exito);
-}
-.ui-tarjeta-metrica__diferencia--baja {
-  color: var(--color-error);
 }
 /* Cifra grande a la izquierda y minigrafico a su lado. */
 .ui-tarjeta-metrica__cuerpo {

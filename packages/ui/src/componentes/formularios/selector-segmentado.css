@@ -1,0 +1,49 @@
+/* Control segmentado con pildora deslizante. Las columnas son iguales, asi la
+   pildora mide una columna y se traslada `--indice` veces su propio ancho. */
+.ui-selector-segmentado {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--segmentos), 1fr);
+  padding: var(--espacio-1);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-difusa);
+}
+.ui-selector-segmentado__pildora {
+  position: absolute;
+  inset-block: var(--espacio-1);
+  inset-inline-start: var(--espacio-1);
+  inline-size: calc((100% - var(--espacio-1) * 2) / var(--segmentos));
+  border-radius: var(--radio-md);
+  background: var(--color-fondoSegmento);
+  transform: translateX(calc(var(--indice) * 100%));
+  transition: transform var(--transicion-normal);
+}
+.ui-selector-segmentado__opcion {
+  position: relative;
+  white-space: nowrap;
+  block-size: calc(var(--control-alto) - var(--espacio-1) * 2);
+  padding-inline: var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: none;
+  color: var(--color-textoSuave);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  cursor: pointer;
+  transition: color var(--transicion-rapida);
+}
+.ui-selector-segmentado__opcion:hover,
+.ui-selector-segmentado__opcion--activa {
+  color: var(--color-texto);
+}
+.ui-selector-segmentado__opcion:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: -2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-selector-segmentado__pildora {
+    transition: none;
+  }
+}

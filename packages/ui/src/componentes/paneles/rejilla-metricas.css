@@ -1,7 +1,31 @@
-/* Auto-fit: una columna en movil y tantas como quepan al ensanchar, sin
-   tener que declarar un quiebre por cada cantidad de metricas. */
+/* FIRST MOBILE: una sola fila que se desliza de lado; cada tarjeta ocupa el
+   ancho completo y encaja al soltar, sin que se corte ninguna.
+   Desde md pasa a auto-fit: tantas columnas como quepan, sin declarar un
+   quiebre por cada cantidad de metricas. */
 .ui-rejilla-metricas {
-  display: grid;
+  display: flex;
   gap: var(--espacio-3);
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.ui-rejilla-metricas::-webkit-scrollbar {
+  display: none;
+}
+.ui-rejilla-metricas > * {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 48rem) {
+  .ui-rejilla-metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+  .ui-rejilla-metricas > * {
+    flex: none;
+  }
 }

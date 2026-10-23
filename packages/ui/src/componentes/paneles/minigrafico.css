@@ -4,6 +4,13 @@
   color: var(--color-info);
   overflow: visible;
 }
+/* El periodo anterior entero: referencia detras, punteada y gris. */
+.ui-minigrafico__previa {
+  fill: none;
+  stroke: var(--color-textoTenue);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 2;
+}
 .ui-minigrafico__linea {
   fill: none;
   stroke: currentColor;

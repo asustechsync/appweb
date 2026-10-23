@@ -121,6 +121,8 @@ export const tokens = {
     fondoSutil: "#ECECED",
     // Gris plano de la opcion seleccionada en el menu del panel.
     fondoSeleccion: "#F0F0F0",
+    // Opcion activa del selector segmentado (Dia, Semana, Mes).
+    fondoSegmento: "#EEF0F2",
     // Fondo de la portada: gris con un toque azulado.
     fondoPortada: "#F1F5F9",
     // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.
@@ -128,7 +130,7 @@ export const tokens = {
     fondoFoto: "#F6F6F7",
     escenaInicio: "#D4D6D9",
     escenaFin: "#EFF0F2",
-    // Fondo de la web en escritorio: sustituye el cielo de escena a partir del quiebre lg.
+    // Fondo de la web, en movil y escritorio (el nombre viene de cuando movil llevaba la escena).
     fondoEscritorio: "#EFF1F3",
     vidrio: "rgb(62 66 72 / 0.5)",
     vidrioBorde: "rgb(255 255 255 / 0.24)",
@@ -310,6 +312,7 @@ export const tokensOscuro = {
     fondo: "#121212",
     fondoSutil: "#1C1C1F",
     fondoSeleccion: "#26262B",
+    fondoSegmento: "#26262B",
     superficie: "#1E1E22",
     borde: "#303035",
     bordeFuerte: "#414148",
