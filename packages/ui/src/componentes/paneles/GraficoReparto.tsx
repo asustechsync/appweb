@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 import "./grafico-reparto.css";
 
 export type TonoReparto = "pistacho" | "lavanda" | "celeste" | "ambar" | "coral" | "grafito";
@@ -8,12 +6,10 @@ export interface ParteReparto {
   etiqueta: string;
   /** Porcentaje entero del total: la cifra grande y el largo de la barra. */
   porcentaje: number;
-  /** El monto bajo el nombre, ya formateado: "S/ 1,096.47". */
+  /** El monto, ya formateado: "S/ 1,096.47". Se ve al pasar sobre el porcentaje. */
   valor: string;
   /** Color de la barra. */
   tono: TonoReparto;
-  /** Logo arriba a la izquierda, ya renderizado: `<LogoMedioPago medio="yape" />`. */
-  logo?: ReactNode;
   /** No recibio nada: la tarjeta sigue, apagada. */
   vacia?: boolean;
 }
@@ -28,8 +24,8 @@ export interface PropsGraficoReparto {
 }
 
 /**
- * Reparto de un total en mini tarjetas, una por parte: logo, porcentaje en
- * grande, nombre y monto, y una barra fina que mide contra el total.
+ * Reparto de un total en mini tarjetas, una por parte: nombre, porcentaje en
+ * grande (el monto en su title) y una barra fina que mide contra el total.
  */
 export function GraficoReparto({ titulo, meta, partes }: PropsGraficoReparto) {
   return (
@@ -48,10 +44,11 @@ export function GraficoReparto({ titulo, meta, partes }: PropsGraficoReparto) {
                 : "ui-grafico-reparto__parte"
             }
           >
-            {parte.logo ? <span className="ui-grafico-reparto__logo">{parte.logo}</span> : null}
-            <span className="ui-grafico-reparto__porcentaje">{parte.porcentaje}%</span>
-            <span className="ui-grafico-reparto__detalle">
-              {parte.etiqueta} · {parte.valor}
+            {/* Como las tarjetas de metrica: nombre arriba, cifra grande y barra al pie.
+                Sin logo: "Pagos recientes" ya muestra la marca de cada medio. */}
+            <span className="ui-grafico-reparto__detalle">{parte.etiqueta}</span>
+            <span className="ui-grafico-reparto__porcentaje" title={parte.valor}>
+              {parte.porcentaje}%
             </span>
             <span className="ui-grafico-reparto__pista" aria-hidden="true">
               <span

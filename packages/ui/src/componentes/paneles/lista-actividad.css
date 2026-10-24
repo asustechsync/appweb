@@ -59,29 +59,36 @@
   font-size: var(--tipo-tamano-sm);
 }
 
-/* Cada hecho en su propio bloque, un paso por debajo del fondo de la tarjeta. */
-/* El logo ocupa las dos filas a la izquierda; estado, codigo y monto a su lado. */
+/* Cada hecho en su propio bloque, un paso por debajo del fondo de la tarjeta:
+   el logo dentro, a la izquierda, y los datos a su lado. */
 .ui-tarjeta-actividad {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  /* Lado del logo cuadrado; el bloque lo rodea con su relleno. */
+  --ui-actividad-alto: var(--espacio-12);
+}
+.ui-tarjeta-actividad__cuerpo {
+  display: flex;
   align-items: center;
-  gap: var(--espacio-1) var(--espacio-3);
-  padding: var(--espacio-3);
-  border-radius: var(--radio-bloque);
+  gap: var(--espacio-3);
+  padding: var(--espacio-2);
+  border-radius: var(--radio-lg);
   background: var(--color-fondoActividad);
 }
 .ui-tarjeta-actividad__logo {
   display: flex;
-  grid-row: 1 / 3;
+  flex: 0 0 auto;
 }
-/* Dentro de la tarjeta, el logo crece hasta el alto de las dos filas. */
 .ui-tarjeta-actividad__logo .ui-logo-medio-pago {
-  inline-size: var(--espacio-12);
-  block-size: var(--espacio-12);
-  /* Un escalon menos que la tarjeta (10 px): dentro de un bloque redondeado,
-     el radio de adentro va mas cerrado para que las curvas no se vean infladas. */
+  inline-size: var(--ui-actividad-alto);
+  block-size: var(--ui-actividad-alto);
   border-radius: var(--radio-md);
   font-size: var(--tipo-tamano-sm);
+}
+.ui-tarjeta-actividad__datos {
+  display: grid;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  gap: var(--espacio-1);
+  padding-inline-end: var(--espacio-1);
 }
 .ui-tarjeta-actividad__fila {
   display: flex;
@@ -165,21 +172,26 @@
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-negrita);
   letter-spacing: -0.02em;
+  /* Fondo liso con el color del medio (`--ui-logo-base`) y una sombra neutra y suave. */
+  background: var(--ui-logo-base);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-texto) 6%, transparent),
+    0 4px 10px -2px color-mix(in srgb, var(--color-texto) 10%, transparent);
 }
 .ui-logo-medio-pago--yape {
-  background: var(--color-yape);
+  --ui-logo-base: var(--color-yape);
   color: var(--color-medioPagoTexto);
 }
 /* El logo de Plin ya trae su burbuja de color: el cuadro es blanco para que resalte. */
 .ui-logo-medio-pago--plin {
-  background: var(--color-fondo);
+  --ui-logo-base: var(--color-fondo);
 }
 .ui-logo-medio-pago--visa {
-  background: var(--color-visa);
+  --ui-logo-base: var(--color-visa);
   color: var(--color-medioPagoTexto);
 }
 .ui-logo-medio-pago--mastercard {
-  background: var(--color-mastercard);
+  --ui-logo-base: var(--color-mastercard);
 }
 /* Area segura comun: en todos los cuadros el logo deja unos 9 px de aire por
    lado (en el de 48). Los lienzos de 24 no ocupan lo mismo — Visa y
@@ -202,12 +214,42 @@
   block-size: 100%;
 }
 /* Tarjeta de una marca que no se distingue: el icono, en el tono de transferencia. */
-.ui-logo-medio-pago--tarjeta,
+.ui-logo-medio-pago--tarjeta {
+  --ui-logo-base: color-mix(in srgb, var(--color-graficoGrafito) 18%, var(--color-fondo));
+  color: var(--color-graficoGrafito);
+}
+/* Transferencia: cuadro blanco con el icono en grafito. */
 .ui-logo-medio-pago--transferencia {
-  background: color-mix(in srgb, var(--color-graficoGrafito) 18%, transparent);
+  --ui-logo-base: var(--color-fondo);
   color: var(--color-graficoGrafito);
 }
 .ui-logo-medio-pago--contraEntrega {
-  background: color-mix(in srgb, var(--color-graficoAmbar) 22%, transparent);
+  --ui-logo-base: color-mix(in srgb, var(--color-graficoAmbar) 22%, var(--color-fondo));
   color: var(--color-alerta);
+}
+
+/* Medios con fondo oscuro o saturado: degradado vertical como los iconos de
+   iOS 15, mas claro arriba y el color pleno de la marca abajo. Sin relieve. */
+.ui-logo-medio-pago--yape,
+.ui-logo-medio-pago--visa,
+.ui-logo-medio-pago--mastercard {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ui-logo-base) 78%, white),
+    var(--ui-logo-base)
+  );
+}
+
+/* Plin y transferencia son blancos y no pueden aclararse: degradado vertical de
+   blanco arriba a un gris muy tenue abajo, como en la referencia. */
+.ui-logo-medio-pago--plin,
+.ui-logo-medio-pago--transferencia {
+  background: linear-gradient(
+    180deg,
+    var(--ui-logo-base),
+    color-mix(in srgb, var(--ui-logo-base) 98%, var(--color-graficoGrafito))
+  );
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-texto) 2%, transparent),
+    0 4px 10px -2px color-mix(in srgb, var(--color-texto) 3%, transparent);
 }

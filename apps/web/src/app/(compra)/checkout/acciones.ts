@@ -11,7 +11,8 @@ import {
   ETIQUETAS_MARCA_TARJETA,
   ETIQUETAS_MEDIO_PAGO,
   errorDocumentoComprobante,
-  generarCodigoPedido,
+  prefijoCodigoPedido,
+  siguienteCodigoPedido,
   hayStock,
   mensajeDeRechazoCupon,
   resolverPrecio,
@@ -274,7 +275,6 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     },
   });
 
-  const codigo = generarCodigoPedido();
   // El cupon se consume solo si fue el que descontó (si ganó el nivel, queda libre).
   const reglaUsada = totales.origenDescuento === "cupon" ? regla : null;
   const notaCreacion =
@@ -282,67 +282,89 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
       ? `Pedido creado en el checkout. Descuento de nivel ${nivel.nombre} (${nivel.descuentoPct}%)`
       : "Pedido creado en el checkout";
 
-  const pedido = await prisma.$transaction(async (tx) => {
-    if (reglaUsada) {
-      // Un uso mas, solo si queda alguno: dos compras a la vez no pasan del tope.
-      const sumado = await tx.$executeRaw`
+  const crearPedido = () =>
+    prisma.$transaction(async (tx) => {
+      // Correlativo del dia: el siguiente al ultimo pedido creado hoy.
+      const hoy = new Date();
+      const ultimo = await tx.pedido.findFirst({
+        where: { codigo: { startsWith: prefijoCodigoPedido(hoy) } },
+        orderBy: { creadoEn: "desc" },
+        select: { codigo: true },
+      });
+      const codigo = siguienteCodigoPedido(hoy, ultimo?.codigo ?? null);
+      if (reglaUsada) {
+        // Un uso mas, solo si queda alguno: dos compras a la vez no pasan del tope.
+        const sumado = await tx.$executeRaw`
         UPDATE "cupones" SET "usos" = "usos" + 1, "editadoEn" = now()
         WHERE "id" = ${reglaUsada.id}
           AND ("usosMaximos" IS NULL OR "usos" < "usosMaximos")`;
-      if (sumado === 0) return null;
-    }
-    return tx.pedido.create({
-      data: {
-        codigo,
-        usuarioId: sesion.usuarioId,
-        subtotal: totales.subtotal,
-        descuento: totales.descuento,
-        costoEnvio: totales.costoEnvio ?? 0,
-        total: totales.total,
-        envioDepartamento: direccion.departamento,
-        envioProvincia: direccion.provincia,
-        envioDistrito: direccion.distrito,
-        envioCalle: direccion.calle,
-        envioReferencia: direccion.referencia,
-        envioMetodo: metodoEnvio.nombre,
-        envioDestinatario: direccion.destinatario ?? usuario.nombre,
-        envioTelefono: direccion.telefono ?? usuario.telefono,
-        cuponCodigo: reglaUsada?.codigo ?? null,
-        comprobante: comprobante === "factura" ? "FACTURA" : "BOLETA",
-        documento,
-        razonSocial: razonSocial ?? null,
-        medioPago: MEDIO_A_ENUM[medioPago],
-        items: {
-          create: itemsPedido.map((item) => ({
-            varianteId: item.varianteId,
-            nombreProducto: item.nombreProducto,
-            sku: item.sku,
-            talla: item.talla,
-            color: item.color,
-            precioUnitario: item.precioUnitario,
-            costoUnitario: item.costoUnitario,
-            cantidad: item.cantidad,
-          })),
-        },
-        // El pago nace pendiente; el panel lo confirma con su referencia.
-        pagos: {
-          create: {
-            medio: MEDIO_A_ENUM[medioPago],
-            monto: totales.total,
-            ...(medioPago === "tarjeta" && tarjetaMarca && tarjetaUltimos
-              ? {
-                  tarjetaMarca: ETIQUETAS_MARCA_TARJETA[tarjetaMarca],
-                  tarjetaUltimos,
-                }
-              : {}),
+        if (sumado === 0) return null;
+      }
+      return tx.pedido.create({
+        data: {
+          codigo,
+          usuarioId: sesion.usuarioId,
+          subtotal: totales.subtotal,
+          descuento: totales.descuento,
+          costoEnvio: totales.costoEnvio ?? 0,
+          total: totales.total,
+          envioDepartamento: direccion.departamento,
+          envioProvincia: direccion.provincia,
+          envioDistrito: direccion.distrito,
+          envioCalle: direccion.calle,
+          envioReferencia: direccion.referencia,
+          envioMetodo: metodoEnvio.nombre,
+          envioDestinatario: direccion.destinatario ?? usuario.nombre,
+          envioTelefono: direccion.telefono ?? usuario.telefono,
+          cuponCodigo: reglaUsada?.codigo ?? null,
+          comprobante: comprobante === "factura" ? "FACTURA" : "BOLETA",
+          documento,
+          razonSocial: razonSocial ?? null,
+          medioPago: MEDIO_A_ENUM[medioPago],
+          items: {
+            create: itemsPedido.map((item) => ({
+              varianteId: item.varianteId,
+              nombreProducto: item.nombreProducto,
+              sku: item.sku,
+              talla: item.talla,
+              color: item.color,
+              precioUnitario: item.precioUnitario,
+              costoUnitario: item.costoUnitario,
+              cantidad: item.cantidad,
+            })),
+          },
+          // El pago nace pendiente; el panel lo confirma con su referencia.
+          pagos: {
+            create: {
+              medio: MEDIO_A_ENUM[medioPago],
+              monto: totales.total,
+              ...(medioPago === "tarjeta" && tarjetaMarca && tarjetaUltimos
+                ? {
+                    tarjetaMarca: ETIQUETAS_MARCA_TARJETA[tarjetaMarca],
+                    tarjetaUltimos,
+                  }
+                : {}),
+            },
+          },
+          historial: {
+            create: { estadoNuevo: "PENDIENTE_PAGO", nota: notaCreacion },
           },
         },
-        historial: {
-          create: { estadoNuevo: "PENDIENTE_PAGO", nota: notaCreacion },
-        },
-      },
+      });
     });
-  });
+
+  // Dos compras a la vez pueden pedir el mismo numero: la base rechaza la
+  // segunda (codigo unico) y se reintenta con el siguiente.
+  let pedido: Awaited<ReturnType<typeof crearPedido>> = null;
+  for (let intento = 1; ; intento++) {
+    try {
+      pedido = await crearPedido();
+      break;
+    } catch (error) {
+      const repetido = (error as { code?: string }).code === "P2002";
+      if (!repetido || intento >= 5) throw error;
+    }
+  }
   if (pedido === null) {
     return { ok: false, error: `${mensajeDeRechazoCupon("agotado")} Quítalo para continuar.` };
   }

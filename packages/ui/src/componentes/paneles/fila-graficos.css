@@ -1,7 +1,8 @@
-/* FIRST MOBILE: una columna bajo otra; desde lg, cinco octavos y tres octavos. */
+/* FIRST MOBILE: una columna bajo otra; desde lg, cinco octavos y tres octavos: la segunda columna da aire a los pagos recientes. */
 .ui-fila-graficos {
   display: grid;
-  align-items: start;
+  /* Las dos columnas terminan a la misma altura: la mas corta se estira. */
+  align-items: stretch;
   gap: var(--espacio-3);
 }
 .ui-fila-graficos > * {

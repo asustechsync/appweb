@@ -28,7 +28,7 @@
 .ui-grafico-reparto__rejilla {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -39,8 +39,8 @@
   }
 }
 
-/* Cada medio: logo, porcentaje grande, nombre y monto, y su barra al pie.
-   Mismo fondo y radio interior que las tarjetas de "Pagos recientes". */
+/* Cada medio, como una tarjeta de metrica: nombre arriba, porcentaje grande
+   y barra al pie. Mismo fondo y radio interior que "Pagos recientes". */
 .ui-grafico-reparto__parte {
   display: flex;
   flex-direction: column;
@@ -54,30 +54,25 @@
 .ui-grafico-reparto__parte--vacia {
   opacity: 0.5;
 }
-.ui-grafico-reparto__logo {
-  display: flex;
-  margin-block-end: var(--espacio-1);
+.ui-grafico-reparto__detalle {
+  overflow: hidden;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .ui-grafico-reparto__porcentaje {
+  margin-block-end: var(--espacio-1);
   color: var(--color-texto);
   font-family: var(--tipo-familia-cifras);
   font-size: var(--tipo-tamano-xl);
   font-weight: var(--tipo-peso-fuerte);
   line-height: var(--tipo-altura-apretada);
 }
-.ui-grafico-reparto__detalle {
-  overflow: hidden;
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-block-end: var(--espacio-2);
-}
 /* La barra al pie de la tarjeta, aunque el nombre de al lado ocupe menos. */
 .ui-grafico-reparto__pista {
   display: block;
   block-size: 3px;
-  margin-block-start: auto;
   border-radius: var(--radio-completo);
   background: var(--color-fondoSutil);
   overflow: hidden;

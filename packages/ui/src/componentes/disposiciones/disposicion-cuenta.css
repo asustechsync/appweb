@@ -302,6 +302,19 @@
   display: inline-flex;
   margin-inline-start: auto;
 }
+/* El contador del menu es un cuadrado de esquinas suaves, no una pildora. */
+.ui-disposicion-cuenta__contador .ui-insignia {
+  justify-content: center;
+  min-inline-size: var(--espacio-6);
+  min-block-size: var(--espacio-6);
+  /* Un digito es cuadrado; con mas digitos se ensancha y sigue siendo rectangulo. */
+  padding: 0 var(--espacio-1);
+  border-radius: var(--radio-sm);
+  /* El plomo neutro del proyecto (el de botones, campos y pestañas). */
+  border: 0;
+  background: var(--color-fondoSutil);
+  color: var(--color-texto);
+}
 /* En el panel la activa es una tarjeta clara con borde, no el bloque oscuro
    de /mi-cuenta. */
 .ui-disposicion-cuenta__pestanas--agrupadas .ui-disposicion-cuenta__pestana {

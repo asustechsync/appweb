@@ -86,30 +86,36 @@ export function TarjetaActividad({
 }: PropsTarjetaActividad) {
   return (
     <li className="ui-tarjeta-actividad">
-      <span className="ui-tarjeta-actividad__logo">{logo}</span>
-      <div className="ui-tarjeta-actividad__fila">
-        <span
-          className={`ui-tarjeta-actividad__estado ui-tarjeta-actividad__estado--${tonoEstado}`}
-        >
-          <span className="ui-tarjeta-actividad__icono" aria-hidden="true">
-            {iconoEstado}
-          </span>
-          {estado}
-        </span>
-        <span className="ui-tarjeta-actividad__fecha">{fecha}</span>
-      </div>
-      <div className="ui-tarjeta-actividad__fila">
-        <span className="ui-tarjeta-actividad__que">
-          <span className="ui-tarjeta-actividad__titulo">{titulo}</span>
-          {subtitulo ? <span className="ui-tarjeta-actividad__subtitulo">{subtitulo}</span> : null}
-        </span>
-        {anulado ? (
-          <del className="ui-tarjeta-actividad__valor ui-tarjeta-actividad__valor--anulado">
-            {valor}
-          </del>
-        ) : (
-          <span className="ui-tarjeta-actividad__valor">{valor}</span>
-        )}
+      <div className="ui-tarjeta-actividad__cuerpo">
+        <span className="ui-tarjeta-actividad__logo">{logo}</span>
+        <div className="ui-tarjeta-actividad__datos">
+          <div className="ui-tarjeta-actividad__fila">
+            <span
+              className={`ui-tarjeta-actividad__estado ui-tarjeta-actividad__estado--${tonoEstado}`}
+            >
+              <span className="ui-tarjeta-actividad__icono" aria-hidden="true">
+                {iconoEstado}
+              </span>
+              {estado}
+            </span>
+            <span className="ui-tarjeta-actividad__fecha">{fecha}</span>
+          </div>
+          <div className="ui-tarjeta-actividad__fila">
+            <span className="ui-tarjeta-actividad__que">
+              <span className="ui-tarjeta-actividad__titulo">{titulo}</span>
+              {subtitulo ? (
+                <span className="ui-tarjeta-actividad__subtitulo">{subtitulo}</span>
+              ) : null}
+            </span>
+            {anulado ? (
+              <del className="ui-tarjeta-actividad__valor ui-tarjeta-actividad__valor--anulado">
+                {valor}
+              </del>
+            ) : (
+              <span className="ui-tarjeta-actividad__valor">{valor}</span>
+            )}
+          </div>
+        </div>
       </div>
     </li>
   );

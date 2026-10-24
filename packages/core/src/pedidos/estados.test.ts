@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import { cubreDepartamento } from "../envios/zonas";
-import { generarCodigoPedido } from "./codigo";
 import { afectaStock, esFinal, pasosDelPedido, puedePasarA } from "./estados";
 
 describe("estados del pedido", () => {
@@ -39,13 +38,6 @@ describe("estados del pedido", () => {
       "pendiente",
     ]);
     expect(pasosDelPedido("CANCELADO")).toEqual([]);
-  });
-});
-
-describe("codigo del pedido", () => {
-  it("tiene el formato PED-AAAAMMDD-XXXX sin caracteres confusos", () => {
-    const codigo = generarCodigoPedido(new Date(2026, 0, 5));
-    expect(codigo).toMatch(/^PED-20260105-[2-9A-HJ-NP-Z]{4}$/);
   });
 });
 

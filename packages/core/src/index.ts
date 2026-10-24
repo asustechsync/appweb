@@ -208,7 +208,7 @@ export {
   type TipoDevolucion,
 } from "./pedidos/devoluciones";
 
-export { codigoCorto, generarCodigoPedido } from "./pedidos/codigo";
+export { codigoCorto, prefijoCodigoPedido, siguienteCodigoPedido } from "./pedidos/codigo";
 
 // WhatsApp
 export {

@@ -22,6 +22,11 @@
   align-items: flex-end;
   gap: var(--espacio-2);
 }
+/* Movil: las acciones se reparten el ancho a partes iguales. */
+.ui-tarjeta__acciones > * {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
 .ui-tarjeta__cuerpo {
   display: flex;
   flex-direction: column;
@@ -37,6 +42,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+  .ui-tarjeta__acciones > * {
+    flex: 0 1 auto;
   }
 }
 

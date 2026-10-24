@@ -72,7 +72,11 @@ export function SelectorSegmentado({
             onClick={() => onCambio(opcion.valor)}
             onKeyDown={(evento) => alTeclear(evento, i)}
           >
-            {opcion.etiqueta}
+            {/* En movil solo la inicial; el nombre completo queda para lectores. */}
+            <span className="ui-selector-segmentado__inicial" aria-hidden="true">
+              {opcion.etiqueta.charAt(0)}
+            </span>
+            <span className="ui-selector-segmentado__nombre">{opcion.etiqueta}</span>
           </button>
         );
       })}

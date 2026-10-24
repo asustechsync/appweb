@@ -77,6 +77,12 @@ const TONO_MEDIO: Record<MedioPagoPedido, TonoReparto> = {
 };
 
 /** Verde lo cobrado, ambar lo que falta confirmar, rojo lo que se cayo. */
+/** Palabras propias de la lista de pagos recientes; el resto usa `ETIQUETAS_PAGO`. */
+const ETIQUETA_PAGO_RECIENTE: Partial<Record<EstadoPago, string>> = {
+  PENDIENTE: "Pendiente",
+  CONFIRMADO: "Recibido",
+};
+
 const ESTADO_PAGO: Record<
   EstadoPago,
   { tono: "exito" | "alerta" | "error" | "neutro"; icono: ReactNode }
@@ -228,12 +234,6 @@ export function Resumen({ onVerPagos }: PropsResumen) {
                   porcentaje: medio.porcentaje,
                   valor: MONEDA.format(medio.monto),
                   tono: TONO_MEDIO[medio.medio],
-                  logo: (
-                    <LogoMedioPago
-                      medio={LOGO_MEDIO[medio.medio]}
-                      nombre={ETIQUETAS_MEDIO_PAGO[medio.medio]}
-                    />
-                  ),
                   vacia: medio.monto === 0,
                 }))}
               />
@@ -246,7 +246,7 @@ export function Resumen({ onVerPagos }: PropsResumen) {
               {ultimosPagos.map((pago) => (
                 <TarjetaActividad
                   key={pago.id}
-                  estado={ETIQUETAS_PAGO[pago.estado]}
+                  estado={ETIQUETA_PAGO_RECIENTE[pago.estado] ?? ETIQUETAS_PAGO[pago.estado]}
                   iconoEstado={ESTADO_PAGO[pago.estado].icono}
                   tonoEstado={ESTADO_PAGO[pago.estado].tono}
                   fecha={cuandoFue(new Date(pago.creadoEn))}
@@ -258,7 +258,6 @@ export function Resumen({ onVerPagos }: PropsResumen) {
                   }
                   // Numero de orden sin el prefijo: "N.º 20261023-F52U".
                   titulo={`N.º ${codigoCorto(pago.codigo)}`}
-                  {...(pago.tarjeta?.ultimos ? { subtitulo: `•••• ${pago.tarjeta.ultimos}` } : {})}
                   valor={MONEDA.format(pago.monto)}
                   anulado={pago.estado === "RECHAZADO"}
                 />
