@@ -19,6 +19,7 @@
   /* Mismo alto que el buscador de la cabecera de la tienda. */
   block-size: var(--espacio-12);
   box-sizing: border-box;
+  border-radius: var(--radio-bloque);
 }
 
 .ui-barra-panel__resultados {
@@ -66,49 +67,41 @@
   font-size: var(--tipo-tamano-sm);
 }
 
+/* La campana es un `ui-boton-icono`, el mismo de la cabecera de la tienda;
+   aqui solo se empuja a la derecha. */
 .ui-barra-panel__campana {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  inline-size: var(--control-alto);
-  block-size: var(--control-alto);
   margin-inline-start: auto;
-  border: 0;
-  border-radius: 50%;
-  background: var(--color-superficie);
-  box-shadow: var(--sombra-difusa);
-  color: var(--color-texto);
-  cursor: pointer;
-}
-.ui-barra-panel__campana-aviso {
-  position: absolute;
-  inset-block-start: calc(var(--espacio-2) * -1);
-  inset-inline-end: calc(var(--espacio-2) * -1);
+  border-radius: var(--radio-bloque);
 }
 
+/* Avatar y texto son dos bloques separados, de la misma altura que los botones. */
 .ui-barra-panel__usuario {
   display: flex;
   align-items: center;
-  gap: var(--espacio-3);
+  gap: var(--espacio-2);
   flex: 0 0 auto;
+  block-size: var(--espacio-12);
 }
 .ui-barra-panel__avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--control-alto);
-  block-size: var(--control-alto);
-  border-radius: 50%;
-  background: var(--color-marca-500);
-  color: var(--color-superficie);
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+  color: var(--color-texto);
   font-family: var(--tipo-familia-titulos);
   font-weight: 600;
 }
 .ui-barra-panel__usuario-texto {
   display: none;
   flex-direction: column;
+  justify-content: center;
+  block-size: var(--espacio-12);
+  padding-inline: var(--espacio-3);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
   line-height: 1.25;
 }
 .ui-barra-panel__nombre {

@@ -3,6 +3,7 @@
 export type { PropsIcono } from "./tipos";
 
 // comercio
+export { IconoBanco } from "./generados/IconoBanco";
 export { IconoCamion } from "./generados/IconoCamion";
 export { IconoCarrito } from "./generados/IconoCarrito";
 export { IconoCatalogo } from "./generados/IconoCatalogo";
@@ -47,6 +48,8 @@ export { IconoCamara } from "./generados/IconoCamara";
 export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
 export { IconoEstrella } from "./generados/IconoEstrella";
 export { IconoFlash } from "./generados/IconoFlash";
+export { IconoFlechaBajada } from "./generados/IconoFlechaBajada";
+export { IconoFlechaSubida } from "./generados/IconoFlechaSubida";
 export { IconoGaleria } from "./generados/IconoGaleria";
 export { IconoLlama } from "./generados/IconoLlama";
 export { IconoLuna } from "./generados/IconoLuna";
@@ -55,13 +58,18 @@ export { IconoNotificacion } from "./generados/IconoNotificacion";
 export { IconoOjoTachado } from "./generados/IconoOjoTachado";
 export { IconoOjo } from "./generados/IconoOjo";
 export { IconoPapelera } from "./generados/IconoPapelera";
+export { IconoReloj } from "./generados/IconoReloj";
 export { IconoSol } from "./generados/IconoSol";
 export { IconoVerificado } from "./generados/IconoVerificado";
 
 // marcas
 export { IconoApple } from "./generados/IconoApple";
 export { IconoGoogle } from "./generados/IconoGoogle";
+export { IconoMastercard } from "./generados/IconoMastercard";
+export { IconoPlin } from "./generados/IconoPlin";
+export { IconoVisa } from "./generados/IconoVisa";
 export { IconoWhatsApp } from "./generados/IconoWhatsApp";
+export { IconoYape } from "./generados/IconoYape";
 
 // navegacion
 export { IconoBuscar } from "./generados/IconoBuscar";

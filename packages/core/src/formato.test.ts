@@ -1,6 +1,33 @@
 import { describe, expect, it } from "vitest";
 
-import { FECHA_HORA, FECHA_LARGA, MONEDA, mensajeDeFallo, numeroDesdeTexto } from "./formato";
+import {
+  cuandoFue,
+  FECHA_HORA,
+  FECHA_LARGA,
+  HORA,
+  MONEDA,
+  mensajeDeFallo,
+  numeroDesdeTexto,
+} from "./formato";
+
+describe("cuando fue", () => {
+  const ahora = new Date("2026-10-23T15:00:00-05:00");
+
+  it("hoy: solo la hora", () => {
+    const fecha = new Date("2026-10-23T10:42:00-05:00");
+    expect(cuandoFue(fecha, ahora)).toBe(HORA.format(fecha));
+  });
+
+  it("ayer: 'Ayer' y la hora, aunque en UTC ya sea hoy", () => {
+    const anoche = new Date("2026-10-22T21:30:00-05:00");
+    expect(cuandoFue(anoche, ahora)).toBe(`Ayer, ${HORA.format(anoche)}`);
+  });
+
+  it("antes: el dia, el mes y la hora", () => {
+    const fecha = new Date("2026-10-16T09:00:00-05:00");
+    expect(cuandoFue(fecha, ahora)).toMatch(/^16 oct, /);
+  });
+});
 
 describe("formato", () => {
   it("escribe soles con dos decimales", () => {

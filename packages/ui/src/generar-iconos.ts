@@ -36,6 +36,9 @@ const ATRIBUTOS_REACT: Record<string, string> = {
   "stroke-linecap": "strokeLinecap",
   "stroke-linejoin": "strokeLinejoin",
   "stroke-opacity": "strokeOpacity",
+  // Degradados de los logos de marca (Plin).
+  "stop-color": "stopColor",
+  "stop-opacity": "stopOpacity",
 };
 
 /** Atributos de la raiz que el componente pone por su cuenta. */

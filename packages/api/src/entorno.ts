@@ -34,6 +34,9 @@ const esquema = z.object({
   PLIN_NUMERO: texto,
   CUENTA_BANCARIA: texto,
   TITULAR_CUENTA: texto,
+  // "si" muestra "Tarjeta (prueba)" en el checkout para ver pagos con tarjeta
+  // en el panel antes de la pasarela. No cobra nada y en produccion se ignora.
+  PAGO_TARJETA_PRUEBA: texto,
 
   RESEND_API_KEY: texto,
   CORREO_REMITENTE: texto,
@@ -53,6 +56,8 @@ export type Entorno = z.infer<typeof esquema> & {
   avisosPedidos: string | undefined;
   /** A quien avisar de reclamos nuevos: atencion al cliente o, si no hay, el de pedidos. */
   avisosReclamos: string | undefined;
+  /** El checkout ofrece la tarjeta de prueba. Nunca en produccion. */
+  tarjetaDePrueba: boolean;
 };
 
 let cache: Entorno | null = null;
@@ -61,9 +66,12 @@ let cache: Entorno | null = null;
 export function entorno(): Entorno {
   if (cache) return cache;
   const leido = esquema.parse(process.env);
+  const produccion = leido.NODE_ENV === "production";
   cache = {
     ...leido,
-    produccion: leido.NODE_ENV === "production",
+    produccion,
+    tarjetaDePrueba:
+      !produccion && ["si", "1", "true"].includes((leido.PAGO_TARJETA_PRUEBA ?? "").toLowerCase()),
     avisosPedidos: leido.NOTIFICAR_PEDIDOS_A,
     avisosReclamos: leido.TIENDA_CORREO ?? leido.NOTIFICAR_PEDIDOS_A,
   };

@@ -67,9 +67,9 @@ export default async function PaginaPedido({ params }: Props) {
 
   const pasos = pasosDelPedido(pedido.estado as EstadoPedido);
 
-  // Contra entrega se paga al recibir: no hay comprobante que mandar.
+  // Con tarjeta no hay captura que mandar: el cobro lo registra la pasarela.
   const enviarComprobante =
-    instrucciones && medio !== "contra_entrega"
+    instrucciones && medio !== "tarjeta"
       ? whatsappTienda(mensajeComprobanteWhatsApp({ codigo: pedido.codigo, total: pedido.total }))
       : null;
   const cancelado = pasos.length === 0;

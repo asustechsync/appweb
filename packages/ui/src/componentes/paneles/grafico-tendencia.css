@@ -1,0 +1,110 @@
+/* La tarjeta no tiene relleno a los lados: la linea y su area van de borde a
+   borde. Cabecera y eje llevan su propio relleno. */
+.ui-grafico-tendencia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding-block: var(--espacio-4);
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+  color: var(--color-info);
+}
+.ui-grafico-tendencia__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding-inline: var(--espacio-4);
+}
+.ui-grafico-tendencia__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-1) var(--espacio-4);
+}
+.ui-grafico-tendencia__titulo {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+}
+/* Cuadrito punteado de la leyenda: el periodo anterior. */
+.ui-grafico-tendencia__leyenda {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-grafico-tendencia__clave {
+  inline-size: var(--espacio-3);
+  border-block-start: 2px dashed var(--color-textoTenue);
+}
+.ui-grafico-tendencia__cifra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espacio-1) var(--espacio-3);
+}
+.ui-grafico-tendencia__valor {
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-4xl);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+}
+.ui-grafico-tendencia__detalle {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-grafico-tendencia__detalle--sube {
+  color: var(--color-exito);
+}
+.ui-grafico-tendencia__detalle--baja {
+  color: var(--color-error);
+}
+
+/* Alto fijo y compacto: la curva se lee entera sin agrandar el bloque. */
+.ui-grafico-tendencia__lienzo {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--espacio-24);
+  overflow: visible;
+}
+.ui-grafico-tendencia__previa {
+  fill: none;
+  stroke: var(--color-textoTenue);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+.ui-grafico-tendencia__linea {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Marcas del eje al pie, centradas bajo su punto del periodo. */
+.ui-grafico-tendencia__eje {
+  position: relative;
+  block-size: var(--espacio-5);
+  margin-inline: var(--espacio-4);
+}
+.ui-grafico-tendencia__marca {
+  position: absolute;
+  inset-block-start: 0;
+  transform: translateX(-50%);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  white-space: nowrap;
+}
+/* La primera marca arranca en el borde: centrada se saldria de la tarjeta. */
+.ui-grafico-tendencia__marca--inicio {
+  transform: none;
+}

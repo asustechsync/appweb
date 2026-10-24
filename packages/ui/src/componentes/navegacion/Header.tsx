@@ -66,7 +66,7 @@ export function Header({ categorias = [], carrito, carritoJuntoAlBuscador = fals
         ) : null}
 
         <details className="ui-header__menu">
-          <summary className="ui-header__boton" aria-label="Menú de categorías" title="Categorías">
+          <summary className="ui-boton-icono" aria-label="Menú de categorías" title="Categorías">
             <IconoOpciones />
           </summary>
           <nav className="ui-header__desplegable ui-header__menu-lista" aria-label="Categorías">
@@ -84,7 +84,7 @@ export function Header({ categorias = [], carrito, carritoJuntoAlBuscador = fals
 
         <div className="ui-header__acciones">
           <details className="ui-header__lupa">
-            <summary className="ui-header__boton" aria-label="Buscar" title="Buscar">
+            <summary className="ui-boton-icono" aria-label="Buscar" title="Buscar">
               <IconoBuscar tamano={20} />
             </summary>
             <div className="ui-header__desplegable ui-header__lupa-panel">

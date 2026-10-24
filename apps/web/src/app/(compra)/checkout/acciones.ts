@@ -8,6 +8,7 @@ import {
   correoPedidoNuevoTienda,
   correoPedidoRecibido,
   cubreDepartamento,
+  ETIQUETAS_MARCA_TARJETA,
   ETIQUETAS_MEDIO_PAGO,
   errorDocumentoComprobante,
   generarCodigoPedido,
@@ -37,7 +38,7 @@ const MEDIO_A_ENUM = {
   yape: "YAPE",
   plin: "PLIN",
   transferencia: "TRANSFERENCIA",
-  contra_entrega: "CONTRA_ENTREGA",
+  tarjeta: "TARJETA",
 } as const;
 
 // ── Sesion y direcciones del comprador ──────────────────────────────────────
@@ -154,7 +155,18 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     razonSocial,
     lineas,
     cupon,
+    tarjetaMarca,
+    tarjetaUltimos,
   } = analizado.data;
+
+  // El navegador puede mandar cualquier medio: solo vale el que la pasarela
+  // activa ofrece (la tarjeta de prueba, solo si el entorno la enciende).
+  if (!pasarela.mediosSoportados.includes(medioPago)) {
+    return { ok: false, error: "Ese medio de pago no está disponible." };
+  }
+  if (medioPago === "tarjeta" && (!tarjetaMarca || !tarjetaUltimos)) {
+    return { ok: false, error: "Elige la marca y escribe los últimos 4 dígitos de la tarjeta." };
+  }
 
   const errorDocumento = errorDocumentoComprobante(comprobante, documento);
   if (errorDocumento) return { ok: false, error: errorDocumento };
@@ -314,7 +326,16 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
         },
         // El pago nace pendiente; el panel lo confirma con su referencia.
         pagos: {
-          create: { medio: MEDIO_A_ENUM[medioPago], monto: totales.total },
+          create: {
+            medio: MEDIO_A_ENUM[medioPago],
+            monto: totales.total,
+            ...(medioPago === "tarjeta" && tarjetaMarca && tarjetaUltimos
+              ? {
+                  tarjetaMarca: ETIQUETAS_MARCA_TARJETA[tarjetaMarca],
+                  tarjetaUltimos,
+                }
+              : {}),
+          },
         },
         historial: {
           create: { estadoNuevo: "PENDIENTE_PAGO", nota: notaCreacion },

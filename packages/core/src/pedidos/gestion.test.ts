@@ -2,12 +2,27 @@ import { describe, expect, it } from "vitest";
 
 import { afectaStock, puedePasarA, siguientesEstados } from "./estados";
 import {
+  marcaDeTarjeta,
   movimientosDelCambio,
   notaDeCambio,
   revisarCambioEstado,
   revisarConfirmacionPago,
   variantesSinStock,
 } from "./gestion";
+
+describe("marca de tarjeta", () => {
+  it("reconoce Visa y Mastercard como las escriba la pasarela", () => {
+    expect(marcaDeTarjeta("Visa")).toBe("visa");
+    expect(marcaDeTarjeta("VS")).toBe("visa");
+    expect(marcaDeTarjeta("MASTERCARD")).toBe("mastercard");
+    expect(marcaDeTarjeta(" mc ")).toBe("mastercard");
+  });
+
+  it("cualquier otra marca, o ninguna, es otra", () => {
+    expect(marcaDeTarjeta("Amex")).toBe("otra");
+    expect(marcaDeTarjeta(null)).toBe("otra");
+  });
+});
 
 const pendiente = {
   estadoPedido: "PENDIENTE_PAGO",

@@ -558,7 +558,15 @@ export const esquemaLineaCarrito = z.object({
 export const esquemaCheckout = z.object({
   direccionId: z.string().min(1, "Elige una direccion"),
   metodoEnvioId: z.string().min(1, "Elige como recibir tu pedido"),
-  medioPago: z.enum(["yape", "plin", "transferencia", "contra_entrega"]),
+  // "tarjeta" solo llega cuando el entorno enciende la tarjeta de prueba; el
+  // servidor revisa que la pasarela lo soporte.
+  medioPago: z.enum(["yape", "plin", "transferencia", "tarjeta"]),
+  // Tarjeta de prueba: la marca y los ultimos 4 digitos, nunca el numero entero.
+  tarjetaMarca: z.enum(["visa", "mastercard"]).optional(),
+  tarjetaUltimos: z
+    .string()
+    .regex(/^\d{4}$/, "Escribe los últimos 4 dígitos de la tarjeta")
+    .optional(),
   // Se piden DESDE AHORA aunque la boleta electronica llegue despues: si no se
   // capturan al inicio, luego no hay forma de conseguirlos.
   comprobante: z.enum(["boleta", "factura"]).default("boleta"),

@@ -27,6 +27,10 @@
   --color-neutro-900: #171717;
   --color-whatsapp: #25d366;
   --color-whatsappTexto: #ffffff;
+  --color-yape: #742284;
+  --color-visa: #1434cb;
+  --color-mastercard: #1c1c1f;
+  --color-medioPagoTexto: #ffffff;
   --color-exito: #17803d;
   --color-exitoClaro: #62b846;
   --color-alerta: #b54708;
@@ -79,6 +83,7 @@
   --color-escenaInicio: #d4d6d9;
   --color-escenaFin: #eff0f2;
   --color-fondoEscritorio: #eff1f3;
+  --color-fondoActividad: #eff1f3;
   --color-vidrio: rgb(62 66 72 / 0.5);
   --color-vidrioBorde: rgb(255 255 255 / 0.24);
   --color-textoVidrio: #ffffff;
@@ -102,6 +107,12 @@
   --color-textoTenue: #6b6b70;
   --color-textoLogo: #5e5e5e;
   --color-textoInverso: #ffffff;
+  --color-graficoPistacho: #9dc24a;
+  --color-graficoLavanda: #9b8ce0;
+  --color-graficoCeleste: #5aa9d6;
+  --color-graficoAmbar: #e9a23b;
+  --color-graficoCoral: #e07a6f;
+  --color-graficoGrafito: #6b6b70;
   --espacio-0: 0;
   --espacio-1: 4px;
   --espacio-2: 8px;
@@ -230,6 +241,12 @@
     --color-textoTenue: #73737d;
     --color-textoLogo: #8a8d91;
     --color-textoInverso: #171717;
+    --color-graficoPistacho: #afd35c;
+    --color-graficoLavanda: #aca0ec;
+    --color-graficoCeleste: #6cb9e3;
+    --color-graficoAmbar: #f0b254;
+    --color-graficoCoral: #ec8d83;
+    --color-graficoGrafito: #8a8a93;
     --color-oferta: #f07c81;
     --color-agotado: #6b6b74;
     --color-favorito: #f79544;
@@ -249,6 +266,7 @@
     --color-escenaInicio: #26282b;
     --color-escenaFin: #151617;
     --color-fondoEscritorio: #151617;
+    --color-fondoActividad: #1e1e22;
     --color-vidrio: rgb(255 255 255 / 0.08);
     --color-vidrioBorde: rgb(255 255 255 / 0.14);
     --color-textoVidrio: #f2f2f2;
@@ -308,6 +326,12 @@
   --color-textoTenue: #73737d;
   --color-textoLogo: #8a8d91;
   --color-textoInverso: #171717;
+  --color-graficoPistacho: #afd35c;
+  --color-graficoLavanda: #aca0ec;
+  --color-graficoCeleste: #6cb9e3;
+  --color-graficoAmbar: #f0b254;
+  --color-graficoCoral: #ec8d83;
+  --color-graficoGrafito: #8a8a93;
   --color-oferta: #f07c81;
   --color-agotado: #6b6b74;
   --color-favorito: #f79544;
@@ -327,6 +351,7 @@
   --color-escenaInicio: #26282b;
   --color-escenaFin: #151617;
   --color-fondoEscritorio: #151617;
+  --color-fondoActividad: #1e1e22;
   --color-vidrio: rgb(255 255 255 / 0.08);
   --color-vidrioBorde: rgb(255 255 255 / 0.14);
   --color-textoVidrio: #f2f2f2;

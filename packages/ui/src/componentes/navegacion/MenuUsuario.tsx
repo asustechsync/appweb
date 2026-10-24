@@ -57,7 +57,7 @@ export function MenuUsuario() {
     <>
       <Link
         href="/mi-cuenta"
-        className="ui-menu-usuario__enlace"
+        className="ui-boton-icono ui-menu-usuario__enlace"
         aria-label="Mi cuenta"
         title="Mi cuenta"
       >
@@ -65,7 +65,7 @@ export function MenuUsuario() {
       </Link>
       <button
         type="button"
-        className="ui-menu-usuario__boton"
+        className="ui-boton-icono ui-menu-usuario__boton"
         aria-label="Mi cuenta"
         aria-haspopup="dialog"
         onClick={abrir}

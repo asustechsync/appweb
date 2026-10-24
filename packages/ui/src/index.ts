@@ -47,6 +47,9 @@ export {
   IconoLibro,
   IconoBuscar,
   IconoEstrella,
+  IconoReloj,
+  IconoFlechaSubida,
+  IconoFlechaBajada,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -292,6 +295,31 @@ export { TarjetaInfo, type PropsTarjetaInfo } from "./componentes/paneles/Tarjet
 export { FilaTarjetas, type PropsFilaTarjetas } from "./componentes/paneles/FilaTarjetas";
 export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/TarjetaMetrica";
 export { Minigrafico, type PropsMinigrafico } from "./componentes/paneles/Minigrafico";
+export {
+  ListaActividad,
+  LogoMedioPago,
+  TarjetaActividad,
+  type MedioLogo,
+  type PropsListaActividad,
+  type PropsLogoMedioPago,
+  type PropsTarjetaActividad,
+} from "./componentes/paneles/ListaActividad";
+export {
+  FilaGraficos,
+  PilaGraficos,
+  type PropsFilaGraficos,
+  type PropsPilaGraficos,
+} from "./componentes/paneles/FilaGraficos";
+export {
+  GraficoReparto,
+  type ParteReparto,
+  type PropsGraficoReparto,
+  type TonoReparto,
+} from "./componentes/paneles/GraficoReparto";
+export {
+  GraficoTendencia,
+  type PropsGraficoTendencia,
+} from "./componentes/paneles/GraficoTendencia";
 export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";
 export {
   EscaleraNiveles,

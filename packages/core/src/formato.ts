@@ -46,6 +46,31 @@ export const FECHA_HORA_LARGA = new Intl.DateTimeFormat("es-PE", {
   timeZone: ZONA,
 });
 
+/** 9:30 p. m. */
+export const HORA = new Intl.DateTimeFormat("es-PE", { timeStyle: "short", timeZone: ZONA });
+
+/** 18 oct */
+const DIA_MES = new Intl.DateTimeFormat("es-PE", {
+  day: "numeric",
+  month: "short",
+  timeZone: ZONA,
+});
+
+/** El dia en Lima como "2026-10-18": para saber si dos instantes caen el mismo dia. */
+const DIA_LIMA = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA });
+
+/**
+ * Cuando paso algo reciente, como en una lista de actividad: "9:30 p. m." si
+ * fue hoy, "Ayer, 9:30 p. m." si fue ayer y "16 oct, 9:30 p. m." si antes.
+ */
+export function cuandoFue(fecha: Date, ahora = new Date()): string {
+  const hora = HORA.format(fecha);
+  const dia = DIA_LIMA.format(fecha);
+  if (dia === DIA_LIMA.format(ahora)) return hora;
+  if (dia === DIA_LIMA.format(new Date(ahora.getTime() - 86_400_000))) return `Ayer, ${hora}`;
+  return `${DIA_MES.format(fecha).replace(".", "")}, ${hora}`;
+}
+
 /** Una diferencia con su signo siempre visible: "+S/ 12.00", "−3". */
 export function conSigno(valor: number, formato?: Intl.NumberFormat): string {
   const texto = formato ? formato.format(Math.abs(valor)) : String(Math.abs(valor));

@@ -5,18 +5,12 @@ import type { MedioPago, PasarelaPago, ResultadoPago, SolicitudPago } from "./pa
  * sube su comprobante; alguien lo confirma desde el panel.
  *
  * No habla con ningun servicio externo. El dia que entre la pasarela real,
- * esta clase se queda (sigue siendo util para pagos contra entrega) y el
- * checkout solo cambia cual instancia recibe.
+ * el checkout solo cambia cual instancia recibe.
  */
 export class PagoManual implements PasarelaPago {
   readonly nombre = "Pago manual";
 
-  readonly mediosSoportados: readonly MedioPago[] = [
-    "yape",
-    "plin",
-    "transferencia",
-    "contra_entrega",
-  ];
+  readonly mediosSoportados: readonly MedioPago[];
 
   constructor(
     private readonly datos: {
@@ -24,8 +18,20 @@ export class PagoManual implements PasarelaPago {
       numeroPlin?: string;
       cuentaBancaria?: string;
       titular?: string;
+      /**
+       * Ofrece "tarjeta" sin cobrar nada: solo para ver pagos con tarjeta en
+       * el panel antes de la pasarela. Lo enciende el entorno, nunca en produccion.
+       */
+      tarjetaDePrueba?: boolean;
     } = {},
-  ) {}
+  ) {
+    this.mediosSoportados = [
+      "yape",
+      "plin",
+      "transferencia",
+      ...(datos.tarjetaDePrueba ? (["tarjeta"] as const) : []),
+    ];
+  }
 
   async cobrar(solicitud: SolicitudPago): Promise<ResultadoPago> {
     if (!this.mediosSoportados.includes(solicitud.medio)) {
@@ -61,8 +67,8 @@ export class PagoManual implements PasarelaPago {
         return `Envia S/ ${monto} por Plin al ${this.datos.numeroPlin ?? "numero de la tienda"} (${titular}) y sube tu captura.`;
       case "transferencia":
         return `Transfiere S/ ${monto} a ${this.datos.cuentaBancaria ?? "la cuenta de la tienda"} (${titular}) y sube tu constancia.`;
-      case "contra_entrega":
-        return `Pagaras S/ ${monto} al recibir tu pedido.`;
+      case "tarjeta":
+        return `Pago de prueba con tarjeta por S/ ${monto}: no se cobra nada.`;
       default:
         return `Monto a pagar: S/ ${monto}.`;
     }

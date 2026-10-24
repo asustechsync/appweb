@@ -14,6 +14,7 @@ export const pasarela = new PagoManual({
   ...(e.PLIN_NUMERO ? { numeroPlin: e.PLIN_NUMERO } : {}),
   ...(e.CUENTA_BANCARIA ? { cuentaBancaria: e.CUENTA_BANCARIA } : {}),
   ...(e.TITULAR_CUENTA ? { titular: e.TITULAR_CUENTA } : {}),
+  tarjetaDePrueba: e.tarjetaDePrueba,
 });
 
 /** El enum de Prisma va en mayusculas; `PasarelaPago` habla el `MedioPago` de core. */
@@ -21,7 +22,7 @@ const ENUM_A_MEDIO: Record<string, MedioPago> = {
   YAPE: "yape",
   PLIN: "plin",
   TRANSFERENCIA: "transferencia",
-  CONTRA_ENTREGA: "contra_entrega",
+  TARJETA: "tarjeta",
 };
 
 export function medioPagoDesdeEnum(valor: string): MedioPago {
@@ -38,5 +39,8 @@ export const ETIQUETAS_MEDIO: Partial<
     etiqueta: "Transferencia bancaria",
     descripcion: "Transfiere el total y sube tu constancia.",
   },
-  contra_entrega: { etiqueta: "Contra entrega", descripcion: "Pagas al recibir tu pedido." },
+  tarjeta: {
+    etiqueta: "Tarjeta (prueba)",
+    descripcion: "Solo para probar: eliges la marca y 4 dígitos, no se cobra nada.",
+  },
 };

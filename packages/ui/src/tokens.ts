@@ -53,6 +53,14 @@ export const tokens = {
     // Verde oficial de WhatsApp: solo para su boton, igual en los dos temas.
     whatsapp: "#25D366",
     whatsappTexto: "#FFFFFF",
+    // Color de Yape: el cuadro de su logo en los pagos, igual en los dos temas.
+    // Plin no lleva: su logo trae su propia burbuja de color.
+    yape: "#742284",
+    // Tarjetas: azul de Visa (el de su logo actual, mas vivo que el #1A1F71 de
+    // su guia de 2017) y el fondo oscuro donde se ven los circulos de Mastercard.
+    visa: "#1434CB",
+    mastercard: "#1C1C1F",
+    medioPagoTexto: "#FFFFFF",
 
     // Estado, no marca. Nunca como color decorativo.
     exito: "#17803D",
@@ -132,6 +140,9 @@ export const tokens = {
     escenaFin: "#EFF0F2",
     // Fondo de la web, en movil y escritorio (el nombre viene de cuando movil llevaba la escena).
     fondoEscritorio: "#EFF1F3",
+    // Cada hecho dentro de una lista de actividad (pagos recientes): el mismo
+    // gris azulado del fondo de la web, un paso bajo el blanco del bloque.
+    fondoActividad: "#EFF1F3",
     vidrio: "rgb(62 66 72 / 0.5)",
     vidrioBorde: "rgb(255 255 255 / 0.24)",
     textoVidrio: "#FFFFFF",
@@ -163,6 +174,16 @@ export const tokens = {
     textoTenue: "#6B6B70",
     textoLogo: "#5E5E5E",
     textoInverso: "#FFFFFF",
+
+    // Paleta de graficos (dona del resumen): categorias, no estados. Son las
+    // mismas familias de las etiquetas pastel (pistacho del acento, lavanda,
+    // celeste, ambar, coral) con cuerpo para leerse como trazo grueso.
+    graficoPistacho: "#9DC24A",
+    graficoLavanda: "#9B8CE0",
+    graficoCeleste: "#5AA9D6",
+    graficoAmbar: "#E9A23B",
+    graficoCoral: "#E07A6F",
+    graficoGrafito: "#6B6B70",
   },
 
   // Escala de 4 px: padding, margin y gap.
@@ -324,6 +345,13 @@ export const tokensOscuro = {
     textoLogo: "#8A8D91",
     textoInverso: "#171717",
 
+    graficoPistacho: "#AFD35C",
+    graficoLavanda: "#ACA0EC",
+    graficoCeleste: "#6CB9E3",
+    graficoAmbar: "#F0B254",
+    graficoCoral: "#EC8D83",
+    graficoGrafito: "#8A8A93",
+
     oferta: "#F07C81",
     agotado: "#6B6B74",
     favorito: "#F79544",
@@ -343,6 +371,8 @@ export const tokensOscuro = {
     escenaInicio: "#26282B",
     escenaFin: "#151617",
     fondoEscritorio: "#151617",
+    // En oscuro, un paso sobre el fondo del bloque para que se distinga.
+    fondoActividad: "#1E1E22",
     vidrio: "rgb(255 255 255 / 0.08)",
     vidrioBorde: "rgb(255 255 255 / 0.14)",
     textoVidrio: "#F2F2F2",

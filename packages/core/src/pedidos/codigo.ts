@@ -24,3 +24,11 @@ export function generarCodigoPedido(fecha: Date = new Date()): string {
 
   return `PED-${aaaa}${mm}${dd}-${sufijo}`;
 }
+
+/**
+ * El codigo sin el prefijo "PED-", para listas donde ya se sabe que es un
+ * pedido: "PED-20261023-F52U" -> "20261023-F52U". Otro codigo queda igual.
+ */
+export function codigoCorto(codigo: string): string {
+  return /^PED-(\d{8}-\w+)$/.exec(codigo)?.[1] ?? codigo;
+}

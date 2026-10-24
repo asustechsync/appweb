@@ -199,7 +199,7 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
         </Alerta>
       ) : null}
       {visible === "inicio" ? (
-        <Resumen />
+        <Resumen {...(secciones.includes("pagos") ? { onVerPagos: () => ir("pagos") } : {})} />
       ) : visible === "pedidos" ? (
         <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
       ) : visible === "pagos" ? (

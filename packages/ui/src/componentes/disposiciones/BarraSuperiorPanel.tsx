@@ -120,14 +120,14 @@ export function BarraSuperiorPanel({
 
       <button
         type="button"
-        className="ui-barra-panel__campana"
+        className="ui-boton-icono ui-barra-panel__campana"
         aria-label={pendientes ? `Notificaciones: ${pendientes} pendientes` : "Notificaciones"}
         title={pendientes ? "Ir a lo pendiente" : "Sin pendientes"}
         onClick={() => conPendientes && onSeccion(conPendientes.id)}
       >
         <IconoNotificacion tamano={20} />
         {pendientes ? (
-          <span className="ui-barra-panel__campana-aviso">
+          <span className="ui-boton-icono__insignia">
             <Insignia tono="alerta">{pendientes}</Insignia>
           </span>
         ) : null}

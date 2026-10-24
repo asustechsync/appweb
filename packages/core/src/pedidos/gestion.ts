@@ -17,15 +17,49 @@ import {
 } from "../stock/movimientos";
 import { afectaStock, ETIQUETAS, puedePasarA, type EstadoPedido } from "./estados";
 
-export const MEDIOS_PAGO = ["YAPE", "PLIN", "TRANSFERENCIA", "CONTRA_ENTREGA"] as const;
+/** TARJETA llega con la pasarela: hoy la base lo acepta, pero el checkout no lo ofrece. */
+export const MEDIOS_PAGO = ["YAPE", "PLIN", "TRANSFERENCIA", "CONTRA_ENTREGA", "TARJETA"] as const;
 export type MedioPagoPedido = (typeof MEDIOS_PAGO)[number];
+
+/**
+ * Los medios con los que la tienda cobra hoy. CONTRA_ENTREGA sigue en la base
+ * por si algun pedido viejo lo tuviera, pero ya no se ofrece ni se reporta.
+ */
+export const MEDIOS_DE_COBRO: readonly MedioPagoPedido[] = [
+  "YAPE",
+  "PLIN",
+  "TRANSFERENCIA",
+  "TARJETA",
+];
 
 export const ETIQUETAS_MEDIO_PAGO: Record<MedioPagoPedido, string> = {
   YAPE: "Yape",
   PLIN: "Plin",
   TRANSFERENCIA: "Transferencia",
   CONTRA_ENTREGA: "Contra entrega",
+  TARJETA: "Tarjeta",
 };
+
+/** Las marcas de tarjeta que se distinguen; cualquier otra cuenta como "otra". */
+export type MarcaTarjeta = "visa" | "mastercard" | "otra";
+
+/** Como se guarda y se muestra cada marca: "Visa", "Mastercard". */
+export const ETIQUETAS_MARCA_TARJETA: Record<MarcaTarjeta, string> = {
+  visa: "Visa",
+  mastercard: "Mastercard",
+  otra: "Tarjeta",
+};
+
+/**
+ * La marca tal como la escriba la pasarela ("Visa", "VS", "MASTERCARD", "MC")
+ * llevada a una de las conocidas. Sin marca, "otra".
+ */
+export function marcaDeTarjeta(texto: string | null | undefined): MarcaTarjeta {
+  const marca = (texto ?? "").trim().toLowerCase();
+  if (marca === "visa" || marca === "vs") return "visa";
+  if (marca === "mastercard" || marca === "mc" || marca === "master") return "mastercard";
+  return "otra";
+}
 
 export const ESTADOS_PAGO = ["PENDIENTE", "CONFIRMADO", "RECHAZADO", "REEMBOLSADO"] as const;
 export type EstadoPago = (typeof ESTADOS_PAGO)[number];

@@ -127,6 +127,93 @@ export function seriesDelResumen(
   };
 }
 
+/** Cuanto entro por un medio de pago y que parte del total es. */
+export interface RepartoMedio<M extends string = string> {
+  medio: M;
+  monto: number;
+  pagos: number;
+  /** Porcentaje entero del monto total; entre todos suman 100. */
+  porcentaje: number;
+}
+
+/**
+ * Los medios de pago ordenados de mas a menos plata, con su porcentaje. Los
+ * que no recibieron nada se quedan, al final y en 0%: el panel muestra todos
+ * los medios para que se note cual no se esta usando.
+ *
+ * Los porcentajes se reparten por mayor resto: redondear cada uno por su lado
+ * podria sumar 99 o 101, y la leyenda mostraria un total que no cuadra.
+ */
+export function repartoPorMedio<M extends string>(
+  grupos: { medio: M; monto: number; pagos: number }[],
+): RepartoMedio<M>[] {
+  const total = grupos.reduce((suma, grupo) => suma + grupo.monto, 0);
+  const ordenados = [...grupos].sort((a, b) => b.monto - a.monto);
+  if (total <= 0) return ordenados.map((grupo) => ({ ...grupo, porcentaje: 0 }));
+
+  const exactos = ordenados.map((grupo) => (grupo.monto / total) * 100);
+  const enteros = exactos.map(Math.floor);
+  let faltan = 100 - enteros.reduce((suma, n) => suma + n, 0);
+  const porResto = exactos
+    .map((valor, i) => ({ i, resto: valor - Math.floor(valor) }))
+    .sort((a, b) => b.resto - a.resto);
+  for (const { i } of porResto) {
+    if (faltan <= 0) break;
+    enteros[i] = (enteros[i] ?? 0) + 1;
+    faltan--;
+  }
+
+  return ordenados.map((grupo, i) => ({ ...grupo, porcentaje: enteros[i] ?? 0 }));
+}
+
+/** Una marca del eje horizontal: dónde cae en el periodo (0 a 1) y qué dice. */
+export interface MarcaEje {
+  posicion: number;
+  texto: string;
+}
+
+const DIA_MS = 86_400_000;
+
+/**
+ * Las marcas del eje de la tendencia segun el largo del periodo:
+ *
+ *   · un dia      — cada 6 horas: 0 h, 6 h, 12 h, 18 h.
+ *   · una semana  — un dia por marca, al centro de su columna: Lun … Dom.
+ *   · un mes      — el 1, 8, 15, 22 y 29, al inicio de su dia.
+ *
+ * Las posiciones son fracciones del periodo entero, las mismas que usan las
+ * series: asi la marca cae justo bajo el tramo que nombra.
+ */
+export function marcasDelEje(desde: Date, fin: Date): MarcaEje[] {
+  const duracion = fin.getTime() - desde.getTime();
+  if (duracion <= 0) return [];
+  const dias = Math.round(duracion / DIA_MS);
+
+  if (dias <= 1) {
+    return [0, 6, 12, 18].map((hora) => ({ posicion: hora / 24, texto: `${hora} h` }));
+  }
+
+  if (dias <= 8) {
+    return Array.from({ length: dias }, (_, i) => {
+      const dia = new Date(desde);
+      dia.setDate(desde.getDate() + i);
+      const nombre = new Intl.DateTimeFormat("es-PE", { weekday: "short" })
+        .format(dia)
+        .replace(".", "");
+      return {
+        posicion: (i + 0.5) / dias,
+        texto: nombre.charAt(0).toUpperCase() + nombre.slice(1),
+      };
+    });
+  }
+
+  const marcas: MarcaEje[] = [];
+  for (let dia = 1; dia <= dias; dia += 7) {
+    marcas.push({ posicion: (dia - 1) / dias, texto: String(dia) });
+  }
+  return marcas;
+}
+
 /** Cuantos dias lleva esperando algo creado en `desde`. */
 export function diasDesde(desde: Date, ahora = new Date()): number {
   return Math.floor((ahora.getTime() - desde.getTime()) / 86_400_000);

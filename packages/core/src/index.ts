@@ -171,7 +171,11 @@ export {
   notaDeCambio,
   mensajeDeRechazoPedido,
   MEDIOS_PAGO,
+  MEDIOS_DE_COBRO,
   ETIQUETAS_MEDIO_PAGO,
+  marcaDeTarjeta,
+  ETIQUETAS_MARCA_TARJETA,
+  type MarcaTarjeta,
   ESTADOS_PAGO,
   ETIQUETAS_PAGO,
   type MedioPagoPedido,
@@ -204,7 +208,7 @@ export {
   type TipoDevolucion,
 } from "./pedidos/devoluciones";
 
-export { generarCodigoPedido } from "./pedidos/codigo";
+export { codigoCorto, generarCodigoPedido } from "./pedidos/codigo";
 
 // WhatsApp
 export {
@@ -285,6 +289,10 @@ export {
   serieEnTramos,
   acumular,
   seriesDelResumen,
+  marcasDelEje,
+  repartoPorMedio,
+  type MarcaEje,
+  type RepartoMedio,
   type SeriesResumen,
   TRAMOS_SERIE,
   diasDesde,

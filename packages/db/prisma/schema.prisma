@@ -425,6 +425,8 @@ enum MedioPago {
   PLIN
   TRANSFERENCIA
   CONTRA_ENTREGA
+  // Llega con la pasarela; el checkout todavia no lo ofrece.
+  TARJETA
 }
 
 model Pedido {
@@ -534,6 +536,10 @@ model Pago {
   referencia      String?
   // Captura o voucher que sube el cliente.
   comprobanteUrl  String?
+  // Solo con TARJETA, tal como los devuelve la pasarela: la marca ("Visa",
+  // "Mastercard") y los ultimos 4 digitos. Nunca el numero completo.
+  tarjetaMarca    String?
+  tarjetaUltimos  String?
   confirmadoPorId String?
   confirmadoEn    DateTime?
   creadoEn        DateTime   @default(now())

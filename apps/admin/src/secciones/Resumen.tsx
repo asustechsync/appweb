@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import {
+  codigoCorto,
   ETIQUETAS,
+  ETIQUETAS_MEDIO_PAGO,
+  ETIQUETAS_PAGO,
   ETIQUETAS_PERIODO,
   PERIODOS,
+  type EstadoPago,
   type EstadoPedido,
+  type MarcaTarjeta,
+  type MedioPagoPedido,
   type Periodo,
 } from "@appweb/core";
 import {
@@ -17,15 +23,28 @@ import {
   SelectorSegmentado,
   Cargando,
   EstadoVacio,
+  FilaGraficos,
   FilaLista,
+  GraficoReparto,
+  GraficoTendencia,
+  PilaGraficos,
+  IconoFlechaBajada,
+  IconoFlechaSubida,
+  IconoDevolucion,
+  IconoReloj,
   Insignia,
+  ListaActividad,
   RejillaMetricas,
   Tarjeta,
+  TarjetaActividad,
   TarjetaMetrica,
+  LogoMedioPago,
+  type MedioLogo,
+  type TonoReparto,
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
-import { FECHA, MONEDA, conSigno } from "@appweb/core/formato";
+import { FECHA, MONEDA, conSigno, cuandoFue } from "@appweb/core/formato";
 
 /** Ambar mientras espera algo, verde cuando ya avanzo. */
 function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
@@ -33,6 +52,41 @@ function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
   if (estado === "PENDIENTE_PAGO") return "alerta";
   return "neutro";
 }
+
+/** El logo de cada medio en la lista de pagos; la tarjeta, segun su marca. */
+const LOGO_MEDIO: Record<MedioPagoPedido, MedioLogo> = {
+  YAPE: "yape",
+  PLIN: "plin",
+  TRANSFERENCIA: "transferencia",
+  CONTRA_ENTREGA: "contraEntrega",
+  TARJETA: "tarjeta",
+};
+const LOGO_MARCA: Record<MarcaTarjeta, MedioLogo> = {
+  visa: "visa",
+  mastercard: "mastercard",
+  otra: "tarjeta",
+};
+
+/** El color de cada medio en el reparto: cercano al de su logo. */
+const TONO_MEDIO: Record<MedioPagoPedido, TonoReparto> = {
+  YAPE: "lavanda",
+  PLIN: "celeste",
+  TARJETA: "pistacho",
+  TRANSFERENCIA: "grafito",
+  CONTRA_ENTREGA: "ambar",
+};
+
+/** Verde lo cobrado, ambar lo que falta confirmar, rojo lo que se cayo. */
+const ESTADO_PAGO: Record<
+  EstadoPago,
+  { tono: "exito" | "alerta" | "error" | "neutro"; icono: ReactNode }
+> = {
+  // Flecha arriba: entro plata. Flecha abajo: el cobro se cayo.
+  CONFIRMADO: { tono: "exito", icono: <IconoFlechaSubida tamano={12} /> },
+  PENDIENTE: { tono: "alerta", icono: <IconoReloj tamano={12} /> },
+  RECHAZADO: { tono: "error", icono: <IconoFlechaBajada tamano={12} /> },
+  REEMBOLSADO: { tono: "neutro", icono: <IconoDevolucion tamano={12} /> },
+};
 
 /**
  * Resumen del panel, en tres niveles y en ese orden:
@@ -44,7 +98,12 @@ function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
  * Los bloques que el rol no puede ver llegan vacios desde la API; aqui solo
  * se decide si se pintan o no.
  */
-export function Resumen() {
+export interface PropsResumen {
+  /** Lleva a la seccion Pagos; sin esto no se muestra "Ver todos". */
+  onVerPagos?: () => void;
+}
+
+export function Resumen({ onVerPagos }: PropsResumen) {
   const trpc = useTRPC();
   const [periodo, setPeriodo] = useState<Periodo>("dia");
   // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
@@ -59,8 +118,17 @@ export function Resumen() {
   if (datos.isPending) return <Cargando texto="Cargando el resumen…" />;
   if (datos.isError) return <Alerta tono="error">{datos.error.message}</Alerta>;
 
-  const { alertas, etiquetaAnterior, metricas, ultimosPedidos, ultimosUsuarios, titulo } =
-    datos.data;
+  const {
+    alertas,
+    etiquetaAnterior,
+    marcasEje,
+    mediosDePago,
+    metricas,
+    ultimosPagos,
+    ultimosPedidos,
+    ultimosUsuarios,
+    titulo,
+  } = datos.data;
   const anterior = (valor: string) => ({ etiqueta: etiquetaAnterior, valor });
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
@@ -133,6 +201,70 @@ export function Resumen() {
               anterior={anterior(String(metricas.anteriores.clientesNuevos))}
             />
           </RejillaMetricas>
+          <FilaGraficos>
+            <PilaGraficos>
+              <GraficoTendencia
+                serie={metricas.serieVentas}
+                seriePrevia={metricas.serieVentasPrevia}
+                titulo={`Ventas · ${titulo}`}
+                valor={MONEDA.format(metricas.ventas)}
+                detalle={`${conSigno(metricas.diferenciaVentas, MONEDA)} vs ${etiquetaAnterior.toLowerCase()}`}
+                tono={
+                  metricas.diferenciaVentas > 0
+                    ? "sube"
+                    : metricas.diferenciaVentas < 0
+                      ? "baja"
+                      : "igual"
+                }
+                etiquetaPrevia={etiquetaAnterior}
+                marcas={marcasEje}
+                etiqueta="Ventas acumuladas del periodo contra el anterior"
+              />
+              <GraficoReparto
+                titulo="Medios de pago"
+                meta={MONEDA.format(mediosDePago.reduce((suma, medio) => suma + medio.monto, 0))}
+                partes={mediosDePago.map((medio) => ({
+                  etiqueta: ETIQUETAS_MEDIO_PAGO[medio.medio],
+                  porcentaje: medio.porcentaje,
+                  valor: MONEDA.format(medio.monto),
+                  tono: TONO_MEDIO[medio.medio],
+                  logo: (
+                    <LogoMedioPago
+                      medio={LOGO_MEDIO[medio.medio]}
+                      nombre={ETIQUETAS_MEDIO_PAGO[medio.medio]}
+                    />
+                  ),
+                  vacia: medio.monto === 0,
+                }))}
+              />
+            </PilaGraficos>
+            <ListaActividad
+              titulo="Pagos recientes"
+              vacio="Todavía no hay pagos registrados."
+              {...(onVerPagos ? { onVerTodos: onVerPagos } : {})}
+            >
+              {ultimosPagos.map((pago) => (
+                <TarjetaActividad
+                  key={pago.id}
+                  estado={ETIQUETAS_PAGO[pago.estado]}
+                  iconoEstado={ESTADO_PAGO[pago.estado].icono}
+                  tonoEstado={ESTADO_PAGO[pago.estado].tono}
+                  fecha={cuandoFue(new Date(pago.creadoEn))}
+                  logo={
+                    <LogoMedioPago
+                      medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio]}
+                      nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
+                    />
+                  }
+                  // Numero de orden sin el prefijo: "N.º 20261023-F52U".
+                  titulo={`N.º ${codigoCorto(pago.codigo)}`}
+                  {...(pago.tarjeta?.ultimos ? { subtitulo: `•••• ${pago.tarjeta.ultimos}` } : {})}
+                  valor={MONEDA.format(pago.monto)}
+                  anulado={pago.estado === "RECHAZADO"}
+                />
+              ))}
+            </ListaActividad>
+          </FilaGraficos>
         </Tarjeta>
       ) : null}
 

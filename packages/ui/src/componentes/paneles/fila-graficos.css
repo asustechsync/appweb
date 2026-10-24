@@ -1,0 +1,23 @@
+/* FIRST MOBILE: una columna bajo otra; desde lg, cinco octavos y tres octavos. */
+.ui-fila-graficos {
+  display: grid;
+  align-items: start;
+  gap: var(--espacio-3);
+}
+.ui-fila-graficos > * {
+  min-inline-size: 0;
+}
+
+/* Graficos apilados en una columna, cada uno a su alto natural: compactos,
+   sin estirarse para igualar a la columna vecina. */
+.ui-fila-graficos__pila {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+@media (min-width: 64rem) {
+  .ui-fila-graficos {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  }
+}

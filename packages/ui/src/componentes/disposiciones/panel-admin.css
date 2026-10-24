@@ -6,6 +6,9 @@
 .ui-panel-admin .ui-tarjeta:not(.ui-tarjeta--sin-marco),
 .ui-panel-admin .ui-tarjeta-metrica,
 .ui-panel-admin .ui-tarjeta-info,
+.ui-panel-admin .ui-grafico-tendencia,
+.ui-panel-admin .ui-grafico-reparto,
+.ui-panel-admin .ui-lista-actividad,
 .ui-panel-admin .ui-disposicion-cuenta__pestanas--agrupadas {
   border-color: transparent;
   box-shadow: var(--sombra-difusa);

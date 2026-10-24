@@ -1,19 +1,6 @@
-.ui-boton-carrito {
-  position: relative;
-  display: grid;
-  place-items: center;
-  inline-size: 2.75rem;
-  block-size: 2.75rem;
-  border: 0;
-  border-radius: var(--radio-md);
-  background: var(--color-superficie);
-  color: var(--color-texto);
-}
-/* Insignia con las unidades del carrito, en la esquina del icono. */
+/* El boton es un `ui-boton-icono`; aqui solo va la piel del contador, que
+   se coloca en la esquina con `ui-boton-icono__insignia`. */
 .ui-boton-carrito__contador {
-  position: absolute;
-  inset-block-start: calc(var(--espacio-2) * -1);
-  inset-inline-end: calc(var(--espacio-2) * -1);
   display: grid;
   place-items: center;
   min-inline-size: 1.25rem;

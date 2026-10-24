@@ -15,13 +15,19 @@ import {
   diasDesde,
   ESTADOS_PENDIENTES,
   ESTADOS_VENTA,
+  marcaDeTarjeta,
+  marcasDelEje,
+  MEDIOS_DE_COBRO,
   puede,
+  repartoPorMedio,
   seriesDelResumen,
   UMBRAL_STOCK_BAJO,
   variacion,
   ventanaDe,
   ventanaDeFecha,
+  type EstadoPago,
   type EstadoPedido,
+  type MedioPagoPedido,
 } from "@appweb/core";
 import { esquemaResumen } from "@appweb/core/tipos";
 
@@ -62,6 +68,8 @@ export const resumen = router({
       altasSerie,
       pedidosSeriePrevia,
       altasSeriePrevia,
+      ultimosPagos,
+      pagosPorMedio,
     ] = await Promise.all([
       verVentas
         ? ctx.prisma.pedido.findMany({
@@ -139,6 +147,34 @@ export const resumen = router({
             select: { creadoEn: true },
           })
         : [],
+      // Los ultimos cobros con su medio: por donde esta entrando la plata y
+      // que falta confirmar. No depende del periodo: es lo mas reciente.
+      verVentas
+        ? ctx.prisma.pago.findMany({
+            orderBy: { creadoEn: "desc" },
+            take: TOPE_LISTA,
+            select: {
+              id: true,
+              medio: true,
+              monto: true,
+              estado: true,
+              creadoEn: true,
+              tarjetaMarca: true,
+              tarjetaUltimos: true,
+              pedido: { select: { codigo: true } },
+            },
+          })
+        : [],
+      // Por que medio entro la plata del periodo: solo pagos confirmados, lo
+      // pendiente o rechazado todavia no es plata.
+      verVentas
+        ? ctx.prisma.pago.groupBy({
+            by: ["medio"],
+            where: { estado: "CONFIRMADO", creadoEn: ventana },
+            _sum: { monto: true },
+            _count: { _all: true },
+          })
+        : [],
     ]);
 
     const ventas = Number(pedidosVentana?._sum.total ?? 0);
@@ -168,6 +204,32 @@ export const resumen = router({
       titulo: periodo.titulo,
       contexto: periodo.contexto,
       etiquetaAnterior: periodo.etiquetaPrevio,
+      marcasEje: marcasDelEje(periodo.desde, periodo.fin),
+      // Todos los medios con los que se cobra, tambien los que no recibieron
+      // nada en el periodo.
+      mediosDePago: repartoPorMedio(
+        MEDIOS_DE_COBRO.map((medio) => {
+          const grupo = pagosPorMedio.find((g) => g.medio === medio);
+          return {
+            medio,
+            monto: Number(grupo?._sum.monto ?? 0),
+            pagos: grupo?._count._all ?? 0,
+          };
+        }),
+      ),
+      ultimosPagos: ultimosPagos.map((pago) => ({
+        id: pago.id,
+        medio: pago.medio as MedioPagoPedido,
+        estado: pago.estado as EstadoPago,
+        monto: Number(pago.monto),
+        creadoEn: pago.creadoEn.toISOString(),
+        codigo: pago.pedido.codigo,
+        // Solo con tarjeta: la marca reconocida y los ultimos 4 digitos.
+        tarjeta:
+          pago.medio === "TARJETA"
+            ? { marca: marcaDeTarjeta(pago.tarjetaMarca), ultimos: pago.tarjetaUltimos }
+            : null,
+      })),
       alertas: {
         pedidosPendientes: pedidosPendientes.map((pedido) => ({
           id: pedido.id,

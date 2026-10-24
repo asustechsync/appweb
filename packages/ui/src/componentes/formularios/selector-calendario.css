@@ -8,6 +8,9 @@
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
+  /* Mismo alto que el buscador de las cabeceras. */
+  block-size: var(--espacio-12);
+  border-radius: var(--radio-bloque);
   inline-size: 100%;
   cursor: pointer;
 }

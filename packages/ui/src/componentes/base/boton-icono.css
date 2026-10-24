@@ -1,0 +1,44 @@
+/* Boton de icono de las cabeceras (tienda y panel): lupa, menu, carrito,
+   cuenta y campana. Unica fuente de su tamaño, forma y color: cambiar aqui
+   cambia las dos cabeceras a la vez. Sirve en <a>, <button> y <summary>. */
+.ui-boton-icono {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  /* En oscuro se aclara solo. */
+  color: var(--color-textoSuave);
+  font: inherit;
+  cursor: pointer;
+  list-style: none;
+  transition: background-color var(--transicion-rapida);
+}
+
+.ui-boton-icono::-webkit-details-marker {
+  display: none;
+}
+
+.ui-boton-icono:hover,
+details[open] > .ui-boton-icono {
+  background: var(--color-fondoSutil);
+}
+
+.ui-boton-icono:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: var(--espacio-1);
+}
+
+/* Insignia (unidades del carrito, pendientes del panel) en la esquina. */
+.ui-boton-icono__insignia {
+  position: absolute;
+  inset-block-start: calc(var(--espacio-2) * -1);
+  inset-inline-end: calc(var(--espacio-2) * -1);
+}

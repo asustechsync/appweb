@@ -1,6 +1,80 @@
 import { describe, expect, it } from "vitest";
 
-import { acumular, serieEnTramos, seriesDelResumen, ventanaDe, ventanaDeFecha } from "./resumen";
+import {
+  acumular,
+  marcasDelEje,
+  repartoPorMedio,
+  serieEnTramos,
+  seriesDelResumen,
+  ventanaDe,
+  ventanaDeFecha,
+} from "./resumen";
+
+describe("reparto por medio de pago", () => {
+  it("ordena de mas a menos plata y los porcentajes suman 100", () => {
+    const reparto = repartoPorMedio([
+      { medio: "PLIN", monto: 100, pagos: 1 },
+      { medio: "YAPE", monto: 100, pagos: 2 },
+      { medio: "TARJETA", monto: 100, pagos: 1 },
+      { medio: "TRANSFERENCIA", monto: 0, pagos: 0 },
+    ]);
+    expect(reparto.reduce((suma, r) => suma + r.porcentaje, 0)).toBe(100);
+  });
+
+  it("los medios sin plata se quedan al final en 0%", () => {
+    const reparto = repartoPorMedio([
+      { medio: "TRANSFERENCIA", monto: 0, pagos: 0 },
+      { medio: "YAPE", monto: 50, pagos: 1 },
+    ]);
+    expect(reparto.map((r) => [r.medio, r.porcentaje])).toEqual([
+      ["YAPE", 100],
+      ["TRANSFERENCIA", 0],
+    ]);
+  });
+
+  it("el mayor va primero", () => {
+    const reparto = repartoPorMedio([
+      { medio: "PLIN", monto: 30, pagos: 1 },
+      { medio: "YAPE", monto: 70, pagos: 3 },
+    ]);
+    expect(reparto[0]).toEqual({ medio: "YAPE", monto: 70, pagos: 3, porcentaje: 70 });
+  });
+
+  it("sin pagos todos quedan en 0%", () => {
+    const reparto = repartoPorMedio([
+      { medio: "YAPE", monto: 0, pagos: 0 },
+      { medio: "PLIN", monto: 0, pagos: 0 },
+    ]);
+    expect(reparto.every((r) => r.porcentaje === 0)).toBe(true);
+  });
+});
+
+describe("marcas del eje", () => {
+  it("un dia: cada seis horas", () => {
+    const marcas = marcasDelEje(new Date(2026, 9, 21), new Date(2026, 9, 22));
+    expect(marcas.map((m) => m.texto)).toEqual(["0 h", "6 h", "12 h", "18 h"]);
+    expect(marcas.map((m) => m.posicion)).toEqual([0, 0.25, 0.5, 0.75]);
+  });
+
+  it("una semana: un dia por marca, al centro de su columna", () => {
+    // Del lunes 19 al lunes 26 de octubre de 2026.
+    const marcas = marcasDelEje(new Date(2026, 9, 19), new Date(2026, 9, 26));
+    expect(marcas.map((m) => m.texto)).toEqual(["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]);
+    expect(marcas[0]?.posicion).toBeCloseTo(0.5 / 7);
+    expect(marcas[6]?.posicion).toBeCloseTo(6.5 / 7);
+  });
+
+  it("un mes: el 1, 8, 15, 22 y 29", () => {
+    const marcas = marcasDelEje(new Date(2026, 9, 1), new Date(2026, 10, 1));
+    expect(marcas.map((m) => m.texto)).toEqual(["1", "8", "15", "22", "29"]);
+    expect(marcas[0]?.posicion).toBe(0);
+  });
+
+  it("un periodo vacio no tiene marcas", () => {
+    const dia = new Date(2026, 9, 21);
+    expect(marcasDelEje(dia, dia)).toEqual([]);
+  });
+});
 
 describe("series acumuladas", () => {
   it("arranca en cero, suma los anteriores y los vacios quedan planos", () => {

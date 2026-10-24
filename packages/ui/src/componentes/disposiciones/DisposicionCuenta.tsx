@@ -153,12 +153,12 @@ export function DisposicionCuenta({
         ) : null}
 
         {barraSuperior ? (
-          <div className="ui-disposicion-cuenta__barra-superior">
+          <header className="ui-disposicion-cuenta__barra-superior">
             {marcaLateral ? (
               <div className="ui-disposicion-cuenta__barra-marca">{marcaLateral}</div>
             ) : null}
             <div className="ui-disposicion-cuenta__barra-contenido">{barraSuperior}</div>
-          </div>
+          </header>
         ) : null}
 
         <div className="ui-disposicion-cuenta__cuerpo">

@@ -11,6 +11,7 @@
 @import "./formularios/opciones-desplegables.css";
 @import "./base/contenedor.css";
 @import "./base/logo.css";
+@import "./base/boton-icono.css";
 @import "./navegacion/boton-carrito.css";
 @import "./navegacion/migas.css";
 @import "./navegacion/buscador.css";

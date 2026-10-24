@@ -91,6 +91,9 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
   const [documento, setDocumento] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
   const [medioPago, setMedioPago] = useState<MedioPago | null>(mediosDePago[0]?.valor ?? null);
+  // Tarjeta de prueba: solo la marca y los ultimos 4 digitos, nunca el numero.
+  const [tarjetaMarca, setTarjetaMarca] = useState<"visa" | "mastercard">("visa");
+  const [tarjetaUltimos, setTarjetaUltimos] = useState("");
 
   const [error, setError] = useState<string | null>(null);
   const [errores, setErrores] = useState<Record<string, string>>({});
@@ -298,9 +301,16 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
     if (comprobante === "factura" && razonSocial.trim() === "") {
       nuevos["razonSocial"] = "Escribe la razón social.";
     }
+    if (medioPago === "tarjeta" && !/^\d{4}$/.test(tarjetaUltimos)) {
+      nuevos["tarjetaUltimos"] = "Escribe los últimos 4 dígitos.";
+    }
     setErrores(nuevos);
     if (Object.keys(nuevos).length > 0) {
-      mostrarError("Revisa los datos del comprobante.");
+      mostrarError(
+        nuevos["tarjetaUltimos"] && Object.keys(nuevos).length === 1
+          ? "Revisa los datos de la tarjeta."
+          : "Revisa los datos del comprobante.",
+      );
       return;
     }
 
@@ -315,6 +325,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       razonSocial: comprobante === "factura" ? razonSocial : undefined,
       lineas: guardadas,
       cupon: cupon.aplicado?.codigo,
+      ...(medioPago === "tarjeta" ? { tarjetaMarca, tarjetaUltimos } : {}),
     });
 
     if (!resultado.ok || !resultado.codigo) {
@@ -669,6 +680,44 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
             </TarjetaSeleccionable>
           ))}
         </GrupoOpciones>
+
+        {medioPago === "tarjeta" ? (
+          <>
+            <GrupoOpciones etiqueta="Marca de la tarjeta" columnas={2}>
+              <TarjetaSeleccionable
+                name="tarjetaMarca"
+                value="visa"
+                checked={tarjetaMarca === "visa"}
+                onChange={() => setTarjetaMarca("visa")}
+              >
+                <strong>Visa</strong>
+              </TarjetaSeleccionable>
+              <TarjetaSeleccionable
+                name="tarjetaMarca"
+                value="mastercard"
+                checked={tarjetaMarca === "mastercard"}
+                onChange={() => setTarjetaMarca("mastercard")}
+              >
+                <strong>Mastercard</strong>
+              </TarjetaSeleccionable>
+            </GrupoOpciones>
+            <FilaCampos>
+              <Campo
+                id="tarjetaUltimos"
+                etiqueta="Últimos 4 dígitos (prueba)"
+                placeholder="4242"
+                valor={tarjetaUltimos}
+                onCambio={(valor) => {
+                  setTarjetaUltimos(valor.replace(/\D/g, "").slice(0, 4));
+                  limpiarError("tarjetaUltimos");
+                }}
+                error={errores["tarjetaUltimos"] ?? null}
+                autoComplete="off"
+                requerido
+              />
+            </FilaCampos>
+          </>
+        ) : null}
       </SeccionCheckout>
     </DisposicionCompra>
   );

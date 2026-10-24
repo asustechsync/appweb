@@ -1,0 +1,109 @@
+.ui-grafico-reparto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+}
+.ui-grafico-reparto__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+.ui-grafico-reparto__titulo {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-grafico-reparto__meta {
+  color: var(--color-textoSuave);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-sm);
+}
+
+/* FIRST MOBILE: dos tarjetas por fila; desde md, cuatro. */
+.ui-grafico-reparto__rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 48rem) {
+  .ui-grafico-reparto__rejilla {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Cada medio: logo, porcentaje grande, nombre y monto, y su barra al pie.
+   Mismo fondo y radio interior que las tarjetas de "Pagos recientes". */
+.ui-grafico-reparto__parte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+  padding: var(--espacio-3);
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+}
+/* Medio sin pagos en el periodo: se ve, pero apagado. */
+.ui-grafico-reparto__parte--vacia {
+  opacity: 0.5;
+}
+.ui-grafico-reparto__logo {
+  display: flex;
+  margin-block-end: var(--espacio-1);
+}
+.ui-grafico-reparto__porcentaje {
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-xl);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+}
+.ui-grafico-reparto__detalle {
+  overflow: hidden;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-block-end: var(--espacio-2);
+}
+/* La barra al pie de la tarjeta, aunque el nombre de al lado ocupe menos. */
+.ui-grafico-reparto__pista {
+  display: block;
+  block-size: 3px;
+  margin-block-start: auto;
+  border-radius: var(--radio-completo);
+  background: var(--color-fondoSutil);
+  overflow: hidden;
+}
+.ui-grafico-reparto__barra {
+  display: block;
+  block-size: 100%;
+  border-radius: var(--radio-completo);
+}
+
+/* Un color por tono: la barra de cada tarjeta. */
+.ui-grafico-reparto__barra--pistacho {
+  background: var(--color-graficoPistacho);
+}
+.ui-grafico-reparto__barra--lavanda {
+  background: var(--color-graficoLavanda);
+}
+.ui-grafico-reparto__barra--celeste {
+  background: var(--color-graficoCeleste);
+}
+.ui-grafico-reparto__barra--ambar {
+  background: var(--color-graficoAmbar);
+}
+.ui-grafico-reparto__barra--coral {
+  background: var(--color-graficoCoral);
+}
+.ui-grafico-reparto__barra--grafito {
+  background: var(--color-graficoGrafito);
+}
