@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -11,9 +11,7 @@ import {
   ETIQUETAS_PAGO,
   ETIQUETAS_PERIODO,
   PERIODOS,
-  type EstadoPago,
   type EstadoPedido,
-  type MarcaTarjeta,
   type MedioPagoPedido,
   type Periodo,
 } from "@appweb/core";
@@ -28,10 +26,6 @@ import {
   GraficoReparto,
   GraficoTendencia,
   PilaGraficos,
-  IconoFlechaBajada,
-  IconoFlechaSubida,
-  IconoDevolucion,
-  IconoReloj,
   Insignia,
   ListaActividad,
   RejillaMetricas,
@@ -39,10 +33,11 @@ import {
   TarjetaActividad,
   TarjetaMetrica,
   LogoMedioPago,
-  type MedioLogo,
   type TonoReparto,
 } from "@appweb/ui";
 
+import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
+import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
 import { useTRPC } from "@/lib/trpc";
 import { FECHA, MONEDA, conSigno, cuandoFue } from "@appweb/core/formato";
 
@@ -53,20 +48,6 @@ function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
   return "neutro";
 }
 
-/** El logo de cada medio en la lista de pagos; la tarjeta, segun su marca. */
-const LOGO_MEDIO: Record<MedioPagoPedido, MedioLogo> = {
-  YAPE: "yape",
-  PLIN: "plin",
-  TRANSFERENCIA: "transferencia",
-  CONTRA_ENTREGA: "contraEntrega",
-  TARJETA: "tarjeta",
-};
-const LOGO_MARCA: Record<MarcaTarjeta, MedioLogo> = {
-  visa: "visa",
-  mastercard: "mastercard",
-  otra: "tarjeta",
-};
-
 /** El color de cada medio en el reparto: cercano al de su logo. */
 const TONO_MEDIO: Record<MedioPagoPedido, TonoReparto> = {
   YAPE: "lavanda",
@@ -74,24 +55,6 @@ const TONO_MEDIO: Record<MedioPagoPedido, TonoReparto> = {
   TARJETA: "pistacho",
   TRANSFERENCIA: "grafito",
   CONTRA_ENTREGA: "ambar",
-};
-
-/** Verde lo cobrado, ambar lo que falta confirmar, rojo lo que se cayo. */
-/** Palabras propias de la lista de pagos recientes; el resto usa `ETIQUETAS_PAGO`. */
-const ETIQUETA_PAGO_RECIENTE: Partial<Record<EstadoPago, string>> = {
-  PENDIENTE: "Pendiente",
-  CONFIRMADO: "Recibido",
-};
-
-const ESTADO_PAGO: Record<
-  EstadoPago,
-  { tono: "exito" | "alerta" | "error" | "neutro"; icono: ReactNode }
-> = {
-  // Flecha arriba: entro plata. Flecha abajo: el cobro se cayo.
-  CONFIRMADO: { tono: "exito", icono: <IconoFlechaSubida tamano={12} /> },
-  PENDIENTE: { tono: "alerta", icono: <IconoReloj tamano={12} /> },
-  RECHAZADO: { tono: "error", icono: <IconoFlechaBajada tamano={12} /> },
-  REEMBOLSADO: { tono: "neutro", icono: <IconoDevolucion tamano={12} /> },
 };
 
 /**

@@ -80,7 +80,9 @@ export {
 // Carrito
 export {
   calcularTotales,
+  igvIncluido,
   redondear,
+  TASA_IGV,
   type LineaCarrito,
   type MetodoEnvioCalculo,
   type TotalesCompra,
@@ -184,6 +186,8 @@ export {
   type EntradaCambioEstado,
   revisarDespacho,
   ESTADOS_DESPACHO,
+  DIAS_DEMORA_ENVIO,
+  estaDemorado,
 } from "./pedidos/gestion";
 
 export {
@@ -214,9 +218,11 @@ export { codigoCorto, prefijoCodigoPedido, siguienteCodigoPedido } from "./pedid
 export {
   numeroWhatsApp,
   enlaceWhatsApp,
+  enlaceCompartirWhatsApp,
   mensajeConsultaWhatsApp,
   mensajeComprobanteWhatsApp,
   mensajeAlClienteWhatsApp,
+  mensajePagoRecibidoWhatsApp,
 } from "./contacto/whatsapp";
 
 // Correos
@@ -286,6 +292,7 @@ export {
   type Periodo,
   type VentanaResumen,
   variacion,
+  serieAcumulada,
   serieEnTramos,
   acumular,
   seriesDelResumen,

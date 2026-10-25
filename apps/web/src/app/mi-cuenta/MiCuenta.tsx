@@ -26,7 +26,7 @@ import { Pedidos } from "./secciones/Pedidos";
 import { Perfil } from "./secciones/Perfil";
 import { Resenas } from "./secciones/Resenas";
 import { Seguridad } from "./secciones/Seguridad";
-import { URL_PANEL } from "@appweb/api/urls";
+import { URL_PANEL, urlPanelEnNavegador } from "@appweb/api/urls";
 
 const SECCIONES = [
   { id: "perfil", etiqueta: "Perfil" },
@@ -89,7 +89,12 @@ export interface PropsMiCuenta {
  */
 export function MiCuenta({ nombre, rol, seccionInicial }: PropsMiCuenta) {
   const [activa, setActiva] = useState(seccionInicial);
-  const hrefPanel = puede(rol, "entrar_panel") ? URL_PANEL : "";
+  const [urlPanel, setUrlPanel] = useState(URL_PANEL);
+  const hrefPanel = puede(rol, "entrar_panel") ? urlPanel : "";
+
+  useEffect(() => {
+    setUrlPanel(urlPanelEnNavegador());
+  }, []);
 
   useEffect(() => {
     function alNavegar() {

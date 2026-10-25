@@ -162,3 +162,23 @@ export function LogoMedioPago({ medio, nombre }: PropsLogoMedioPago) {
     </span>
   );
 }
+
+export interface PropsLogoIcono {
+  /** El icono ya renderizado: `<IconoPedidos tamano={16} />`. */
+  icono: ReactNode;
+  /** Nombre para lectores de pantalla: "Pedido". */
+  nombre: string;
+}
+
+/** Mismo cuadro que `LogoMedioPago`, con un icono del panel: pedidos, envios. */
+export function LogoIcono({ icono, nombre }: PropsLogoIcono) {
+  return (
+    <span
+      className="ui-logo-medio-pago ui-logo-medio-pago--transferencia"
+      role="img"
+      aria-label={nombre}
+    >
+      {icono}
+    </span>
+  );
+}

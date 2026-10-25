@@ -11,45 +11,102 @@ import { TRPCError } from "@trpc/server";
 
 import {
   ESTADOS_PAGO,
+  igvIncluido,
+  marcaDeTarjeta,
   mensajeDeRechazoPago,
   notaDeRechazoPago,
   revisarRechazoPago,
+  serieAcumulada,
+  variacion,
+  ventanaDe,
+  ventanaDeFecha,
   type EstadoPago,
 } from "@appweb/core";
-import { esquemaFiltroPagos, esquemaRechazarPago } from "@appweb/core/tipos";
+import {
+  esquemaDetallePago,
+  esquemaFiltroPagos,
+  esquemaMetricasPagos,
+  esquemaRechazarPago,
+} from "@appweb/core/tipos";
 
+import { nivelDeUsuario } from "../../clientes";
 import { rechazar } from "../../stock";
-import { exige, router } from "../../trpc";
+import { exige, router, type Contexto } from "../../trpc";
 
 const ver = exige("ver_ventas");
 const gestionar = exige("cambiar_estado_pedido");
 
-/** Cuantos pagos trae la lista. La busqueda por texto filtra en el cliente. */
-const TOPE_LISTA = 100;
+const INCLUDE_LISTA = {
+  confirmadoPor: { select: { nombre: true } },
+  pedido: {
+    select: {
+      id: true,
+      codigo: true,
+      estado: true,
+      usuario: { select: { nombre: true, email: true } },
+    },
+  },
+} as const;
+
+/**
+ * Los pagos de la lista. Con un estado, ese estado. Sin estado, todos con los
+ * pendientes arriba (del mas viejo al mas nuevo) y luego el resto del mas
+ * nuevo al mas viejo: asi el tope nunca deja fuera lo que hay que atender.
+ */
+async function listarPagos(
+  prisma: Contexto["prisma"],
+  estado: EstadoPago | undefined,
+  busqueda: string | undefined,
+  limite: number,
+) {
+  // Trae uno de mas: si llega, hay pagos que "Ver mas" todavia no muestra.
+  const tope = limite + 1;
+  const coincide = busqueda
+    ? {
+        OR: [
+          { referencia: { contains: busqueda, mode: "insensitive" as const } },
+          { pedido: { codigo: { contains: busqueda, mode: "insensitive" as const } } },
+          {
+            pedido: {
+              usuario: { nombre: { contains: busqueda, mode: "insensitive" as const } },
+            },
+          },
+        ],
+      }
+    : {};
+
+  if (estado) {
+    return prisma.pago.findMany({
+      where: { estado, ...coincide },
+      orderBy: { creadoEn: estado === "PENDIENTE" ? "asc" : "desc" },
+      take: tope,
+      include: INCLUDE_LISTA,
+    });
+  }
+  const pendientes = await prisma.pago.findMany({
+    where: { estado: "PENDIENTE", ...coincide },
+    orderBy: { creadoEn: "asc" },
+    take: tope,
+    include: INCLUDE_LISTA,
+  });
+  const resto = await prisma.pago.findMany({
+    where: { estado: { not: "PENDIENTE" }, ...coincide },
+    orderBy: { creadoEn: "desc" },
+    take: Math.max(tope - pendientes.length, 0),
+    include: INCLUDE_LISTA,
+  });
+  return [...pendientes, ...resto];
+}
 
 export const pagos = router({
   /** Lista por estado, con conteo y monto de cada estado para las pestañas. */
   listar: ver.input(esquemaFiltroPagos).query(async ({ ctx, input }) => {
-    const [filas, totales] = await Promise.all([
-      ctx.prisma.pago.findMany({
-        where: input.estado ? { estado: input.estado } : {},
-        // Los pendientes, del mas viejo al mas nuevo: el que mas espera, arriba.
-        orderBy: { creadoEn: input.estado === "PENDIENTE" ? "asc" : "desc" },
-        take: TOPE_LISTA,
-        include: {
-          confirmadoPor: { select: { nombre: true } },
-          pedido: {
-            select: {
-              id: true,
-              codigo: true,
-              estado: true,
-              usuario: { select: { nombre: true, email: true } },
-            },
-          },
-        },
-      }),
+    const [encontrados, totales] = await Promise.all([
+      listarPagos(ctx.prisma, input.estado, input.busqueda || undefined, input.limite),
       ctx.prisma.pago.groupBy({ by: ["estado"], _count: { _all: true }, _sum: { monto: true } }),
     ]);
+
+    const filas = encontrados.slice(0, input.limite);
 
     const porEstado = Object.fromEntries(
       ESTADOS_PAGO.map((e) => [e, { cantidad: 0, monto: 0 }]),
@@ -63,6 +120,7 @@ export const pagos = router({
 
     return {
       porEstado,
+      hayMas: encontrados.length > input.limite,
       pagos: filas.map((p) => ({
         id: p.id,
         medio: p.medio,
@@ -70,6 +128,8 @@ export const pagos = router({
         estado: p.estado,
         referencia: p.referencia,
         comprobanteUrl: p.comprobanteUrl,
+        // Solo con tarjeta: la marca reconocida, para su logo.
+        tarjeta: p.medio === "TARJETA" ? marcaDeTarjeta(p.tarjetaMarca) : null,
         creadoEn: p.creadoEn.toISOString(),
         confirmadoPor: p.confirmadoPor?.nombre ?? null,
         confirmadoEn: p.confirmadoEn?.toISOString() ?? null,
@@ -80,6 +140,158 @@ export const pagos = router({
         email: p.pedido.usuario.email,
       })),
     };
+  }),
+
+  /**
+   * Las tarjetas de arriba: cada estado en el periodo (o dia) elegido contra
+   * el anterior entero, con el mismo eje que el resumen de Inicio.
+   */
+  /**
+   * Un pago con todo lo que hace falta para decidir sobre el: el comprobante,
+   * los demas intentos de cobro del mismo pedido y los motivos de rechazo.
+   * Del pedido solo lo justo para ubicarlo; el resto vive en Pedidos.
+   */
+  detalle: ver.input(esquemaDetallePago).query(async ({ ctx, input }) => {
+    const pago = await ctx.prisma.pago.findUnique({
+      where: { id: input.pagoId },
+      include: {
+        confirmadoPor: { select: { nombre: true } },
+        pedido: {
+          select: {
+            id: true,
+            codigo: true,
+            estado: true,
+            subtotal: true,
+            descuento: true,
+            costoEnvio: true,
+            cuponCodigo: true,
+            envioTelefono: true,
+            total: true,
+            usuario: {
+              select: { id: true, nombre: true, email: true, telefono: true, creadoEn: true },
+            },
+            items: { select: { cantidad: true } },
+            pagos: {
+              orderBy: { creadoEn: "asc" },
+              include: { confirmadoPor: { select: { nombre: true } } },
+            },
+            // Solo las notas que deja `notaDeRechazoPago`: el porque de cada rechazo.
+            historial: {
+              where: { nota: { startsWith: "Pago por" } },
+              orderBy: { creadoEn: "asc" },
+              select: { nota: true, creadoEn: true },
+            },
+          },
+        },
+      },
+    });
+    if (pago === null) throw new TRPCError({ code: "NOT_FOUND", message: "Ese pago no existe." });
+
+    // Quien es el cliente para la tienda: su nivel sale de lo que ya compro.
+    const nivel = await nivelDeUsuario(ctx.prisma, pago.pedido.usuario.id);
+
+    return {
+      id: pago.id,
+      medio: pago.medio,
+      monto: Number(pago.monto),
+      estado: pago.estado,
+      referencia: pago.referencia,
+      comprobanteUrl: pago.comprobanteUrl,
+      tarjeta:
+        pago.medio === "TARJETA"
+          ? { marca: marcaDeTarjeta(pago.tarjetaMarca), ultimos: pago.tarjetaUltimos }
+          : null,
+      creadoEn: pago.creadoEn.toISOString(),
+      confirmadoPor: pago.confirmadoPor?.nombre ?? null,
+      confirmadoEn: pago.confirmadoEn?.toISOString() ?? null,
+      pedido: {
+        id: pago.pedido.id,
+        codigo: pago.pedido.codigo,
+        estado: pago.pedido.estado,
+        total: Number(pago.pedido.total),
+        // Desglose congelado en el pedido. El descuento es el del cupon o el
+        // del nivel, el que fuera mayor al comprar: no se suman.
+        subtotal: Number(pago.pedido.subtotal),
+        descuento: Number(pago.pedido.descuento),
+        costoEnvio: Number(pago.pedido.costoEnvio),
+        cuponCodigo: pago.pedido.cuponCodigo,
+        igv: igvIncluido(Number(pago.pedido.total)),
+        cliente: pago.pedido.usuario.nombre,
+        email: pago.pedido.usuario.email,
+        // El de envio es el que el cliente dio para este pedido; si no, el de su cuenta.
+        telefono: pago.pedido.envioTelefono ?? pago.pedido.usuario.telefono,
+        articulos: pago.pedido.items.reduce((total, item) => total + item.cantidad, 0),
+      },
+      clienteResumen: {
+        nivel: nivel.nivel.nombre,
+        nivelId: nivel.nivel.id,
+        pedidos: nivel.pedidos,
+        totalComprado: nivel.totalComprado,
+        desde: pago.pedido.usuario.creadoEn.toISOString(),
+      },
+      intentos: pago.pedido.pagos.map((p) => ({
+        id: p.id,
+        medio: p.medio,
+        monto: Number(p.monto),
+        estado: p.estado,
+        referencia: p.referencia,
+        creadoEn: p.creadoEn.toISOString(),
+        confirmadoPor: p.confirmadoPor?.nombre ?? null,
+      })),
+      rechazos: pago.pedido.historial.map((h) => ({
+        nota: h.nota ?? "",
+        creadoEn: h.creadoEn.toISOString(),
+      })),
+    };
+  }),
+
+  metricas: ver.input(esquemaMetricasPagos).query(async ({ ctx, input }) => {
+    const ahora = new Date();
+    const periodo = input.fecha
+      ? ventanaDeFecha(input.fecha, ahora)
+      : ventanaDe(input.periodo, ahora);
+    const registros = await ctx.prisma.pago.findMany({
+      where: { creadoEn: { gte: periodo.previoDesde, lt: periodo.hasta ?? periodo.fin } },
+      select: { estado: true, monto: true, creadoEn: true },
+    });
+
+    // Cada estado contra el periodo anterior, por fecha de creacion del pago.
+    const enVentana = (estado: EstadoPago, desde: Date, hasta: Date) =>
+      registros
+        .filter((p) => p.estado === estado && p.creadoEn >= desde && p.creadoEn < hasta)
+        .map((p) => ({ en: p.creadoEn, valor: Number(p.monto) }));
+    const suma = (lista: { valor: number }[]) => lista.reduce((total, r) => total + r.valor, 0);
+    const porEstado = Object.fromEntries(
+      ESTADOS_PAGO.map((estado) => {
+        const actual = enVentana(estado, periodo.desde, periodo.hasta ?? periodo.fin);
+        const previo = enVentana(estado, periodo.previoDesde, periodo.previoHasta);
+        const monto = suma(actual);
+        const montoPrevio = suma(previo);
+        return [
+          estado,
+          {
+            monto,
+            montoPrevio,
+            cantidad: actual.length,
+            cambio: variacion(monto, montoPrevio),
+            serie: serieAcumulada(actual, periodo.desde, periodo.fin, ahora),
+            seriePrevia: serieAcumulada(previo, periodo.previoDesde, periodo.previoHasta),
+          },
+        ];
+      }),
+    ) as Record<
+      EstadoPago,
+      {
+        monto: number;
+        montoPrevio: number;
+        cantidad: number;
+        cambio: number;
+        serie: number[];
+        seriePrevia: number[];
+      }
+    >;
+
+    return { titulo: periodo.titulo, etiquetaAnterior: periodo.etiquetaPrevio, porEstado };
   }),
 
   /** PENDIENTE -> RECHAZADO, y un pago pendiente nuevo para el reintento. */

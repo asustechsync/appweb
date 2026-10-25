@@ -113,6 +113,8 @@ export interface PropsPanel {
   secciones: string[];
   /** "" = sin seccion en la URL: en movil se ve el menu. */
   seccionInicial: string;
+  /** Id del detalle abierto en la URL (`/pagos/<id>`); `null` = la lista. */
+  detalleInicial?: string | null;
   usuarioId: string;
   nombre: string;
   rol: Rol;
@@ -125,12 +127,25 @@ export interface PropsPanel {
  * queda compartible y el boton "atras" funciona, pero no hay ni un viaje al
  * servidor. Los datos de cada seccion salen de la cache de TanStack Query.
  */
-export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: PropsPanel) {
+export function Panel({
+  secciones,
+  seccionInicial,
+  detalleInicial = null,
+  usuarioId,
+  nombre,
+  rol,
+}: PropsPanel) {
   const [activa, setActiva] = useState(seccionInicial);
+  // Pedido a abrir al llegar a Pedidos desde otra seccion (el detalle de un pago).
+  const [pedidoAbierto, setPedidoAbierto] = useState<string | null>(null);
+  // Detalle de pago abierto por la URL y cuantas veces se eligio una seccion:
+  // volver a pulsar "Pagos" en el menu reinicia la seccion y muestra la lista.
+  const [detalleAbierto, setDetalleAbierto] = useState<string | null>(detalleInicial);
+  const [visitas, setVisitas] = useState(0);
 
   useEffect(() => {
     function alNavegar() {
-      const desdeUrl = window.location.pathname.replace(/^\/+/, "");
+      const desdeUrl = window.location.pathname.replace(/^\/+/, "").split("/")[0] ?? "";
       setActiva(secciones.includes(desdeUrl) ? desdeUrl : "");
     }
 
@@ -138,7 +153,10 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
     return () => window.removeEventListener("popstate", alNavegar);
   }, [secciones]);
 
-  function ir(id: string) {
+  function ir(id: string, pedido: string | null = null) {
+    setPedidoAbierto(pedido);
+    setDetalleAbierto(null);
+    setVisitas((n) => n + 1);
     setActiva(id);
     window.history.pushState(null, "", `/${id}`);
     window.scrollTo(0, 0);
@@ -201,9 +219,21 @@ export function Panel({ secciones, seccionInicial, usuarioId, nombre, rol }: Pro
       {visible === "inicio" ? (
         <Resumen {...(secciones.includes("pagos") ? { onVerPagos: () => ir("pagos") } : {})} />
       ) : visible === "pedidos" ? (
-        <Pedidos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
+        <Pedidos
+          // La clave reinicia la seccion: llegar con otro pedido lo abre aunque ya estuviera ahi.
+          key={pedidoAbierto ?? "lista"}
+          puedeGestionar={puede(rol, "cambiar_estado_pedido")}
+          pedidoInicial={pedidoAbierto}
+        />
       ) : visible === "pagos" ? (
-        <Pagos puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
+        <Pagos
+          key={visitas}
+          pagoInicial={detalleAbierto}
+          puedeGestionar={puede(rol, "cambiar_estado_pedido")}
+          {...(secciones.includes("pedidos")
+            ? { onVerPedido: (pedidoId: string) => ir("pedidos", pedidoId) }
+            : {})}
+        />
       ) : visible === "devoluciones" ? (
         <Devoluciones puedeGestionar={puede(rol, "cambiar_estado_pedido")} />
       ) : visible === "reclamos" ? (

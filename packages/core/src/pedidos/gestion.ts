@@ -159,6 +159,16 @@ export function revisarDespacho(entrada: EntradaCambioEstado): RechazoPedido | n
 /** Estados que ve la cola de despacho, en el orden en que se trabajan. */
 export const ESTADOS_DESPACHO: readonly EstadoPedido[] = ["PAGADO", "PREPARANDO", "ENVIADO"];
 
+/** Dias en camino desde los que un envio cuenta como demorado. */
+export const DIAS_DEMORA_ENVIO = 3;
+
+const UN_DIA = 24 * 60 * 60 * 1000;
+
+/** Un envio entregado al transportista hace `DIAS_DEMORA_ENVIO` dias o mas y aun sin entregar. */
+export function estaDemorado(enviadoEn: Date, ahora: Date): boolean {
+  return ahora.getTime() - enviadoEn.getTime() >= DIAS_DEMORA_ENVIO * UN_DIA;
+}
+
 /** Junta las lineas de una misma variante: el stock se compara por variante. */
 function porVariante(lineas: LineaVendida[]): LineaVendida[] {
   const suma = new Map<string, number>();

@@ -1,0 +1,31 @@
+.ui-lista-con-lateral-conjunto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+.ui-lista-con-lateral__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  min-inline-size: 0;
+}
+.ui-lista-con-lateral__lateral {
+  display: none;
+}
+
+/* Escritorio: cuatro columnas como la rejilla de metricas de arriba; la lista ocupa tres
+   y el bloque lateral la cuarta, asi los bordes caen alineados. */
+@media (min-width: 64rem) {
+  .ui-lista-con-lateral {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--espacio-3);
+    align-items: stretch;
+  }
+  .ui-lista-con-lateral__lista {
+    grid-column: span 3;
+  }
+  .ui-lista-con-lateral__lateral {
+    display: block;
+  }
+}

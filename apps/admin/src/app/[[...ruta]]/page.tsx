@@ -69,6 +69,8 @@ export default async function PaginaPanel({ params }: Props) {
       <Panel
         secciones={secciones}
         seccionInicial={inicial}
+        // /pagos/<id>: el detalle abierto sobrevive a actualizar la pagina.
+        detalleInicial={inicial === "pagos" ? (ruta?.[1] ?? null) : null}
         usuarioId={sesion.usuarioId}
         nombre={sesion.nombre}
         rol={sesion.rol}

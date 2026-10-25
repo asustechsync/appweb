@@ -34,6 +34,33 @@
   background: var(--color-nivelPlatino);
 }
 
+/* Etiqueta del nivel: fondo con un tinte de su color y el texto en el mismo
+   color, oscurecido para que se lea en claro y en oscuro. */
+.ui-insignia-nivel {
+  --ui-tono-nivel: var(--color-nivelBasico);
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-etiqueta);
+  background: color-mix(in srgb, var(--ui-tono-nivel) 22%, transparent);
+  color: color-mix(in srgb, var(--ui-tono-nivel) 55%, var(--color-texto));
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  white-space: nowrap;
+}
+.ui-insignia-nivel--bronce {
+  --ui-tono-nivel: var(--color-nivelBronce);
+}
+.ui-insignia-nivel--plata {
+  --ui-tono-nivel: var(--color-nivelPlata);
+}
+.ui-insignia-nivel--oro {
+  --ui-tono-nivel: var(--color-nivelOro);
+}
+.ui-insignia-nivel--platino {
+  --ui-tono-nivel: var(--color-nivelPlatino);
+}
+
 /* ── Escalera ─────────────────────────────────────────────────────────────── */
 
 .ui-escalera-niveles {

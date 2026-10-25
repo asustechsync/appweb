@@ -22,26 +22,25 @@ import {
   Campo,
   CampoTexto,
   Cargando,
+  CuadroBento,
+  CuadroMonto,
   EscaleraNiveles,
+  FilaMovimiento,
+  IconoPremio,
   InformacionGrid,
+  ListaConLateral,
+  LogoIcono,
   ProgresoNivel,
+  RejillaBento,
   RejillaMetricas,
-  RejillaNiveles,
   Tarjeta,
   TarjetaMetrica,
-  TarjetaNivel,
-  type TonoNivel,
+  VistaPrevia,
 } from "@appweb/ui";
 
+import { TONO_NIVEL } from "@/lib/tonos-nivel";
+import { useEscritorio } from "@/lib/use-escritorio";
 import { useTRPC } from "@/lib/trpc";
-
-const TONO: Record<IdNivel, TonoNivel> = {
-  BASICO: "basico",
-  BRONCE: "bronce",
-  PLATA: "plata",
-  ORO: "oro",
-  PLATINO: "platino",
-};
 
 /** Lo que se escribe en el formulario: los montos como texto, tal cual. */
 interface Borrador {
@@ -112,6 +111,10 @@ function EditorNiveles({ vigentes, compras }: { vigentes: Nivel[]; compras: Comp
   const [borrador, setBorrador] = useState<Borrador[]>(() => aBorrador(vigentes));
   const [aviso, setAviso] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // El nivel que se edita al lado de la lista; por defecto, el primero que se
+  // puede mover (Basico tiene monto y pedidos fijos).
+  const [elegido, setElegido] = useState<IdNivel | null>(null);
+  const escritorio = useEscritorio();
 
   const propuestos = useMemo(() => aNiveles(borrador), [borrador]);
   const motivo = revisarNiveles(propuestos);
@@ -157,6 +160,96 @@ function EditorNiveles({ vigentes, compras }: { vigentes: Nivel[]; compras: Comp
       : { total: 0, pedidos: 0 };
   const estadoEjemplo = nivelPorCompras(ejemplo, mostrados);
 
+  const indice = Math.max(
+    0,
+    borrador.findIndex((fila) => fila.id === (elegido ?? borrador[1]?.id)),
+  );
+  const seleccion = borrador[indice];
+  const fijo = indice === 0;
+
+  const botones = (
+    <>
+      <Boton
+        variante="secundario"
+        disabled={!cambiado || guardar.isPending}
+        onClick={() => {
+          setBorrador(aBorrador(vigentes));
+          setError(null);
+        }}
+      >
+        Descartar
+      </Boton>
+      <Boton
+        disabled={!cambiado || motivo !== null || guardar.isPending}
+        onClick={() => guardar.mutate({ niveles: propuestos })}
+      >
+        {guardar.isPending ? "Guardando…" : "Guardar niveles"}
+      </Boton>
+    </>
+  );
+
+  const editor = seleccion ? (
+    <RejillaBento>
+      <CuadroMonto
+        logo={<LogoIcono icono={<IconoPremio tamano={16} />} nombre="Nivel" />}
+        estado={{
+          texto: `${reparto[seleccion.id] ?? 0} ${reparto[seleccion.id] === 1 ? "cliente" : "clientes"}`,
+          tono: "neutro",
+        }}
+        etiqueta={fijo ? "Nivel de toda cuenta nueva" : `Nivel ${indice + 1} de ${borrador.length}`}
+        monto={seleccion.nombre || seleccion.id}
+        texto
+      />
+      <CuadroBento titulo="Nombre" ancho="ancho">
+        <Campo
+          id={`nivel-nombre-${seleccion.id}`}
+          etiqueta="Nombre"
+          etiquetaOculta
+          valor={seleccion.nombre}
+          onCambio={(valor) => cambiar(seleccion.id, "nombre", valor)}
+        />
+      </CuadroBento>
+      <CuadroBento titulo={fijo ? "Monto S/ · fijo" : "Monto S/"}>
+        <Campo
+          id={`nivel-desde-${seleccion.id}`}
+          etiqueta="Monto comprado (S/)"
+          etiquetaOculta
+          valor={seleccion.desde}
+          onCambio={(valor) => cambiar(seleccion.id, "desde", valor)}
+          disabled={fijo}
+        />
+      </CuadroBento>
+      <CuadroBento titulo={fijo ? "Pedidos · fijo" : "Pedidos"}>
+        <Campo
+          id={`nivel-pedidos-${seleccion.id}`}
+          etiqueta="Pedidos mínimos"
+          etiquetaOculta
+          valor={seleccion.pedidosMinimos}
+          onCambio={(valor) => cambiar(seleccion.id, "pedidosMinimos", valor)}
+          disabled={fijo}
+        />
+      </CuadroBento>
+      <CuadroBento titulo="Descuento en cada compra (%)" ancho="ancho">
+        <Campo
+          id={`nivel-descuento-${seleccion.id}`}
+          etiqueta="Descuento en cada compra (%)"
+          etiquetaOculta
+          valor={seleccion.descuentoPct}
+          onCambio={(valor) => cambiar(seleccion.id, "descuentoPct", valor)}
+        />
+      </CuadroBento>
+      <CuadroBento titulo="Lo que ve el cliente" ancho="ancho">
+        <CampoTexto
+          id={`nivel-beneficio-${seleccion.id}`}
+          etiqueta={`${seleccion.beneficio.length} de ${MAX_BENEFICIO} caracteres`}
+          valor={seleccion.beneficio}
+          onCambio={(valor) => cambiar(seleccion.id, "beneficio", valor)}
+          filas={3}
+        />
+      </CuadroBento>
+    </RejillaBento>
+  ) : null;
+
   return (
     <>
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
@@ -174,80 +267,52 @@ function EditorNiveles({ vigentes, compras }: { vigentes: Nivel[]; compras: Comp
                 : "al crear la cuenta",
             detalle:
               nivel.descuentoPct > 0 ? `${nivel.descuentoPct}% de descuento` : "sin descuento",
-            tono: TONO[nivel.id],
+            tono: TONO_NIVEL[nivel.id],
           }))}
         />
       </Tarjeta>
 
-      <Tarjeta
-        titulo="Editar cada nivel"
-        acciones={
-          <>
-            <Boton
-              variante="secundario"
-              disabled={!cambiado || guardar.isPending}
-              onClick={() => {
-                setBorrador(aBorrador(vigentes));
-                setError(null);
-              }}
-            >
-              Descartar
-            </Boton>
-            <Boton
-              disabled={!cambiado || motivo !== null || guardar.isPending}
-              onClick={() => guardar.mutate({ niveles: propuestos })}
-            >
-              {guardar.isPending ? "Guardando…" : "Guardar niveles"}
-            </Boton>
-          </>
+      <ListaConLateral
+        lateral={
+          seleccion ? (
+            <VistaPrevia logo={null} estado={{ texto: "", tono: "neutro" }} etiqueta="" monto="">
+              {editor}
+            </VistaPrevia>
+          ) : null
         }
       >
-        <p>
-          Para subir hay que cumplir los dos requisitos: el monto y los pedidos. Básico es el de
-          toda cuenta nueva (S/ 0 y 0 pedidos). Cada nivel pide más que el anterior y no descuenta
-          menos.
-        </p>
-        {motivo !== null ? <Alerta tono="error">{motivo}</Alerta> : null}
-        <RejillaNiveles>
-          {borrador.map((fila, i) => (
-            <TarjetaNivel key={fila.id} nombre={fila.nombre || fila.id} tono={TONO[fila.id]}>
-              <Campo
-                id={`nivel-nombre-${fila.id}`}
-                etiqueta="Nombre"
-                valor={fila.nombre}
-                onCambio={(valor) => cambiar(fila.id, "nombre", valor)}
-              />
-              <Campo
-                id={`nivel-desde-${fila.id}`}
-                etiqueta={i === 0 ? "Monto comprado (S/) · fijo" : "Monto comprado (S/)"}
-                valor={fila.desde}
-                onCambio={(valor) => cambiar(fila.id, "desde", valor)}
-                disabled={i === 0}
-              />
-              <Campo
-                id={`nivel-pedidos-${fila.id}`}
-                etiqueta={i === 0 ? "Pedidos · fijo" : "Pedidos mínimos"}
-                valor={fila.pedidosMinimos}
-                onCambio={(valor) => cambiar(fila.id, "pedidosMinimos", valor)}
-                disabled={i === 0}
-              />
-              <Campo
-                id={`nivel-descuento-${fila.id}`}
-                etiqueta="Descuento en cada compra (%)"
-                valor={fila.descuentoPct}
-                onCambio={(valor) => cambiar(fila.id, "descuentoPct", valor)}
-              />
-              <CampoTexto
-                id={`nivel-beneficio-${fila.id}`}
-                etiqueta={`Descuento y obsequio que ve el cliente (máx. ${MAX_BENEFICIO})`}
-                valor={fila.beneficio}
-                onCambio={(valor) => cambiar(fila.id, "beneficio", valor)}
-                filas={2}
-              />
-            </TarjetaNivel>
-          ))}
-        </RejillaNiveles>
-      </Tarjeta>
+        <Tarjeta titulo="Editar cada nivel" acciones={botones}>
+          <p>
+            Para subir hay que cumplir los dos requisitos: el monto y los pedidos. Cada nivel pide
+            más que el anterior y no descuenta menos.
+          </p>
+          {motivo !== null ? <Alerta tono="error">{motivo}</Alerta> : null}
+          <div>
+            {borrador.map((fila) => {
+              const nivel = mostrados.find((n) => n.id === fila.id);
+              const clientes = nivel ? reparto[nivel.id] : 0;
+              return (
+                <FilaMovimiento
+                  key={fila.id}
+                  logo={<LogoIcono icono={<IconoPremio tamano={16} />} nombre="Nivel" />}
+                  titulo={fila.nombre || fila.id}
+                  subtitulo={`S/ ${fila.desde || "0"} · ${fila.pedidosMinimos || "0"} ${fila.pedidosMinimos === "1" ? "pedido" : "pedidos"}`}
+                  estado={{
+                    texto: `${clientes} ${clientes === 1 ? "cliente" : "clientes"}`,
+                    tono: "neutro",
+                  }}
+                  valor={`${fila.descuentoPct || "0"}%`}
+                  seleccionada={seleccion?.id === fila.id}
+                  onAbrir={() => setElegido(fila.id)}
+                  etiquetaAbrir={`Editar nivel ${fila.nombre || fila.id}`}
+                />
+              );
+            })}
+          </div>
+        </Tarjeta>
+      </ListaConLateral>
+      {/* Sin escritorio no hay columna lateral: el editor va debajo de la lista. */}
+      {!escritorio && seleccion ? editor : null}
 
       <Tarjeta titulo="Clientes por nivel">
         <RejillaMetricas>
@@ -316,7 +381,7 @@ function EditorNiveles({ vigentes, compras }: { vigentes: Nivel[]; compras: Comp
               ? `Te faltan ${textoQueFalta(estadoEjemplo.siguiente)} para llegar a ${estadoEjemplo.siguiente.nivel.nombre}`
               : "Estás en el nivel más alto"
           }
-          tono={TONO[estadoEjemplo.nivel.id]}
+          tono={TONO_NIVEL[estadoEjemplo.nivel.id]}
         />
       </Tarjeta>
     </>

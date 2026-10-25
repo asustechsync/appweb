@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { afectaStock, puedePasarA, siguientesEstados } from "./estados";
 import {
+  DIAS_DEMORA_ENVIO,
+  estaDemorado,
   marcaDeTarjeta,
   movimientosDelCambio,
   notaDeCambio,
@@ -156,5 +158,19 @@ describe("notaDeCambio", () => {
     expect(notaDeCambio("CANCELADO", { nota: "Cliente desistió" })).toBe(
       "Pasó a Cancelado. Cliente desistió",
     );
+  });
+});
+
+describe("estaDemorado", () => {
+  const ahora = new Date("2026-10-24T12:00:00Z");
+  const haceDias = (dias: number) => new Date(ahora.getTime() - dias * 24 * 60 * 60 * 1000);
+
+  it("no lo esta antes del limite", () => {
+    expect(estaDemorado(haceDias(DIAS_DEMORA_ENVIO - 0.5), ahora)).toBe(false);
+  });
+
+  it("lo esta justo en el limite y despues", () => {
+    expect(estaDemorado(haceDias(DIAS_DEMORA_ENVIO), ahora)).toBe(true);
+    expect(estaDemorado(haceDias(DIAS_DEMORA_ENVIO + 2), ahora)).toBe(true);
   });
 });

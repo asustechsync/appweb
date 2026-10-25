@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { enlaceWhatsApp, mensajeComprobanteWhatsApp, numeroWhatsApp } from "./whatsapp";
+import {
+  enlaceCompartirWhatsApp,
+  enlaceWhatsApp,
+  mensajeComprobanteWhatsApp,
+  mensajePagoRecibidoWhatsApp,
+  numeroWhatsApp,
+} from "./whatsapp";
 
 describe("whatsapp", () => {
   it("normaliza celulares peruanos al formato de wa.me", () => {
@@ -20,5 +26,22 @@ describe("whatsapp", () => {
   it("el mensaje del comprobante lleva codigo y monto", () => {
     expect(mensajeComprobanteWhatsApp({ codigo: "PED-1", total: 59.9 })).toContain("PED-1");
     expect(mensajeComprobanteWhatsApp({ codigo: "PED-1", total: 59.9 })).toContain("59.90");
+  });
+
+  it("el aviso de pago recibido lleva nombre, monto, medio y pedido", () => {
+    const mensaje = mensajePagoRecibidoWhatsApp({
+      nombre: "Garuda",
+      codigo: "261024-0002",
+      monto: 104.44,
+      medio: "Yape",
+    });
+    expect(mensaje).toContain("Garuda");
+    expect(mensaje).toContain("104.44");
+    expect(mensaje).toContain("Yape");
+    expect(mensaje).toContain("261024-0002");
+  });
+
+  it("sin numero comparte el mensaje para elegir el chat", () => {
+    expect(enlaceCompartirWhatsApp("Hola")).toBe("https://wa.me/?text=Hola");
   });
 });

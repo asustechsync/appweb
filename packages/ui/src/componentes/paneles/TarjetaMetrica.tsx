@@ -18,6 +18,8 @@ export interface PropsTarjetaMetrica {
   seriePrevia?: number[];
   /** Al pie de la cifra: "3 pagos esperando". */
   contexto?: string;
+  /** Para cifras donde bajar es lo bueno (rechazos, reembolsos): invierte verde y rojo. */
+  menosEsMejor?: boolean;
 }
 
 /** Separa el simbolo de moneda del resto de la cifra: "S/ 12.50" -> ["S/", " 12.50"]. */
@@ -43,8 +45,12 @@ export function TarjetaMetrica({
   serie,
   seriePrevia,
   contexto,
+  menosEsMejor = false,
 }: PropsTarjetaMetrica) {
   const tono = cambio === undefined ? null : tonoDe(cambio);
+  // La flecha sigue la direccion; el color, si el cambio es bueno o malo.
+  const color =
+    menosEsMejor && tono === "sube" ? "baja" : menosEsMejor && tono === "baja" ? "sube" : tono;
   // Sin cambio no hay flecha ni diferencia que mostrar: solo el periodo anterior.
   const movio = tono === "sube" || tono === "baja";
   const [moneda, cifra] = partirMoneda(valor);
@@ -54,7 +60,7 @@ export function TarjetaMetrica({
       <header className="ui-tarjeta-metrica__cabecera">
         <span className="ui-tarjeta-metrica__etiqueta">{etiqueta}</span>
         {cambio === undefined ? null : (
-          <span className={`ui-tarjeta-metrica__cambio ui-tarjeta-metrica__cambio--${tono}`}>
+          <span className={`ui-tarjeta-metrica__cambio ui-tarjeta-metrica__cambio--${color}`}>
             {cambio > 0 ? "+" : cambio < 0 ? "−" : ""}
             {Math.abs(cambio)}%
           </span>
@@ -79,7 +85,7 @@ export function TarjetaMetrica({
             {contexto ? <span className="ui-tarjeta-metrica__contexto">{contexto}</span> : null}
             {movio ? (
               <span
-                className={`ui-tarjeta-metrica__flecha ui-tarjeta-metrica__flecha--${tono}`}
+                className={`ui-tarjeta-metrica__flecha ui-tarjeta-metrica__flecha--${color}`}
                 aria-hidden="true"
               >
                 {tono === "sube" ? (
@@ -91,7 +97,7 @@ export function TarjetaMetrica({
             ) : null}
             {movio && diferencia ? (
               <span
-                className={`ui-tarjeta-metrica__diferencia ui-tarjeta-metrica__diferencia--${tono}`}
+                className={`ui-tarjeta-metrica__diferencia ui-tarjeta-metrica__diferencia--${color}`}
               >
                 {diferencia}
               </span>

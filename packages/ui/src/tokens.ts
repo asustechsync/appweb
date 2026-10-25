@@ -206,6 +206,7 @@ export const tokens = {
   radio: {
     ninguno: 0,
     sm: 4,
+    etiqueta: 6,
     tarjeta: 7,
     md: 8,
     lg: 12,

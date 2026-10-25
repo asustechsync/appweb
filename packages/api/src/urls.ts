@@ -10,3 +10,19 @@
 
 export const URL_TIENDA = process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhost:3000";
 export const URL_PANEL = process.env["NEXT_PUBLIC_ADMIN_URL"] ?? "http://localhost:3001";
+
+/**
+ * URL del panel vista desde el navegador actual. Si el panel apunta a
+ * `localhost` pero la tienda se abrio por otra direccion (el movil entrando por
+ * la IP de la red local), `localhost` seria el propio telefono: se reemplaza el
+ * host por el de la pagina y se conserva el puerto del panel.
+ */
+export function urlPanelEnNavegador(): string {
+  if (typeof window === "undefined") return URL_PANEL;
+  const panel = new URL(URL_PANEL);
+  const esLocal = panel.hostname === "localhost" || panel.hostname === "127.0.0.1";
+  if (esLocal && window.location.hostname !== panel.hostname) {
+    panel.hostname = window.location.hostname;
+  }
+  return panel.origin;
+}

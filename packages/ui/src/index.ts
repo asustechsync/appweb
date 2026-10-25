@@ -19,6 +19,8 @@ export {
   IconoTicket,
   IconoCamion,
   IconoGaleria,
+  IconoVerificado,
+  IconoWhatsAppLinea,
   IconoInicio,
   IconoClientes,
   IconoVentas,
@@ -32,6 +34,7 @@ export {
   IconoCandado,
   IconoTelefono,
   IconoFlechaIzquierda,
+  IconoFlechaDerecha,
   IconoPedidos,
   IconoUbicacion,
   IconoUsuario,
@@ -297,10 +300,12 @@ export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/
 export { Minigrafico, type PropsMinigrafico } from "./componentes/paneles/Minigrafico";
 export {
   ListaActividad,
+  LogoIcono,
   LogoMedioPago,
   TarjetaActividad,
   type MedioLogo,
   type PropsListaActividad,
+  type PropsLogoIcono,
   type PropsLogoMedioPago,
   type PropsTarjetaActividad,
 } from "./componentes/paneles/ListaActividad";
@@ -325,6 +330,7 @@ export {
   EscaleraNiveles,
   ProgresoNivel,
   PuntoNivel,
+  InsigniaNivel,
   RejillaNiveles,
   TarjetaNivel,
   type PropsEscaleraNiveles,
@@ -334,6 +340,28 @@ export {
   type TramoNivel,
 } from "./componentes/paneles/EscaleraNiveles";
 export { FilaLista, type PropsFilaLista } from "./componentes/paneles/FilaLista";
+export { BarraLista, type PropsBarraLista } from "./componentes/paneles/BarraLista";
+export {
+  FilaMovimiento,
+  type PropsFilaMovimiento,
+  type TonoMovimiento,
+} from "./componentes/paneles/FilaMovimiento";
+export { ListaConLateral, type PropsListaConLateral } from "./componentes/paneles/ListaConLateral";
+export { VistaPrevia, type PropsVistaPrevia } from "./componentes/paneles/VistaPrevia";
+export { CabeceraDetalle, type PropsCabeceraDetalle } from "./componentes/paneles/CabeceraDetalle";
+export {
+  RejillaBento,
+  CuadroBento,
+  CuadroMonto,
+  AccionesBento,
+  CuadroDesglose,
+  ZonaImprimible,
+  type PropsZonaImprimible,
+  type PropsCuadroDesglose,
+  type PropsRejillaBento,
+  type PropsCuadroBento,
+  type PropsCuadroMonto,
+} from "./componentes/paneles/RejillaBento";
 export { Insignia, type PropsInsignia } from "./componentes/base/Insignia";
 export {
   CampoSelect,

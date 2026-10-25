@@ -1,0 +1,249 @@
+/* Movil: dos columnas; el destacado y los anchos ocupan la fila entera. */
+.ui-rejilla-bento {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-2);
+}
+.ui-cuadro-bento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+}
+.ui-cuadro-bento--ancho,
+.ui-cuadro-bento--destacado {
+  grid-column: span 2;
+}
+.ui-cuadro-bento--destacado {
+  justify-content: space-between;
+  gap: var(--espacio-6);
+  padding: var(--espacio-4);
+}
+.ui-cuadro-bento__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  margin: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-cuadro-bento__icono {
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-textoTenue);
+}
+.ui-cuadro-bento__valor {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.ui-cuadro-bento__valor:has(.ui-cuadro-bento__copiar) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+.ui-cuadro-bento__copiar {
+  display: inline-grid;
+  place-items: center;
+  padding: var(--espacio-1);
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: none;
+  color: var(--color-textoTenue);
+  cursor: pointer;
+}
+.ui-cuadro-bento__copiar:hover {
+  background: var(--color-fondoActividad);
+  color: var(--color-texto);
+}
+.ui-cuadro-bento__copiar:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+}
+.ui-cuadro-bento__cifras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-1) var(--espacio-4);
+  margin: var(--espacio-2) 0 0;
+}
+.ui-cuadro-bento__cifra {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: var(--espacio-1);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-cuadro-bento__cifra dd {
+  margin: 0;
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+}
+.ui-cuadro-bento__desglose {
+  display: grid;
+  gap: var(--espacio-1);
+  margin: var(--espacio-1) 0 0;
+}
+.ui-cuadro-bento__linea {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-base);
+}
+.ui-cuadro-bento__linea dd {
+  margin: 0;
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ui-cuadro-bento__linea dd.ui-cuadro-bento__rebaja {
+  color: var(--color-exito);
+}
+/* El total, resaltado por tamaño y peso: sin franja ni linea. */
+.ui-cuadro-bento__linea--total {
+  align-items: baseline;
+  margin-block-start: var(--espacio-2);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-cuadro-bento__linea--total dd {
+  font-weight: var(--tipo-peso-fuerte);
+}
+.ui-cuadro-bento__nota {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-normal);
+}
+.ui-cuadro-bento--vacio .ui-cuadro-bento__valor {
+  color: var(--color-textoTenue);
+  font-weight: var(--tipo-peso-normal);
+}
+.ui-cuadro-bento__detalle {
+  margin: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  overflow-wrap: anywhere;
+}
+.ui-cuadro-bento__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+.ui-cuadro-bento__estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-etiqueta);
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-cuadro-bento__estado--exito {
+  color: var(--color-exito);
+}
+.ui-cuadro-bento__estado--alerta {
+  color: var(--color-alerta);
+}
+.ui-cuadro-bento__estado--error {
+  color: var(--color-error);
+}
+.ui-cuadro-bento__estado--neutro {
+  color: var(--color-textoTenue);
+}
+.ui-cuadro-bento__monto {
+  margin: 0;
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-3xl);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+.ui-cuadro-bento__monto--texto {
+  font-family: var(--tipo-familia-titulos);
+  font-size: var(--tipo-tamano-2xl);
+  overflow-wrap: anywhere;
+}
+.ui-cuadro-bento__monto--anulado {
+  color: var(--color-textoTenue);
+  text-decoration: line-through;
+}
+
+.ui-cuadro-bento__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  margin-block-start: var(--espacio-3);
+}
+.ui-cuadro-bento__accion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-2) var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  cursor: pointer;
+}
+.ui-cuadro-bento__accion:hover {
+  background: var(--color-fondoActividad);
+}
+.ui-cuadro-bento__accion:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}
+
+/* Lo que va dentro (cabecera y tarjeta) se apila con el aire de las secciones. */
+.ui-zona-imprimible {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+/* Impresion: solo la zona, a todo el ancho, sin botones. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .ui-zona-imprimible,
+  .ui-zona-imprimible * {
+    visibility: visible;
+  }
+  .ui-zona-imprimible {
+    position: absolute;
+    inset: 0 0 auto 0;
+  }
+  .ui-zona-imprimible button,
+  .ui-zona-imprimible a.ui-boton {
+    display: none;
+  }
+  .ui-rejilla-bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ui-cuadro-bento--destacado {
+    grid-row: span 2;
+  }
+}
+
+/* Desde tablet: cuatro columnas y el destacado en un bloque de 2x2. */
+@media (min-width: 48rem) {
+  .ui-rejilla-bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ui-cuadro-bento--destacado {
+    grid-row: span 2;
+  }
+}

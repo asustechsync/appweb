@@ -69,6 +69,11 @@ export function PuntoNivel({ tono }: { tono: TonoNivel }) {
   return <span className={`ui-punto-nivel ui-punto-nivel--${tono}`} aria-hidden="true" />;
 }
 
+/** El nombre del nivel en una etiqueta teñida con su color: "Platino". */
+export function InsigniaNivel({ tono, children }: { tono: TonoNivel; children: ReactNode }) {
+  return <span className={`ui-insignia-nivel ui-insignia-nivel--${tono}`}>{children}</span>;
+}
+
 export interface PropsTarjetaNivel {
   nombre: string;
   tono: TonoNivel;

@@ -1,30 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { departamentosDesdeTexto, type EstadoPedido } from "@appweb/core";
+import {
+  DIAS_DEMORA_ENVIO,
+  departamentosDesdeTexto,
+  ETIQUETAS_PERIODO,
+  PERIODOS,
+  type EstadoPedido,
+  type Periodo,
+} from "@appweb/core";
 import {
   Alerta,
+  BarraLista,
   Boton,
   Campo,
+  CampoSelectorLista,
   Cargando,
   Casilla,
   EstadoVacio,
   FilaLista,
+  FilaMovimiento,
   FilaUnida,
   Formulario,
+  IconoBuscar,
+  IconoCamion,
   Insignia,
-  Pestanas,
+  ListaConLateral,
+  LogoIcono,
+  RejillaMetricas,
+  SelectorCalendario,
+  SelectorSegmentado,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
 } from "@appweb/ui";
 
 import { revalidarTienda } from "@/lib/revalidar";
+import { useEscritorio } from "@/lib/use-escritorio";
 import { useTRPC } from "@/lib/trpc";
-import { FECHA_HORA, MONEDA, numeroDesdeTexto } from "@appweb/core/formato";
 
-type Pestana = "PAGADO" | "PREPARANDO" | "ENVIADO" | "TARIFAS";
+import { CuadrosEnvio, ETAPA_ENVIO, tonoDeEtapa, type EnvioDeCola } from "./CuadrosEnvio";
+import {
+  MONEDA,
+  conSigno,
+  cuandoFue,
+  mensajeDeFallo,
+  numeroDesdeTexto,
+} from "@appweb/core/formato";
+
+type Filtro = "TODOS" | "PAGADO" | "PREPARANDO" | "ENVIADO" | "TARIFAS";
 
 /** El siguiente paso de cada estado de la cola, como lo lee el almacen. */
 const SIGUIENTE: Partial<Record<EstadoPedido, { estado: EstadoPedido; boton: string }>> = {
@@ -33,82 +60,47 @@ const SIGUIENTE: Partial<Record<EstadoPedido, { estado: EstadoPedido; boton: str
   ENVIADO: { estado: "ENTREGADO", boton: "Marcar entregado" },
 };
 
+/** "2 pedidos esperan · el más antiguo hace 3 h", o el texto de cola vacia. */
+function contextoDeCola(cantidad: number, masAntiguo: string | null, vacia: string): string {
+  if (cantidad === 0 || masAntiguo === null) return vacia;
+  const esperan = cantidad === 1 ? "pedido espera" : "pedidos esperan";
+  return `${cantidad} ${esperan} · el más antiguo ${cuandoFue(new Date(masAntiguo)).toLowerCase()}`;
+}
+
+const AVISO_PASO: Partial<Record<EstadoPedido, string>> = {
+  PREPARANDO: "pasó a preparación",
+  ENVIADO: "quedó como enviado",
+  ENTREGADO: "quedó como entregado",
+};
+
 /**
- * Seccion de envios: lo que el almacen tiene que preparar, despachar y
- * entregar. No muestra montos ni deja cancelar: los pasos permitidos los
- * decide `revisarDespacho` de @appweb/core.
+ * Seccion de envios: a donde va cada pedido y en que paso del despacho esta.
+ * Lista con vista previa al lado (escritorio). No muestra montos ni deja
+ * cancelar: los pasos permitidos los decide `revisarDespacho` de @appweb/core.
  */
 export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
   const trpc = useTRPC();
-  const [pestana, setPestana] = useState<Pestana>("PAGADO");
+  const queryClient = useQueryClient();
+  const [filtro, setFiltro] = useState<Filtro>("TODOS");
+  const [busqueda, setBusqueda] = useState("");
   const cola = useQuery(trpc.panel.envios.cola.queryOptions());
 
-  const pedidos = cola.data ?? [];
-  const cuenta = (estado: EstadoPedido) => pedidos.filter((p) => p.estado === estado).length;
-  const etiqueta = (texto: string, n: number) => (n > 0 ? `${texto} (${n})` : texto);
+  const [periodo, setPeriodo] = useState<Periodo>("dia");
+  // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
+  const [fecha, setFecha] = useState("");
+  // Aparte de la cola: cambiar el periodo no la recarga, y se conservan las
+  // cifras anteriores mientras llegan las nuevas.
+  const metricas = useQuery({
+    ...trpc.panel.envios.metricas.queryOptions({ periodo, ...(fecha ? { fecha } : {}) }),
+    placeholderData: keepPreviousData,
+  });
 
-  const opciones = [
-    { id: "PAGADO", etiqueta: etiqueta("Por preparar", cuenta("PAGADO")) },
-    { id: "PREPARANDO", etiqueta: etiqueta("Preparando", cuenta("PREPARANDO")) },
-    { id: "ENVIADO", etiqueta: etiqueta("En camino", cuenta("ENVIADO")) },
-    ...(puedeTarifas ? [{ id: "TARIFAS", etiqueta: "Tarifas" }] : []),
-  ];
-
-  return (
-    <Tarjeta titulo="Envíos">
-      <Pestanas
-        etiqueta="Etapa del despacho"
-        opciones={opciones}
-        activa={pestana}
-        onCambio={(id) => setPestana(id as Pestana)}
-      />
-      {pestana === "TARIFAS" ? (
-        <Tarifas />
-      ) : cola.isPending ? (
-        <Cargando texto="Cargando envíos…" />
-      ) : cola.isError ? (
-        <Alerta tono="error">{cola.error.message}</Alerta>
-      ) : (
-        <ColaDeEtapa estado={pestana} pedidos={pedidos.filter((p) => p.estado === pestana)} />
-      )}
-    </Tarjeta>
-  );
-}
-
-// ── Cola de una etapa ───────────────────────────────────────────────────────
-
-interface PedidoDeCola {
-  id: string;
-  codigo: string;
-  estado: EstadoPedido;
-  cobrarAlEntregar: boolean;
-  creadoEn: string;
-  destinatario: string;
-  telefono: string | null;
-  direccion: string;
-  referencia: string | null;
-  metodo: string;
-  transportista: string | null;
-  codigoSeguimiento: string | null;
-  items: { nombreProducto: string; sku: string; talla: string; color: string; cantidad: number }[];
-}
-
-const VACIA: Record<Exclude<Pestana, "TARIFAS">, string> = {
-  PAGADO: "No hay pedidos pagados esperando preparación.",
-  PREPARANDO: "No hay pedidos en preparación.",
-  ENVIADO: "No hay pedidos en camino.",
-};
-
-function ColaDeEtapa({
-  estado,
-  pedidos,
-}: {
-  estado: Exclude<Pestana, "TARIFAS">;
-  pedidos: PedidoDeCola[];
-}) {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const escritorio = useEscritorio();
+  const [elegido, setElegido] = useState<string | null>(null);
+  // En movil no hay vista previa: tocar una fila la abre a pantalla completa.
+  const [abiertoMovil, setAbiertoMovil] = useState<string | null>(null);
+  // Pedido con el formulario de "Marcar enviado" abierto.
+  const [enviando, setEnviando] = useState<string | null>(null);
   const [transportista, setTransportista] = useState("");
   const [seguimiento, setSeguimiento] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -118,118 +110,318 @@ function ColaDeEtapa({
     trpc.panel.envios.avanzar.mutationOptions({
       onSuccess: (r, v) => {
         setError(null);
-        setAbierto(null);
+        setEnviando(null);
         setTransportista("");
         setSeguimiento("");
-        const textos: Partial<Record<EstadoPedido, string>> = {
-          PREPARANDO: "pasó a preparación",
-          ENVIADO: "quedó como enviado",
-          ENTREGADO: "quedó como entregado",
-        };
-        setAviso(`${r.codigo} ${textos[v.estado] ?? "se actualizó"}.`);
+        setAviso(`${r.codigo} ${AVISO_PASO[v.estado] ?? "se actualizó"}.`);
+        // Incluye las tarjetas: un paso mueve las colas y los despachados.
         void queryClient.invalidateQueries(trpc.panel.envios.pathFilter());
         void queryClient.invalidateQueries(trpc.panel.pedidos.pathFilter());
         void queryClient.invalidateQueries(trpc.panel.avisos.pathFilter());
       },
       onError: (fallo) => {
         setAviso(null);
-        setError(fallo.message);
+        setError(mensajeDeFallo(fallo));
       },
     }),
   );
 
-  const paso = SIGUIENTE[estado];
+  const visibles = useMemo(() => {
+    const pedidos: EnvioDeCola[] = cola.data ?? [];
+    const termino = busqueda.trim().toLowerCase();
+    return pedidos.filter(
+      (p) =>
+        (filtro === "TODOS" || p.estado === filtro) &&
+        (termino === "" ||
+          p.codigo.toLowerCase().includes(termino) ||
+          p.destinatario.toLowerCase().includes(termino) ||
+          p.distrito.toLowerCase().includes(termino) ||
+          (p.codigoSeguimiento ?? "").toLowerCase().includes(termino)),
+    );
+  }, [cola.data, filtro, busqueda]);
+  const seleccionado = visibles.find((p) => p.id === elegido) ?? visibles[0] ?? null;
 
-  return (
+  const todos: EnvioDeCola[] = cola.data ?? [];
+  const cuenta = (estado: EstadoPedido) => todos.filter((p) => p.estado === estado).length;
+  const conCuenta = (texto: string, n: number) => (n > 0 ? `${texto} (${n})` : texto);
+  const opciones = [
+    { valor: "TODOS", etiqueta: "Toda la cola" },
+    { valor: "PAGADO", etiqueta: conCuenta("Por preparar", cuenta("PAGADO")) },
+    { valor: "PREPARANDO", etiqueta: conCuenta("Preparando", cuenta("PREPARANDO")) },
+    { valor: "ENVIADO", etiqueta: conCuenta("En camino", cuenta("ENVIADO")) },
+    ...(puedeTarifas ? [{ valor: "TARIFAS", etiqueta: "Tarifas de envío" }] : []),
+  ];
+
+  /** El boton del cuadro principal: el siguiente paso, o abrir el formulario de envio. */
+  function accionDe(p: EnvioDeCola) {
+    const paso = SIGUIENTE[p.estado];
+    if (!paso || enviando === p.id) return undefined;
+    return {
+      etiqueta: avanzar.isPending ? "Guardando…" : paso.boton,
+      onClick: () => {
+        if (avanzar.isPending) return;
+        // Enviar pide transportista y codigo: abre el formulario.
+        if (paso.estado === "ENVIADO") setEnviando(p.id);
+        else avanzar.mutate({ pedidoId: p.id, estado: paso.estado });
+      },
+    };
+  }
+
+  /** Cuadros del envio y, si toca, el formulario para marcarlo enviado. */
+  function vistaDe(p: EnvioDeCola) {
+    return (
+      <>
+        <CuadrosEnvio pedido={p} accion={accionDe(p)} />
+        {enviando === p.id ? (
+          <Tarjeta titulo="Datos del envío">
+            <Formulario
+              onSubmit={(evento) => {
+                evento.preventDefault();
+                avanzar.mutate({
+                  pedidoId: p.id,
+                  estado: "ENVIADO",
+                  ...(transportista.trim() ? { transportista } : {}),
+                  ...(seguimiento.trim() ? { codigoSeguimiento: seguimiento } : {}),
+                });
+              }}
+            >
+              <Campo
+                id={`transportista-${p.id}`}
+                etiqueta="Transportista"
+                valor={transportista}
+                onCambio={setTransportista}
+                placeholder="Olva, Shalom…"
+              />
+              <Campo
+                id={`seguimiento-${p.id}`}
+                etiqueta="Código de seguimiento"
+                valor={seguimiento}
+                onCambio={setSeguimiento}
+                placeholder="Opcional"
+              />
+              <Boton tipo="submit" disabled={avanzar.isPending}>
+                {avanzar.isPending ? "Guardando…" : "Confirmar envío"}
+              </Boton>
+              <Boton variante="secundario" onClick={() => setEnviando(null)}>
+                Cancelar
+              </Boton>
+            </Formulario>
+          </Tarjeta>
+        ) : null}
+      </>
+    );
+  }
+
+  const avisos = (
     <>
       {error ? <Alerta tono="error">{error}</Alerta> : null}
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-      {pedidos.length === 0 ? (
-        <EstadoVacio titulo="Nada por aquí" texto={VACIA[estado]} />
-      ) : (
-        pedidos.map((p) => (
-          <FilaLista
-            key={p.id}
-            acciones={
-              paso && abierto !== p.id ? (
-                <Boton
-                  variante={estado === "PAGADO" ? "primario" : "secundario"}
-                  disabled={avanzar.isPending}
-                  onClick={() =>
-                    // Enviar pide transportista y codigo: abre el formulario.
-                    paso.estado === "ENVIADO"
-                      ? setAbierto(p.id)
-                      : avanzar.mutate({ pedidoId: p.id, estado: paso.estado })
-                  }
-                >
-                  {paso.boton}
-                </Boton>
-              ) : null
-            }
+    </>
+  );
+
+  const barra = (
+    <BarraLista
+      juntos
+      {...(filtro === "TARIFAS"
+        ? {}
+        : {
+            buscador: (
+              <Campo
+                id="busqueda-envios"
+                etiqueta="Buscar por pedido, destinatario, distrito o guía"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={setBusqueda}
+                placeholder="Pedido, distrito o guía"
+              />
+            ),
+          })}
+    >
+      <CampoSelectorLista
+        id="filtro-envios"
+        ancho="amplio"
+        etiqueta="Etapa del despacho"
+        etiquetaOculta
+        valor={filtro}
+        opciones={opciones}
+        onCambio={(valor) => {
+          setFiltro(valor as Filtro);
+          setEnviando(null);
+        }}
+      />
+    </BarraLista>
+  );
+
+  if (filtro === "TARIFAS") {
+    return (
+      <>
+        {barra}
+        <Tarjeta titulo="Tarifas de envío">
+          <Tarifas />
+        </Tarjeta>
+      </>
+    );
+  }
+
+  const movil = escritorio ? undefined : visibles.find((p) => p.id === abiertoMovil);
+  if (movil) {
+    return (
+      <>
+        {avisos}
+        <Boton variante="secundario" onClick={() => setAbiertoMovil(null)}>
+          ← Volver a envíos
+        </Boton>
+        {vistaDe(movil)}
+      </>
+    );
+  }
+
+  const cifras = metricas.data;
+  const tarjetas = cifras ? (
+    <Tarjeta
+      titulo={cifras.titulo}
+      sinMarco
+      acciones={
+        <>
+          <SelectorSegmentado
+            etiqueta="Periodo de las métricas"
+            // Con un dia del calendario elegido, ningun periodo esta activo.
+            valor={fecha ? "" : periodo}
+            opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
+            onCambio={(valor) => {
+              setFecha("");
+              setPeriodo(valor as Periodo);
+            }}
+          />
+          <SelectorCalendario
+            id="fecha-metricas-envios"
+            etiqueta="Elegir un día"
+            etiquetaOculta
+            placeholder="Elegir día"
+            valor={fecha}
+            onCambio={setFecha}
+            limpiable
+            alineacion="fin"
+          />
+        </>
+      }
+    >
+      <RejillaMetricas>
+        {/* Las tres primeras son colas de ahora mismo: se muestran enteras y sin comparar. */}
+        <TarjetaMetrica
+          etiqueta="Por despachar"
+          valor={String(cifras.porDespachar.cantidad)}
+          serie={cifras.porDespachar.serie}
+          contexto={contextoDeCola(
+            cifras.porDespachar.cantidad,
+            cifras.porDespachar.masAntiguo,
+            "Nada esperando salir",
+          )}
+        />
+        <TarjetaMetrica
+          etiqueta="En camino"
+          valor={String(cifras.enCamino.cantidad)}
+          serie={cifras.enCamino.serie}
+          contexto={contextoDeCola(
+            cifras.enCamino.cantidad,
+            cifras.enCamino.masAntiguo,
+            "Nada en camino",
+          )}
+        />
+        <TarjetaMetrica
+          etiqueta="Demorados"
+          valor={String(cifras.demorados.cantidad)}
+          contexto={
+            cifras.demorados.cantidad > 0
+              ? `Más de ${DIAS_DEMORA_ENVIO} días en camino`
+              : `Ninguno pasa de ${DIAS_DEMORA_ENVIO} días`
+          }
+        />
+        <TarjetaMetrica
+          etiqueta="Despachados"
+          valor={String(cifras.despachados.cantidad)}
+          cambio={cifras.despachados.cambio}
+          serie={cifras.despachados.serie}
+          seriePrevia={cifras.despachados.seriePrevia}
+          diferencia={`${conSigno(cifras.despachados.cantidad - cifras.despachados.cantidadPrevia)} ${
+            Math.abs(cifras.despachados.cantidad - cifras.despachados.cantidadPrevia) === 1
+              ? "envío"
+              : "envíos"
+          }`}
+          anterior={{
+            etiqueta: cifras.etiquetaAnterior,
+            valor: String(cifras.despachados.cantidadPrevia),
+          }}
+        />
+      </RejillaMetricas>
+    </Tarjeta>
+  ) : null;
+
+  return (
+    <>
+      {avisos}
+      {tarjetas}
+      <ListaConLateral
+        barra={barra}
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionado ? {} : { vacio: "Elige un envío de la lista para ver su resumen." })}
           >
-            <strong>
-              {p.codigo} · {p.destinatario}
-            </strong>
-            <span>
-              {p.direccion}
-              {p.referencia ? ` (Ref.: ${p.referencia})` : ""}
-            </span>
-            <span>
-              {p.telefono ? `${p.telefono} · ` : ""}
-              {p.metodo} · {FECHA_HORA.format(new Date(p.creadoEn))}
-            </span>
-            <span>
-              {p.cobrarAlEntregar ? <Insignia tono="alerta">Cobrar al entregar</Insignia> : null}
-              {p.transportista || p.codigoSeguimiento ? (
-                <Insignia tono="neutro">
-                  {p.transportista ?? "Transportista"} · {p.codigoSeguimiento ?? "sin código"}
-                </Insignia>
-              ) : null}
-            </span>
-            {p.items.map((item) => (
-              <span key={item.sku}>
-                {item.cantidad} × {item.nombreProducto} · Talla {item.talla} · {item.color}
-              </span>
-            ))}
-            {abierto === p.id ? (
-              <Formulario
-                onSubmit={(evento) => {
-                  evento.preventDefault();
-                  avanzar.mutate({
-                    pedidoId: p.id,
-                    estado: "ENVIADO",
-                    ...(transportista.trim() ? { transportista } : {}),
-                    ...(seguimiento.trim() ? { codigoSeguimiento: seguimiento } : {}),
-                  });
-                }}
-              >
-                <FilaUnida iguales>
-                  <Campo
-                    id={`transportista-${p.id}`}
-                    etiqueta="Transportista"
-                    valor={transportista}
-                    onCambio={setTransportista}
-                    placeholder="Olva, Shalom…"
+            {seleccionado ? vistaDe(seleccionado) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {cola.isPending ? (
+            <Cargando texto="Cargando envíos…" />
+          ) : cola.isError ? (
+            <Alerta tono="error">{cola.error.message}</Alerta>
+          ) : visibles.length === 0 ? (
+            <EstadoVacio
+              titulo="Nada por aquí"
+              texto={
+                busqueda
+                  ? "Ningún envío coincide con esa búsqueda."
+                  : "No hay pedidos en esta etapa del despacho."
+              }
+            />
+          ) : (
+            <div>
+              {visibles.map((p) => {
+                const unidades = p.items.reduce((suma, item) => suma + item.cantidad, 0);
+                return (
+                  <FilaMovimiento
+                    key={p.id}
+                    logo={<LogoIcono icono={<IconoCamion tamano={16} />} nombre="Envío" />}
+                    titulo={p.codigo}
+                    detalle={p.destinatario}
+                    subtitulo={`${p.distrito || p.departamento} · ${p.transportista ?? p.metodo}${
+                      p.codigoSeguimiento ? ` · Guía …${p.codigoSeguimiento.slice(-4)}` : ""
+                    }`}
+                    estado={{
+                      texto: ETAPA_ENVIO[p.estado] ?? p.estado,
+                      tono: tonoDeEtapa(p.estado),
+                    }}
+                    valor={`${unidades} ${unidades === 1 ? "unidad" : "uds."}`}
+                    seleccionada={escritorio && seleccionado?.id === p.id}
+                    onAbrir={() => {
+                      setEnviando(null);
+                      if (escritorio) setElegido(p.id);
+                      else setAbiertoMovil(p.id);
+                    }}
+                    etiquetaAbrir={`Ver envío de ${p.codigo}`}
                   />
-                  <Campo
-                    id={`seguimiento-${p.id}`}
-                    etiqueta="Código de seguimiento"
-                    valor={seguimiento}
-                    onCambio={setSeguimiento}
-                    placeholder="Opcional"
-                  />
-                </FilaUnida>
-                <Boton tipo="submit" disabled={avanzar.isPending}>
-                  {avanzar.isPending ? "Guardando…" : "Confirmar envío"}
-                </Boton>
-                <Boton variante="secundario" onClick={() => setAbierto(null)}>
-                  Cancelar
-                </Boton>
-              </Formulario>
-            ) : null}
-          </FilaLista>
-        ))
-      )}
+                );
+              })}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
     </>
   );
 }

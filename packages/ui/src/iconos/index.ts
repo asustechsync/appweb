@@ -29,6 +29,7 @@ export { IconoOpiniones } from "./generados/IconoOpiniones";
 export { IconoPregunta } from "./generados/IconoPregunta";
 export { IconoSoporte } from "./generados/IconoSoporte";
 export { IconoTelefono } from "./generados/IconoTelefono";
+export { IconoWhatsAppLinea } from "./generados/IconoWhatsAppLinea";
 
 // cuenta
 export { IconoCandado } from "./generados/IconoCandado";
@@ -45,6 +46,7 @@ export { IconoUsuario } from "./generados/IconoUsuario";
 // interfaz
 export { IconoCalendario } from "./generados/IconoCalendario";
 export { IconoCamara } from "./generados/IconoCamara";
+export { IconoCopiar } from "./generados/IconoCopiar";
 export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
 export { IconoEstrella } from "./generados/IconoEstrella";
 export { IconoFlash } from "./generados/IconoFlash";

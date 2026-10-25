@@ -84,6 +84,25 @@ export function acumular(serie: number[]): number[] {
   ];
 }
 
+/**
+ * Una linea de minigrafico: `valor` de cada registro acumulado sobre el
+ * periodo [desde, fin). Con `corte` (ahora) se detiene en el tramo en curso.
+ */
+export function serieAcumulada(
+  registros: { en: Date; valor: number }[],
+  desde: Date,
+  fin: Date,
+  corte?: Date,
+): number[] {
+  const duracion = fin.getTime() - desde.getTime();
+  // +1 por el 0 de arranque que pone `acumular`.
+  const puntos =
+    corte && duracion > 0 && corte < fin
+      ? Math.ceil(((corte.getTime() - desde.getTime()) / duracion) * TRAMOS_SERIE) + 1
+      : TRAMOS_SERIE + 1;
+  return acumular(serieEnTramos(registros, desde, fin)).slice(0, Math.max(puntos, 1));
+}
+
 export interface SeriesResumen {
   ventas: number[];
   pedidos: number[];
@@ -106,14 +125,8 @@ export function seriesDelResumen(
   fin: Date,
   corte?: Date,
 ): SeriesResumen {
-  const duracion = fin.getTime() - desde.getTime();
-  // +1 por el 0 de arranque que pone `acumular`.
-  const puntos =
-    corte && duracion > 0 && corte < fin
-      ? Math.ceil(((corte.getTime() - desde.getTime()) / duracion) * TRAMOS_SERIE) + 1
-      : TRAMOS_SERIE + 1;
   const serie = (registros: { en: Date; valor: number }[]) =>
-    acumular(serieEnTramos(registros, desde, fin)).slice(0, Math.max(puntos, 1));
+    serieAcumulada(registros, desde, fin, corte);
   const ventas = serie(pedidos.map((p) => ({ en: p.en, valor: p.total })));
   const cantidad = serie(pedidos.map((p) => ({ en: p.en, valor: 1 })));
   return {

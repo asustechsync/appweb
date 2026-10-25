@@ -210,7 +210,23 @@ export const esquemaResumen = z.object({
 export const esquemaFiltroPagos = z.object({
   /** Sin estado: todos. */
   estado: z.enum(ESTADOS_PAGO).optional(),
+  /** Pedido, cliente u operacion. Se busca en todos los pagos, no solo en los visibles. */
+  busqueda: z.string().trim().max(80).optional(),
+  /** Cuantos pagos trae la lista; "Ver mas" lo sube de diez en diez. */
+  limite: z.number().int().min(1).max(100).default(10),
 });
+
+/** Las tarjetas de Pagos: el mismo periodo o dia que el resumen de Inicio. */
+export const esquemaMetricasPagos = esquemaResumen;
+
+/** Mismo periodo que el resumen: las tarjetas de la seccion Pedidos. */
+export const esquemaMetricasPedidos = esquemaResumen;
+
+/** Mismo periodo que el resumen: las tarjetas de la seccion Envios. */
+export const esquemaMetricasEnvios = esquemaResumen;
+
+/** Un pago concreto, para su detalle. */
+export const esquemaDetallePago = z.object({ pagoId: z.string().min(1) });
 
 export const esquemaRechazarPago = z.object({
   pedidoId: z.string().min(1),

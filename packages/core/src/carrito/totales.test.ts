@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { descuentoDeCupon, normalizarCodigo, revisarCupon, type ReglaCupon } from "./cupones";
-import { calcularTotales, redondear, type LineaCarrito } from "./totales";
+import { calcularTotales, igvIncluido, redondear, type LineaCarrito } from "./totales";
 
 function linea(
   precioUnitario: number,
@@ -16,6 +16,14 @@ describe("redondear", () => {
   it("corrige el error de coma flotante", () => {
     expect(redondear(0.1 + 0.2)).toBe(0.3);
     expect(redondear(1.005)).toBe(1.01);
+  });
+});
+
+describe("igvIncluido", () => {
+  it("saca el 18 % que ya va dentro del monto", () => {
+    expect(igvIncluido(118)).toBe(18);
+    expect(igvIncluido(104.44)).toBe(15.93);
+    expect(igvIncluido(0)).toBe(0);
   });
 });
 

@@ -23,7 +23,11 @@ import {
   notaDeCambio,
   revisarCambioEstado,
   revisarConfirmacionPago,
+  serieAcumulada,
+  variacion,
   variantesSinStock,
+  ventanaDe,
+  ventanaDeFecha,
   type EntradaCambioEstado,
   type EstadoPedido,
   type RechazoPedido,
@@ -33,6 +37,7 @@ import {
   esquemaConfirmarPago,
   esquemaFiltroPedidos,
   esquemaIdPedido,
+  esquemaMetricasPedidos,
 } from "@appweb/core/tipos";
 import { Prisma, type PrismaClient } from "@appweb/db";
 import type { z } from "zod";
@@ -263,6 +268,67 @@ export const pedidos = router({
         email: p.usuario.email,
         lineas: p._count.items,
       })),
+    };
+  }),
+
+  /**
+   * Tarjetas de la seccion: la cola por preparar (ahora, sin comparar) y los
+   * pedidos creados, entregados y cancelados del periodo contra el anterior.
+   * Entregado y cancelado cuentan por la fecha del cambio en el historial.
+   */
+  metricas: ver.input(esquemaMetricasPedidos).query(async ({ ctx, input }) => {
+    const ahora = new Date();
+    const periodo = input.fecha
+      ? ventanaDeFecha(input.fecha, ahora)
+      : ventanaDe(input.periodo, ahora);
+    const hasta = periodo.hasta ?? periodo.fin;
+    const rango = { gte: periodo.previoDesde, lt: hasta };
+
+    const [creados, cambios, porPreparar, masAntiguo] = await Promise.all([
+      ctx.prisma.pedido.findMany({ where: { creadoEn: rango }, select: { creadoEn: true } }),
+      ctx.prisma.historialPedido.findMany({
+        where: { creadoEn: rango, estadoNuevo: { in: ["PAGADO", "ENTREGADO", "CANCELADO"] } },
+        select: { estadoNuevo: true, creadoEn: true },
+      }),
+      ctx.prisma.pedido.count({ where: { estado: "PAGADO" } }),
+      ctx.prisma.pedido.findFirst({
+        where: { estado: "PAGADO" },
+        orderBy: { creadoEn: "asc" },
+        select: { creadoEn: true },
+      }),
+    ]);
+
+    const fechasDe = (estado: EstadoPedido) =>
+      cambios.filter((c) => c.estadoNuevo === estado).map((c) => c.creadoEn);
+    /** Una cifra contada contra el periodo anterior, con sus dos series. */
+    const comparar = (fechas: Date[]) => {
+      const actual = fechas
+        .filter((en) => en >= periodo.desde && en < hasta)
+        .map((en) => ({ en, valor: 1 }));
+      const previo = fechas
+        .filter((en) => en >= periodo.previoDesde && en < periodo.previoHasta)
+        .map((en) => ({ en, valor: 1 }));
+      return {
+        cantidad: actual.length,
+        cantidadPrevia: previo.length,
+        cambio: variacion(actual.length, previo.length),
+        serie: serieAcumulada(actual, periodo.desde, periodo.fin, ahora),
+        seriePrevia: serieAcumulada(previo, periodo.previoDesde, periodo.previoHasta),
+      };
+    };
+
+    return {
+      titulo: periodo.titulo,
+      etiquetaAnterior: periodo.etiquetaPrevio,
+      porPreparar: {
+        cantidad: porPreparar,
+        masAntiguo: masAntiguo?.creadoEn.toISOString() ?? null,
+        // Los pagos que entraron a la cola en el periodo: de donde sale su ritmo.
+        serie: comparar(fechasDe("PAGADO")).serie,
+      },
+      creados: comparar(creados.map((p) => p.creadoEn)),
+      entregados: comparar(fechasDe("ENTREGADO")),
+      cancelados: comparar(fechasDe("CANCELADO")),
     };
   }),
 

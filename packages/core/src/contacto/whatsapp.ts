@@ -30,6 +30,11 @@ export function enlaceWhatsApp(numero: string | null | undefined, mensaje: strin
   return `https://wa.me/${destino}?text=${encodeURIComponent(mensaje)}`;
 }
 
+/** Sin numero: WhatsApp abre con el mensaje escrito y se elige el chat a mano. */
+export function enlaceCompartirWhatsApp(mensaje: string): string {
+  return `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+}
+
 export function mensajeConsultaWhatsApp(): string {
   return "Hola, tengo una consulta sobre sus productos.";
 }
@@ -37,6 +42,16 @@ export function mensajeConsultaWhatsApp(): string {
 /** Del cliente a la tienda: manda su comprobante de pago. */
 export function mensajeComprobanteWhatsApp(datos: { codigo: string; total: number }): string {
   return `Hola, les envío el comprobante de pago de mi pedido ${datos.codigo} por ${MONEDA.format(datos.total)}.`;
+}
+
+/** De la tienda al cliente: su pago ya entro. */
+export function mensajePagoRecibidoWhatsApp(datos: {
+  nombre: string;
+  codigo: string;
+  monto: number;
+  medio: string;
+}): string {
+  return `Hola, ${datos.nombre}. Recibimos tu pago de ${MONEDA.format(datos.monto)} por ${datos.medio} del pedido ${datos.codigo}. ¡Gracias por tu compra!`;
 }
 
 /** De la tienda al cliente, desde el panel. */

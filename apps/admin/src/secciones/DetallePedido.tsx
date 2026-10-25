@@ -8,7 +8,6 @@ import {
   enlaceWhatsApp,
   ETIQUETAS,
   ETIQUETAS_MEDIO_PAGO,
-  ETIQUETAS_PAGO,
   mensajeAlClienteWhatsApp,
   pasosDelPedido,
   siguientesEstados,
@@ -35,7 +34,7 @@ import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 
 import { tonoDeEstado } from "./Pedidos";
-import { FECHA_HORA, MONEDA, mensajeDeFallo } from "@appweb/core/formato";
+import { FECHA_HORA, mensajeDeFallo } from "@appweb/core/formato";
 
 export function tonoDePago(estado: EstadoPago): "exito" | "alerta" | "error" | "neutro" {
   if (estado === "CONFIRMADO") return "exito";
@@ -72,9 +71,6 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
-  const [referencia, setReferencia] = useState("");
-  const [notaPago, setNotaPago] = useState("");
-
   const [estadoNuevo, setEstadoNuevo] = useState("");
   const [nota, setNota] = useState("");
   const [transportista, setTransportista] = useState("");
@@ -88,8 +84,6 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
         ? mensaje
         : `${mensaje} La tienda tardará unos minutos en mostrar el stock nuevo.`,
     );
-    setReferencia("");
-    setNotaPago("");
     setEstadoNuevo("");
     setNota("");
     setTransportista("");
@@ -97,20 +91,13 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
     // Lista y detalle: el pedido cambio de pestaña y de conteo.
     void queryClient.invalidateQueries(trpc.panel.pedidos.pathFilter());
     void queryClient.invalidateQueries(trpc.panel.resumen.pathFilter());
+    void queryClient.invalidateQueries(trpc.panel.pagos.pathFilter());
   }
 
   function alFallar(fallo: unknown) {
     setAviso(null);
     setError(mensajeDeFallo(fallo));
   }
-
-  const confirmar = useMutation(
-    trpc.panel.pedidos.confirmarPago.mutationOptions({
-      onSuccess: (r) =>
-        alTerminar(`Pago de ${r.codigo} confirmado. El stock ya se descontó.`, r.productosTocados),
-      onError: alFallar,
-    }),
-  );
 
   const cambiar = useMutation(
     trpc.panel.pedidos.cambiarEstado.mutationOptions({
@@ -146,8 +133,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
     .filter((estado) => estado !== "PAGADO")
     .map((estado) => ({ valor: estado, etiqueta: etiquetaDeCambio(estado, contraEntrega) }));
   const pendiente = p.estado === "PENDIENTE_PAGO";
-  const faltaStock = p.items.some((item) => item.stockActual < item.cantidad);
-  const trabajando = confirmar.isPending || cambiar.isPending;
+  const trabajando = cambiar.isPending;
   const whatsappCliente = enlaceWhatsApp(
     p.envio.telefono ?? p.cliente.telefono,
     mensajeAlClienteWhatsApp({
@@ -170,48 +156,13 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
         <LineaEstados pasos={pasosDelPedido(p.estado)} />
       </Tarjeta>
 
-      {puedeGestionar && pendiente && !contraEntrega && pagoPendiente ? (
-        <Tarjeta titulo="Confirmar pago">
-          <Formulario
-            onSubmit={(evento) => {
-              evento.preventDefault();
-              confirmar.mutate({
-                pedidoId: p.id,
-                pagoId: pagoPendiente.id,
-                referencia,
-                ...(notaPago.trim() === "" ? {} : { nota: notaPago }),
-              });
-            }}
-          >
-            <p>
-              Revisa en tu {ETIQUETAS_MEDIO_PAGO[pagoPendiente.medio]} que entraron{" "}
-              <strong>{MONEDA.format(pagoPendiente.monto)}</strong> y copia el número de operación.
-              Al confirmar, el pedido pasa a Pagado y se descuenta el stock.
-            </p>
-            {faltaStock ? (
-              <Alerta tono="error">
-                Algún producto ya no tiene stock suficiente. Revisa la lista de abajo antes de
-                confirmar.
-              </Alerta>
-            ) : null}
-            <Campo
-              id="referencia-pago"
-              etiqueta="Número de operación"
-              valor={referencia}
-              onCambio={setReferencia}
-              requerido
-            />
-            <Campo
-              id="nota-pago"
-              etiqueta="Nota (opcional)"
-              valor={notaPago}
-              onCambio={setNotaPago}
-            />
-            <Boton tipo="submit" disabled={trabajando || referencia.trim() === ""}>
-              {confirmar.isPending ? "Confirmando…" : "Confirmar pago y descontar stock"}
-            </Boton>
-          </Formulario>
-        </Tarjeta>
+      {pendiente && !contraEntrega ? (
+        // El dinero se revisa en Pagos: aqui solo se ve que el pedido espera.
+        <Alerta tono="info">
+          {pagoPendiente
+            ? "Este pedido espera que se confirme su pago. Eso se hace en la sección Pagos."
+            : "Este pedido aún no tiene un pago registrado."}
+        </Alerta>
       ) : null}
 
       {puedeGestionar && opcionesCambio.length > 0 ? (
@@ -338,30 +289,6 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
           ) : null}
         </BloqueDetalle>
       </FilaDetalles>
-
-      <Tarjeta titulo="Pagos">
-        {p.pagos.map((pago) => (
-          <FilaLista key={pago.id}>
-            <strong>
-              {ETIQUETAS_MEDIO_PAGO[pago.medio]} · {MONEDA.format(pago.monto)}
-            </strong>
-            <span>
-              <Insignia tono={tonoDePago(pago.estado)}>{ETIQUETAS_PAGO[pago.estado]}</Insignia>
-              {pago.referencia ? ` · Op. ${pago.referencia}` : ""}
-            </span>
-            {pago.confirmadoPor && pago.confirmadoEn ? (
-              <span>
-                Confirmó {pago.confirmadoPor} · {FECHA_HORA.format(new Date(pago.confirmadoEn))}
-              </span>
-            ) : null}
-            {pago.comprobanteUrl ? (
-              <a href={pago.comprobanteUrl} target="_blank" rel="noreferrer">
-                Ver comprobante
-              </a>
-            ) : null}
-          </FilaLista>
-        ))}
-      </Tarjeta>
 
       <Tarjeta titulo="Historial">
         {p.historial.map((h) => (

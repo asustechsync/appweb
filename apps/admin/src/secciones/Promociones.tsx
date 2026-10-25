@@ -15,7 +15,6 @@ import {
   FilaUnida,
   Formulario,
   Insignia,
-  Pestanas,
   Tarjeta,
 } from "@appweb/ui";
 

@@ -1,0 +1,131 @@
+.ui-vista-previa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+  border-radius: var(--radio-lg);
+  background: var(--color-fondo);
+}
+.ui-vista-previa__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+.ui-vista-previa__estado {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-etiqueta);
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-vista-previa__estado--exito {
+  color: var(--color-exito);
+}
+.ui-vista-previa__estado--alerta {
+  color: var(--color-alerta);
+}
+.ui-vista-previa__estado--error {
+  color: var(--color-error);
+}
+.ui-vista-previa__estado--neutro {
+  color: var(--color-textoTenue);
+}
+.ui-vista-previa__etiqueta,
+.ui-vista-previa__monto,
+.ui-vista-previa__detalle {
+  margin: 0;
+}
+.ui-vista-previa__etiqueta {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-vista-previa__monto {
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-3xl);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+.ui-vista-previa__detalle {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-vista-previa__filas {
+  display: grid;
+  gap: var(--espacio-2);
+  margin: 0;
+}
+.ui-vista-previa__fila {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  font-size: var(--tipo-tamano-base);
+}
+.ui-vista-previa__fila dt {
+  color: var(--color-textoSuave);
+}
+.ui-vista-previa__fila dd {
+  margin: 0;
+  color: var(--color-texto);
+  font-weight: var(--tipo-peso-medio);
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+.ui-vista-previa__acciones {
+  display: grid;
+  gap: var(--espacio-2);
+}
+.ui-vista-previa__acciones .ui-boton {
+  align-self: stretch;
+  inline-size: 100%;
+}
+.ui-vista-previa__vacio {
+  margin: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-base);
+}
+
+/* Cuadros bento sueltos: cada uno trae su propio fondo. */
+.ui-vista-previa-cuadros {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  block-size: 100%;
+}
+.ui-vista-previa-cuadros .ui-cuadro-bento {
+  justify-content: center;
+  padding: var(--espacio-2) var(--espacio-3);
+}
+.ui-vista-previa-cuadros .ui-cuadro-bento--destacado {
+  gap: var(--espacio-3);
+  padding: var(--espacio-3);
+}
+/* Los cuadros reparten el alto que sobra: la columna iguala a la lista sin huecos. */
+.ui-vista-previa-cuadros > .ui-rejilla-bento {
+  flex: 1;
+  align-content: stretch;
+}
+
+/* La columna lateral es estrecha: dos columnas siempre, aunque la pantalla sea ancha. */
+.ui-vista-previa-cuadros .ui-rejilla-bento {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ui-vista-previa-cuadros .ui-cuadro-bento--destacado {
+  grid-row: auto;
+}
+
+/* Boton del cuadro del monto: ancho completo y con cuerpo, es la accion principal. */
+.ui-vista-previa-cuadros .ui-cuadro-bento__acciones {
+  gap: var(--espacio-1);
+}
+.ui-vista-previa-cuadros .ui-cuadro-bento__accion {
+  flex: 1;
+  justify-content: center;
+}
+.ui-vista-previa-cuadros .ui-cuadro-bento__accion {
+  gap: var(--espacio-1);
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-md);
+}

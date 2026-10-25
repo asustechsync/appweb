@@ -129,7 +129,6 @@ export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: Props
           <ul
             ref={listaRef}
             id={listaId}
-            role="listbox"
             aria-label="Países"
             className={
               visibles.length > 3
@@ -144,7 +143,6 @@ export function SelectorPais({ id, valor, onCambio, cantidadInicial = 3 }: Props
                 <li
                   key={pais.iso2}
                   id={`${listaId}-opcion-${indice}`}
-                  role="option"
                   aria-selected={pais.iso2 === elegido.iso2}
                   aria-label={`${pais.nombre}, +${pais.prefijo}`}
                   data-activa={indice === indiceActivo || undefined}

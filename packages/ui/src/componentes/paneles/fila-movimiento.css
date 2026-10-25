@@ -1,0 +1,131 @@
+.ui-fila-movimiento {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--espacio-1) var(--espacio-3);
+  align-items: center;
+  padding: var(--espacio-3) var(--espacio-2);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-fila-movimiento:first-child {
+  border-block-start: 0;
+}
+.ui-fila-movimiento--clicable:hover {
+  background: var(--color-fondoSutil);
+}
+.ui-fila-movimiento--seleccionada {
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+}
+/* Cubre la fila entera; el foco se ve en el borde de la fila. */
+.ui-fila-movimiento__abrir {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: none;
+  cursor: pointer;
+}
+.ui-fila-movimiento__abrir:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: -2px;
+}
+.ui-fila-movimiento__logo {
+  display: grid;
+  place-items: center;
+}
+.ui-fila-movimiento__texto {
+  display: grid;
+  min-inline-size: 0;
+}
+.ui-fila-movimiento__titulo,
+.ui-fila-movimiento__subtitulo {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-fila-movimiento__titulo {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-fila-movimiento__detalle {
+  color: var(--color-textoSuave);
+  font-weight: var(--tipo-peso-normal);
+}
+.ui-fila-movimiento__subtitulo {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+/* En movil: segunda linea bajo el texto, estado a la izquierda y monto a la derecha. */
+.ui-fila-movimiento__cierre {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+.ui-fila-movimiento__estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-inline-end: auto;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  white-space: nowrap;
+}
+.ui-fila-movimiento__punto {
+  inline-size: var(--espacio-2);
+  block-size: var(--espacio-2);
+  border-radius: var(--radio-completo);
+  background: var(--color-textoSuave);
+}
+.ui-fila-movimiento__punto--exito {
+  background: var(--color-exito);
+}
+.ui-fila-movimiento__punto--alerta {
+  background: var(--color-alerta);
+}
+.ui-fila-movimiento__punto--error {
+  background: var(--color-error);
+}
+.ui-fila-movimiento__valor {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* La accion va encima del boton que cubre la fila. */
+.ui-fila-movimiento__accion {
+  position: relative;
+}
+.ui-fila-movimiento__accion:empty {
+  display: none;
+}
+
+/* Desde tablet, columnas fijas: estado, monto y accion alineados fila a fila. */
+@media (min-width: 48rem) {
+  .ui-fila-movimiento {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding-inline: var(--espacio-3);
+  }
+  .ui-fila-movimiento__cierre {
+    grid-column: auto;
+    display: grid;
+    grid-template-columns: 11rem 6.5rem 6rem;
+  }
+  .ui-fila-movimiento__estado {
+    margin-inline-end: 0;
+  }
+  .ui-fila-movimiento__valor {
+    text-align: end;
+  }
+  .ui-fila-movimiento__accion:empty {
+    display: block;
+  }
+  .ui-fila-movimiento__accion {
+    justify-self: end;
+  }
+}

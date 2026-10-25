@@ -6,8 +6,21 @@
  * No ve montos ni puede cancelar. Las tarifas son de `gestionar_ajustes`.
  */
 
-import { ESTADOS_DESPACHO, revisarDespacho, type EstadoPedido } from "@appweb/core";
-import { esquemaCambioEstadoPedido, esquemaMetodoEnvio } from "@appweb/core/tipos";
+import {
+  ESTADOS_DESPACHO,
+  estaDemorado,
+  revisarDespacho,
+  serieAcumulada,
+  variacion,
+  ventanaDe,
+  ventanaDeFecha,
+  type EstadoPedido,
+} from "@appweb/core";
+import {
+  esquemaCambioEstadoPedido,
+  esquemaMetodoEnvio,
+  esquemaMetricasEnvios,
+} from "@appweb/core/tipos";
 
 import { rechazar } from "../../stock";
 import { exige, router } from "../../trpc";
@@ -43,6 +56,11 @@ export const envios = router({
         items: {
           select: { nombreProducto: true, sku: true, talla: true, color: true, cantidad: true },
         },
+        // El recorrido del paquete: cuando paso por cada paso del despacho.
+        historial: {
+          orderBy: { creadoEn: "asc" },
+          select: { estadoNuevo: true, creadoEn: true, usuario: { select: { nombre: true } } },
+        },
       },
     });
 
@@ -56,12 +74,105 @@ export const envios = router({
       destinatario: p.envioDestinatario ?? p.usuario.nombre,
       telefono: p.envioTelefono ?? p.usuario.telefono,
       direccion: [p.envioCalle, p.envioDistrito, p.envioProvincia, p.envioDepartamento].join(", "),
+      distrito: p.envioDistrito,
+      departamento: p.envioDepartamento,
       referencia: p.envioReferencia,
       metodo: p.envioMetodo,
       transportista: p.transportista,
       codigoSeguimiento: p.codigoSeguimiento,
       items: p.items,
+      recorrido: p.historial.map((h) => ({
+        estado: h.estadoNuevo as EstadoPedido,
+        usuario: h.usuario?.nombre ?? null,
+        creadoEn: h.creadoEn.toISOString(),
+      })),
     }));
+  }),
+
+  /**
+   * Tarjetas de la seccion. Tres colas de ahora mismo (por despachar, en
+   * camino, demorados) y los despachados del periodo contra el anterior.
+   * Sin montos: el almacen no los ve.
+   */
+  metricas: despachar.input(esquemaMetricasEnvios).query(async ({ ctx, input }) => {
+    const ahora = new Date();
+    const periodo = input.fecha
+      ? ventanaDeFecha(input.fecha, ahora)
+      : ventanaDe(input.periodo, ahora);
+    const hasta = periodo.hasta ?? periodo.fin;
+
+    const [enCurso, pasos] = await Promise.all([
+      // Cada pedido con la fecha en que entro a su estado actual.
+      ctx.prisma.pedido.findMany({
+        where: { estado: { in: ["PREPARANDO", "ENVIADO"] } },
+        select: {
+          estado: true,
+          creadoEn: true,
+          historial: {
+            where: { estadoNuevo: { in: ["PREPARANDO", "ENVIADO"] } },
+            orderBy: { creadoEn: "desc" },
+            take: 1,
+            select: { creadoEn: true },
+          },
+        },
+      }),
+      ctx.prisma.historialPedido.findMany({
+        where: {
+          creadoEn: { gte: periodo.previoDesde, lt: hasta },
+          estadoNuevo: { in: ["PREPARANDO", "ENVIADO"] },
+        },
+        select: { estadoNuevo: true, creadoEn: true },
+      }),
+    ]);
+
+    const desde = (p: (typeof enCurso)[number]) => p.historial[0]?.creadoEn ?? p.creadoEn;
+    /** Una cola de ahora: cuantos hay y desde cuando espera el mas antiguo. */
+    const cola = (estado: EstadoPedido, fechas: Date[]) => {
+      const serie = pasos
+        .filter(
+          (c) => c.estadoNuevo === estado && c.creadoEn >= periodo.desde && c.creadoEn < hasta,
+        )
+        .map((c) => ({ en: c.creadoEn, valor: 1 }));
+      const masAntiguo = fechas.reduce<Date | null>((min, f) => (min && min < f ? min : f), null);
+      return {
+        cantidad: fechas.length,
+        masAntiguo: masAntiguo?.toISOString() ?? null,
+        // Los que entraron a la cola en el periodo: de donde sale su ritmo.
+        serie: serieAcumulada(serie, periodo.desde, periodo.fin, ahora),
+      };
+    };
+    const fechasDe = (estado: EstadoPedido) =>
+      enCurso.filter((p) => p.estado === estado).map(desde);
+
+    const enviados = pasos.filter((c) => c.estadoNuevo === "ENVIADO").map((c) => c.creadoEn);
+    const actual = enviados
+      .filter((en) => en >= periodo.desde && en < hasta)
+      .map((en) => ({ en, valor: 1 }));
+    const previo = enviados
+      .filter((en) => en >= periodo.previoDesde && en < periodo.previoHasta)
+      .map((en) => ({ en, valor: 1 }));
+    const demorados = fechasDe("ENVIADO").filter((f) => estaDemorado(f, ahora));
+
+    return {
+      titulo: periodo.titulo,
+      etiquetaAnterior: periodo.etiquetaPrevio,
+      porDespachar: cola("PREPARANDO", fechasDe("PREPARANDO")),
+      enCamino: cola("ENVIADO", fechasDe("ENVIADO")),
+      demorados: {
+        cantidad: demorados.length,
+        masAntiguo:
+          demorados
+            .reduce<Date | null>((min, f) => (min && min < f ? min : f), null)
+            ?.toISOString() ?? null,
+      },
+      despachados: {
+        cantidad: actual.length,
+        cantidadPrevia: previo.length,
+        cambio: variacion(actual.length, previo.length),
+        serie: serieAcumulada(actual, periodo.desde, periodo.fin, ahora),
+        seriePrevia: serieAcumulada(previo, periodo.previoDesde, periodo.previoHasta),
+      },
+    };
   }),
 
   /** Un paso del despacho. Misma transaccion que Pedidos, otra regla. */

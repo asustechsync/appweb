@@ -39,7 +39,6 @@ export function ListaOpciones({
       ref={listaRef}
       id={id}
       className={opciones.length > 4 ? `${claseLista} ${claseLista}--con-scroll` : claseLista}
-      role="listbox"
       aria-label={etiqueta}
     >
       {opciones.length === 0 ? (
@@ -49,7 +48,6 @@ export function ListaOpciones({
           <li
             key={opcion.valor}
             id={`${id}-opcion-${indice}`}
-            role="option"
             aria-selected={opcion.valor === valor}
             data-activa={indice === indiceActivo || undefined}
             className={claseOpcion}

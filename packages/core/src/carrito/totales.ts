@@ -45,6 +45,14 @@ export function redondear(valor: number): number {
   return Math.round((valor + Number.EPSILON) * 100) / 100;
 }
 
+/** Tasa del IGV en Peru. Los precios de la tienda ya lo incluyen. */
+export const TASA_IGV = 0.18;
+
+/** El IGV que va dentro de un monto con IGV incluido: S/ 118 -> S/ 18. */
+export function igvIncluido(monto: number): number {
+  return redondear(monto - monto / (1 + TASA_IGV));
+}
+
 export function calcularTotales(
   lineas: LineaCarrito[],
   opciones: {

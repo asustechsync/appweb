@@ -81,7 +81,6 @@ export function ItemDesplegable({ etiqueta, items, icono }: PropsItemDesplegable
       {abierto ? (
         <ul
           className="ui-item-desplegable__lista"
-          role="menu"
           style={{ top: posicion.top, left: posicion.left }}
         >
           {items.map((item) => (

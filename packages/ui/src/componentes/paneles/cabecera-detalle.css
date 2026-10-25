@@ -1,0 +1,45 @@
+/* Movil: titulo arriba y acciones debajo. */
+.ui-cabecera-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding-inline: var(--espacio-1);
+}
+.ui-cabecera-detalle__titulo {
+  margin: 0;
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-titulos);
+  font-size: var(--tipo-tamano-xl);
+  font-weight: var(--tipo-peso-fuerte);
+}
+/* Cada accion suelta, con el aire del selector segmentado: fondo claro y
+   sombra difusa, sin bordes. */
+.ui-cabecera-detalle__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+.ui-cabecera-detalle__acciones .ui-boton {
+  block-size: var(--espacio-12);
+  padding-inline: var(--espacio-5);
+  gap: var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-difusa);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-cabecera-detalle__acciones .ui-boton:hover:not(:disabled) {
+  background: var(--color-fondo);
+}
+
+/* Desde tablet: titulo a la izquierda y acciones a la derecha. */
+@media (min-width: 48rem) {
+  .ui-cabecera-detalle {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
