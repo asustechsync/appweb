@@ -1,3 +1,7 @@
+/* Tamano fijo: no se estira aunque la grafica de arriba crezca o tenga pocos datos. */
+.ui-fila-graficos__pila > .ui-grafico-reparto:last-child {
+  flex: 0 0 auto;
+}
 .ui-grafico-reparto {
   display: flex;
   flex-direction: column;
@@ -27,8 +31,9 @@
 /* FIRST MOBILE: dos tarjetas por fila; desde md, cuatro. */
 .ui-grafico-reparto__rejilla {
   display: grid;
+  grid-auto-rows: auto;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--espacio-3);
+  gap: var(--espacio-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -46,7 +51,7 @@
   flex-direction: column;
   gap: var(--espacio-1);
   min-inline-size: 0;
-  padding: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
   border-radius: var(--radio-md);
   background: var(--color-fondoActividad);
 }
@@ -65,13 +70,30 @@
   margin-block-end: var(--espacio-1);
   color: var(--color-texto);
   font-family: var(--tipo-familia-cifras);
-  font-size: var(--tipo-tamano-xl);
+  font-size: var(--tipo-tamano-lg);
   font-weight: var(--tipo-peso-fuerte);
   line-height: var(--tipo-altura-apretada);
 }
-/* La barra al pie de la tarjeta, aunque el nombre de al lado ocupe menos. */
+.ui-grafico-reparto__porcentaje--exito {
+  color: var(--color-exito);
+}
+.ui-grafico-reparto__porcentaje--error {
+  color: var(--color-error);
+}
+/* En lugar de la barra: una linea suave que explica la cifra. */
+.ui-grafico-reparto__nota {
+  overflow: hidden;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  line-height: var(--tipo-altura-apretada);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* La barra al pie de la tarjeta, aunque el nombre de al lado ocupe menos.
+   `margin-top: auto`: en una fila con notas, la barra baja hasta la base. */
 .ui-grafico-reparto__pista {
   display: block;
+  margin-block-start: auto;
   block-size: 3px;
   border-radius: var(--radio-completo);
   background: var(--color-fondoSutil);
@@ -81,6 +103,32 @@
   display: block;
   block-size: 100%;
   border-radius: var(--radio-completo);
+}
+
+/* Variante fila: las cifras sin cajas, separadas por una linea fina. FIRST
+   MOBILE: dos por fila sin divisores; desde md, cuatro con divisor. */
+.ui-grafico-reparto--fila {
+  padding-block: var(--espacio-3);
+}
+.ui-grafico-reparto--fila .ui-grafico-reparto__rejilla {
+  row-gap: var(--espacio-3);
+}
+.ui-grafico-reparto--fila .ui-grafico-reparto__parte {
+  padding-block: 0;
+  padding-inline: var(--espacio-3);
+  border-radius: 0;
+  background: none;
+}
+.ui-grafico-reparto--fila .ui-grafico-reparto__porcentaje {
+  margin-block-end: 0;
+}
+@media (min-width: 48rem) {
+  .ui-grafico-reparto--fila .ui-grafico-reparto__rejilla {
+    column-gap: 0;
+  }
+  .ui-grafico-reparto--fila .ui-grafico-reparto__parte + .ui-grafico-reparto__parte {
+    border-inline-start: 1px solid var(--color-borde);
+  }
 }
 
 /* Un color por tono: la barra de cada tarjeta. */

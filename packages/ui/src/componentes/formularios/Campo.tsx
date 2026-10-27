@@ -37,6 +37,10 @@ export interface PropsCampo {
   /** Oculta la etiqueta a la vista; sigue leyendola el lector de pantalla.
       Solo tiene sentido con `placeholder`. */
   etiquetaOculta?: EtiquetaOculta;
+  /** Al salir del campo: para guardar lo escrito sin un boton aparte. */
+  onSalir?: () => void;
+  /** Teclado que abre el movil: "decimal" para montos. */
+  modoTeclado?: "decimal" | "numeric";
 }
 
 /**
@@ -63,6 +67,8 @@ export function Campo({
   enlaceEtiqueta,
   icono,
   etiquetaOculta,
+  onSalir,
+  modoTeclado,
 }: PropsCampo) {
   const prefijoSeleccionable = pais !== undefined && onCambioPais !== undefined;
   const conPrefijoFijo = !prefijoSeleccionable && Boolean(prefijo);
@@ -80,6 +86,8 @@ export function Campo({
       placeholder={placeholder}
       autoComplete={autoComplete}
       disabled={disabled}
+      onBlur={onSalir}
+      inputMode={modoTeclado}
       aria-invalid={error ? true : undefined}
       aria-describedby={error ? `${id}-error` : undefined}
       className={

@@ -193,6 +193,18 @@
 .ui-logo-medio-pago--mastercard {
   --ui-logo-base: var(--color-mastercard);
 }
+/* Foto de producto: llena el cuadro, recortada a las esquinas. */
+.ui-logo-medio-pago--foto {
+  --ui-logo-base: var(--color-fondo);
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  overflow: hidden;
+}
+.ui-logo-medio-pago--foto img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
 /* Area segura comun: en todos los cuadros el logo deja unos 9 px de aire por
    lado (en el de 48). Los lienzos de 24 no ocupan lo mismo — Visa y
    Mastercard llegan a 20 de ancho, Yape a 19 de alto — asi que el svg se
@@ -252,4 +264,42 @@
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--color-texto) 2%, transparent),
     0 4px 10px -2px color-mix(in srgb, var(--color-texto) 3%, transparent);
+}
+
+/* Las pestanas ocupan el sitio del titulo y dejan "Ver todos" a la derecha. */
+.ui-lista-actividad__pestanas {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+/* Pestanas compactas: a todo el ancho, sin caja blanca ni sombra. */
+.ui-lista-actividad__pestanas .ui-selector-segmentado {
+  block-size: var(--espacio-10);
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.ui-lista-actividad__pestanas .ui-selector-segmentado__pildora {
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: calc(100% / var(--segmentos));
+}
+.ui-lista-actividad__pestanas .ui-selector-segmentado__opcion {
+  block-size: 100%;
+  padding-inline: var(--espacio-3);
+}
+
+/* Alto reservado para N filas, con el hueco entre ellas: no salta al cambiar de pestana. */
+.ui-lista-actividad--reserva {
+  --ui-alto-fila: 3.25rem;
+  align-content: start;
+  min-block-size: calc(
+    var(--ui-reserva) *
+    var(--ui-alto-fila) +
+    (var(--ui-reserva) - 1) *
+    var(--espacio-2)
+  );
+}
+.ui-lista-actividad--alta {
+  --ui-alto-fila: calc(var(--espacio-12) + var(--espacio-2) * 2);
 }

@@ -53,37 +53,14 @@ describe("calcularTotales", () => {
     expect(totales.total).toBe(0);
   });
 
-  it("cobra el envio y dice cuanto falta para que sea gratis", () => {
-    const totales = calcularTotales([linea(60, 1)], {
-      metodoEnvio: { costo: 12, gratisDesde: 100 },
-    });
-    expect(totales.costoEnvio).toBe(12);
-    expect(totales.faltaEnvioGratis).toBe(40);
-    expect(totales.total).toBe(72);
-  });
-
-  it("el envio es gratis desde el umbral, contado despues del descuento", () => {
-    const gratis = calcularTotales([linea(100, 1)], {
-      metodoEnvio: { costo: 12, gratisDesde: 100 },
-    });
-    expect(gratis.costoEnvio).toBe(0);
-    expect(gratis.faltaEnvioGratis).toBeNull();
-
-    // 100 - 10% = 90: el cupon lo baja del umbral y vuelve a pagar envio.
-    const conCupon = calcularTotales([linea(100, 1)], {
+  it("no cobra el envio: el cliente lo paga al courier al recibir", () => {
+    const totales = calcularTotales([linea(100, 1)], {
       cupon: { codigo: "X", porcentaje: 10 },
-      metodoEnvio: { costo: 12, gratisDesde: 100 },
+      metodoEnvio: { costo: 22, gratisDesde: null },
     });
-    expect(conCupon.costoEnvio).toBe(12);
-    expect(conCupon.faltaEnvioGratis).toBe(10);
-  });
-
-  it("un metodo sin envio gratis no calcula cuanto falta", () => {
-    const totales = calcularTotales([linea(500, 1)], {
-      metodoEnvio: { costo: 8, gratisDesde: null },
-    });
-    expect(totales.costoEnvio).toBe(8);
+    expect(totales.costoEnvio).toBeNull();
     expect(totales.faltaEnvioGratis).toBeNull();
+    expect(totales.total).toBe(90);
   });
 
   it("avisa las lineas que piden mas de lo que hay", () => {

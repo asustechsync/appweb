@@ -31,7 +31,13 @@ export const stock = router({
         sku: true,
         stock: true,
         activo: true,
-        producto: { select: { nombre: true, activo: true } },
+        producto: {
+          select: {
+            nombre: true,
+            activo: true,
+            imagenes: { take: 1, orderBy: { orden: "asc" }, select: { url: true } },
+          },
+        },
       },
     });
     return {
@@ -39,6 +45,7 @@ export const stock = router({
       variantes: filas.map((v) => ({
         id: v.id,
         producto: v.producto.nombre,
+        imagen: v.producto.imagenes[0]?.url ?? null,
         talla: v.talla,
         color: v.color,
         sku: v.sku,

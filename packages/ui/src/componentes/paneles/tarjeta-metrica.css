@@ -15,7 +15,7 @@
 }
 .ui-tarjeta-metrica__etiqueta {
   color: var(--color-texto);
-  font-size: var(--tipo-tamano-lg);
+  font-size: var(--tipo-tamano-base);
   font-weight: var(--tipo-peso-medio);
 }
 .ui-tarjeta-metrica__cambio {

@@ -1,0 +1,22 @@
+/* Como los selectores de al lado: blanco, sin borde y con la sombra difusa. */
+.ui-limpiar-filtros {
+  block-size: var(--control-alto);
+  padding-inline: var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-difusa);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transicion-rapida);
+}
+.ui-limpiar-filtros:hover {
+  background: var(--color-fondoSutil);
+}
+.ui-limpiar-filtros:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}

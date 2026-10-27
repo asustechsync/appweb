@@ -19,4 +19,6 @@ export const ESTADO_PAGO: Record<
   PENDIENTE: { tono: "alerta", icono: <IconoReloj tamano={12} /> },
   RECHAZADO: { tono: "error", icono: <IconoFlechaBajada tamano={12} /> },
   REEMBOLSADO: { tono: "neutro", icono: <IconoDevolucion tamano={12} /> },
+  // Gris: no fue un intento de cobro, el pedido se cancelo antes de pagar.
+  ANULADO: { tono: "neutro", icono: <IconoFlechaBajada tamano={12} /> },
 };

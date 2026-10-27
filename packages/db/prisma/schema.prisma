@@ -521,6 +521,8 @@ enum EstadoPago {
   CONFIRMADO
   RECHAZADO
   REEMBOLSADO
+  // Cerrado sin intento real: el pedido se cancelo con este pago aun pendiente.
+  ANULADO
 }
 
 // Un pedido puede tener varios pagos: un intento rechazado y otro confirmado,

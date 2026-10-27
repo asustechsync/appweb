@@ -36,7 +36,7 @@
 /* Recien a partir de la 4ta opcion tiene sentido acotar el alto: con 3 o
    menos, mostrarlas todas sin scroll se ve mejor. */
 .ui-selector-pais__lista--con-scroll {
-  max-block-size: calc(3 * 2.25rem + 4 * var(--espacio-1));
+  max-block-size: calc(3 * 2.5rem + 4 * var(--espacio-1));
   overflow-y: auto;
 }
 .ui-selector-pais__opcion {

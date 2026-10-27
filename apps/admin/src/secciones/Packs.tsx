@@ -1,26 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ahorroDePack, slugDesdeTexto } from "@appweb/core";
 import {
   Alerta,
+  BarraLista,
   Boton,
   Campo,
   CampoTexto,
   Cargando,
   Casilla,
+  CuadroDesglose,
+  CuadroMonto,
   EstadoVacio,
   FilaLista,
+  FilaPedido,
   FilaUnida,
   Formulario,
-  Insignia,
+  IconoBuscar,
+  IconoMoneda,
+  IconoPack,
+  LimpiarFiltros,
+  ListaConLateral,
+  LogoIcono,
+  Paginador,
+  RejillaBento,
+  RejillaMetricas,
   SelectorBuscable,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
 } from "@appweb/ui";
 
+import { useEscritorio } from "@/lib/use-escritorio";
+import { usePaginado } from "@/lib/use-paginado";
 import { useTRPC } from "@/lib/trpc";
 import { MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 
@@ -43,66 +59,222 @@ export function Packs() {
   const trpc = useTRPC();
   const lista = useQuery(trpc.panel.packs.listar.queryOptions());
   const [editando, setEditando] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState("");
+
+  const coinciden = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
+    return (lista.data ?? []).filter(
+      (p) => termino === "" || p.nombre.toLowerCase().includes(termino) || p.slug.includes(termino),
+    );
+  }, [busqueda, lista.data]);
+  const { pagina, paginas, setPagina, visibles } = usePaginado(coinciden, PAGINA);
+
+  const escritorio = useEscritorio();
+  const [elegido, setElegido] = useState<string | null>(null);
+  const seleccionado = visibles.find((p) => p.id === elegido) ?? visibles[0] ?? null;
 
   if (lista.isPending) return <Cargando texto="Cargando packs…" />;
   if (lista.isError) return <Alerta tono="error">{lista.error.message}</Alerta>;
 
+  if (editando !== null) {
+    const pack = lista.data.find((p) => p.id === editando) ?? null;
+    return (
+      <Tarjeta
+        titulo={pack ? `Editar ${pack.nombre}` : "Nuevo pack"}
+        acciones={
+          <Boton variante="secundario" onClick={() => setEditando(null)}>
+            ← Volver a packs
+          </Boton>
+        }
+      >
+        <p>
+          Prendas que se venden juntas a un precio especial, por ejemplo 3 boxers talla M. El stock
+          sale solo de sus prendas.
+        </p>
+        <FormularioPack pack={pack} onListo={() => setEditando(null)} />
+      </Tarjeta>
+    );
+  }
+
+  const packs = lista.data;
+  const activos = packs.filter((p) => p.activo);
+  const agotados = activos.filter((p) => p.stock === 0).length;
+  const conMargen = packs.filter((p) => p.margen !== null);
+  const margenMedio =
+    conMargen.length === 0
+      ? null
+      : conMargen.reduce((suma, p) => suma + (p.margen?.porcentaje ?? 0), 0) / conMargen.length;
+  const ahorroMedio =
+    packs.length === 0 ? 0 : packs.reduce((suma, p) => suma + p.ahorro, 0) / packs.length;
+
   return (
-    <Tarjeta titulo="Packs y combos">
-      <p>
-        Prendas que se venden juntas a un precio especial, por ejemplo 3 boxers talla M. El stock
-        sale solo de sus prendas.
-      </p>
-      {lista.data.length === 0 ? (
-        <EstadoVacio titulo="Sin packs" texto="Arma el primero con prendas del catálogo." />
-      ) : null}
-      {lista.data.map((p) =>
-        editando === p.id ? (
-          <FormularioPack key={p.id} pack={p} onListo={() => setEditando(null)} />
-        ) : (
-          <FilaLista
-            key={p.id}
-            acciones={
-              <Boton variante="secundario" onClick={() => setEditando(p.id)}>
-                Editar
-              </Boton>
+    <>
+      <Tarjeta
+        titulo="Packs y combos"
+        sinMarco
+        acciones={<Boton onClick={() => setEditando("nuevo")}>+ Nuevo pack</Boton>}
+      >
+        <RejillaMetricas>
+          <TarjetaMetrica
+            etiqueta="Activos"
+            valor={String(activos.length)}
+            contexto={`De ${packs.length} armados`}
+          />
+          <TarjetaMetrica
+            etiqueta="Sin stock"
+            valor={String(agotados)}
+            contexto={agotados === 0 ? "Todos alcanzan" : "Falta alguna prenda"}
+          />
+          <TarjetaMetrica
+            etiqueta="Ahorro medio"
+            valor={MONEDA.format(ahorroMedio)}
+            contexto="Frente a comprar suelto"
+          />
+          <TarjetaMetrica
+            etiqueta="Margen medio"
+            valor={margenMedio === null ? "—" : `${Math.round(margenMedio)} %`}
+            contexto={
+              conMargen.length === packs.length
+                ? "Con el costo de sus prendas"
+                : `${packs.length - conMargen.length} sin costo registrado`
+            }
+          />
+        </RejillaMetricas>
+      </Tarjeta>
+
+      <ListaConLateral
+        filasPorPagina={PAGINA}
+        barra={
+          <BarraLista
+            juntos
+            buscador={
+              <Campo
+                id="busqueda-packs"
+                etiqueta="Buscar pack"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
+                placeholder="Nombre del pack"
+              />
             }
           >
-            <strong>
-              {p.nombre} · {MONEDA.format(p.precio)}
-            </strong>
-            {p.componentes.map((c) => (
-              <span key={c.varianteId}>
-                {c.cantidad} × {c.etiqueta} (stock {c.stock})
-              </span>
-            ))}
-            <span>
-              Suelto {MONEDA.format(p.precioSuelto)} · ahorra {MONEDA.format(p.ahorro)}
-              {p.margen
-                ? ` · margen ${MONEDA.format(p.margen.monto)} (${p.margen.porcentaje} %)`
-                : " · sin costo registrado"}
-            </span>
-            <span>
-              <Insignia tono={p.activo ? "exito" : "alerta"}>
-                {p.activo ? "Activo" : "Oculto"}
-              </Insignia>{" "}
-              <Insignia tono={p.stock === 0 ? "error" : "neutro"}>
-                Alcanza para {p.stock} {p.stock === 1 ? "pack" : "packs"}
-              </Insignia>
-            </span>
-          </FilaLista>
-        ),
-      )}
-      {editando === "nuevo" ? (
-        <FormularioPack pack={null} onListo={() => setEditando(null)} />
-      ) : (
-        <Boton variante="secundario" onClick={() => setEditando("nuevo")}>
-          + Nuevo pack
-        </Boton>
-      )}
-    </Tarjeta>
+            <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
+            {busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
+            ) : null}
+          </BarraLista>
+        }
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionado ? {} : { vacio: "Elige un pack para ver de qué está hecho." })}
+          >
+            {seleccionado ? (
+              <RejillaBento>
+                <CuadroMonto
+                  logo={<LogoIcono icono={<IconoPack tamano={16} />} nombre="Pack" />}
+                  estado={estadoDePack(seleccionado)}
+                  etiqueta={seleccionado.nombre}
+                  monto={MONEDA.format(seleccionado.precio)}
+                  detalle={`Alcanza para ${seleccionado.stock} ${seleccionado.stock === 1 ? "pack" : "packs"}`}
+                  acciones={[
+                    { etiqueta: "Editar pack", onClick: () => setEditando(seleccionado.id) },
+                  ]}
+                />
+                <CuadroDesglose
+                  icono={<IconoPack tamano={16} />}
+                  titulo="Prendas"
+                  ancho="ancho"
+                  lineas={seleccionado.componentes.map((c) => ({
+                    etiqueta: `${c.cantidad} × ${c.etiqueta}`,
+                    valor: `${c.stock} en stock`,
+                  }))}
+                />
+                <CuadroDesglose
+                  icono={<IconoMoneda tamano={16} />}
+                  titulo="Precio"
+                  ancho="ancho"
+                  lineas={[
+                    { etiqueta: "Por separado", valor: MONEDA.format(seleccionado.precioSuelto) },
+                    {
+                      etiqueta: "Ahorro del cliente",
+                      valor: `− ${MONEDA.format(seleccionado.ahorro)}`,
+                      rebaja: true,
+                    },
+                  ]}
+                  total={{
+                    etiqueta: "Margen",
+                    valor: seleccionado.margen
+                      ? `${MONEDA.format(seleccionado.margen.monto)} · ${seleccionado.margen.porcentaje} %`
+                      : "Sin costo",
+                  }}
+                />
+              </RejillaBento>
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {visibles.length === 0 ? (
+            <EstadoVacio
+              titulo="Sin packs"
+              texto={
+                packs.length === 0
+                  ? "Arma el primero con prendas del catálogo."
+                  : "Ningún pack coincide con esa búsqueda."
+              }
+            />
+          ) : (
+            <div>
+              {visibles.map((p) => {
+                const prendas = p.componentes.reduce((suma, c) => suma + c.cantidad, 0);
+                return (
+                  <FilaPedido
+                    key={p.id}
+                    logo={<LogoIcono icono={<IconoPack tamano={16} />} nombre="Pack" />}
+                    titulo={p.nombre}
+                    contenido={`${prendas} ${prendas === 1 ? "prenda" : "prendas"} · ahorra ${MONEDA.format(p.ahorro)}`}
+                    centro={[MONEDA.format(p.precio), `Suelto ${MONEDA.format(p.precioSuelto)}`]}
+                    estado={estadoDePack(p)}
+                    nota={`Alcanza para ${p.stock}`}
+                    seleccionada={escritorio && seleccionado?.id === p.id}
+                    onAbrir={() => (escritorio ? setElegido(p.id) : setEditando(p.id))}
+                    etiquetaAbrir={`${escritorio ? "Elegir" : "Editar"} ${p.nombre}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
+    </>
   );
 }
+
+/** Oculto manda; si no alcanza ni para uno, sin stock. */
+function estadoDePack(p: { activo: boolean; stock: number }): {
+  texto: string;
+  tono: "exito" | "alerta" | "error";
+} {
+  if (!p.activo) return { texto: "Oculto", tono: "alerta" };
+  if (p.stock === 0) return { texto: "Sin stock", tono: "error" };
+  return { texto: "Activo", tono: "exito" };
+}
+
+/** Cuantos packs se ven por pagina. */
+const PAGINA = 10;
 
 interface ComponenteBorrador {
   clave: number;

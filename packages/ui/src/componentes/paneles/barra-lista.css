@@ -3,7 +3,23 @@
   flex-direction: column;
   gap: var(--espacio-3);
 }
+/* El buscador, como los selectores de al lado: blanco, sin borde y con la sombra difusa. */
+.ui-barra-lista__buscador :is(.ui-campo__input, .ui-campo__grupo) {
+  border: 0;
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-difusa);
+  transition: box-shadow var(--transicion-rapida);
+}
+.ui-barra-lista__buscador :is(.ui-campo__input:focus, .ui-campo__grupo:focus-within) {
+  box-shadow:
+    var(--sombra-difusa),
+    0 0 0 2px color-mix(in srgb, var(--campo-borde-foco, var(--color-texto)) 18%, transparent);
+}
 .ui-barra-lista__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
   min-inline-size: 0;
 }
 
@@ -19,5 +35,10 @@
   }
   .ui-barra-lista__buscador {
     flex: 0 0 18rem;
+  }
+  /* Junto a la lista con lateral, el buscador ocupa justo la cuarta columna:
+     mismo ancho y mismos bordes que la tarjeta de metricas y el bloque de abajo. */
+  .ui-barra-lista--juntos .ui-barra-lista__buscador {
+    flex: 0 0 calc((100% - 3 * var(--espacio-3)) / 4);
   }
 }

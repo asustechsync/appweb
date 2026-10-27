@@ -1,9 +1,10 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import {
   IconoBanco,
   IconoCamion,
   IconoFlechaDerecha,
+  IconoGaleria,
   IconoMastercard,
   IconoPlin,
   IconoTarjetaPersonal,
@@ -19,17 +20,41 @@ export interface PropsListaActividad {
   vacio: string;
   /** "Ver todos" arriba a la derecha; sin esto no se muestra. */
   onVerTodos?: () => void;
+  /** Pestanas (`SelectorSegmentado`) en lugar del titulo, para cambiar lo que lista. */
+  pestanas?: ReactNode;
+  /** Filas de alto que se reservan aunque haya menos: el bloque no cambia de tamano. */
+  reservar?: number;
+  /** Las filas son `TarjetaActividad` (mas altas que las `FilaResumen`). */
+  filasAltas?: boolean;
   /** Las `TarjetaActividad`, de la mas reciente a la mas vieja. */
   children?: ReactNode;
 }
 
 /** Bloque con titulo, "Ver todos" opcional y una pila de `TarjetaActividad`. */
-export function ListaActividad({ titulo, vacio, onVerTodos, children }: PropsListaActividad) {
+export function ListaActividad({
+  titulo,
+  vacio,
+  onVerTodos,
+  pestanas,
+  reservar,
+  filasAltas,
+  children,
+}: PropsListaActividad) {
+  const reserva = reservar ? ({ "--ui-reserva": reservar } as CSSProperties) : undefined;
+  const claseReserva = reservar
+    ? filasAltas
+      ? " ui-lista-actividad--reserva ui-lista-actividad--alta"
+      : " ui-lista-actividad--reserva"
+    : "";
   const hay = Array.isArray(children) ? children.length > 0 : Boolean(children);
   return (
     <section className="ui-lista-actividad">
       <div className="ui-lista-actividad__cabecera">
-        <h3 className="ui-lista-actividad__titulo">{titulo}</h3>
+        {pestanas ? (
+          <div className="ui-lista-actividad__pestanas">{pestanas}</div>
+        ) : (
+          <h3 className="ui-lista-actividad__titulo">{titulo}</h3>
+        )}
         {onVerTodos ? (
           <button type="button" className="ui-lista-actividad__ver-todos" onClick={onVerTodos}>
             Ver todos
@@ -40,9 +65,13 @@ export function ListaActividad({ titulo, vacio, onVerTodos, children }: PropsLis
         ) : null}
       </div>
       {hay ? (
-        <ul className="ui-lista-actividad__lista">{children}</ul>
+        <ul className={`ui-lista-actividad__lista${claseReserva}`} style={reserva}>
+          {children}
+        </ul>
       ) : (
-        <p className="ui-lista-actividad__vacio">{vacio}</p>
+        <p className={`ui-lista-actividad__vacio${claseReserva}`} style={reserva}>
+          {vacio}
+        </p>
       )}
     </section>
   );
@@ -179,6 +208,28 @@ export function LogoIcono({ icono, nombre }: PropsLogoIcono) {
       aria-label={nombre}
     >
       {icono}
+    </span>
+  );
+}
+
+export interface PropsLogoFoto {
+  /** Foto del producto; sin ella se pinta el aviso de "Sin imagen". */
+  src: string | null;
+  /** Nombre del producto, para lectores de pantalla. */
+  nombre: string;
+}
+
+/** Mismo cuadro que `LogoIcono`, con la foto de un producto: la miniatura de un pedido. */
+export function LogoFoto({ src, nombre }: PropsLogoFoto) {
+  return (
+    <span className="ui-logo-medio-pago ui-logo-medio-pago--foto">
+      {src ? (
+        // El panel es una SPA y la foto puede vivir en otro dominio: sin optimizador de next/image.
+        // biome-ignore lint/performance/noImgElement: la foto puede vivir en otro dominio
+        <img src={src} alt={nombre} loading="lazy" />
+      ) : (
+        <IconoGaleria tamano={20} />
+      )}
     </span>
   );
 }

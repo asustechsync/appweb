@@ -11,7 +11,6 @@ import {
   Campo,
   CabeceraDetalle,
   Cargando,
-  FilaLista,
   Formulario,
   IconoFlechaDerecha,
   IconoFlechaIzquierda,
@@ -27,7 +26,7 @@ import { LOGO_MEDIO } from "@/lib/logos-pago";
 import { CuadrosPago } from "./CuadrosPago";
 import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
-import { FECHA_HORA, MONEDA, cuandoFue, mensajeDeFallo } from "@appweb/core/formato";
+import { MONEDA, cuandoFue, mensajeDeFallo } from "@appweb/core/formato";
 
 export interface PropsDetallePago {
   pagoId: string;
@@ -117,14 +116,20 @@ export function DetallePago({ pagoId, puedeGestionar, onVolver, onVerPedido }: P
       ) : null}
 
       {pago.rechazos.length > 0 ? (
-        <Tarjeta titulo="Motivos de rechazo">
+        <ListaActividad titulo="Motivos de rechazo" vacio="">
           {pago.rechazos.map((rechazo) => (
-            <FilaLista key={rechazo.creadoEn}>
-              <span>{rechazo.nota}</span>
-              <span>{FECHA_HORA.format(new Date(rechazo.creadoEn))}</span>
-            </FilaLista>
+            <TarjetaActividad
+              key={rechazo.creadoEn}
+              estado={ETIQUETAS_PAGO.RECHAZADO}
+              iconoEstado={ESTADO_PAGO.RECHAZADO.icono}
+              tonoEstado={ESTADO_PAGO.RECHAZADO.tono}
+              fecha={cuandoFue(new Date(rechazo.creadoEn))}
+              logo={<LogoMedioPago medio={LOGO_MEDIO[pago.medio]} nombre={medio} />}
+              titulo={rechazo.nota}
+              valor=""
+            />
           ))}
-        </Tarjeta>
+        </ListaActividad>
       ) : null}
     </>
   );

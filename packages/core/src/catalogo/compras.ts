@@ -93,3 +93,63 @@ export function margenDe(precio: number, costo: number | null): Margen | null {
   const monto = aCentimos(precio - costo);
   return { monto, porcentaje: Math.round((monto / precio) * 1000) / 10 };
 }
+
+/**
+ * Lo que de verdad se vendio en un pedido: los productos menos el descuento.
+ * El envio queda fuera: es plata que se va al courier, no venta de la tienda.
+ */
+export function vendidoDe(pedido: { subtotal: unknown; descuento: unknown }): number {
+  return aCentimos(Number(pedido.subtotal) - Number(pedido.descuento));
+}
+
+/**
+ * Que parte del precio de lista quedo tras el descuento del pedido, de 0 a 1:
+ * con un cupon del 10 %, 0.9. Se aplica a cada linea para repartir el descuento.
+ */
+export function factorDeDescuento(subtotal: number, descuento: number): number {
+  if (subtotal <= 0) return 1;
+  return Math.max(0, Math.min(1, (subtotal - descuento) / subtotal));
+}
+
+/** Una linea vendida con su precio y su costo congelados en el pedido. */
+export interface LineaConCosto {
+  precioUnitario: number;
+  costoUnitario: number | null;
+  cantidad: number;
+}
+
+export interface MargenDeVentas {
+  /** Lo vendido menos lo que costo, solo de las lineas con costo. */
+  ganancia: number;
+  /** Lo que costo lo vendido. */
+  costo: number;
+  /** Ganancia sobre lo vendido con costo, de 0 a 100. */
+  porcentaje: number;
+  /** Que parte de lo vendido tiene costo registrado, de 0 a 100: sin el 100, el margen es parcial. */
+  cobertura: number;
+}
+
+/**
+ * Margen bruto de un conjunto de ventas. Las lineas sin costo no entran en la
+ * cuenta: suponer costo cero inflaria la ganancia. Cuanto pesan se ve en
+ * `cobertura`.
+ */
+export function margenDeVentas(lineas: LineaConCosto[]): MargenDeVentas {
+  let vendido = 0;
+  let vendidoConCosto = 0;
+  let costo = 0;
+  for (const linea of lineas) {
+    const venta = linea.precioUnitario * linea.cantidad;
+    vendido += venta;
+    if (linea.costoUnitario === null) continue;
+    vendidoConCosto += venta;
+    costo += linea.costoUnitario * linea.cantidad;
+  }
+  const ganancia = aCentimos(vendidoConCosto - costo);
+  return {
+    ganancia,
+    costo: aCentimos(costo),
+    porcentaje: vendidoConCosto > 0 ? Math.round((ganancia / vendidoConCosto) * 1000) / 10 : 0,
+    cobertura: vendido > 0 ? Math.round((vendidoConCosto / vendido) * 100) : 0,
+  };
+}

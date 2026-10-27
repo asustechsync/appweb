@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -11,18 +11,23 @@ import {
   Campo,
   CampoSelect,
   CampoTexto,
+  CabeceraDetalle,
   Cargando,
   Casilla,
-  FilaLista,
+  FilaMovimiento,
   FilaUnida,
   Formulario,
   GaleriaEditable,
-  Insignia,
+  IconoCatalogo,
+  IconoFlechaDerecha,
+  IconoFlechaIzquierda,
+  LogoIcono,
   Tarjeta,
 } from "@appweb/ui";
 
 import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
+import { urlVisible } from "@/lib/url-visible";
 import { MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 import { URL_TIENDA } from "@appweb/api/urls";
 
@@ -82,7 +87,8 @@ export function EditorProducto({
 
   const volver = (
     <Boton variante="secundario" onClick={onVolver}>
-      ← Volver a productos
+      <IconoFlechaIzquierda tamano={16} />
+      Volver a productos
     </Boton>
   );
 
@@ -130,11 +136,6 @@ export function EditorProducto({
 }
 
 // ── Fotos ───────────────────────────────────────────────────────────────────
-
-/** En local las fotos quedan en la tienda ("/subidas/..."): el panel les antepone su dominio. */
-function urlVisible(url: string): string {
-  return url.startsWith("/") ? `${URL_TIENDA}${url}` : url;
-}
 
 /**
  * Fotos del producto. Se suben una por una al route handler /api/imagenes
@@ -324,131 +325,142 @@ function FormularioProducto({
   const guardando = crear.isPending || editar.isPending;
 
   return (
-    <Tarjeta titulo={nuevo ? "Nuevo producto" : inicial.nombre} acciones={volver}>
-      {error ? <Alerta tono="error">{error}</Alerta> : null}
-      {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-      <Formulario
-        ancho="completo"
-        onSubmit={(evento) => {
-          evento.preventDefault();
-          if (nuevo) crear.mutate(datos());
-          else editar.mutate({ productoId, datos: datos() });
-        }}
-      >
-        <Campo
-          id="producto-nombre"
-          etiqueta="Nombre"
-          valor={nombre}
-          onCambio={(valor) => {
-            setNombre(valor);
-            if (!slugTocado) setSlug(slugDesdeTexto(valor));
+    <>
+      <CabeceraDetalle
+        titulo={nuevo ? "Nuevo producto" : inicial.nombre}
+        acciones={
+          <>
+            {!nuevo && inicial.activo ? (
+              <Boton variante="secundario" href={`${URL_TIENDA}/productos/${inicial.slug}`}>
+                Ver en la tienda
+                <IconoFlechaDerecha tamano={16} />
+              </Boton>
+            ) : null}
+            {volver}
+          </>
+        }
+      />
+      <Tarjeta titulo="Datos del producto">
+        {error ? <Alerta tono="error">{error}</Alerta> : null}
+        {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
+        <Formulario
+          ancho="completo"
+          onSubmit={(evento) => {
+            evento.preventDefault();
+            if (nuevo) crear.mutate(datos());
+            else editar.mutate({ productoId, datos: datos() });
           }}
-          requerido
-        />
-        <Campo
-          id="producto-slug"
-          etiqueta="Dirección web (slug)"
-          valor={slug}
-          onCambio={(valor) => {
-            setSlugTocado(true);
-            setSlug(valor);
-          }}
-          placeholder="boxer-algodon-pima"
-          requerido
-        />
-        <CampoSelect
-          id="producto-categoria"
-          etiqueta="Categoría"
-          valor={categoriaId}
-          opciones={[
-            { valor: "", etiqueta: "Elige una categoría" },
-            ...categorias.map((c) => ({
-              valor: c.id,
-              etiqueta: c.activo ? c.nombre : `${c.nombre} (oculta)`,
-            })),
-          ]}
-          onCambio={setCategoriaId}
-        />
-        <CampoSelect
-          id="producto-marca"
-          etiqueta="Marca"
-          valor={marcaId}
-          opciones={[
-            { valor: "", etiqueta: "Sin marca" },
-            ...marcas.map((m) => ({ valor: m.id, etiqueta: m.nombre })),
-          ]}
-          onCambio={setMarcaId}
-        />
-        <FilaUnida iguales>
+        >
           <Campo
-            id="producto-precio"
-            etiqueta="Precio (S/)"
-            valor={precio}
-            onCambio={setPrecio}
-            placeholder="29.90"
+            id="producto-nombre"
+            etiqueta="Nombre"
+            valor={nombre}
+            onCambio={(valor) => {
+              setNombre(valor);
+              if (!slugTocado) setSlug(slugDesdeTexto(valor));
+            }}
             requerido
           />
           <Campo
-            id="producto-precio-lista"
-            etiqueta="Precio anterior (oferta)"
-            valor={precioLista}
-            onCambio={setPrecioLista}
-            placeholder="Opcional"
+            id="producto-slug"
+            etiqueta="Dirección web (slug)"
+            valor={slug}
+            onCambio={(valor) => {
+              setSlugTocado(true);
+              setSlug(valor);
+            }}
+            placeholder="boxer-algodon-pima"
+            requerido
           />
-        </FilaUnida>
-        <Campo
-          id="producto-resumen"
-          etiqueta="Resumen (sale en la tarjeta del listado)"
-          valor={descripcionCorta}
-          onCambio={setDescripcionCorta}
-          placeholder="Algodón pima, cintura suave"
-        />
-        <CampoTexto
-          id="producto-descripcion"
-          etiqueta="Descripción (sale en la ficha)"
-          valor={descripcion}
-          onCambio={setDescripcion}
-          filas={5}
-        />
-        <Campo
-          id="producto-insignia"
-          etiqueta="Insignia sobre la foto (opcional)"
-          valor={etiqueta}
-          onCambio={setEtiqueta}
-          placeholder="Nuevo, Más vendido…"
-        />
-        <Casilla
-          id="producto-envio-gratis"
-          etiqueta="Envío gratis (muestra la etiqueta sobre la foto)"
-          marcada={envioGratis}
-          onCambio={setEnvioGratis}
-        />
-        <Casilla
-          id="producto-destacado"
-          etiqueta="Destacado en la portada"
-          marcada={destacado}
-          onCambio={setDestacado}
-        />
-        <Casilla
-          id="producto-activo"
-          etiqueta="Visible en la tienda"
-          marcada={activo}
-          onCambio={setActivo}
-        />
-        <Alerta tono="info">
-          Por ahora el producto usa la foto de demostración. La subida de fotos llega en una fase
-          posterior.
-        </Alerta>
-        <Boton tipo="submit" disabled={guardando}>
-          {guardando ? "Guardando…" : nuevo ? "Crear producto" : "Guardar cambios"}
-        </Boton>
-        {!nuevo && inicial.activo ? (
-          <Boton variante="secundario" href={`${URL_TIENDA}/productos/${inicial.slug}`}>
-            Ver en la tienda
+          <CampoSelect
+            id="producto-categoria"
+            etiqueta="Categoría"
+            valor={categoriaId}
+            opciones={[
+              { valor: "", etiqueta: "Elige una categoría" },
+              ...categorias.map((c) => ({
+                valor: c.id,
+                etiqueta: c.activo ? c.nombre : `${c.nombre} (oculta)`,
+              })),
+            ]}
+            onCambio={setCategoriaId}
+          />
+          <CampoSelect
+            id="producto-marca"
+            etiqueta="Marca"
+            valor={marcaId}
+            opciones={[
+              { valor: "", etiqueta: "Sin marca" },
+              ...marcas.map((m) => ({ valor: m.id, etiqueta: m.nombre })),
+            ]}
+            onCambio={setMarcaId}
+          />
+          <FilaUnida iguales>
+            <Campo
+              id="producto-precio"
+              etiqueta="Precio (S/)"
+              valor={precio}
+              onCambio={setPrecio}
+              placeholder="29.90"
+              requerido
+            />
+            <Campo
+              id="producto-precio-lista"
+              etiqueta="Precio anterior (oferta)"
+              valor={precioLista}
+              onCambio={setPrecioLista}
+              placeholder="Opcional"
+            />
+          </FilaUnida>
+          <Campo
+            id="producto-resumen"
+            etiqueta="Resumen (sale en la tarjeta del listado)"
+            valor={descripcionCorta}
+            onCambio={setDescripcionCorta}
+            placeholder="Algodón pima, cintura suave"
+          />
+          <CampoTexto
+            id="producto-descripcion"
+            etiqueta="Descripción (sale en la ficha)"
+            valor={descripcion}
+            onCambio={setDescripcion}
+            filas={5}
+          />
+          <Campo
+            id="producto-insignia"
+            etiqueta="Insignia sobre la foto (opcional)"
+            valor={etiqueta}
+            onCambio={setEtiqueta}
+            placeholder="Nuevo, Más vendido…"
+          />
+          <Casilla
+            id="producto-envio-gratis"
+            etiqueta="Envío gratis (muestra la etiqueta sobre la foto)"
+            marcada={envioGratis}
+            onCambio={setEnvioGratis}
+          />
+          <Casilla
+            id="producto-destacado"
+            etiqueta="Destacado en la portada"
+            marcada={destacado}
+            onCambio={setDestacado}
+          />
+          <Casilla
+            id="producto-activo"
+            etiqueta="Visible en la tienda"
+            marcada={activo}
+            onCambio={setActivo}
+          />
+          <Alerta tono="info">
+            Por ahora el producto usa la foto de demostración. La subida de fotos llega en una fase
+            posterior.
+          </Alerta>
+          <Boton tipo="submit" disabled={guardando}>
+            {guardando ? "Guardando…" : nuevo ? "Crear producto" : "Guardar cambios"}
           </Boton>
-        ) : null}
-      </Formulario>
-    </Tarjeta>
+        </Formulario>
+      </Tarjeta>
+    </>
   );
 }
 
@@ -465,7 +477,7 @@ interface PropsVariantesProducto {
     color: string;
     sku: string;
     stock: number;
-    /** Costo de la ultima compra. Se registra en Proveedores, no aqui. */
+    /** Costo puesto a mano o el de la ultima compra, que lo vuelve a fijar. */
     costo: number | null;
     activo: boolean;
   }[];
@@ -474,8 +486,45 @@ interface PropsVariantesProducto {
 /** "Costo actual S/ 8.00 · margen S/ 17.00 (68 %)", o como registrarlo. */
 function textoDeCosto(precio: number, costo: number | null): string {
   const margen = margenDe(precio, costo);
-  if (costo === null || margen === null) return "Sin costo: se registra al ingresar una compra.";
+  if (costo === null || margen === null) return "Sin costo: escríbelo aquí o registra una compra.";
   return `Costo actual ${MONEDA.format(costo)} · margen ${MONEDA.format(margen.monto)} (${margen.porcentaje} %)`;
+}
+
+/** Costo de una variante: se escribe y se guarda al salir del campo; vacio lo quita. */
+function CostoDeVariante({
+  id,
+  costo,
+  deshabilitado,
+  onGuardar,
+}: {
+  id: string;
+  costo: number | null;
+  deshabilitado: boolean;
+  onGuardar: (costo: number | null) => void;
+}) {
+  const inicial = costo === null ? "" : String(costo);
+  const [texto, setTexto] = useState(inicial);
+  // Si el costo cambia desde fuera (una compra), el campo lo sigue.
+  useEffect(() => setTexto(inicial), [inicial]);
+
+  function guardar() {
+    if (texto === inicial) return;
+    onGuardar(texto.trim() === "" ? null : numeroDesdeTexto(texto));
+  }
+
+  return (
+    <Campo
+      id={`costo-${id}`}
+      etiqueta="Costo"
+      etiquetaOculta
+      valor={texto}
+      onCambio={setTexto}
+      onSalir={guardar}
+      disabled={deshabilitado}
+      placeholder="Costo S/"
+      modoTeclado="decimal"
+    />
+  );
 }
 
 /**
@@ -533,7 +582,19 @@ function VariantesProducto({
     }),
   );
 
-  const trabajando = agregar.isPending || cambiarActivo.isPending;
+  const fijarCosto = useMutation(
+    trpc.panel.productos.fijarCosto.mutationOptions({
+      onSuccess: () => {
+        setError(null);
+        setAviso("Costo guardado.");
+        void queryClient.invalidateQueries(trpc.panel.productos.pathFilter());
+        void queryClient.invalidateQueries(trpc.panel.resumen.pathFilter());
+      },
+      onError: alFallar,
+    }),
+  );
+
+  const trabajando = agregar.isPending || cambiarActivo.isPending || fijarCosto.isPending;
 
   return (
     <Tarjeta titulo="Tallas y colores">
@@ -543,35 +604,42 @@ function VariantesProducto({
       {variantes.length === 0 ? (
         <p>Todavía no tiene tallas. Agrega al menos una para poder venderlo.</p>
       ) : (
-        variantes.map((v) => (
-          <FilaLista
-            key={v.id}
-            acciones={
-              <Boton
-                variante="secundario"
-                disabled={trabajando}
-                onClick={() => cambiarActivo.mutate({ varianteId: v.id, activo: !v.activo })}
-              >
-                {v.activo ? "Ocultar" : "Mostrar"}
-              </Boton>
-            }
-          >
-            <strong>
-              Talla {v.talla} · {v.color}
-            </strong>
-            <span>SKU {v.sku}</span>
-            <span>{textoDeCosto(precio, v.costo)}</span>
-            <span>
-              <Insignia tono={v.stock === 0 ? "error" : "neutro"}>{v.stock} en stock</Insignia>
-              {!v.activo ? (
+        <div>
+          {variantes.map((v) => (
+            <FilaMovimiento
+              key={v.id}
+              logo={<LogoIcono icono={<IconoCatalogo tamano={16} />} nombre="Variante" />}
+              titulo={`Talla ${v.talla} · ${v.color}`}
+              detalle={`SKU ${v.sku}`}
+              subtitulo={textoDeCosto(precio, v.costo)}
+              estado={
+                !v.activo
+                  ? { texto: "Oculta", tono: "alerta" }
+                  : v.stock === 0
+                    ? { texto: "Sin stock", tono: "error" }
+                    : { texto: "A la venta", tono: "exito" }
+              }
+              valor={`${v.stock} u.`}
+              accion={
                 <>
-                  {" "}
-                  <Insignia tono="alerta">Oculta</Insignia>
+                  <CostoDeVariante
+                    id={v.id}
+                    costo={v.costo}
+                    deshabilitado={trabajando}
+                    onGuardar={(costo) => fijarCosto.mutate({ varianteId: v.id, costo })}
+                  />
+                  <Boton
+                    variante="secundario"
+                    disabled={trabajando}
+                    onClick={() => cambiarActivo.mutate({ varianteId: v.id, activo: !v.activo })}
+                  >
+                    {v.activo ? "Ocultar" : "Mostrar"}
+                  </Boton>
                 </>
-              ) : null}
-            </span>
-          </FilaLista>
-        ))
+              }
+            />
+          ))}
+        </div>
       )}
 
       <Formulario

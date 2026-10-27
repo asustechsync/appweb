@@ -11,8 +11,7 @@ import {
   ETIQUETAS_PAGO,
   ETIQUETAS_PERIODO,
   PERIODOS,
-  type EstadoPedido,
-  type MedioPagoPedido,
+  TRAMOS_SERIE,
   type Periodo,
 } from "@appweb/core";
 import {
@@ -22,40 +21,52 @@ import {
   Cargando,
   EstadoVacio,
   FilaGraficos,
-  FilaLista,
-  GraficoReparto,
+  FilaResumen,
+  TarjetasGanancia,
   GraficoTendencia,
   PilaGraficos,
-  Insignia,
-  ListaActividad,
+  ParejaListas,
+  IconoCatalogo,
+  IconoCamion,
+  IconoEstrella,
+  IconoLibro,
+  IconoPedidos,
+  ListaConPestanas,
   RejillaMetricas,
   Tarjeta,
   TarjetaActividad,
   TarjetaMetrica,
   LogoMedioPago,
-  type TonoReparto,
 } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
 import { useTRPC } from "@/lib/trpc";
-import { FECHA, MONEDA, conSigno, cuandoFue } from "@appweb/core/formato";
 
-/** Ambar mientras espera algo, verde cuando ya avanzo. */
-function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "neutro" {
-  if (estado === "ENTREGADO" || estado === "PAGADO") return "exito";
-  if (estado === "PENDIENTE_PAGO") return "alerta";
-  return "neutro";
+import { tonoDeEstado } from "./Pedidos";
+import { MONEDA, conSigno, cuandoFue, diaYHora, haceCuanto, horaCorta } from "@appweb/core/formato";
+
+/**
+ * Como se llama cada punto de la serie (el tooltip y la pildora del eje): la
+ * hora en un dia, el dia y la hora en una semana y solo el dia en un mes. Los
+ * puntos reparten el periodo en 24 tramos iguales; el primero es el inicio.
+ */
+function etiquetasDelEje(inicio: string, fin: string, puntos: number): string[] {
+  const desde = new Date(inicio).getTime();
+  const duracion = new Date(fin).getTime() - desde;
+  const dias = duracion / 86_400_000;
+  return Array.from({ length: puntos }, (_, i) => {
+    const momento = new Date(desde + (i * duracion) / TRAMOS_SERIE);
+    if (dias <= 1.5) return horaCorta(momento);
+    const { dia } = diaYHora(momento);
+    return dias <= 8 ? `${dia} ${horaCorta(momento)}` : dia;
+  });
 }
 
-/** El color de cada medio en el reparto: cercano al de su logo. */
-const TONO_MEDIO: Record<MedioPagoPedido, TonoReparto> = {
-  YAPE: "lavanda",
-  PLIN: "celeste",
-  TARJETA: "pistacho",
-  TRANSFERENCIA: "grafito",
-  CONTRA_ENTREGA: "ambar",
-};
+/** La cuenta ya se lee sola: el pie solo sale para avisar que la ganancia es parcial. */
+function notaDeGanancia(cobertura: number): string {
+  return `Solo el ${cobertura}% de lo vendido tiene costo registrado: la ganancia es parcial.`;
+}
 
 /**
  * Resumen del panel, en tres niveles y en ese orden:
@@ -70,9 +81,27 @@ const TONO_MEDIO: Record<MedioPagoPedido, TonoReparto> = {
 export interface PropsResumen {
   /** Lleva a la seccion Pagos; sin esto no se muestra "Ver todos". */
   onVerPagos?: () => void;
+  /** Llevan a Pedidos, Inventario y Clientes; sin ellas, esa lista no ofrece "Ver todos". */
+  onVerPedidos?: () => void;
+  onVerInventario?: () => void;
+  onVerClientes?: () => void;
+  onVerEnvios?: () => void;
+  onVerReclamos?: () => void;
+  onVerResenas?: () => void;
 }
 
-export function Resumen({ onVerPagos }: PropsResumen) {
+/** Cuantas filas se ven por lista: es un resumen, no la seccion. */
+const FILAS_RESUMEN = 5;
+
+export function Resumen({
+  onVerPagos,
+  onVerPedidos,
+  onVerInventario,
+  onVerClientes,
+  onVerEnvios,
+  onVerReclamos,
+  onVerResenas,
+}: PropsResumen) {
   const trpc = useTRPC();
   const [periodo, setPeriodo] = useState<Periodo>("dia");
   // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
@@ -80,7 +109,10 @@ export function Resumen({ onVerPagos }: PropsResumen) {
   // El periodo cambia solo las cifras: se conserva lo anterior mientras llegan
   // las nuevas para que el resumen no parpadee a "Cargando".
   const datos = useQuery({
-    ...trpc.panel.resumen.datos.queryOptions({ periodo, ...(fecha ? { fecha } : {}) }),
+    ...trpc.panel.resumen.datos.queryOptions({
+      periodo,
+      ...(fecha ? { fecha } : {}),
+    }),
     placeholderData: keepPreviousData,
   });
 
@@ -89,17 +121,110 @@ export function Resumen({ onVerPagos }: PropsResumen) {
 
   const {
     alertas,
+    enviosEnCamino,
+    reclamosPendientes,
+    resenasPendientes,
     etiquetaAnterior,
     marcasEje,
-    mediosDePago,
     metricas,
     ultimosPagos,
+    pagosRechazados,
     ultimosPedidos,
     ultimosUsuarios,
     titulo,
   } = datos.data;
   const anterior = (valor: string) => ({ etiqueta: etiquetaAnterior, valor });
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
+
+  const filaPago = (pago: (typeof ultimosPagos)[number]) => (
+    <TarjetaActividad
+      key={pago.id}
+      estado={ETIQUETA_PAGO_RECIENTE[pago.estado] ?? ETIQUETAS_PAGO[pago.estado]}
+      iconoEstado={ESTADO_PAGO[pago.estado].icono}
+      tonoEstado={ESTADO_PAGO[pago.estado].tono}
+      fecha={cuandoFue(new Date(pago.creadoEn))}
+      logo={
+        <LogoMedioPago
+          medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio]}
+          nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
+        />
+      }
+      // Numero de orden sin el prefijo: "N.º 20261023-F52U".
+      titulo={`N.º ${codigoCorto(pago.codigo)}`}
+      valor={MONEDA.format(pago.monto)}
+      anulado={pago.estado === "RECHAZADO"}
+    />
+  );
+  const filasAtender = alertas.pedidosPendientes.slice(0, FILAS_RESUMEN).map((pedido) => (
+    <FilaResumen
+      key={pedido.id}
+      marca={<IconoPedidos tamano={16} />}
+      titulo={pedido.codigo}
+      subtitulo={pedido.dias === 0 ? "Hoy" : `Hace ${pedido.dias} d`}
+      estado={{
+        texto: ETIQUETAS[pedido.estado],
+        tono: tonoDeEstado(pedido.estado),
+      }}
+    />
+  ));
+  const filasEnvios = enviosEnCamino.slice(0, FILAS_RESUMEN).map((pedido) => (
+    <FilaResumen
+      key={pedido.id}
+      marca={<IconoCamion tamano={16} />}
+      titulo={pedido.codigo}
+      subtitulo={pedido.transportista ?? "Sin transportista"}
+      estado={{
+        texto: pedido.dias === 0 ? "Hoy" : `Hace ${pedido.dias} d`,
+        tono: "neutro",
+      }}
+    />
+  ));
+  const filasReclamos = reclamosPendientes.slice(0, FILAS_RESUMEN).map((hoja) => (
+    <FilaResumen
+      key={hoja.id}
+      marca={<IconoLibro tamano={16} />}
+      titulo={hoja.codigo}
+      subtitulo={hoja.tipo}
+      estado={{
+        texto: hoja.dias === 0 ? "Hoy" : `Hace ${hoja.dias} d`,
+        tono: "alerta",
+      }}
+    />
+  ));
+  const filasResenas = resenasPendientes.slice(0, FILAS_RESUMEN).map((resena) => (
+    <FilaResumen
+      key={resena.id}
+      marca={<IconoEstrella tamano={16} />}
+      titulo={resena.producto}
+      subtitulo={`${resena.estrellas} de 5 estrellas`}
+      estado={{
+        texto: resena.dias === 0 ? "Hoy" : `Hace ${resena.dias} d`,
+        tono: "alerta",
+      }}
+    />
+  ));
+  const filasCuentas = ultimosUsuarios
+    .slice(0, FILAS_RESUMEN)
+    .map((usuario) => (
+      <FilaResumen
+        key={usuario.id}
+        marca={usuario.nombre.charAt(0).toUpperCase()}
+        titulo={usuario.nombre}
+        subtitulo={cuandoFue(new Date(usuario.creadoEn))}
+      />
+    ));
+  const filasStock = alertas.variantesBajas.slice(0, FILAS_RESUMEN).map((variante) => (
+    <FilaResumen
+      key={variante.id}
+      marca={<IconoCatalogo tamano={16} />}
+      titulo={variante.nombre}
+      subtitulo={`Talla ${variante.talla} · ${variante.color}`}
+      estado={{
+        texto: variante.stock === 0 ? "Agotado" : `${variante.stock} und.`,
+        tono: variante.stock === 0 ? "error" : "alerta",
+      }}
+    />
+  ));
 
   return (
     <>
@@ -109,16 +234,6 @@ export function Resumen({ onVerPagos }: PropsResumen) {
           sinMarco
           acciones={
             <>
-              <SelectorSegmentado
-                etiqueta="Periodo de las métricas"
-                // Con un dia del calendario elegido, ningun periodo esta activo.
-                valor={fecha ? "" : periodo}
-                opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
-                onCambio={(valor) => {
-                  setFecha("");
-                  setPeriodo(valor as Periodo);
-                }}
-              />
               <SelectorCalendario
                 id="fecha-metricas"
                 etiqueta="Elegir un día"
@@ -128,6 +243,19 @@ export function Resumen({ onVerPagos }: PropsResumen) {
                 onCambio={setFecha}
                 limpiable
                 alineacion="fin"
+              />
+              <SelectorSegmentado
+                etiqueta="Periodo de las métricas"
+                // Con un dia del calendario elegido, ningun periodo esta activo.
+                valor={fecha ? "" : periodo}
+                opciones={PERIODOS.map((id) => ({
+                  valor: id,
+                  etiqueta: ETIQUETAS_PERIODO[id],
+                }))}
+                onCambio={(valor) => {
+                  setFecha("");
+                  setPeriodo(valor as Periodo);
+                }}
               />
             </>
           }
@@ -175,136 +303,144 @@ export function Resumen({ onVerPagos }: PropsResumen) {
               <GraficoTendencia
                 serie={metricas.serieVentas}
                 seriePrevia={metricas.serieVentasPrevia}
-                titulo={`Ventas · ${titulo}`}
+                titulo="Ventas"
+                etiquetaActual={titulo}
                 valor={MONEDA.format(metricas.ventas)}
-                detalle={`${conSigno(metricas.diferenciaVentas, MONEDA)} vs ${etiquetaAnterior.toLowerCase()}`}
-                tono={
-                  metricas.diferenciaVentas > 0
-                    ? "sube"
-                    : metricas.diferenciaVentas < 0
-                      ? "baja"
-                      : "igual"
-                }
+                // El total ya esta en la tarjeta de Ventas y la rentabilidad, debajo:
+                // la cabecera solo nombra las dos lineas.
+                cifras={[]}
+                {...(metricas.ultimaVenta
+                  ? { nota: `Última venta ${haceCuanto(new Date(metricas.ultimaVenta))}` }
+                  : {})}
+                valorPrevio={MONEDA.format(metricas.anteriores.ventas)}
                 etiquetaPrevia={etiquetaAnterior}
                 marcas={marcasEje}
                 etiqueta="Ventas acumuladas del periodo contra el anterior"
+                etiquetasPunto={etiquetasDelEje(
+                  datos.data.inicioPeriodo,
+                  datos.data.finPeriodo,
+                  metricas.serieVentas.length,
+                )}
+                formatear={(valor) => MONEDA.format(valor)}
               />
-              <GraficoReparto
-                titulo="Medios de pago"
-                meta={MONEDA.format(mediosDePago.reduce((suma, medio) => suma + medio.monto, 0))}
-                partes={mediosDePago.map((medio) => ({
-                  etiqueta: ETIQUETAS_MEDIO_PAGO[medio.medio],
-                  porcentaje: medio.porcentaje,
-                  valor: MONEDA.format(medio.monto),
-                  tono: TONO_MEDIO[medio.medio],
-                  vacia: medio.monto === 0,
-                }))}
+              {/* Rentabilidad: cada tarjeta con su parte del precio de lista. */}
+              <TarjetasGanancia
+                actual={{
+                  ganancia: metricas.margen.ganancia,
+                  costo: metricas.margen.costo,
+                  descuentos: metricas.descuentos,
+                  margen: metricas.margen.porcentaje,
+                }}
+                previo={{
+                  ganancia: metricas.margenPrevio.ganancia,
+                  costo: metricas.margenPrevio.costo,
+                  descuentos: metricas.descuentosPrevios,
+                  margen: metricas.margenPrevio.porcentaje,
+                }}
+                etiquetaPrevia={etiquetaAnterior}
+                formatear={(valor) => MONEDA.format(valor)}
+                {...(metricas.margen.cobertura < 100
+                  ? { nota: notaDeGanancia(metricas.margen.cobertura) }
+                  : {})}
               />
             </PilaGraficos>
-            <ListaActividad
-              titulo="Pagos recientes"
-              vacio="Todavía no hay pagos registrados."
-              {...(onVerPagos ? { onVerTodos: onVerPagos } : {})}
-            >
-              {ultimosPagos.map((pago) => (
-                <TarjetaActividad
-                  key={pago.id}
-                  estado={ETIQUETA_PAGO_RECIENTE[pago.estado] ?? ETIQUETAS_PAGO[pago.estado]}
-                  iconoEstado={ESTADO_PAGO[pago.estado].icono}
-                  tonoEstado={ESTADO_PAGO[pago.estado].tono}
-                  fecha={cuandoFue(new Date(pago.creadoEn))}
-                  logo={
-                    <LogoMedioPago
-                      medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio]}
-                      nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
-                    />
-                  }
-                  // Numero de orden sin el prefijo: "N.º 20261023-F52U".
-                  titulo={`N.º ${codigoCorto(pago.codigo)}`}
-                  valor={MONEDA.format(pago.monto)}
-                  anulado={pago.estado === "RECHAZADO"}
-                />
-              ))}
-            </ListaActividad>
+            <ListaConPestanas
+              etiqueta="Pagos"
+              reservar={FILAS_RESUMEN}
+              filasAltas
+              pestanas={[
+                {
+                  valor: "recientes",
+                  etiqueta: "Recientes",
+                  titulo: "Pagos recientes",
+                  vacio: "Todavía no hay pagos registrados.",
+                  ...(onVerPagos ? { onVerTodos: onVerPagos } : {}),
+                  filas: ultimosPagos.map(filaPago),
+                },
+                {
+                  valor: "rechazados",
+                  etiqueta: "Rechazados",
+                  titulo: "Pagos rechazados",
+                  vacio: "No hay pagos rechazados.",
+                  ...(onVerPagos ? { onVerTodos: onVerPagos } : {}),
+                  filas: pagosRechazados.map(filaPago),
+                },
+              ]}
+            />
           </FilaGraficos>
         </Tarjeta>
       ) : null}
 
-      {hayAlertas ? (
-        <>
-          {alertas.pedidosPendientes.length > 0 ? (
-            <Tarjeta titulo="Pedidos por atender">
-              {alertas.pedidosPendientes.map((pedido) => (
-                <FilaLista
-                  key={pedido.id}
-                  acciones={
-                    <Insignia tono={pedido.dias >= 2 ? "alerta" : "neutro"}>
-                      {pedido.dias === 0 ? "Hoy" : `Hace ${pedido.dias} d`}
-                    </Insignia>
-                  }
-                >
-                  <strong>{pedido.codigo}</strong>
-                  <span>{MONEDA.format(pedido.total)}</span>
-                  <span>
-                    <Insignia tono={tonoDeEstado(pedido.estado)}>
-                      {ETIQUETAS[pedido.estado]}
-                    </Insignia>
-                  </span>
-                </FilaLista>
-              ))}
-            </Tarjeta>
-          ) : null}
-
-          {alertas.variantesBajas.length > 0 ? (
-            <Tarjeta titulo="Stock por acabarse">
-              {alertas.variantesBajas.map((variante) => (
-                <FilaLista
-                  key={variante.id}
-                  acciones={
-                    <Insignia tono={variante.stock === 0 ? "error" : "alerta"}>
-                      {variante.stock === 0 ? "Agotado" : `${variante.stock} und.`}
-                    </Insignia>
-                  }
-                >
-                  <strong>{variante.nombre}</strong>
-                  <span>
-                    Talla {variante.talla} · {variante.color}
-                  </span>
-                </FilaLista>
-              ))}
-            </Tarjeta>
-          ) : null}
-        </>
-      ) : null}
-
-      {ultimosPedidos.length > 0 ? (
-        <Tarjeta titulo="Últimos pedidos">
-          {ultimosPedidos.map((pedido) => (
-            <FilaLista
-              key={pedido.id}
-              acciones={
-                <Insignia tono={tonoDeEstado(pedido.estado)}>{ETIQUETAS[pedido.estado]}</Insignia>
-              }
-            >
-              <strong>{pedido.codigo}</strong>
-              <span>
-                {FECHA.format(new Date(pedido.creadoEn))} · {MONEDA.format(pedido.total)}
-              </span>
-            </FilaLista>
-          ))}
-        </Tarjeta>
-      ) : null}
-
-      {ultimosUsuarios.length > 0 ? (
-        <Tarjeta titulo="Últimas cuentas creadas">
-          {ultimosUsuarios.map((usuario) => (
-            <FilaLista key={usuario.id}>
-              <strong>{usuario.nombre}</strong>
-              <span>{usuario.email}</span>
-            </FilaLista>
-          ))}
-        </Tarjeta>
-      ) : null}
+      <ParejaListas>
+        <ListaConPestanas
+          etiqueta="Pedidos, stock y envíos"
+          reservar={FILAS_RESUMEN}
+          pestanas={[
+            ...(metricas
+              ? [
+                  {
+                    valor: "atender",
+                    etiqueta: "Pedidos",
+                    titulo: "Pedidos por atender",
+                    vacio: "No hay pedidos por atender.",
+                    ...(onVerPedidos ? { onVerTodos: onVerPedidos } : {}),
+                    filas: filasAtender,
+                  },
+                ]
+              : []),
+            {
+              valor: "stock",
+              etiqueta: "Stock",
+              titulo: "Stock por acabarse",
+              vacio: "No hay stock bajo.",
+              ...(onVerInventario ? { onVerTodos: onVerInventario } : {}),
+              filas: filasStock,
+            },
+            ...(metricas
+              ? [
+                  {
+                    valor: "envios",
+                    etiqueta: "Envíos",
+                    titulo: "Envíos en camino",
+                    vacio: "No hay envíos en camino.",
+                    ...(onVerEnvios ? { onVerTodos: onVerEnvios } : {}),
+                    filas: filasEnvios,
+                  },
+                ]
+              : []),
+          ]}
+        />
+        <ListaConPestanas
+          etiqueta="Registros, reclamos y reseñas"
+          reservar={FILAS_RESUMEN}
+          pestanas={[
+            {
+              valor: "cuentas",
+              etiqueta: "Registros",
+              titulo: "Registros nuevos",
+              vacio: "Todavía no hay registros.",
+              ...(onVerClientes ? { onVerTodos: onVerClientes } : {}),
+              filas: filasCuentas,
+            },
+            {
+              valor: "reclamos",
+              etiqueta: "Reclamos",
+              titulo: "Reclamos sin responder",
+              vacio: "No hay reclamos pendientes.",
+              ...(onVerReclamos ? { onVerTodos: onVerReclamos } : {}),
+              filas: filasReclamos,
+            },
+            {
+              valor: "resenas",
+              etiqueta: "Reseñas",
+              titulo: "Reseñas por moderar",
+              vacio: "No hay reseñas pendientes.",
+              ...(onVerResenas ? { onVerTodos: onVerResenas } : {}),
+              filas: filasResenas,
+            },
+          ]}
+        />
+      </ParejaListas>
 
       {!hayAlertas && metricas === null && ultimosPedidos.length === 0 ? (
         <EstadoVacio

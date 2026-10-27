@@ -7,21 +7,31 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ETIQUETAS, evaluarClave, type EstadoPedido } from "@appweb/core";
 import {
   Alerta,
-  BloqueDetalle,
   Boton,
+  CabeceraDetalle,
   Campo,
   Cargando,
-  EstadoVacio,
-  FilaDetalles,
-  FilaLista,
+  CuadroBento,
+  CuadroMonto,
   Formulario,
+  IconoCorreo,
+  IconoFlechaIzquierda,
+  IconoPedidos,
+  IconoReloj,
+  IconoUsuario,
   IndicadorClave,
-  Insignia,
+  ListaActividad,
+  LogoIcono,
+  RejillaBento,
   Tarjeta,
+  TarjetaActividad,
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
-import { FECHA, MONEDA } from "@appweb/core/formato";
+
+import { estadoDeCuenta } from "./CuadrosUsuario";
+import { tonoDeEstado } from "./Pedidos";
+import { FECHA, MONEDA, cuandoFue } from "@appweb/core/formato";
 
 interface PropsDetalleUsuario {
   usuarioId: string;
@@ -46,7 +56,8 @@ export function DetalleUsuario({
 
   const volver = (
     <Boton variante="secundario" onClick={onVolver}>
-      ← Volver a usuarios
+      <IconoFlechaIzquierda tamano={16} />
+      Volver a la lista
     </Boton>
   );
 
@@ -64,41 +75,41 @@ export function DetalleUsuario({
 
   return (
     <>
-      <Tarjeta titulo={u.nombre} acciones={volver}>
-        <p>
-          <Insignia tono="marca">{etiquetaRol(u.rol)}</Insignia>{" "}
-          {u.anonimizada ? (
-            <Insignia tono="error">Eliminada</Insignia>
-          ) : (
-            <Insignia tono={u.activo ? "exito" : "alerta"}>
-              {u.activo ? "Activa" : "Desactivada"}
-            </Insignia>
-          )}
-        </p>
-        <FilaDetalles>
-          <BloqueDetalle titulo="Cuenta">
-            <p>{u.email}</p>
-            <p>{u.telefono ?? "Sin teléfono"}</p>
-            <p>Desde {FECHA.format(new Date(u.creadoEn))}</p>
-            <p>
-              {u.ultimoAccesoEn
-                ? `Último ingreso: ${FECHA.format(new Date(u.ultimoAccesoEn))}`
-                : "Nunca ingresó"}
-            </p>
-          </BloqueDetalle>
-          <BloqueDetalle titulo="Compras">
-            <p>
-              {u.totalPedidos} {u.totalPedidos === 1 ? "pedido" : "pedidos"}
-            </p>
-            <p>Comprado: {MONEDA.format(u.totalComprado)}</p>
-            <p>Nivel: {u.nivel}</p>
-            <p>
-              {u.direcciones} {u.direcciones === 1 ? "dirección guardada" : "direcciones guardadas"}
-            </p>
-            <p>{u.tieneDocumento ? "Con documento registrado" : "Sin documento"}</p>
-          </BloqueDetalle>
-        </FilaDetalles>
-      </Tarjeta>
+      <CabeceraDetalle titulo={u.nombre} acciones={volver} />
+
+      <RejillaBento>
+        <CuadroMonto
+          logo={<LogoIcono icono={<IconoUsuario tamano={16} />} nombre={u.nombre} />}
+          estado={estadoDeCuenta(u)}
+          etiqueta={`${etiquetaRol(u.rol)} · ${u.nivel}`}
+          monto={MONEDA.format(u.totalComprado)}
+          detalle={`Cuenta desde ${FECHA.format(new Date(u.creadoEn))}`}
+        />
+        <CuadroBento
+          icono={<IconoCorreo tamano={16} />}
+          titulo="Cuenta"
+          ancho="ancho"
+          {...(u.anonimizada ? {} : { copiable: u.email })}
+          detalle={u.telefono ?? "Sin teléfono"}
+        >
+          {u.anonimizada ? "Datos eliminados" : u.email}
+        </CuadroBento>
+        <CuadroBento
+          icono={<IconoPedidos tamano={16} />}
+          titulo="Compras"
+          ancho="ancho"
+          detalle={u.tieneDocumento ? "Con documento registrado" : "Sin documento"}
+          cifras={[
+            { valor: String(u.totalPedidos), etiqueta: "Pedidos" },
+            { valor: String(u.direcciones), etiqueta: "Direcciones" },
+          ]}
+        >
+          {u.nivel}
+        </CuadroBento>
+        <CuadroBento icono={<IconoReloj tamano={16} />} titulo="Último ingreso" ancho="ancho">
+          {u.ultimoAccesoEn ? cuandoFue(new Date(u.ultimoAccesoEn)) : "Nunca ingresó"}
+        </CuadroBento>
+      </RejillaBento>
 
       {u.anonimizada ? null : (
         <>
@@ -110,23 +121,21 @@ export function DetalleUsuario({
         </>
       )}
 
-      <Tarjeta titulo="Últimos pedidos">
-        {u.pedidos.length === 0 ? (
-          <EstadoVacio titulo="Sin pedidos" texto="Esta cuenta todavía no compró." />
-        ) : (
-          u.pedidos.map((p) => (
-            <FilaLista key={p.id}>
-              <strong>
-                {p.codigo} · {MONEDA.format(p.total)}
-              </strong>
-              <span>
-                <Insignia tono="neutro">{ETIQUETAS[p.estado as EstadoPedido]}</Insignia>{" "}
-                {FECHA.format(new Date(p.creadoEn))}
-              </span>
-            </FilaLista>
-          ))
-        )}
-      </Tarjeta>
+      <ListaActividad titulo="Últimos pedidos" vacio="Esta cuenta todavía no compró.">
+        {u.pedidos.map((p) => (
+          <TarjetaActividad
+            key={p.id}
+            estado={ETIQUETAS[p.estado as EstadoPedido]}
+            iconoEstado={<IconoPedidos tamano={12} />}
+            tonoEstado={tonoDeEstado(p.estado as EstadoPedido)}
+            fecha={cuandoFue(new Date(p.creadoEn))}
+            logo={<LogoIcono icono={<IconoPedidos tamano={16} />} nombre="Pedido" />}
+            titulo={p.codigo}
+            valor={MONEDA.format(p.total)}
+            anulado={p.estado === "CANCELADO"}
+          />
+        ))}
+      </ListaActividad>
 
       {u.anonimizada || esUnoMismo ? null : (
         <EliminarCuenta usuarioId={u.id} nombre={u.nombre} onEliminada={onVolver} />

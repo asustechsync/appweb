@@ -184,6 +184,7 @@ export const tokens = {
     graficoAmbar: "#E9A23B",
     graficoCoral: "#E07A6F",
     graficoGrafito: "#6B6B70",
+    graficoPiedra: "#CFCEC8",
   },
 
   // Escala de 4 px: padding, margin y gap.
@@ -201,6 +202,9 @@ export const tokens = {
     16: 64,
     20: 80,
     24: 96,
+    28: 112,
+    32: 128,
+    36: 144,
   },
 
   radio: {
@@ -352,6 +356,7 @@ export const tokensOscuro = {
     graficoAmbar: "#F0B254",
     graficoCoral: "#EC8D83",
     graficoGrafito: "#8A8A93",
+    graficoPiedra: "#4A4A50",
 
     oferta: "#F07C81",
     agotado: "#6B6B74",

@@ -9,16 +9,35 @@
   min-inline-size: 0;
 }
 
-/* Graficos apilados en una columna, cada uno a su alto natural: compactos,
-   sin estirarse para igualar a la columna vecina. */
+/* Graficos apilados en una columna: el ultimo se estira para que las dos
+   columnas terminen a la misma altura. */
 .ui-fila-graficos__pila {
   display: flex;
   flex-direction: column;
   gap: var(--espacio-3);
 }
+.ui-fila-graficos__pila > :last-child {
+  flex: 1 1 auto;
+}
 
 @media (min-width: 64rem) {
   .ui-fila-graficos {
     grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  }
+}
+
+/* Dos listas a partes iguales; cada una conserva su caja. */
+.ui-fila-graficos__pareja {
+  display: grid;
+  align-items: start;
+  gap: var(--espacio-3);
+}
+.ui-fila-graficos__pareja > * {
+  min-inline-size: 0;
+}
+@media (min-width: 48rem) {
+  .ui-fila-graficos__pareja {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: column;
   }
 }

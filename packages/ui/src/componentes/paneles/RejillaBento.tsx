@@ -180,7 +180,7 @@ export interface PropsCuadroMonto {
   /** La cifra no cuenta (pago rechazado): va tachada. */
   anulado?: boolean;
   /** Botones pequeños bajo la fecha: "Recibo PDF", "Reembolsar". No se imprimen. */
-  acciones?: { etiqueta: string; icono?: ReactNode; onClick: () => void }[];
+  acciones?: AccionBento[];
 }
 
 /** El cuadro grande del bento: logo, estado y el monto en grande. */
@@ -223,12 +223,14 @@ export function CuadroMonto({
   );
 }
 
+export interface AccionBento {
+  etiqueta: string;
+  icono?: ReactNode;
+  onClick: () => void;
+}
+
 /** Botones pequeños de un cuadro: "Recibo PDF", "WhatsApp". No se imprimen. */
-export function AccionesBento({
-  acciones,
-}: {
-  acciones?: { etiqueta: string; icono?: ReactNode; onClick: () => void }[] | undefined;
-}) {
+export function AccionesBento({ acciones }: { acciones?: AccionBento[] | undefined }) {
   if (!acciones || acciones.length === 0) return null;
   return (
     <div className="ui-cuadro-bento__acciones">

@@ -27,11 +27,11 @@ import {
   InsigniaNivel,
   LogoMedioPago,
   RejillaBento,
+  TONO_NIVEL,
 } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
-import { TONO_NIVEL } from "@/lib/tonos-nivel";
 import { useTRPC } from "@/lib/trpc";
 import { FECHA, FECHA_HORA, MONEDA, cuandoFue } from "@appweb/core/formato";
 

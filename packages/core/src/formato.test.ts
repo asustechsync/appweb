@@ -4,7 +4,9 @@ import {
   cuandoFue,
   FECHA_HORA,
   FECHA_LARGA,
+  haceCuanto,
   HORA,
+  horaCorta,
   MONEDA,
   mensajeDeFallo,
   numeroDesdeTexto,
@@ -49,5 +51,21 @@ describe("formato", () => {
   it("saca el mensaje de un error", () => {
     expect(mensajeDeFallo(new Error("Sin stock"))).toBe("Sin stock");
     expect(mensajeDeFallo("raro")).toBe("No se pudo completar la acción.");
+  });
+});
+
+describe("hace cuanto", () => {
+  const ahora = new Date("2026-10-23T15:00:00-05:00");
+
+  it("elige la unidad que se lee mejor", () => {
+    expect(haceCuanto(new Date("2026-10-23T14:54:00-05:00"), ahora)).toBe("hace 6 min");
+    expect(haceCuanto(new Date("2026-10-23T12:30:00-05:00"), ahora)).toBe("hace 2 h");
+    expect(haceCuanto(new Date("2026-10-20T15:00:00-05:00"), ahora)).toBe("hace 3 d");
+    expect(haceCuanto(ahora, ahora)).toBe("hace un momento");
+  });
+
+  it("la hora corta quita los minutos solo si es en punto", () => {
+    expect(horaCorta(new Date("2026-10-23T19:00:00-05:00"))).not.toContain(":00");
+    expect(horaCorta(new Date("2026-10-23T19:30:00-05:00"))).toContain(":30");
   });
 });

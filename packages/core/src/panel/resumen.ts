@@ -190,7 +190,7 @@ const DIA_MS = 86_400_000;
 /**
  * Las marcas del eje de la tendencia segun el largo del periodo:
  *
- *   · un dia      — cada 6 horas: 0 h, 6 h, 12 h, 18 h.
+ *   · un dia      — cada 6 horas: 0 h, 6 h, 12 h, 18 h, y 24 h al final del eje.
  *   · una semana  — un dia por marca, al centro de su columna: Lun … Dom.
  *   · un mes      — el 1, 8, 15, 22 y 29, al inicio de su dia.
  *
@@ -203,7 +203,10 @@ export function marcasDelEje(desde: Date, fin: Date): MarcaEje[] {
   const dias = Math.round(duracion / DIA_MS);
 
   if (dias <= 1) {
-    return [0, 6, 12, 18].map((hora) => ({ posicion: hora / 24, texto: `${hora} h` }));
+    return [0, 6, 12, 18, 24].map((hora) => ({
+      posicion: hora / 24,
+      texto: `${hora} h`,
+    }));
   }
 
   if (dias <= 8) {
@@ -306,7 +309,7 @@ export function ventanaDe(periodo: Periodo, ahora = new Date()): VentanaResumen 
       fin,
       previoDesde,
       previoHasta: desde,
-      etiquetaPrevio: "Semana pasada",
+      etiquetaPrevio: "Sem. pasada",
       titulo: "Esta semana",
       contexto: "más que la semana pasada",
     };

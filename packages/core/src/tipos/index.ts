@@ -165,8 +165,8 @@ export const esquemaClavePanel = z.object({
 // ── Pedidos (panel) ────────────────────────────────────────────────────────
 
 export const esquemaFiltroPedidos = z.object({
-  /** Sin estado: todos. */
-  estado: z.enum(ESTADOS_PEDIDO).optional(),
+  /** Sin estados: todos. Con varios, los pedidos en cualquiera de ellos. */
+  estados: z.array(z.enum(ESTADOS_PEDIDO)).optional(),
 });
 
 export const esquemaIdPedido = z.object({
@@ -436,6 +436,12 @@ export const esquemaVarianteNueva = z.object({
 export const esquemaCambioActivoVariante = z.object({
   varianteId: z.string().min(1),
   activo: z.boolean(),
+});
+
+/** Costo de una variante puesto a mano; `null` lo quita. Una compra lo vuelve a fijar. */
+export const esquemaCostoVariante = z.object({
+  varianteId: z.string().min(1),
+  costo: z.number().min(0).max(99999999).nullable(),
 });
 
 const esquemaSlug = z

@@ -1,28 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { slugDesdeTexto } from "@appweb/core";
 import {
   Alerta,
+  BarraLista,
   Boton,
   Campo,
   CampoSelect,
+  CampoSelectorLista,
   CampoTexto,
   Cargando,
   Casilla,
+  CuadroBento,
+  CuadroMonto,
   EstadoVacio,
-  FilaLista,
+  FilaPedido,
   FilaUnida,
   Formulario,
-  Insignia,
+  IconoBuscar,
+  IconoCatalogo,
+  IconoGlobo,
+  IconoMensaje,
+  LimpiarFiltros,
+  ListaConLateral,
+  LogoFoto,
+  Paginador,
+  RejillaBento,
+  RejillaMetricas,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
 } from "@appweb/ui";
 
 import { revalidarTienda } from "@/lib/revalidar";
+import { useEscritorio } from "@/lib/use-escritorio";
+import { usePaginado } from "@/lib/use-paginado";
 import { useTRPC } from "@/lib/trpc";
+import { urlVisible } from "@/lib/url-visible";
 import { mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 
 /** Lo comun a categoria y marca en el formulario. */
@@ -51,18 +69,294 @@ interface MarcaDelPanel extends Ficha {
 
 type Revalidar = { navegacion: boolean; catalogo: boolean; portada: boolean };
 
-/** Insignias de estado: oculta, destacada, cuantos productos tiene. */
-function Estado({ ficha }: { ficha: Ficha }) {
+function estadoDeFicha(ficha: Ficha): { texto: string; tono: "exito" | "alerta" } {
+  return ficha.activo ? { texto: "Visible", tono: "exito" } : { texto: "Oculta", tono: "alerta" };
+}
+
+type FiltroFichas = "TODAS" | "VISIBLES" | "OCULTAS" | "DESTACADAS";
+
+const FILTROS: { id: FiltroFichas; etiqueta: string }[] = [
+  { id: "TODAS", etiqueta: "Todas" },
+  { id: "VISIBLES", etiqueta: "Visibles" },
+  { id: "OCULTAS", etiqueta: "Ocultas" },
+  { id: "DESTACADAS", etiqueta: "Destacadas en portada" },
+];
+
+function cumpleFiltro(ficha: Ficha, filtro: FiltroFichas): boolean {
+  if (filtro === "VISIBLES") return ficha.activo;
+  if (filtro === "OCULTAS") return !ficha.activo;
+  if (filtro === "DESTACADAS") return ficha.destacado;
+  return true;
+}
+
+/** Cuantas fichas se ven por pagina. */
+const PAGINA = 10;
+
+interface PropsSeccionFichas<T extends Ficha> {
+  /** "Categorías". */
+  titulo: string;
+  /** "categoría": para botones y avisos. */
+  sustantivo: string;
+  /** "/categorias/": antepuesto a la direccion web. */
+  ruta: string;
+  /** Ya en el orden en que se muestran. */
+  fichas: T[];
+  /** La imagen o el logo, si tiene. */
+  imagenDe: (ficha: T) => string;
+  /** Al lado del nombre en la fila: "dentro de Boxers". */
+  detalleDe?: (ficha: T) => string | null;
+  /** Cifras propias en el cuadro de productos: subcategorias. */
+  cifrasDe?: (ficha: T) => { valor: string; etiqueta: string }[];
+  formulario: (ficha: T | null, onListo: (mensaje?: string) => void) => ReactNode;
+}
+
+/**
+ * Lo comun a categorias y marcas: cifras arriba, lista con vista previa al
+ * lado y, al editar o crear, el formulario en lugar de la lista.
+ */
+function SeccionFichas<T extends Ficha>({
+  titulo,
+  sustantivo,
+  ruta,
+  fichas,
+  imagenDe,
+  detalleDe,
+  cifrasDe,
+  formulario,
+}: PropsSeccionFichas<T>) {
+  const [editando, setEditando] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [filtro, setFiltro] = useState<FiltroFichas>("TODAS");
+  const [busqueda, setBusqueda] = useState("");
+
+  const coinciden = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
+    return fichas.filter(
+      (f) =>
+        cumpleFiltro(f, filtro) &&
+        (termino === "" || f.nombre.toLowerCase().includes(termino) || f.slug.includes(termino)),
+    );
+  }, [busqueda, filtro, fichas]);
+  const { pagina, paginas, setPagina, visibles } = usePaginado(coinciden, PAGINA);
+
+  const escritorio = useEscritorio();
+  const [elegida, setElegida] = useState<string | null>(null);
+  const seleccionada = visibles.find((f) => f.id === elegida) ?? visibles[0] ?? null;
+
+  function listo(mensaje?: string) {
+    setEditando(null);
+    if (mensaje) setAviso(mensaje);
+  }
+
+  if (editando !== null) {
+    const ficha = fichas.find((f) => f.id === editando) ?? null;
+    return (
+      <Tarjeta
+        titulo={ficha ? `Editar ${ficha.nombre}` : `Nueva ${sustantivo}`}
+        acciones={
+          <Boton variante="secundario" onClick={() => listo()}>
+            ← Volver a {titulo.toLowerCase()}
+          </Boton>
+        }
+      >
+        {formulario(ficha, listo)}
+      </Tarjeta>
+    );
+  }
+
+  const contar = (id: FiltroFichas) => fichas.filter((f) => cumpleFiltro(f, id)).length;
+  const opciones = FILTROS.map((f) => {
+    const cantidad = f.id === "TODAS" ? 0 : contar(f.id);
+    return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
+  });
+  const productos = fichas.reduce((suma, f) => suma + f.productos, 0);
+  const vacias = fichas.filter((f) => f.activo && f.productos === 0).length;
+
   return (
-    <span>
-      <Insignia tono={ficha.activo ? "exito" : "alerta"}>
-        {ficha.activo ? "Visible" : "Oculta"}
-      </Insignia>{" "}
-      {ficha.destacado ? <Insignia tono="neutro">Destacada</Insignia> : null}{" "}
-      <Insignia tono="neutro">
-        {ficha.productos} {ficha.productos === 1 ? "producto" : "productos"}
-      </Insignia>
-    </span>
+    <>
+      {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
+
+      <Tarjeta
+        titulo={titulo}
+        sinMarco
+        acciones={<Boton onClick={() => setEditando("nueva")}>+ Nueva {sustantivo}</Boton>}
+      >
+        <RejillaMetricas>
+          <TarjetaMetrica
+            etiqueta="Visibles"
+            valor={String(contar("VISIBLES"))}
+            contexto={`De ${fichas.length} en total`}
+          />
+          <TarjetaMetrica
+            etiqueta="Ocultas"
+            valor={String(contar("OCULTAS"))}
+            contexto="No salen en la tienda"
+          />
+          <TarjetaMetrica
+            etiqueta="Destacadas"
+            valor={String(contar("DESTACADAS"))}
+            contexto="Salen en la portada"
+          />
+          <TarjetaMetrica
+            etiqueta="Productos"
+            valor={String(productos)}
+            contexto={
+              vacias === 0 ? "Ninguna visible está vacía" : `${vacias} visibles sin productos`
+            }
+          />
+        </RejillaMetricas>
+      </Tarjeta>
+
+      <ListaConLateral
+        filasPorPagina={PAGINA}
+        barra={
+          <BarraLista
+            juntos
+            buscador={
+              <Campo
+                id={`busqueda-${sustantivo}`}
+                etiqueta="Buscar por nombre o dirección web"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
+                placeholder="Nombre o dirección"
+              />
+            }
+          >
+            <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
+            <CampoSelectorLista
+              id={`filtro-${sustantivo}`}
+              ancho="amplio"
+              etiqueta="Qué mostrar"
+              etiquetaOculta
+              valor={filtro}
+              opciones={opciones}
+              onCambio={(valor) => {
+                setFiltro(valor as FiltroFichas);
+                setPagina(1);
+              }}
+            />
+            {filtro !== "TODAS" || busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setFiltro("TODAS");
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
+            ) : null}
+          </BarraLista>
+        }
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionada ? {} : { vacio: `Elige una ${sustantivo} para ver su resumen.` })}
+          >
+            {seleccionada ? (
+              <RejillaBento>
+                <CuadroMonto
+                  logo={
+                    <LogoFoto
+                      src={imagenDe(seleccionada) ? urlVisible(imagenDe(seleccionada)) : null}
+                      nombre={seleccionada.nombre}
+                    />
+                  }
+                  estado={estadoDeFicha(seleccionada)}
+                  etiqueta={
+                    detalleDe?.(seleccionada) ??
+                    `${sustantivo.charAt(0).toUpperCase()}${sustantivo.slice(1)}`
+                  }
+                  monto={seleccionada.nombre}
+                  texto
+                  detalle={`${ruta}${seleccionada.slug}`}
+                  acciones={[
+                    {
+                      etiqueta: `Editar ${sustantivo}`,
+                      onClick: () => setEditando(seleccionada.id),
+                    },
+                  ]}
+                />
+                <CuadroBento
+                  icono={<IconoCatalogo tamano={16} />}
+                  titulo="En la tienda"
+                  ancho="ancho"
+                  cifras={[
+                    { valor: String(seleccionada.productos), etiqueta: "Productos" },
+                    ...(cifrasDe?.(seleccionada) ?? []),
+                    { valor: String(seleccionada.orden), etiqueta: "Orden" },
+                  ]}
+                >
+                  {seleccionada.destacado ? "Destacada en la portada" : "Sin destacar"}
+                </CuadroBento>
+                <CuadroBento
+                  icono={<IconoMensaje tamano={16} />}
+                  titulo="Descripción"
+                  ancho="ancho"
+                  vacio={seleccionada.descripcion === ""}
+                >
+                  {seleccionada.descripcion || "Sin descripción"}
+                </CuadroBento>
+                <CuadroBento
+                  icono={<IconoGlobo tamano={16} />}
+                  titulo="En Google"
+                  ancho="ancho"
+                  vacio={seleccionada.tituloSeo === ""}
+                  {...(seleccionada.descripcionSeo ? { detalle: seleccionada.descripcionSeo } : {})}
+                >
+                  {seleccionada.tituloSeo || "Usa el nombre"}
+                </CuadroBento>
+              </RejillaBento>
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {visibles.length === 0 ? (
+            <EstadoVacio
+              titulo={`Sin ${titulo.toLowerCase()}`}
+              texto={
+                fichas.length === 0
+                  ? `Crea la primera ${sustantivo}.`
+                  : "Ninguna coincide con esa búsqueda o ese filtro."
+              }
+            />
+          ) : (
+            <div>
+              {visibles.map((f) => {
+                const detalle = detalleDe?.(f) ?? null;
+                return (
+                  <FilaPedido
+                    key={f.id}
+                    logo={
+                      <LogoFoto
+                        src={imagenDe(f) ? urlVisible(imagenDe(f)) : null}
+                        nombre={f.nombre}
+                      />
+                    }
+                    titulo={f.nombre}
+                    {...(detalle ? { detalle } : {})}
+                    contenido={`${ruta}${f.slug}`}
+                    centro={[String(f.productos), f.productos === 1 ? "producto" : "productos"]}
+                    estado={estadoDeFicha(f)}
+                    {...(f.destacado ? { nota: "Destacada" } : {})}
+                    seleccionada={escritorio && seleccionada?.id === f.id}
+                    onAbrir={() => (escritorio ? setElegida(f.id) : setEditando(f.id))}
+                    etiquetaAbrir={`${escritorio ? "Elegir" : "Editar"} ${f.nombre}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
+    </>
   );
 }
 
@@ -84,8 +378,6 @@ async function publicar(revalidar: Revalidar, que: string): Promise<string> {
 export function Categorias() {
   const trpc = useTRPC();
   const lista = useQuery(trpc.panel.categorias.listar.queryOptions());
-  const [editando, setEditando] = useState<string | null>(null);
-  const [aviso, setAviso] = useState<string | null>(null);
 
   if (lista.isPending) return <Cargando texto="Cargando categorías…" />;
   if (lista.isError) return <Alerta tono="error">{lista.error.message}</Alerta>;
@@ -96,56 +388,21 @@ export function Categorias() {
   // Primer nivel y debajo sus hijas, en el orden del menu.
   const ordenadas = raices.flatMap((r) => [r, ...hijasDe(r.id)]);
   const huerfanas = todas.filter((c) => !ordenadas.includes(c));
-  const filas = [...ordenadas, ...huerfanas];
   const nombreDe = (id: string | null) => todas.find((c) => c.id === id)?.nombre ?? null;
 
-  function listo(mensaje?: string) {
-    setEditando(null);
-    if (mensaje) setAviso(mensaje);
-  }
-
   return (
-    <Tarjeta titulo="Categorías">
-      {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-      <p>
-        Lo que se ve en el menú de la tienda, en este orden. Una subcategoría cuelga de otra; las
-        ocultas no se muestran.
-      </p>
-      {filas.length === 0 ? (
-        <EstadoVacio titulo="Sin categorías" texto="Crea la primera para poder cargar productos." />
-      ) : null}
-      {filas.map((c) =>
-        editando === c.id ? (
-          <FormularioCategoria key={c.id} categoria={c} todas={todas} onListo={listo} />
-        ) : (
-          <FilaLista
-            key={c.id}
-            acciones={
-              <Boton variante="secundario" onClick={() => setEditando(c.id)}>
-                Editar
-              </Boton>
-            }
-          >
-            <strong>
-              {c.padreId ? `${nombreDe(c.padreId)} › ` : ""}
-              {c.nombre}
-            </strong>
-            <span>
-              /categorias/{c.slug} · orden {c.orden}
-              {c.hijas > 0 ? ` · ${c.hijas} subcategorías` : ""}
-            </span>
-            <Estado ficha={c} />
-          </FilaLista>
-        ),
+    <SeccionFichas
+      titulo="Categorías"
+      sustantivo="categoría"
+      ruta="/categorias/"
+      fichas={[...ordenadas, ...huerfanas]}
+      imagenDe={(c) => c.imagenUrl}
+      detalleDe={(c) => (c.padreId ? `dentro de ${nombreDe(c.padreId)}` : null)}
+      cifrasDe={(c) => [{ valor: String(c.hijas), etiqueta: "Subcategorías" }]}
+      formulario={(c, onListo) => (
+        <FormularioCategoria categoria={c} todas={todas} onListo={onListo} />
       )}
-      {editando === "nueva" ? (
-        <FormularioCategoria categoria={null} todas={todas} onListo={listo} />
-      ) : (
-        <Boton variante="secundario" onClick={() => setEditando("nueva")}>
-          + Nueva categoría
-        </Boton>
-      )}
-    </Tarjeta>
+    />
   );
 }
 
@@ -298,52 +555,19 @@ function FormularioCategoria({
 export function Marcas() {
   const trpc = useTRPC();
   const lista = useQuery(trpc.panel.marcas.listar.queryOptions());
-  const [editando, setEditando] = useState<string | null>(null);
-  const [aviso, setAviso] = useState<string | null>(null);
 
   if (lista.isPending) return <Cargando texto="Cargando marcas…" />;
   if (lista.isError) return <Alerta tono="error">{lista.error.message}</Alerta>;
 
-  function listo(mensaje?: string) {
-    setEditando(null);
-    if (mensaje) setAviso(mensaje);
-  }
-
   return (
-    <Tarjeta titulo="Marcas">
-      {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-      <p>Las destacadas salen en la fila de marcas de la portada, en este orden.</p>
-      {lista.data.length === 0 ? (
-        <EstadoVacio titulo="Sin marcas" texto="Los productos pueden ir sin marca." />
-      ) : null}
-      {lista.data.map((m) =>
-        editando === m.id ? (
-          <FormularioMarca key={m.id} marca={m} onListo={listo} />
-        ) : (
-          <FilaLista
-            key={m.id}
-            acciones={
-              <Boton variante="secundario" onClick={() => setEditando(m.id)}>
-                Editar
-              </Boton>
-            }
-          >
-            <strong>{m.nombre}</strong>
-            <span>
-              /marcas/{m.slug} · orden {m.orden}
-            </span>
-            <Estado ficha={m} />
-          </FilaLista>
-        ),
-      )}
-      {editando === "nueva" ? (
-        <FormularioMarca marca={null} onListo={listo} />
-      ) : (
-        <Boton variante="secundario" onClick={() => setEditando("nueva")}>
-          + Nueva marca
-        </Boton>
-      )}
-    </Tarjeta>
+    <SeccionFichas
+      titulo="Marcas"
+      sustantivo="marca"
+      ruta="/marcas/"
+      fichas={lista.data}
+      imagenDe={(m) => m.logoUrl}
+      formulario={(m, onListo) => <FormularioMarca marca={m} onListo={onListo} />}
+    />
   );
 }
 

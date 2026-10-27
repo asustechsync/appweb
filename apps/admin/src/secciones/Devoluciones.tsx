@@ -1,33 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { ETIQUETAS, ETIQUETAS_DEVOLUCION, ETIQUETAS_MEDIO_PAGO } from "@appweb/core";
+import {
+  ETIQUETAS,
+  ETIQUETAS_DEVOLUCION,
+  ETIQUETAS_MEDIO_PAGO,
+  type TipoDevolucion,
+} from "@appweb/core";
 import {
   Alerta,
+  BarraLista,
   Boton,
   Campo,
   CampoSelect,
+  CampoSelectorLista,
   Cargando,
+  CuadroBento,
+  CuadroDesglose,
+  CuadroMonto,
   EstadoVacio,
   FilaLista,
+  FilaPedido,
   Formulario,
-  Insignia,
+  IconoBuscar,
+  IconoDevolucion,
+  IconoMensaje,
+  IconoPedidos,
+  LimpiarFiltros,
+  ListaConLateral,
+  LogoIcono,
+  Paginador,
+  RejillaBento,
+  RejillaMetricas,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
 } from "@appweb/ui";
 
 import { revalidarTienda } from "@/lib/revalidar";
+import { useEscritorio } from "@/lib/use-escritorio";
+import { usePaginado } from "@/lib/use-paginado";
 import { useTRPC } from "@/lib/trpc";
 
 import { DetallePedido } from "./DetallePedido";
 import { tonoDeEstado } from "./Pedidos";
-import { FECHA_HORA, MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
+import {
+  FECHA_HORA,
+  MONEDA,
+  diaYHora,
+  mensajeDeFallo,
+  numeroDesdeTexto,
+} from "@appweb/core/formato";
+
+/** El cambio no mueve dinero; la devolucion devuelve prendas; el reembolso solo dinero. */
+const TONO_DEVOLUCION: Record<TipoDevolucion, "neutro" | "alerta" | "error"> = {
+  CAMBIO: "neutro",
+  DEVOLUCION: "alerta",
+  REEMBOLSO: "error",
+};
+
+type FiltroDevoluciones = "TODAS" | TipoDevolucion;
+
+const FILTROS: { id: FiltroDevoluciones; etiqueta: string }[] = [
+  { id: "TODAS", etiqueta: "Todos los tipos" },
+  { id: "DEVOLUCION", etiqueta: "Devoluciones" },
+  { id: "CAMBIO", etiqueta: "Cambios" },
+  { id: "REEMBOLSO", etiqueta: "Reembolsos" },
+];
+
+/** Cuantas devoluciones se ven por pagina. */
+const PAGINA = 10;
 
 /**
- * Devoluciones, cambios y reembolsos. Arriba se registra una nueva a partir
- * del codigo del pedido; abajo, las ya registradas con quien lo hizo.
+ * Devoluciones, cambios y reembolsos. Arriba las cifras y el buscador de
+ * pedido para registrar una nueva; abajo, las ya registradas con vista previa
+ * al lado (escritorio).
  *
  * Que se puede devolver, cuanto reembolsar y que stock se mueve lo decide
  * @appweb/core (`revisarDevolucion`); esta pantalla muestra y envia.
@@ -38,8 +88,27 @@ export function Devoluciones({ puedeGestionar }: { puedeGestionar: boolean }) {
   const [buscado, setBuscado] = useState<string | null>(null);
   const [pedidoAbierto, setPedidoAbierto] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [filtro, setFiltro] = useState<FiltroDevoluciones>("TODAS");
+  const [busqueda, setBusqueda] = useState("");
 
   const lista = useQuery(trpc.panel.devoluciones.listar.queryOptions());
+  const todas = lista.data?.devoluciones ?? [];
+
+  const coinciden = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
+    return (lista.data?.devoluciones ?? []).filter(
+      (d) =>
+        (filtro === "TODAS" || d.tipo === filtro) &&
+        (termino === "" ||
+          d.codigo.toLowerCase().includes(termino) ||
+          d.cliente.toLowerCase().includes(termino)),
+    );
+  }, [busqueda, filtro, lista.data]);
+  const { pagina, paginas, setPagina, visibles } = usePaginado(coinciden, PAGINA);
+
+  const escritorio = useEscritorio();
+  const [elegida, setElegida] = useState<string | null>(null);
+  const seleccionada = visibles.find((d) => d.id === elegida) ?? visibles[0] ?? null;
 
   if (pedidoAbierto !== null) {
     return (
@@ -65,74 +134,232 @@ export function Devoluciones({ puedeGestionar }: { puedeGestionar: boolean }) {
     );
   }
 
+  const contar = (tipo: TipoDevolucion) => todas.filter((d) => d.tipo === tipo).length;
+  const opciones = FILTROS.map((f) => {
+    const cantidad = f.id === "TODAS" ? 0 : contar(f.id);
+    return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
+  });
+  const reembolsado = todas.reduce((suma, d) => suma + d.reembolso, 0);
+  const buscar = () => {
+    if (codigo.trim() !== "") setBuscado(codigo.trim());
+  };
+
   return (
     <>
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
 
-      <Tarjeta titulo="Registrar devolución">
-        <Formulario
-          onSubmit={(evento) => {
-            evento.preventDefault();
-            if (codigo.trim() !== "") setBuscado(codigo.trim());
-          }}
-        >
-          <p>
-            Busca el pedido por su código. Se puede devolver o cambiar prendas de un pedido
-            entregado, y reembolsar el pago de uno cancelado.
-          </p>
-          <Campo
-            id="codigo-devolucion"
-            etiqueta="Código del pedido"
-            valor={codigo}
-            onCambio={setCodigo}
-            requerido
+      <Tarjeta
+        titulo="Devoluciones"
+        sinMarco
+        acciones={
+          <>
+            <Campo
+              id="codigo-devolucion"
+              etiqueta="Código del pedido a devolver"
+              etiquetaOculta
+              icono={<IconoPedidos tamano={16} />}
+              valor={codigo}
+              onCambio={setCodigo}
+              placeholder="Código del pedido"
+            />
+            <Boton disabled={codigo.trim() === ""} onClick={buscar}>
+              Registrar
+            </Boton>
+          </>
+        }
+      >
+        <RejillaMetricas>
+          <TarjetaMetrica
+            etiqueta="Devoluciones"
+            valor={String(contar("DEVOLUCION"))}
+            contexto="Prendas que vuelven al almacén"
           />
-          <Boton tipo="submit" disabled={codigo.trim() === ""}>
-            Buscar pedido
-          </Boton>
-        </Formulario>
+          <TarjetaMetrica
+            etiqueta="Cambios"
+            valor={String(contar("CAMBIO"))}
+            contexto="Otra talla o color"
+          />
+          <TarjetaMetrica
+            etiqueta="Reembolsos"
+            valor={String(contar("REEMBOLSO"))}
+            contexto="Solo dinero, sin prendas"
+          />
+          <TarjetaMetrica
+            etiqueta="Reembolsado"
+            valor={MONEDA.format(reembolsado)}
+            contexto={`En ${todas.length} ${todas.length === 1 ? "registro" : "registros"}`}
+          />
+        </RejillaMetricas>
       </Tarjeta>
 
-      <Tarjeta titulo="Registradas">
-        {lista.isPending ? (
-          <Cargando texto="Cargando devoluciones…" />
-        ) : lista.isError ? (
-          <Alerta tono="error">{lista.error.message}</Alerta>
-        ) : lista.data.devoluciones.length === 0 ? (
-          <EstadoVacio titulo="Sin devoluciones" texto="Todavía no se registró ninguna." />
-        ) : (
-          lista.data.devoluciones.map((d) => (
-            <FilaLista
-              key={d.id}
-              acciones={
-                <Boton variante="secundario" onClick={() => setPedidoAbierto(d.pedidoId)}>
-                  Ver pedido
-                </Boton>
+      <ListaConLateral
+        filasPorPagina={PAGINA}
+        barra={
+          <BarraLista
+            juntos
+            buscador={
+              <Campo
+                id="busqueda-devoluciones"
+                etiqueta="Buscar por código o cliente"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
+                placeholder="Pedido o cliente"
+              />
+            }
+          >
+            <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
+            <CampoSelectorLista
+              id="filtro-devoluciones"
+              ancho="amplio"
+              etiqueta="Tipo"
+              etiquetaOculta
+              valor={filtro}
+              opciones={opciones}
+              onCambio={(valor) => {
+                setFiltro(valor as FiltroDevoluciones);
+                setPagina(1);
+              }}
+            />
+            {filtro !== "TODAS" || busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setFiltro("TODAS");
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
+            ) : null}
+          </BarraLista>
+        }
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionada ? {} : { vacio: "Elige una devolución para ver su resumen." })}
+          >
+            {seleccionada ? (
+              <CuadrosDevolucion
+                devolucion={seleccionada}
+                onVerPedido={() => setPedidoAbierto(seleccionada.pedidoId)}
+              />
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {lista.isPending ? (
+            <Cargando texto="Cargando devoluciones…" />
+          ) : lista.isError ? (
+            <Alerta tono="error">{lista.error.message}</Alerta>
+          ) : visibles.length === 0 ? (
+            <EstadoVacio
+              titulo="Sin devoluciones"
+              texto={
+                todas.length === 0
+                  ? "Todavía no se registró ninguna."
+                  : "Ninguna coincide con esa búsqueda o ese tipo."
               }
-            >
-              <strong>
-                {d.codigo} · {d.cliente}
-              </strong>
-              {d.vuelven.length > 0 ? <span>Vuelve: {d.vuelven.join(", ")}</span> : null}
-              {d.salen.length > 0 ? <span>Sale: {d.salen.join(", ")}</span> : null}
-              {d.nota ? <span>{d.nota}</span> : null}
-              <span>
-                {d.usuario ?? "Sistema"} · {FECHA_HORA.format(new Date(d.creadoEn))}
-              </span>
-              <span>
-                <Insignia tono="neutro">{ETIQUETAS_DEVOLUCION[d.tipo]}</Insignia>
-                {d.reembolso > 0 ? (
-                  <>
-                    {" "}
-                    <Insignia tono="alerta">Reembolso {MONEDA.format(d.reembolso)}</Insignia>
-                  </>
-                ) : null}
-              </span>
-            </FilaLista>
-          ))
-        )}
-      </Tarjeta>
+            />
+          ) : (
+            <div>
+              {visibles.map((d) => {
+                const { dia, hora } = diaYHora(new Date(d.creadoEn));
+                return (
+                  <FilaPedido
+                    key={d.id}
+                    logo={<LogoIcono icono={<IconoDevolucion tamano={16} />} nombre="Devolución" />}
+                    titulo={d.codigo}
+                    detalle={d.cliente}
+                    contenido={resumenDePrendas(d)}
+                    centro={[dia, hora]}
+                    estado={{ texto: ETIQUETAS_DEVOLUCION[d.tipo], tono: TONO_DEVOLUCION[d.tipo] }}
+                    {...(d.reembolso > 0 ? { nota: MONEDA.format(d.reembolso) } : {})}
+                    seleccionada={escritorio && seleccionada?.id === d.id}
+                    onAbrir={() => (escritorio ? setElegida(d.id) : setPedidoAbierto(d.pedidoId))}
+                    etiquetaAbrir={`${escritorio ? "Elegir" : "Ver pedido de"} la devolución de ${d.codigo}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
     </>
+  );
+}
+
+interface DevolucionDeLista {
+  codigo: string;
+  cliente: string;
+  tipo: TipoDevolucion;
+  vuelven: string[];
+  salen: string[];
+  reembolso: number;
+  nota: string | null;
+  usuario: string | null;
+  creadoEn: string;
+}
+
+/** Segunda linea de la fila: cuantas prendas vuelven o salen, o solo dinero. */
+function resumenDePrendas(d: DevolucionDeLista): string {
+  const partes: string[] = [];
+  if (d.vuelven.length > 0) partes.push(`Vuelven ${d.vuelven.length}`);
+  if (d.salen.length > 0) partes.push(`salen ${d.salen.length}`);
+  return partes.length > 0 ? partes.join(" · ") : "Solo reembolso";
+}
+
+/** Vista previa de una devolucion: lo que vuelve, lo que sale y el dinero. */
+function CuadrosDevolucion({
+  devolucion: d,
+  onVerPedido,
+}: {
+  devolucion: DevolucionDeLista;
+  onVerPedido: () => void;
+}) {
+  return (
+    <RejillaBento>
+      <CuadroMonto
+        logo={<LogoIcono icono={<IconoDevolucion tamano={16} />} nombre="Devolución" />}
+        estado={{ texto: ETIQUETAS_DEVOLUCION[d.tipo], tono: TONO_DEVOLUCION[d.tipo] }}
+        etiqueta={d.reembolso > 0 ? `Reembolso · ${d.codigo}` : `Pedido ${d.codigo}`}
+        monto={d.reembolso > 0 ? MONEDA.format(d.reembolso) : "Sin reembolso"}
+        texto={d.reembolso === 0}
+        detalle={FECHA_HORA.format(new Date(d.creadoEn))}
+        acciones={[{ etiqueta: "Ver pedido", onClick: onVerPedido }]}
+      />
+      {d.vuelven.length > 0 ? (
+        <CuadroDesglose
+          icono={<IconoDevolucion tamano={16} />}
+          titulo="Vuelven al almacén"
+          ancho="ancho"
+          lineas={d.vuelven.map((prenda) => ({ etiqueta: prenda, valor: "" }))}
+        />
+      ) : null}
+      {d.salen.length > 0 ? (
+        <CuadroDesglose
+          icono={<IconoPedidos tamano={16} />}
+          titulo="Salen en el cambio"
+          ancho="ancho"
+          lineas={d.salen.map((prenda) => ({ etiqueta: prenda, valor: "" }))}
+        />
+      ) : null}
+      <CuadroBento
+        icono={<IconoMensaje tamano={16} />}
+        titulo="Motivo"
+        ancho="ancho"
+        detalle={`${d.usuario ?? "Sistema"} · ${d.cliente}`}
+        vacio={!d.nota}
+      >
+        {d.nota ?? "Sin motivo escrito"}
+      </CuadroBento>
+    </RejillaBento>
   );
 }
 
@@ -215,12 +442,19 @@ function RegistrarDevolucion({ codigo, puedeGestionar, onVolver }: PropsRegistra
     <>
       {error ? <Alerta tono="error">{error}</Alerta> : null}
 
-      <Tarjeta titulo={`Pedido ${p.codigo}`} acciones={volver}>
-        <p>
-          <Insignia tono={tonoDeEstado(p.estado)}>{ETIQUETAS[p.estado]}</Insignia>{" "}
-          <Insignia tono="neutro">{ETIQUETAS_MEDIO_PAGO[p.medioPago]}</Insignia> {p.cliente} · Total{" "}
-          {MONEDA.format(p.total)} · Reembolsable {MONEDA.format(p.reembolsable)}
-        </p>
+      <Tarjeta titulo={`Pedido ${p.codigo}`} sinMarco acciones={volver}>
+        <RejillaBento>
+          <CuadroMonto
+            logo={<LogoIcono icono={<IconoPedidos tamano={16} />} nombre="Pedido" />}
+            estado={{ texto: ETIQUETAS[p.estado], tono: tonoDeEstado(p.estado) }}
+            etiqueta={`Total · ${ETIQUETAS_MEDIO_PAGO[p.medioPago]}`}
+            monto={MONEDA.format(p.total)}
+            detalle={p.cliente}
+          />
+          <CuadroBento icono={<IconoDevolucion tamano={16} />} titulo="Reembolsable" ancho="ancho">
+            {MONEDA.format(p.reembolsable)}
+          </CuadroBento>
+        </RejillaBento>
       </Tarjeta>
 
       {!p.admiteDevolucion ? (

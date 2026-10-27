@@ -16,17 +16,28 @@ import {
 } from "@appweb/core";
 import {
   Alerta,
-  BloqueDetalle,
   Boton,
+  CabeceraDetalle,
   Campo,
   CampoSelect,
   Cargando,
-  FilaDetalles,
-  FilaLista,
+  CuadroBento,
+  CuadroDesglose,
+  CuadroMonto,
   Formulario,
-  Insignia,
+  IconoCatalogo,
+  IconoFlechaIzquierda,
+  IconoPedidos,
+  IconoReloj,
+  IconoUbicacion,
+  IconoUsuario,
+  IconoWhatsAppLinea,
   LineaEstados,
+  ListaActividad,
+  LogoIcono,
+  RejillaBento,
   Tarjeta,
+  TarjetaActividad,
   TarjetaPedido,
 } from "@appweb/ui";
 
@@ -34,7 +45,7 @@ import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 
 import { tonoDeEstado } from "./Pedidos";
-import { FECHA_HORA, mensajeDeFallo } from "@appweb/core/formato";
+import { FECHA_HORA, MONEDA, cuandoFue, mensajeDeFallo } from "@appweb/core/formato";
 
 export function tonoDePago(estado: EstadoPago): "exito" | "alerta" | "error" | "neutro" {
   if (estado === "CONFIRMADO") return "exito";
@@ -113,7 +124,8 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
 
   const volver = (
     <Boton variante="secundario" onClick={onVolver}>
-      ← Volver a pedidos
+      <IconoFlechaIzquierda tamano={16} />
+      Volver a pedidos
     </Boton>
   );
 
@@ -147,12 +159,87 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
       {error ? <Alerta tono="error">{error}</Alerta> : null}
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
 
-      <Tarjeta titulo={`Pedido ${p.codigo}`} acciones={volver}>
-        <p>
-          <Insignia tono={tonoDeEstado(p.estado)}>{ETIQUETAS[p.estado]}</Insignia>{" "}
-          <Insignia tono="neutro">{ETIQUETAS_MEDIO_PAGO[p.medioPago]}</Insignia>{" "}
-          {FECHA_HORA.format(new Date(p.creadoEn))}
-        </p>
+      <CabeceraDetalle
+        titulo={`Pedido ${p.codigo}`}
+        acciones={
+          <>
+            {whatsappCliente ? (
+              <Boton variante="secundario" href={whatsappCliente} externo>
+                <IconoWhatsAppLinea tamano={16} />
+                WhatsApp
+              </Boton>
+            ) : null}
+            {volver}
+          </>
+        }
+      />
+
+      <RejillaBento>
+        <CuadroMonto
+          logo={<LogoIcono icono={<IconoPedidos tamano={16} />} nombre="Pedido" />}
+          estado={{ texto: ETIQUETAS[p.estado], tono: tonoDeEstado(p.estado) }}
+          etiqueta={`Total · ${ETIQUETAS_MEDIO_PAGO[p.medioPago]}`}
+          monto={MONEDA.format(p.total)}
+          detalle={FECHA_HORA.format(new Date(p.creadoEn))}
+        />
+        <CuadroBento
+          icono={<IconoUsuario tamano={16} />}
+          titulo="Cliente"
+          ancho="ancho"
+          detalle={[p.cliente.email, p.cliente.telefono].filter(Boolean).join(" · ")}
+          cifras={[
+            {
+              valor: p.comprobante.documento,
+              etiqueta: p.comprobante.tipo === "FACTURA" ? "Factura" : "Boleta",
+            },
+            ...(p.comprobante.razonSocial
+              ? [{ valor: p.comprobante.razonSocial, etiqueta: "Razón social" }]
+              : []),
+          ]}
+        >
+          {p.cliente.nombre}
+        </CuadroBento>
+        <CuadroBento
+          icono={<IconoUbicacion tamano={16} />}
+          titulo={`Envío · ${p.envio.metodo}`}
+          ancho="ancho"
+          detalle={[
+            p.envio.destinatario ?? p.cliente.nombre,
+            p.envio.telefono,
+            p.envio.referencia ? `Ref.: ${p.envio.referencia}` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+          {...(p.envio.transportista || p.envio.codigoSeguimiento
+            ? {
+                cifras: [
+                  {
+                    valor: p.envio.codigoSeguimiento ?? "sin código",
+                    etiqueta: p.envio.transportista ?? "Transportista",
+                  },
+                ],
+              }
+            : {})}
+        >
+          {p.envio.direccion}
+        </CuadroBento>
+        {pendiente ? (
+          <CuadroDesglose
+            icono={<IconoCatalogo tamano={16} />}
+            titulo="Stock disponible"
+            ancho="ancho"
+            lineas={p.items.map((item) => ({
+              etiqueta: `${item.nombreProducto} · ${item.talla} · ${item.color}`,
+              valor:
+                item.stockActual < item.cantidad
+                  ? `Falta: pide ${item.cantidad}, hay ${item.stockActual}`
+                  : `Pide ${item.cantidad} · hay ${item.stockActual}`,
+            }))}
+          />
+        ) : null}
+      </RejillaBento>
+
+      <Tarjeta titulo="Avance">
         <LineaEstados pasos={pasosDelPedido(p.estado)} />
       </Tarjeta>
 
@@ -242,67 +329,21 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
         total={p.total}
       />
 
-      {pendiente ? (
-        <Tarjeta titulo="Stock disponible">
-          {p.items.map((item) => (
-            <FilaLista key={item.sku}>
-              <strong>{item.nombreProducto}</strong>
-              <span>
-                {item.color} · Talla {item.talla} · SKU {item.sku}
-              </span>
-              <span>
-                <Insignia tono={item.stockActual < item.cantidad ? "error" : "exito"}>
-                  Pide {item.cantidad} · hay {item.stockActual}
-                </Insignia>
-              </span>
-            </FilaLista>
-          ))}
-        </Tarjeta>
-      ) : null}
-
-      <FilaDetalles>
-        <BloqueDetalle titulo="Cliente">
-          <p>{p.cliente.nombre}</p>
-          <p>{p.cliente.email}</p>
-          {p.cliente.telefono ? <p>{p.cliente.telefono}</p> : null}
-          <p>
-            {p.comprobante.tipo === "FACTURA" ? "Factura" : "Boleta"} · {p.comprobante.documento}
-            {p.comprobante.razonSocial ? ` · ${p.comprobante.razonSocial}` : ""}
-          </p>
-        </BloqueDetalle>
-        <BloqueDetalle titulo="Envío">
-          <p>{p.envio.destinatario ?? p.cliente.nombre}</p>
-          {p.envio.telefono ? <p>{p.envio.telefono}</p> : null}
-          <p>{p.envio.direccion}</p>
-          {p.envio.referencia ? <p>Ref.: {p.envio.referencia}</p> : null}
-          <p>{p.envio.metodo}</p>
-          {p.envio.transportista || p.envio.codigoSeguimiento ? (
-            <p>
-              {p.envio.transportista ?? "Transportista"} ·{" "}
-              {p.envio.codigoSeguimiento ?? "sin código"}
-            </p>
-          ) : null}
-          {whatsappCliente ? (
-            <Boton variante="secundario" href={whatsappCliente} externo>
-              Escribir por WhatsApp
-            </Boton>
-          ) : null}
-        </BloqueDetalle>
-      </FilaDetalles>
-
-      <Tarjeta titulo="Historial">
-        {p.historial.map((h) => (
-          <FilaLista key={h.id}>
-            <span>
-              <Insignia tono={tonoDeEstado(h.estadoNuevo)}>{ETIQUETAS[h.estadoNuevo]}</Insignia>
-            </span>
-            {h.nota ? <span>{h.nota}</span> : null}
-            <span>
-              {h.usuario ?? "Sistema"} · {FECHA_HORA.format(new Date(h.creadoEn))}
-            </span>
-          </FilaLista>
+      <ListaActividad titulo="Historial" vacio="Sin cambios registrados.">
+        {[...p.historial].reverse().map((h) => (
+          <TarjetaActividad
+            key={h.id}
+            estado={ETIQUETAS[h.estadoNuevo]}
+            iconoEstado={<IconoReloj tamano={12} />}
+            tonoEstado={tonoDeEstado(h.estadoNuevo)}
+            fecha={cuandoFue(new Date(h.creadoEn))}
+            logo={<LogoIcono icono={<IconoUsuario tamano={16} />} nombre="Quién" />}
+            titulo={h.usuario ?? "Sistema"}
+            {...(h.nota ? { subtitulo: h.nota } : {})}
+            valor=""
+          />
         ))}
-      </Tarjeta>
+      </ListaActividad>
     </>
   );
 }

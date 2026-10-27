@@ -61,7 +61,13 @@ export function marcaDeTarjeta(texto: string | null | undefined): MarcaTarjeta {
   return "otra";
 }
 
-export const ESTADOS_PAGO = ["PENDIENTE", "CONFIRMADO", "RECHAZADO", "REEMBOLSADO"] as const;
+export const ESTADOS_PAGO = [
+  "PENDIENTE",
+  "CONFIRMADO",
+  "RECHAZADO",
+  "REEMBOLSADO",
+  "ANULADO",
+] as const;
 export type EstadoPago = (typeof ESTADOS_PAGO)[number];
 
 export const ETIQUETAS_PAGO: Record<EstadoPago, string> = {
@@ -69,6 +75,7 @@ export const ETIQUETAS_PAGO: Record<EstadoPago, string> = {
   CONFIRMADO: "Confirmado",
   RECHAZADO: "Rechazado",
   REEMBOLSADO: "Reembolsado",
+  ANULADO: "Anulado",
 };
 
 export type RechazoPedido =

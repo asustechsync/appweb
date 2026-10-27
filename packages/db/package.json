@@ -15,6 +15,7 @@
     "semilla": "tsx prisma/semilla.ts",
     "demo-stock": "tsx prisma/demo-stock.ts",
     "demo-pagos": "tsx prisma/demo-pagos.ts",
+    "demo-costos": "tsx prisma/demo-costos.ts",
     "studio": "prisma studio",
     "typecheck": "tsc --noEmit"
   },

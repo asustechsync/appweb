@@ -217,7 +217,15 @@ export function Panel({
         </Alerta>
       ) : null}
       {visible === "inicio" ? (
-        <Resumen {...(secciones.includes("pagos") ? { onVerPagos: () => ir("pagos") } : {})} />
+        <Resumen
+          {...(secciones.includes("pagos") ? { onVerPagos: () => ir("pagos") } : {})}
+          {...(secciones.includes("pedidos") ? { onVerPedidos: () => ir("pedidos") } : {})}
+          {...(secciones.includes("inventario") ? { onVerInventario: () => ir("inventario") } : {})}
+          {...(secciones.includes("clientes") ? { onVerClientes: () => ir("clientes") } : {})}
+          {...(secciones.includes("envios") ? { onVerEnvios: () => ir("envios") } : {})}
+          {...(secciones.includes("reclamos") ? { onVerReclamos: () => ir("reclamos") } : {})}
+          {...(secciones.includes("resenas") ? { onVerResenas: () => ir("resenas") } : {})}
+        />
       ) : visible === "pedidos" ? (
         <Pedidos
           // La clave reinicia la seccion: llegar con otro pedido lo abre aunque ya estuviera ahi.

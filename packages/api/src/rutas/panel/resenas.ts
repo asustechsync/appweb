@@ -30,7 +30,13 @@ export const resenas = router({
           estado: true,
           creadoEn: true,
           moderadoEn: true,
-          producto: { select: { nombre: true, slug: true } },
+          producto: {
+            select: {
+              nombre: true,
+              slug: true,
+              imagenes: { take: 1, orderBy: { orden: "asc" }, select: { url: true } },
+            },
+          },
           usuario: { select: { nombre: true, apellidoPaterno: true, email: true } },
           moderadoPor: { select: { nombre: true } },
         },
@@ -54,6 +60,7 @@ export const resenas = router({
         creadoEn: r.creadoEn.toISOString(),
         producto: r.producto.nombre,
         productoSlug: r.producto.slug,
+        imagen: r.producto.imagenes[0]?.url ?? null,
         autor: autorDeResena(r.usuario),
         email: r.usuario.email,
         moderadoPor: r.moderadoPor?.nombre ?? null,

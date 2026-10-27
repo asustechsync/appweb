@@ -22,7 +22,9 @@ import {
   BarraLista,
   FilaMovimiento,
   IconoBuscar,
+  LimpiarFiltros,
   ListaConLateral,
+  Paginador,
   LogoMedioPago,
   RejillaMetricas,
   SelectorCalendario,
@@ -32,14 +34,14 @@ import {
   VistaPrevia,
 } from "@appweb/ui";
 
+import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
 import { useEscritorio } from "@/lib/use-escritorio";
 import { useTRPC } from "@/lib/trpc";
 
 import { CuadrosPago } from "./CuadrosPago";
 import { DetallePago } from "./DetallePago";
-import { tonoDePago } from "./DetallePedido";
-import { MONEDA, conSigno, cuandoFue } from "@appweb/core/formato";
+import { MONEDA, conSigno, diaDeLima, diaYHora } from "@appweb/core/formato";
 
 /** El filtro de la lista; sin filtro van todos, los pendientes arriba. */
 const FILTROS: { id: EstadoPago | "TODOS"; etiqueta: string }[] = [
@@ -48,6 +50,7 @@ const FILTROS: { id: EstadoPago | "TODOS"; etiqueta: string }[] = [
   { id: "CONFIRMADO", etiqueta: "Confirmados" },
   { id: "RECHAZADO", etiqueta: "Rechazados" },
   { id: "REEMBOLSADO", etiqueta: "Reembolsados" },
+  { id: "ANULADO", etiqueta: "Anulados" },
 ];
 
 /** Las tarjetas que se miden en el periodo elegido contra el anterior. */
@@ -71,13 +74,33 @@ export interface PropsPagos {
   pagoInicial?: string | null;
 }
 
-/** Cuantos pagos se ven de una vez. */
+/** Cuantos pagos se ven por pagina. */
 const PAGINA = 10;
+
+/** Cuantos pagos trae el servidor; se reparten en paginas de `PAGINA`. */
+const TOPE = 100;
+
+/**
+ * Segunda linea de la fila: el logo ya dice el medio, asi que solo va el
+ * numero de operacion. Sin numero (pago pendiente) se nombra el medio.
+ */
+function subtituloDePago(
+  medio: keyof typeof ETIQUETAS_MEDIO_PAGO,
+  referencia: string | null,
+  rechazosPrevios: number,
+) {
+  const base = referencia ? `Op. ${referencia}` : ETIQUETAS_MEDIO_PAGO[medio];
+  if (rechazosPrevios === 0) return base;
+  return `${base} · ${rechazosPrevios} ${rechazosPrevios === 1 ? "rechazo previo" : "rechazos previos"}`;
+}
 
 export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: PropsPagos) {
   const trpc = useTRPC();
   const [filtro, setFiltro] = useState<EstadoPago | "TODOS">("TODOS");
   const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
+  // Dia de la lista (no de las tarjetas): "" muestra todos.
+  const [diaLista, setDiaLista] = useState("");
   const [abierto, setAbierto] = useState<string | null>(pagoInicial);
   const [aviso, setAviso] = useState<string | null>(null);
 
@@ -105,24 +128,31 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
   // Las tarjetas van aparte de la lista: cambiar el periodo no recarga la
   // cola, y se conservan las cifras anteriores mientras llegan las nuevas.
   const metricas = useQuery({
-    ...trpc.panel.pagos.metricas.queryOptions({ periodo, ...(fecha ? { fecha } : {}) }),
+    ...trpc.panel.pagos.metricas.queryOptions({
+      periodo,
+      ...(fecha ? { fecha } : {}),
+    }),
     placeholderData: keepPreviousData,
   });
 
-  // Se ven los diez ultimos; para otros se busca o se filtra. La busqueda la hace el servidor
-  // sobre todos los pagos, no solo sobre los que ya se ven.
-  const [limite, setLimite] = useState(PAGINA);
+  // La busqueda la hace el servidor sobre todos los pagos; el dia y las paginas,
+  // aqui, sobre lo que trae.
   const termino = busqueda.trim();
   const lista = useQuery({
     ...trpc.panel.pagos.listar.queryOptions({
       ...(filtro === "TODOS" ? {} : { estado: filtro }),
       ...(termino ? { busqueda: termino } : {}),
-      limite,
+      limite: TOPE,
     }),
     placeholderData: keepPreviousData,
   });
 
-  const visibles = lista.data?.pagos ?? [];
+  const coinciden = (lista.data?.pagos ?? []).filter(
+    (p) => diaLista === "" || diaDeLima(new Date(p.creadoEn)) === diaLista,
+  );
+  const paginas = Math.max(1, Math.ceil(coinciden.length / PAGINA));
+  const paginaActual = Math.min(pagina, paginas);
+  const visibles = coinciden.slice((paginaActual - 1) * PAGINA, paginaActual * PAGINA);
 
   // En escritorio, tocar una fila la elige y la vista previa de al lado la
   // muestra; abrir el detalle es un boton. En movil no hay vista previa y la
@@ -160,7 +190,10 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
   const etiquetaAnterior = metricas.data?.etiquetaAnterior ?? "";
   const opciones = FILTROS.map((f) => {
     const cantidad = resumen && f.id !== "TODOS" ? resumen[f.id].cantidad : 0;
-    return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
+    return {
+      valor: f.id,
+      etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta,
+    };
   });
 
   return (
@@ -173,16 +206,6 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
           sinMarco
           acciones={
             <>
-              <SelectorSegmentado
-                etiqueta="Periodo de las métricas"
-                // Con un dia del calendario elegido, ningun periodo esta activo.
-                valor={fecha ? "" : periodo}
-                opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
-                onCambio={(valor) => {
-                  setFecha("");
-                  setPeriodo(valor as Periodo);
-                }}
-              />
               <SelectorCalendario
                 id="fecha-metricas-pagos"
                 etiqueta="Elegir un día"
@@ -192,6 +215,19 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                 onCambio={setFecha}
                 limpiable
                 alineacion="fin"
+              />
+              <SelectorSegmentado
+                etiqueta="Periodo de las métricas"
+                // Con un dia del calendario elegido, ningun periodo esta activo.
+                valor={fecha ? "" : periodo}
+                opciones={PERIODOS.map((id) => ({
+                  valor: id,
+                  etiqueta: ETIQUETAS_PERIODO[id],
+                }))}
+                onCambio={(valor) => {
+                  setFecha("");
+                  setPeriodo(valor as Periodo);
+                }}
               />
             </>
           }
@@ -215,7 +251,10 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                   serie={m.serie}
                   seriePrevia={m.seriePrevia}
                   diferencia={conSigno(m.monto - m.montoPrevio, MONEDA)}
-                  anterior={{ etiqueta: etiquetaAnterior, valor: MONEDA.format(m.montoPrevio) }}
+                  anterior={{
+                    etiqueta: etiquetaAnterior,
+                    valor: MONEDA.format(m.montoPrevio),
+                  }}
                   menosEsMejor={menosEsMejor}
                 />
               );
@@ -225,6 +264,7 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
       ) : null}
 
       <ListaConLateral
+        filasPorPagina={PAGINA}
         barra={
           <BarraLista
             juntos
@@ -237,12 +277,13 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                 valor={busqueda}
                 onCambio={(valor) => {
                   setBusqueda(valor);
-                  setLimite(PAGINA);
+                  setPagina(1);
                 }}
                 placeholder="Pedido, cliente u operación"
               />
             }
           >
+            <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
             <CampoSelectorLista
               id="filtro-pagos"
               ancho="amplio"
@@ -252,9 +293,31 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
               opciones={opciones}
               onCambio={(valor) => {
                 setFiltro(valor as EstadoPago | "TODOS");
-                setLimite(PAGINA);
+                setPagina(1);
               }}
             />
+            <SelectorCalendario
+              id="dia-lista-pagos"
+              etiqueta="Pagos de un día"
+              etiquetaOculta
+              placeholder="Elegir día"
+              valor={diaLista}
+              onCambio={(valor) => {
+                setDiaLista(valor);
+                setPagina(1);
+              }}
+              limpiable
+            />
+            {filtro !== "TODOS" || diaLista !== "" || busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setFiltro("TODOS");
+                  setDiaLista("");
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
+            ) : null}
           </BarraLista>
         }
         lateral={
@@ -293,7 +356,9 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
             <EstadoVacio
               titulo="Sin pagos"
               texto={
-                busqueda ? "Ningún pago coincide con esa búsqueda." : "No hay pagos en este estado."
+                busqueda || diaLista
+                  ? "Ningún pago coincide con esa búsqueda o ese día."
+                  : "No hay pagos en este estado."
               }
             />
           ) : (
@@ -304,10 +369,11 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                   pago.estado === "PENDIENTE" &&
                   pago.estadoPedido === "PENDIENTE_PAGO" &&
                   pago.medio !== "CONTRA_ENTREGA";
-                const fecha = new Date(pago.creadoEn);
+                const { dia, hora } = diaYHora(new Date(pago.creadoEn));
                 return (
                   <FilaMovimiento
                     key={pago.id}
+                    bloque
                     logo={
                       <LogoMedioPago
                         medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta] : LOGO_MEDIO[pago.medio]}
@@ -317,18 +383,13 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                     titulo={pago.codigo}
                     detalle={pago.cliente}
                     // Corto a proposito: la operacion completa y quien confirmo estan en el detalle.
-                    subtitulo={`${ETIQUETAS_MEDIO_PAGO[pago.medio]} · ${cuandoFue(fecha)}${
-                      pago.referencia ? ` · Op. …${pago.referencia.slice(-4)}` : ""
-                    }`}
-                    estado={
-                      // Lo pendiente dice desde cuando espera; lo demas, su estado.
-                      pago.estado === "PENDIENTE"
-                        ? {
-                            texto: `Espera desde ${cuandoFue(fecha).toLowerCase()}`,
-                            tono: "alerta",
-                          }
-                        : { texto: ETIQUETAS_PAGO[pago.estado], tono: tonoDePago(pago.estado) }
-                    }
+                    subtitulo={subtituloDePago(pago.medio, pago.referencia, pago.rechazosPrevios)}
+                    centro={[dia, hora]}
+                    estado={{
+                      texto: ETIQUETA_PAGO_RECIENTE[pago.estado] ?? ETIQUETAS_PAGO[pago.estado],
+                      tono: ESTADO_PAGO[pago.estado].tono,
+                      icono: ESTADO_PAGO[pago.estado].icono,
+                    }}
                     valor={MONEDA.format(pago.monto)}
                     accion={
                       revisable ? <Boton onClick={() => abrir(pago.id)}>Revisar</Boton> : undefined

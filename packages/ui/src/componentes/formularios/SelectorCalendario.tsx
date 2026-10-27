@@ -113,7 +113,7 @@ export function SelectorCalendario({
       : "ui-selector-calendario__panel";
 
   return (
-    <div className="ui-campo ui-campo--amplio">
+    <div className="ui-campo ui-campo--calendario">
       <label htmlFor={id} className={claseEtiquetaOculta(etiquetaOculta)}>
         {etiqueta}
       </label>

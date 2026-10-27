@@ -43,7 +43,7 @@
 .ui-vista-previa__monto {
   color: var(--color-texto);
   font-family: var(--tipo-familia-cifras);
-  font-size: var(--tipo-tamano-3xl);
+  font-size: var(--tipo-tamano-2xl);
   font-weight: var(--tipo-peso-medio);
   font-variant-numeric: tabular-nums;
   line-height: 1.15;
@@ -114,6 +114,20 @@
 }
 .ui-vista-previa-cuadros .ui-cuadro-bento--destacado {
   grid-row: auto;
+}
+
+/* Escala del panel: 12 secundario, 14 cuerpo, 16 destacado. El desglose va en cuerpo
+   y solo el total sube a destacado. */
+.ui-vista-previa-cuadros .ui-cuadro-bento__linea {
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-vista-previa-cuadros .ui-cuadro-bento__linea--total {
+  font-size: var(--tipo-tamano-base);
+}
+
+/* Los bloques de la vista previa, con el mismo radio que las tarjetas de al lado. */
+.ui-vista-previa-cuadros .ui-cuadro-bento {
+  border-radius: var(--radio-bloque);
 }
 
 /* Boton del cuadro del monto: ancho completo y con cuerpo, es la accion principal. */

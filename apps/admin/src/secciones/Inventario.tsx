@@ -7,135 +7,240 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ETIQUETAS_MOVIMIENTO, type TipoMovimientoManual } from "@appweb/core";
 import {
   Alerta,
+  BarraLista,
+  CabeceraDetalle,
   Boton,
   Campo,
+  CampoSelectorLista,
   Cargando,
   EstadoVacio,
-  FilaLista,
+  FilaMovimiento,
+  FilaPedido,
   Formulario,
-  Insignia,
+  IconoBuscar,
+  IconoFlechaIzquierda,
+  IconoReloj,
+  LimpiarFiltros,
+  ListaConLateral,
+  LogoFoto,
+  LogoIcono,
+  Paginador,
   Pestanas,
+  RejillaMetricas,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
 } from "@appweb/ui";
 
 import { revalidarTienda } from "@/lib/revalidar";
+import { useEscritorio } from "@/lib/use-escritorio";
 import { useTRPC } from "@/lib/trpc";
-import { FECHA_HORA } from "@appweb/core/formato";
+import { urlVisible } from "@/lib/url-visible";
 
-type Filtro = "BAJO" | "TODAS";
+import { CuadrosStock, estadoDeStock, type VarianteDeStock } from "./CuadrosStock";
+import { conSigno, diaYHora } from "@appweb/core/formato";
 
-interface VarianteDeStock {
-  id: string;
-  producto: string;
-  talla: string;
-  color: string;
-  sku: string;
-  stock: number;
-  activa: boolean;
+type Filtro = "BAJO" | "AGOTADAS" | "TODAS";
+
+const FILTROS: { id: Filtro; etiqueta: string }[] = [
+  { id: "BAJO", etiqueta: "Por reponer" },
+  { id: "AGOTADAS", etiqueta: "Agotadas" },
+  { id: "TODAS", etiqueta: "Todas las variantes" },
+];
+
+/** Por reponer y agotadas solo cuentan lo que esta a la venta. */
+function cumpleFiltro(v: { stock: number; activa: boolean }, filtro: Filtro, umbral: number) {
+  if (filtro === "BAJO") return v.activa && v.stock <= umbral;
+  if (filtro === "AGOTADAS") return v.activa && v.stock === 0;
+  return true;
 }
 
-function tonoDeStock(stock: number, umbral: number): "error" | "alerta" | "exito" {
-  if (stock === 0) return "error";
-  if (stock <= umbral) return "alerta";
-  return "exito";
-}
+/** Cuantas variantes se ven por pagina. */
+const PAGINA = 10;
 
 /**
- * Seccion de inventario: cuanto queda de cada talla y color, y los tres
- * movimientos que se registran a mano (ingreso, ajuste por conteo, merma).
- * Las ventas y devoluciones no se registran aqui: las deja el pedido.
+ * Seccion de inventario: cuanto queda de cada talla y color, con vista previa
+ * al lado (escritorio), y los tres movimientos que se registran a mano
+ * (ingreso, ajuste por conteo, merma). Las ventas y devoluciones no se
+ * registran aqui: las deja el pedido.
  */
 export function Inventario() {
   const trpc = useTRPC();
   const [filtro, setFiltro] = useState<Filtro>("BAJO");
   const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
   const [abierta, setAbierta] = useState<VarianteDeStock | null>(null);
 
   const lista = useQuery(trpc.panel.stock.listar.queryOptions());
   const umbral = lista.data?.umbralBajo ?? 0;
+  const variantes = lista.data?.variantes ?? [];
 
-  const visibles = useMemo(() => {
+  const coinciden = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
-    return (lista.data?.variantes ?? []).filter((v) => {
-      if (filtro === "BAJO" && (v.stock > umbral || !v.activa)) return false;
-      if (termino === "") return true;
-      return (
-        v.producto.toLowerCase().includes(termino) ||
-        v.sku.toLowerCase().includes(termino) ||
-        v.color.toLowerCase().includes(termino)
-      );
-    });
+    return (lista.data?.variantes ?? []).filter(
+      (v) =>
+        cumpleFiltro(v, filtro, umbral) &&
+        (termino === "" ||
+          v.producto.toLowerCase().includes(termino) ||
+          v.sku.toLowerCase().includes(termino) ||
+          v.color.toLowerCase().includes(termino)),
+    );
   }, [busqueda, filtro, lista.data, umbral]);
+  const paginas = Math.max(1, Math.ceil(coinciden.length / PAGINA));
+  const paginaActual = Math.min(pagina, paginas);
+  const visibles = useMemo(
+    () => coinciden.slice((paginaActual - 1) * PAGINA, paginaActual * PAGINA),
+    [coinciden, paginaActual],
+  );
+
+  const escritorio = useEscritorio();
+  const [elegida, setElegida] = useState<string | null>(null);
+  const seleccionada = visibles.find((v) => v.id === elegida) ?? visibles[0] ?? null;
 
   if (abierta !== null) {
     // Datos frescos de la lista si ya cambiaron (tras registrar un movimiento).
-    const actual = lista.data?.variantes.find((v) => v.id === abierta.id) ?? abierta;
+    const actual = variantes.find((v) => v.id === abierta.id) ?? abierta;
     return (
       <MovimientosVariante variante={actual} umbral={umbral} onVolver={() => setAbierta(null)} />
     );
   }
 
-  const bajas = (lista.data?.variantes ?? []).filter((v) => v.activa && v.stock <= umbral).length;
+  const conteo = (id: Filtro) => variantes.filter((v) => cumpleFiltro(v, id, umbral)).length;
+  const opciones = FILTROS.map((f) => {
+    const cantidad = f.id === "TODAS" ? 0 : conteo(f.id);
+    return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
+  });
+  const aLaVenta = variantes.filter((v) => v.activa);
+  const unidades = aLaVenta.reduce((suma, v) => suma + v.stock, 0);
+  const porReponer = conteo("BAJO");
+  const agotadas = conteo("AGOTADAS");
 
   return (
-    <Tarjeta titulo="Inventario">
-      <Campo
-        id="busqueda-stock"
-        etiqueta="Buscar por producto, color o SKU"
-        valor={busqueda}
-        onCambio={setBusqueda}
-        placeholder="Buscar…"
-      />
-      <Pestanas
-        etiqueta="Qué variantes mostrar"
-        opciones={[
-          { id: "BAJO", etiqueta: bajas > 0 ? `Por reponer (${bajas})` : "Por reponer" },
-          { id: "TODAS", etiqueta: "Todas" },
-        ]}
-        activa={filtro}
-        onCambio={(id) => setFiltro(id as Filtro)}
-      />
+    <>
+      <Tarjeta titulo="Inventario" sinMarco>
+        <RejillaMetricas>
+          <TarjetaMetrica
+            etiqueta="Unidades a la venta"
+            valor={String(unidades)}
+            contexto={`En ${aLaVenta.length} ${aLaVenta.length === 1 ? "variante" : "variantes"}`}
+          />
+          <TarjetaMetrica
+            etiqueta="Por reponer"
+            valor={String(porReponer)}
+            contexto={`Con ${umbral} unidades o menos`}
+          />
+          <TarjetaMetrica
+            etiqueta="Agotadas"
+            valor={String(agotadas)}
+            contexto={agotadas === 0 ? "Nada agotado" : "Visibles sin stock"}
+          />
+          <TarjetaMetrica
+            etiqueta="Fuera de venta"
+            valor={String(variantes.length - aLaVenta.length)}
+            contexto="Variantes o productos ocultos"
+          />
+        </RejillaMetricas>
+      </Tarjeta>
 
-      {lista.isPending ? (
-        <Cargando texto="Cargando stock…" />
-      ) : lista.isError ? (
-        <Alerta tono="error">{lista.error.message}</Alerta>
-      ) : visibles.length === 0 ? (
-        <EstadoVacio
-          titulo={filtro === "BAJO" && !busqueda ? "Nada por reponer" : "Sin resultados"}
-          texto={
-            filtro === "BAJO" && !busqueda
-              ? `Todas las variantes en venta tienen más de ${umbral} unidades.`
-              : "Ninguna variante coincide con esa búsqueda."
-          }
-        />
-      ) : (
-        visibles.map((v) => (
-          <FilaLista
-            key={v.id}
-            acciones={
-              <Boton variante="secundario" onClick={() => setAbierta(v)}>
-                Mover stock
-              </Boton>
+      <ListaConLateral
+        filasPorPagina={PAGINA}
+        barra={
+          <BarraLista
+            juntos
+            buscador={
+              <Campo
+                id="busqueda-stock"
+                etiqueta="Buscar por producto, color o SKU"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
+                placeholder="Producto, color o SKU"
+              />
             }
           >
-            <strong>{v.producto}</strong>
-            <span>
-              Talla {v.talla} · {v.color} · SKU {v.sku}
-            </span>
-            <span>
-              <Insignia tono={tonoDeStock(v.stock, umbral)}>{v.stock} en stock</Insignia>
-              {!v.activa ? (
-                <>
-                  {" "}
-                  <Insignia tono="neutro">No está a la venta</Insignia>
-                </>
-              ) : null}
-            </span>
-          </FilaLista>
-        ))
-      )}
-    </Tarjeta>
+            <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
+            <CampoSelectorLista
+              id="filtro-stock"
+              ancho="amplio"
+              etiqueta="Qué variantes mostrar"
+              etiquetaOculta
+              valor={filtro}
+              opciones={opciones}
+              onCambio={(valor) => {
+                setFiltro(valor as Filtro);
+                setPagina(1);
+              }}
+            />
+            {filtro !== "BAJO" || busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setFiltro("BAJO");
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
+            ) : null}
+          </BarraLista>
+        }
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionada
+              ? {}
+              : { vacio: "Elige una variante de la lista para ver su stock." })}
+          >
+            {seleccionada ? (
+              <CuadrosStock
+                variante={seleccionada}
+                umbral={umbral}
+                onMover={() => setAbierta(seleccionada)}
+              />
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {lista.isPending ? (
+            <Cargando texto="Cargando stock…" />
+          ) : lista.isError ? (
+            <Alerta tono="error">{lista.error.message}</Alerta>
+          ) : visibles.length === 0 ? (
+            <EstadoVacio
+              titulo={filtro === "BAJO" && !busqueda ? "Nada por reponer" : "Sin resultados"}
+              texto={
+                filtro === "BAJO" && !busqueda
+                  ? `Todas las variantes en venta tienen más de ${umbral} unidades.`
+                  : "Ninguna variante coincide con esa búsqueda."
+              }
+            />
+          ) : (
+            <div>
+              {visibles.map((v) => (
+                <FilaPedido
+                  key={v.id}
+                  logo={<LogoFoto src={urlVisible(v.imagen)} nombre={v.producto} />}
+                  titulo={v.producto}
+                  detalle={`${v.talla} · ${v.color}`}
+                  contenido={`SKU ${v.sku}`}
+                  centro={[`${v.stock} u.`, "En stock"]}
+                  estado={estadoDeStock(v, umbral)}
+                  seleccionada={escritorio && seleccionada?.id === v.id}
+                  onAbrir={() => (escritorio ? setElegida(v.id) : setAbierta(v))}
+                  etiquetaAbrir={`${escritorio ? "Elegir" : "Mover stock de"} ${v.producto} ${v.talla} ${v.color}`}
+                />
+              ))}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
+    </>
   );
 }
 
@@ -209,21 +314,16 @@ function MovimientosVariante({ variante, umbral, onVolver }: PropsMovimientosVar
 
   return (
     <>
-      <Tarjeta
-        titulo={variante.producto}
+      <CabeceraDetalle
+        titulo={`${variante.producto} · ${variante.talla} · ${variante.color}`}
         acciones={
           <Boton variante="secundario" onClick={onVolver}>
-            ← Volver a stock
+            <IconoFlechaIzquierda tamano={16} />
+            Volver a inventario
           </Boton>
         }
-      >
-        <p>
-          Talla {variante.talla} · {variante.color} · SKU {variante.sku}
-        </p>
-        <p>
-          <Insignia tono={tonoDeStock(variante.stock, umbral)}>{variante.stock} en stock</Insignia>
-        </p>
-      </Tarjeta>
+      />
+      <CuadrosStock variante={variante} umbral={umbral} />
 
       <Tarjeta titulo="Registrar movimiento">
         {error ? <Alerta tono="error">{error}</Alerta> : null}
@@ -281,21 +381,27 @@ function MovimientosVariante({ variante, umbral, onVolver }: PropsMovimientosVar
         ) : historial.data.length === 0 ? (
           <EstadoVacio titulo="Sin movimientos" texto="Esta variante todavía no tiene historial." />
         ) : (
-          historial.data.map((m) => (
-            <FilaLista key={m.id}>
-              <span>
-                <Insignia tono={m.delta > 0 ? "exito" : "alerta"}>
-                  {m.delta > 0 ? `+${m.delta}` : m.delta}
-                </Insignia>{" "}
-                <strong>{ETIQUETAS_MOVIMIENTO[m.motivo]}</strong>
-                {m.pedido ? ` · pedido ${m.pedido}` : ""}
-              </span>
-              {m.nota ? <span>{m.nota}</span> : null}
-              <span>
-                {m.usuario ?? "Sistema"} · {FECHA_HORA.format(new Date(m.creadoEn))}
-              </span>
-            </FilaLista>
-          ))
+          <div>
+            {historial.data.map((m) => {
+              const { dia, hora } = diaYHora(new Date(m.creadoEn));
+              const quien = m.usuario ?? "Sistema";
+              return (
+                <FilaMovimiento
+                  key={m.id}
+                  logo={<LogoIcono icono={<IconoReloj tamano={16} />} nombre="Movimiento" />}
+                  titulo={ETIQUETAS_MOVIMIENTO[m.motivo]}
+                  {...(m.pedido ? { detalle: `pedido ${m.pedido}` } : {})}
+                  subtitulo={m.nota ? `${quien} · ${m.nota}` : quien}
+                  estado={{
+                    texto: m.delta > 0 ? "Entra" : "Sale",
+                    tono: m.delta > 0 ? "exito" : "alerta",
+                  }}
+                  valor={`${conSigno(m.delta)} u.`}
+                  centro={[dia, hora]}
+                />
+              );
+            })}
+          </div>
         )}
       </Tarjeta>
     </>

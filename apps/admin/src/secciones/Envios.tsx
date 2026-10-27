@@ -22,13 +22,15 @@ import {
   Casilla,
   EstadoVacio,
   FilaLista,
-  FilaMovimiento,
+  FilaPedido,
   FilaUnida,
   Formulario,
   IconoBuscar,
   IconoCamion,
   Insignia,
+  LimpiarFiltros,
   ListaConLateral,
+  Paginador,
   LogoIcono,
   RejillaMetricas,
   SelectorCalendario,
@@ -47,11 +49,15 @@ import {
   MONEDA,
   conSigno,
   cuandoFue,
+  diaDeLima,
   mensajeDeFallo,
   numeroDesdeTexto,
 } from "@appweb/core/formato";
 
-type Filtro = "TODOS" | "PAGADO" | "PREPARANDO" | "ENVIADO" | "TARIFAS";
+/** Cuantos envios se ven, como en Pedidos y Pagos. Para otros se busca o se filtra. */
+const PAGINA = 10;
+
+type Filtro = "TODOS" | "PAGADO" | "PREPARANDO" | "ENVIADO" | "ENTREGADO" | "TARIFAS";
 
 /** El siguiente paso de cada estado de la cola, como lo lee el almacen. */
 const SIGUIENTE: Partial<Record<EstadoPedido, { estado: EstadoPedido; boton: string }>> = {
@@ -83,7 +89,16 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
   const queryClient = useQueryClient();
   const [filtro, setFiltro] = useState<Filtro>("TODOS");
   const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
+  // Dia de la lista (no de las tarjetas): "" muestra todos.
+  const [diaLista, setDiaLista] = useState("");
   const cola = useQuery(trpc.panel.envios.cola.queryOptions());
+  // El historial se pide solo al abrir "Entregados": no pesa en la cola de trabajo.
+  const entregados = useQuery({
+    ...trpc.panel.envios.cola.queryOptions({ historial: true }),
+    enabled: filtro === "ENTREGADO",
+  });
+  const lista = filtro === "ENTREGADO" ? entregados : cola;
 
   const [periodo, setPeriodo] = useState<Periodo>("dia");
   // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
@@ -126,19 +141,26 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
     }),
   );
 
-  const visibles = useMemo(() => {
-    const pedidos: EnvioDeCola[] = cola.data ?? [];
+  const coinciden = useMemo(() => {
+    const pedidos: EnvioDeCola[] = lista.data ?? [];
     const termino = busqueda.trim().toLowerCase();
     return pedidos.filter(
       (p) =>
         (filtro === "TODOS" || p.estado === filtro) &&
+        (diaLista === "" || diaDeLima(new Date(p.creadoEn)) === diaLista) &&
         (termino === "" ||
           p.codigo.toLowerCase().includes(termino) ||
           p.destinatario.toLowerCase().includes(termino) ||
           p.distrito.toLowerCase().includes(termino) ||
           (p.codigoSeguimiento ?? "").toLowerCase().includes(termino)),
     );
-  }, [cola.data, filtro, busqueda]);
+  }, [lista.data, filtro, diaLista, busqueda]);
+  const paginas = Math.max(1, Math.ceil(coinciden.length / PAGINA));
+  const paginaActual = Math.min(pagina, paginas);
+  const visibles = useMemo(
+    () => coinciden.slice((paginaActual - 1) * PAGINA, paginaActual * PAGINA),
+    [coinciden, paginaActual],
+  );
   const seleccionado = visibles.find((p) => p.id === elegido) ?? visibles[0] ?? null;
 
   const todos: EnvioDeCola[] = cola.data ?? [];
@@ -149,6 +171,7 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
     { valor: "PAGADO", etiqueta: conCuenta("Por preparar", cuenta("PAGADO")) },
     { valor: "PREPARANDO", etiqueta: conCuenta("Preparando", cuenta("PREPARANDO")) },
     { valor: "ENVIADO", etiqueta: conCuenta("En camino", cuenta("ENVIADO")) },
+    { valor: "ENTREGADO", etiqueta: "Entregados" },
     ...(puedeTarifas ? [{ valor: "TARIFAS", etiqueta: "Tarifas de envío" }] : []),
   ];
 
@@ -232,12 +255,18 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
                 etiquetaOculta
                 icono={<IconoBuscar tamano={16} />}
                 valor={busqueda}
-                onCambio={setBusqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
                 placeholder="Pedido, distrito o guía"
               />
             ),
           })}
     >
+      {filtro === "TARIFAS" ? null : (
+        <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
+      )}
       <CampoSelectorLista
         id="filtro-envios"
         ancho="amplio"
@@ -248,8 +277,34 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
         onCambio={(valor) => {
           setFiltro(valor as Filtro);
           setEnviando(null);
+          setPagina(1);
         }}
       />
+      {filtro === "TARIFAS" ? null : (
+        <SelectorCalendario
+          id="dia-lista-envios"
+          etiqueta="Envíos de un día"
+          etiquetaOculta
+          placeholder="Elegir día"
+          valor={diaLista}
+          onCambio={(valor) => {
+            setDiaLista(valor);
+            setPagina(1);
+          }}
+          limpiable
+        />
+      )}
+      {(filtro !== "TODOS" && filtro !== "TARIFAS") || diaLista !== "" || busqueda !== "" ? (
+        <LimpiarFiltros
+          onClick={() => {
+            setFiltro("TODOS");
+            setDiaLista("");
+            setBusqueda("");
+            setPagina(1);
+            setEnviando(null);
+          }}
+        />
+      ) : null}
     </BarraLista>
   );
 
@@ -284,16 +339,6 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
       sinMarco
       acciones={
         <>
-          <SelectorSegmentado
-            etiqueta="Periodo de las métricas"
-            // Con un dia del calendario elegido, ningun periodo esta activo.
-            valor={fecha ? "" : periodo}
-            opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
-            onCambio={(valor) => {
-              setFecha("");
-              setPeriodo(valor as Periodo);
-            }}
-          />
           <SelectorCalendario
             id="fecha-metricas-envios"
             etiqueta="Elegir un día"
@@ -303,6 +348,16 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
             onCambio={setFecha}
             limpiable
             alineacion="fin"
+          />
+          <SelectorSegmentado
+            etiqueta="Periodo de las métricas"
+            // Con un dia del calendario elegido, ningun periodo esta activo.
+            valor={fecha ? "" : periodo}
+            opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
+            onCambio={(valor) => {
+              setFecha("");
+              setPeriodo(valor as Periodo);
+            }}
           />
         </>
       }
@@ -363,6 +418,7 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
       {avisos}
       {tarjetas}
       <ListaConLateral
+        filasPorPagina={PAGINA}
         barra={barra}
         lateral={
           <VistaPrevia
@@ -377,17 +433,19 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
         }
       >
         <Tarjeta>
-          {cola.isPending ? (
+          {lista.isPending ? (
             <Cargando texto="Cargando envíos…" />
-          ) : cola.isError ? (
-            <Alerta tono="error">{cola.error.message}</Alerta>
+          ) : lista.isError ? (
+            <Alerta tono="error">{lista.error.message}</Alerta>
           ) : visibles.length === 0 ? (
             <EstadoVacio
               titulo="Nada por aquí"
               texto={
-                busqueda
-                  ? "Ningún envío coincide con esa búsqueda."
-                  : "No hay pedidos en esta etapa del despacho."
+                busqueda || diaLista
+                  ? "Ningún envío coincide con esa búsqueda o ese día."
+                  : filtro === "ENTREGADO"
+                    ? "Todavía no hay envíos entregados."
+                    : "No hay pedidos en esta etapa del despacho."
               }
             />
           ) : (
@@ -395,19 +453,21 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
               {visibles.map((p) => {
                 const unidades = p.items.reduce((suma, item) => suma + item.cantidad, 0);
                 return (
-                  <FilaMovimiento
+                  <FilaPedido
                     key={p.id}
                     logo={<LogoIcono icono={<IconoCamion tamano={16} />} nombre="Envío" />}
                     titulo={p.codigo}
                     detalle={p.destinatario}
-                    subtitulo={`${p.distrito || p.departamento} · ${p.transportista ?? p.metodo}${
-                      p.codigoSeguimiento ? ` · Guía …${p.codigoSeguimiento.slice(-4)}` : ""
-                    }`}
+                    contenido={`${p.distrito || p.departamento} · ${unidades} ${unidades === 1 ? "unidad" : "unidades"}`}
+                    centro={[
+                      p.transportista ?? "Sin asignar",
+                      p.codigoSeguimiento ? `Guía ${p.codigoSeguimiento}` : "Sin guía todavía",
+                    ]}
                     estado={{
                       texto: ETAPA_ENVIO[p.estado] ?? p.estado,
                       tono: tonoDeEtapa(p.estado),
                     }}
-                    valor={`${unidades} ${unidades === 1 ? "unidad" : "uds."}`}
+                    nota={cuandoFue(new Date(p.recorrido.at(-1)?.creadoEn ?? p.creadoEn))}
                     seleccionada={escritorio && seleccionado?.id === p.id}
                     onAbrir={() => {
                       setEnviando(null);

@@ -1,0 +1,58 @@
+.ui-contadores-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
+}
+.ui-contadores-resumen__item {
+  display: grid;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-difusa);
+  color: var(--color-texto);
+  font: inherit;
+  text-align: start;
+}
+.ui-contadores-resumen__item:hover {
+  background: var(--color-fondoSutil);
+}
+.ui-contadores-resumen__item:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}
+/* El elegido lleva un aro fino del color del texto. */
+.ui-contadores-resumen__item--activo {
+  box-shadow:
+    var(--sombra-difusa),
+    0 0 0 2px color-mix(in srgb, var(--color-texto) 80%, transparent);
+}
+.ui-contadores-resumen__valor {
+  font-size: var(--tipo-tamano-2xl, 1.5rem);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.ui-contadores-resumen__etiqueta {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+@media (min-width: 48rem) {
+  .ui-contadores-resumen {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Dentro de una capsula (Tarjeta con marco): mismo acabado que "Medios de pago". */
+.ui-tarjeta .ui-contadores-resumen__item {
+  background: var(--color-fondoActividad);
+  box-shadow: none;
+}
+.ui-tarjeta .ui-contadores-resumen__item:hover {
+  background: var(--color-fondoSutil);
+}
+.ui-tarjeta .ui-contadores-resumen__item--activo {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-texto) 80%, transparent);
+}

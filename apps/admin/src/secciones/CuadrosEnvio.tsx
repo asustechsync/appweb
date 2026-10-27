@@ -42,10 +42,12 @@ export const ETAPA_ENVIO: Partial<Record<EstadoPedido, string>> = {
   PAGADO: "Por preparar",
   PREPARANDO: "Preparando",
   ENVIADO: "En camino",
+  ENTREGADO: "Entregado",
 };
 
-/** Ambar lo que nadie empezo; el resto, neutro: todavia no llega. */
-export function tonoDeEtapa(estado: EstadoPedido): "alerta" | "neutro" {
+/** Ambar lo que nadie empezo, verde lo que ya llego; el resto, neutro: todavia no llega. */
+export function tonoDeEtapa(estado: EstadoPedido): "alerta" | "exito" | "neutro" {
+  if (estado === "ENTREGADO") return "exito";
   return estado === "PAGADO" ? "alerta" : "neutro";
 }
 

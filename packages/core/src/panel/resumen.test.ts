@@ -50,10 +50,10 @@ describe("reparto por medio de pago", () => {
 });
 
 describe("marcas del eje", () => {
-  it("un dia: cada seis horas", () => {
+  it("un dia: cada seis horas y el final del dia", () => {
     const marcas = marcasDelEje(new Date(2026, 9, 21), new Date(2026, 9, 22));
-    expect(marcas.map((m) => m.texto)).toEqual(["0 h", "6 h", "12 h", "18 h"]);
-    expect(marcas.map((m) => m.posicion)).toEqual([0, 0.25, 0.5, 0.75]);
+    expect(marcas.map((m) => m.texto)).toEqual(["0 h", "6 h", "12 h", "18 h", "24 h"]);
+    expect(marcas.map((m) => m.posicion)).toEqual([0, 0.25, 0.5, 0.75, 1]);
   });
 
   it("una semana: un dia por marca, al centro de su columna", () => {

@@ -1,0 +1,110 @@
+/* Tamano fijo bajo la grafica, como las tarjetas de reparto. */
+.ui-fila-graficos__pila > .ui-tarjetas-ganancia:last-child {
+  flex: 0 0 auto;
+}
+/* Sin caja que las envuelva: cada tarjeta va suelta, como las de metricas. */
+.ui-tarjetas-ganancia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+/* FIRST MOBILE: dos por fila; desde md, las cuatro. Mismo hueco que la
+   rejilla de metricas. */
+.ui-tarjetas-ganancia__rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
+  margin: 0;
+}
+@media (min-width: 48rem) {
+  .ui-tarjetas-ganancia__rejilla {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ui-tarjetas-ganancia__tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+  padding: var(--espacio-4);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+}
+.ui-tarjetas-ganancia__tarjeta dd {
+  margin: 0;
+}
+.ui-tarjetas-ganancia__tarjeta dt {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  overflow: hidden;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  white-space: nowrap;
+}
+/* Bajo la barra: el periodo anterior a la izquierda y el cambio a la derecha,
+   con el radio de 4px y el tinte suave de las tarjetas de metrica. */
+.ui-tarjetas-ganancia__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+.ui-tarjetas-ganancia__cambio {
+  flex: none;
+  padding: 0 var(--espacio-1);
+  border-radius: var(--radio-sm);
+  background: color-mix(in srgb, var(--color-textoTenue) 8%, transparent);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-tarjetas-ganancia__cambio--exito {
+  background: color-mix(in srgb, var(--color-exito) 8%, transparent);
+  color: var(--color-exito);
+}
+.ui-tarjetas-ganancia__cambio--error {
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+  color: var(--color-error);
+}
+.ui-tarjetas-ganancia__valor {
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
+  line-height: var(--tipo-altura-apretada);
+  white-space: nowrap;
+}
+/* Barra fina de 3px sobre una pista que se distingue del fondo gris de la tarjeta. */
+.ui-tarjetas-ganancia__pista {
+  display: block;
+  block-size: 3px;
+  margin-block: var(--espacio-2) var(--espacio-1);
+  overflow: hidden;
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+}
+/* Un solo color para las cuatro: el mismo azul de la linea de la grafica de ventas. */
+.ui-tarjetas-ganancia__barra {
+  display: block;
+  background: var(--color-info);
+  block-size: 100%;
+  border-radius: var(--radio-completo);
+}
+.ui-tarjetas-ganancia__detalle {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-tarjetas-ganancia__nota {
+  margin: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}

@@ -17,6 +17,41 @@
   border-radius: var(--radio-md);
   background: var(--color-fondoActividad);
 }
+/* Bloque propio: fondo suave, esquinas redondas y aire entre filas, sin rayas. */
+.ui-fila-movimiento--bloque {
+  border-block-start: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+}
+/* Letras un paso mas grandes: titulo y monto en base, el resto en sm. */
+.ui-fila-movimiento--bloque .ui-fila-movimiento__titulo,
+.ui-fila-movimiento--bloque .ui-fila-movimiento__valor {
+  font-size: var(--tipo-tamano-base);
+}
+.ui-fila-movimiento--bloque .ui-fila-movimiento__subtitulo,
+.ui-fila-movimiento--bloque .ui-fila-movimiento__estado {
+  font-size: var(--tipo-tamano-sm);
+}
+/* El logo cubre el alto de las dos lineas de texto. */
+.ui-fila-movimiento--bloque .ui-logo-medio-pago {
+  inline-size: var(--espacio-10);
+  block-size: var(--espacio-10);
+}
+.ui-fila-movimiento--bloque + .ui-fila-movimiento--bloque {
+  margin-block-start: var(--espacio-2);
+}
+.ui-fila-movimiento--bloque.ui-fila-movimiento--clicable:hover {
+  background: var(--color-fondoSutil);
+}
+/* La elegida va en plomo suave, sin borde; el texto conserva su color oscuro. */
+.ui-fila-movimiento--bloque.ui-fila-movimiento--seleccionada {
+  background: color-mix(in srgb, var(--color-graficoGrafito) 24%, var(--color-fondo));
+}
+.ui-fila-movimiento--seleccionada .ui-fila-movimiento__subtitulo,
+.ui-fila-movimiento--seleccionada .ui-fila-movimiento__detalle,
+.ui-fila-movimiento--seleccionada .ui-fila-movimiento__estado {
+  color: var(--color-texto);
+}
 /* Cubre la fila entera; el foco se ve en el borde de la fila. */
 .ui-fila-movimiento__abrir {
   position: absolute;
@@ -90,6 +125,24 @@
 .ui-fila-movimiento__punto--error {
   background: var(--color-error);
 }
+/* Icono del estado, suelto y del color del tono. */
+.ui-fila-movimiento__icono {
+  display: inline-grid;
+  place-items: center;
+  color: var(--ui-icono-color);
+}
+.ui-fila-movimiento__icono--exito {
+  --ui-icono-color: var(--color-exito);
+}
+.ui-fila-movimiento__icono--alerta {
+  --ui-icono-color: var(--color-alerta);
+}
+.ui-fila-movimiento__icono--error {
+  --ui-icono-color: var(--color-error);
+}
+.ui-fila-movimiento__icono--neutro {
+  --ui-icono-color: var(--color-textoSuave);
+}
 .ui-fila-movimiento__valor {
   color: var(--color-texto);
   font-size: var(--tipo-tamano-sm);
@@ -97,12 +150,47 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+/* Con dia y hora al centro: el monto arriba y el estado debajo, a la derecha. */
+.ui-fila-movimiento__centro {
+  display: grid;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.ui-fila-movimiento__centro-dia {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-fila-movimiento__derecha {
+  display: grid;
+  justify-items: end;
+  margin-inline-start: auto;
+}
+.ui-fila-movimiento__derecha .ui-fila-movimiento__estado {
+  margin-inline-end: 0;
+}
 /* La accion va encima del boton que cubre la fila. */
 .ui-fila-movimiento__accion {
   position: relative;
 }
 .ui-fila-movimiento__accion:empty {
   display: none;
+}
+/* La accion de la fila: boton compacto de esquinas suaves en el gris `fondoActividad` (#EFF1F3). */
+.ui-fila-movimiento__accion .ui-boton {
+  block-size: var(--espacio-8);
+  padding-inline: var(--espacio-6);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-fila-movimiento__accion .ui-boton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-fondoActividad) 92%, var(--color-texto));
 }
 
 /* Desde tablet, columnas fijas: estado, monto y accion alineados fila a fila. */
@@ -121,6 +209,9 @@
   }
   .ui-fila-movimiento__valor {
     text-align: end;
+  }
+  .ui-fila-movimiento--con-centro .ui-fila-movimiento__cierre {
+    grid-template-columns: 11rem 8rem 6rem;
   }
   .ui-fila-movimiento__accion:empty {
     display: block;

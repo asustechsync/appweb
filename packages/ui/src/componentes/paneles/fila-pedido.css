@@ -1,0 +1,104 @@
+.ui-fila-pedido {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(7rem, auto);
+  gap: var(--espacio-3);
+  align-items: center;
+  /* 12 px arriba y abajo: la fila mide 69 px, igual que las de Pagos. */
+  padding: var(--espacio-3);
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+}
+.ui-fila-pedido + .ui-fila-pedido {
+  margin-block-start: var(--espacio-2);
+}
+.ui-fila-pedido:hover {
+  background: var(--color-fondoSutil);
+}
+/* La elegida va en plomo suave, sin borde. */
+.ui-fila-pedido--seleccionada,
+.ui-fila-pedido--seleccionada:hover {
+  background: color-mix(in srgb, var(--color-graficoGrafito) 24%, var(--color-fondo));
+}
+/* Cubre la fila entera; el foco se ve en el borde de la fila. */
+.ui-fila-pedido__abrir {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: none;
+  cursor: pointer;
+}
+.ui-fila-pedido__abrir:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: -2px;
+}
+/* La miniatura cubre el alto de las dos lineas: una de titulo y una pequena. */
+.ui-fila-pedido__logo .ui-logo-medio-pago {
+  --ui-alto-lineas: calc(1.5 * (var(--tipo-tamano-base) + var(--tipo-tamano-sm)));
+  inline-size: var(--ui-alto-lineas);
+  block-size: var(--ui-alto-lineas);
+}
+.ui-fila-pedido__bloque {
+  display: grid;
+  min-inline-size: 0;
+}
+.ui-fila-pedido__linea {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  line-height: 1.5;
+}
+.ui-fila-pedido__linea--titulo {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-base);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-fila-pedido__detalle {
+  color: var(--color-textoSuave);
+  font-weight: var(--tipo-peso-normal);
+}
+.ui-fila-pedido__derecha {
+  text-align: end;
+  justify-items: end;
+}
+.ui-fila-pedido__derecha .ui-fila-movimiento__punto {
+  display: inline-block;
+}
+.ui-fila-pedido__avance {
+  display: flex;
+  gap: var(--espacio-1);
+  inline-size: 100%;
+  margin-block-start: var(--espacio-1);
+}
+.ui-fila-pedido__paso {
+  flex: 1 1 0;
+  block-size: var(--espacio-1);
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+}
+.ui-fila-pedido__paso--hecho {
+  background: var(--color-exito);
+}
+/* El paso que se espera ahora: en ambar, como el punto de "pendiente". */
+.ui-fila-pedido__paso--espera {
+  background: var(--color-alerta);
+}
+/* En movil el centro se oculta: no cabe junto al monto y el estado. */
+.ui-fila-pedido__centro {
+  display: none;
+}
+
+/* Desde tablet, columnas: contenido, contacto y envio, monto y avance. */
+@media (min-width: 48rem) {
+  .ui-fila-pedido {
+    grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 1fr) minmax(9rem, 0.8fr);
+  }
+  .ui-fila-pedido__centro {
+    display: grid;
+  }
+}

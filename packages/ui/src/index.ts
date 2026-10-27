@@ -53,6 +53,8 @@ export {
   IconoReloj,
   IconoFlechaSubida,
   IconoFlechaBajada,
+  IconoMensaje,
+  IconoCalendario,
 } from "./iconos";
 
 // Primitivos. Las paginas importan de aqui y nunca escriben estilos propios.
@@ -300,11 +302,13 @@ export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/
 export { Minigrafico, type PropsMinigrafico } from "./componentes/paneles/Minigrafico";
 export {
   ListaActividad,
+  LogoFoto,
   LogoIcono,
   LogoMedioPago,
   TarjetaActividad,
   type MedioLogo,
   type PropsListaActividad,
+  type PropsLogoFoto,
   type PropsLogoIcono,
   type PropsLogoMedioPago,
   type PropsTarjetaActividad,
@@ -312,6 +316,8 @@ export {
 export {
   FilaGraficos,
   PilaGraficos,
+  ParejaListas,
+  type PropsParejaListas,
   type PropsFilaGraficos,
   type PropsPilaGraficos,
 } from "./componentes/paneles/FilaGraficos";
@@ -321,6 +327,10 @@ export {
   type PropsGraficoReparto,
   type TonoReparto,
 } from "./componentes/paneles/GraficoReparto";
+export {
+  TarjetasGanancia,
+  type PropsTarjetasGanancia,
+} from "./componentes/paneles/TarjetasGanancia";
 export {
   GraficoTendencia,
   type PropsGraficoTendencia,
@@ -333,6 +343,7 @@ export {
   InsigniaNivel,
   RejillaNiveles,
   TarjetaNivel,
+  TONO_NIVEL,
   type PropsEscaleraNiveles,
   type PropsProgresoNivel,
   type PropsTarjetaNivel,
@@ -346,6 +357,15 @@ export {
   type PropsFilaMovimiento,
   type TonoMovimiento,
 } from "./componentes/paneles/FilaMovimiento";
+export { LimpiarFiltros, type PropsLimpiarFiltros } from "./componentes/paneles/LimpiarFiltros";
+export {
+  ContadoresResumen,
+  type ContadorResumen,
+  type PropsContadoresResumen,
+} from "./componentes/paneles/ContadoresResumen";
+export { FilaResumen, type PropsFilaResumen } from "./componentes/paneles/FilaResumen";
+export { Paginador, type PropsPaginador } from "./componentes/paneles/Paginador";
+export { FilaPedido, type PropsFilaPedido } from "./componentes/paneles/FilaPedido";
 export { ListaConLateral, type PropsListaConLateral } from "./componentes/paneles/ListaConLateral";
 export { VistaPrevia, type PropsVistaPrevia } from "./componentes/paneles/VistaPrevia";
 export { CabeceraDetalle, type PropsCabeceraDetalle } from "./componentes/paneles/CabeceraDetalle";
@@ -361,6 +381,7 @@ export {
   type PropsRejillaBento,
   type PropsCuadroBento,
   type PropsCuadroMonto,
+  type AccionBento,
 } from "./componentes/paneles/RejillaBento";
 export { Insignia, type PropsInsignia } from "./componentes/base/Insignia";
 export {
@@ -382,3 +403,8 @@ export {
   type PropsSelectorLista,
   type OpcionDeSelectorLista,
 } from "./componentes/formularios/SelectorLista";
+export {
+  ListaConPestanas,
+  type PestanaLista,
+  type PropsListaConPestanas,
+} from "./componentes/paneles/ListaConPestanas";

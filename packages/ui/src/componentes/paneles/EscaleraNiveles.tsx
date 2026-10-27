@@ -1,8 +1,19 @@
 import type { ReactNode } from "react";
 
+import type { IdNivel } from "@appweb/core";
+
 import "./niveles.css";
 
 export type TonoNivel = "basico" | "bronce" | "plata" | "oro" | "platino";
+
+/** El color de cada nivel, igual en el panel y en "Mi cuenta": escalera, tarjetas y etiquetas. */
+export const TONO_NIVEL: Record<IdNivel, TonoNivel> = {
+  BASICO: "basico",
+  BRONCE: "bronce",
+  PLATA: "plata",
+  ORO: "oro",
+  PLATINO: "platino",
+};
 
 export interface TramoNivel {
   id: string;

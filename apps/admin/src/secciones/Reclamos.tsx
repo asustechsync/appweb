@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -13,28 +13,57 @@ import {
 } from "@appweb/core";
 import {
   Alerta,
-  BloqueDetalle,
+  BarraLista,
   Boton,
-  Cargando,
+  Campo,
+  CampoSelectorLista,
   CampoTexto,
+  Cargando,
+  CuadroBento,
+  CuadroMonto,
   EstadoVacio,
-  FilaDetalles,
-  FilaLista,
+  FilaPedido,
   Formulario,
-  Insignia,
-  Pestanas,
+  IconoBuscar,
+  IconoCatalogo,
+  IconoLibro,
+  IconoMensaje,
+  IconoUsuario,
+  LimpiarFiltros,
+  ListaConLateral,
+  LogoIcono,
+  Paginador,
+  RejillaBento,
+  RejillaMetricas,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
+  type AccionBento,
 } from "@appweb/ui";
 
+import { useEscritorio } from "@/lib/use-escritorio";
+import { usePaginado } from "@/lib/use-paginado";
 import { useTRPC } from "@/lib/trpc";
 
-import { FECHA, FECHA_HORA, MONEDA } from "@appweb/core/formato";
+import { FECHA, FECHA_HORA, MONEDA, diaYHora } from "@appweb/core/formato";
 
-const PESTANAS: { id: EstadoReclamo | "TODOS"; etiqueta: string }[] = [
+type FiltroReclamos = EstadoReclamo | "TODOS" | "VENCIDOS";
+
+const FILTROS: { id: FiltroReclamos; etiqueta: string }[] = [
   { id: "PENDIENTE", etiqueta: "Por responder" },
+  { id: "VENCIDOS", etiqueta: "Vencidos" },
   { id: "RESPONDIDO", etiqueta: "Respondidos" },
   { id: "TODOS", etiqueta: "Todos" },
 ];
+
+function cumpleFiltro(
+  r: { estado: EstadoReclamo; diasParaVencer: number | null },
+  filtro: FiltroReclamos,
+): boolean {
+  if (filtro === "TODOS") return true;
+  if (filtro === "VENCIDOS") return r.diasParaVencer !== null && r.diasParaVencer < 0;
+  return r.estado === filtro;
+}
 
 /** Rojo si ya vencio o vence en dos dias; ambar mientras corre; verde respondido. */
 function plazo(estado: EstadoReclamo, dias: number | null, vence: string) {
@@ -50,6 +79,22 @@ function plazo(estado: EstadoReclamo, dias: number | null, vence: string) {
   return { tono: dias <= 2 ? ("error" as const) : ("alerta" as const), texto };
 }
 
+/** Lo corto para la fila: "Vence en 3 días", sin la fecha. */
+function plazoCorto(estado: EstadoReclamo, dias: number | null) {
+  if (estado === "RESPONDIDO" || dias === null) {
+    return { tono: "exito" as const, texto: ETIQUETAS_ESTADO_RECLAMO[estado] };
+  }
+  if (dias < 0) return { tono: "error" as const, texto: "Vencido" };
+  if (dias === 0) return { tono: "error" as const, texto: "Vence hoy" };
+  return {
+    tono: dias <= 2 ? ("error" as const) : ("alerta" as const),
+    texto: `Vence en ${dias} ${dias === 1 ? "día" : "días"}`,
+  };
+}
+
+/** Cuantas hojas se ven por pagina. */
+const PAGINA = 10;
+
 /**
  * Libro de Reclamaciones: hojas por responder, con el plazo legal a la vista.
  * La hoja no se edita; lo unico que se escribe aqui es la respuesta, y llega
@@ -57,67 +102,252 @@ function plazo(estado: EstadoReclamo, dias: number | null, vence: string) {
  */
 export function Reclamos() {
   const trpc = useTRPC();
-  const [pestana, setPestana] = useState<EstadoReclamo | "TODOS">("PENDIENTE");
+  const [filtro, setFiltro] = useState<FiltroReclamos>("PENDIENTE");
+  const [busqueda, setBusqueda] = useState("");
   const [abierto, setAbierto] = useState<string | null>(null);
 
-  const lista = useQuery(
-    trpc.panel.reclamos.listar.queryOptions(pestana === "TODOS" ? {} : { estado: pestana }),
-  );
+  // Se traen todas y se filtra aqui: las cifras de arriba no dependen del filtro.
+  const lista = useQuery(trpc.panel.reclamos.listar.queryOptions({}));
+  const todos = lista.data?.reclamos ?? [];
+
+  const coinciden = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
+    return (lista.data?.reclamos ?? [])
+      .filter(
+        (r) =>
+          cumpleFiltro(r, filtro) &&
+          (termino === "" ||
+            r.codigo.toLowerCase().includes(termino) ||
+            r.nombre.toLowerCase().includes(termino) ||
+            r.email.toLowerCase().includes(termino)),
+      )
+      .sort((a, b) =>
+        // Por responder, lo que vence antes primero; lo demas, lo mas nuevo primero.
+        filtro === "PENDIENTE" || filtro === "VENCIDOS"
+          ? a.creadoEn.localeCompare(b.creadoEn)
+          : b.creadoEn.localeCompare(a.creadoEn),
+      );
+  }, [busqueda, filtro, lista.data]);
+  const { pagina, paginas, setPagina, visibles } = usePaginado(coinciden, PAGINA);
+
+  const escritorio = useEscritorio();
+  const [elegido, setElegido] = useState<string | null>(null);
+  const seleccionado = visibles.find((r) => r.id === elegido) ?? visibles[0] ?? null;
+
+  // Precarga la hoja de los que se ven: al elegir uno, ya esta en cache.
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!escritorio) return;
+    for (const reclamo of visibles) {
+      void queryClient.prefetchQuery(
+        trpc.panel.reclamos.detalle.queryOptions({ reclamoId: reclamo.id }),
+      );
+    }
+  }, [escritorio, visibles, queryClient, trpc]);
 
   if (abierto !== null) {
     return <DetalleReclamo reclamoId={abierto} onVolver={() => setAbierto(null)} />;
   }
 
-  const conteo = lista.data?.porEstado;
-  const opciones = PESTANAS.map((p) => {
-    const cantidad = conteo && p.id !== "TODOS" ? conteo[p.id] : 0;
-    return { id: p.id, etiqueta: cantidad > 0 ? `${p.etiqueta} (${cantidad})` : p.etiqueta };
+  const contar = (id: FiltroReclamos) => todos.filter((r) => cumpleFiltro(r, id)).length;
+  const opciones = FILTROS.map((f) => {
+    const cantidad = f.id === "TODOS" ? 0 : contar(f.id);
+    return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
+  const porVencer = todos.filter(
+    (r) => r.diasParaVencer !== null && r.diasParaVencer >= 0 && r.diasParaVencer <= 2,
+  ).length;
+  const quejas = todos.filter((r) => r.tipo === "QUEJA").length;
 
   return (
-    <Tarjeta titulo="Libro de Reclamaciones">
-      <Pestanas
-        etiqueta="Estado del reclamo"
-        opciones={opciones}
-        activa={pestana}
-        onCambio={(id) => setPestana(id as EstadoReclamo | "TODOS")}
-      />
+    <>
+      <Tarjeta titulo="Libro de Reclamaciones" sinMarco>
+        <RejillaMetricas>
+          <TarjetaMetrica
+            etiqueta="Por responder"
+            valor={String(contar("PENDIENTE"))}
+            contexto="El plazo legal corre desde que se registra"
+          />
+          <TarjetaMetrica
+            etiqueta="Por vencer"
+            valor={String(porVencer)}
+            contexto="Vencen en dos días o menos"
+          />
+          <TarjetaMetrica
+            etiqueta="Vencidos"
+            valor={String(contar("VENCIDOS"))}
+            contexto={contar("VENCIDOS") === 0 ? "Todo dentro del plazo" : "Responder cuanto antes"}
+          />
+          <TarjetaMetrica
+            etiqueta="Respondidos"
+            valor={String(contar("RESPONDIDO"))}
+            contexto={`${todos.length - quejas} reclamos · ${quejas} quejas`}
+          />
+        </RejillaMetricas>
+      </Tarjeta>
 
-      {lista.isPending ? (
-        <Cargando texto="Cargando reclamos…" />
-      ) : lista.isError ? (
-        <Alerta tono="error">{lista.error.message}</Alerta>
-      ) : lista.data.reclamos.length === 0 ? (
-        <EstadoVacio titulo="Sin reclamos" texto="No hay hojas en este estado." />
-      ) : (
-        lista.data.reclamos.map((r) => {
-          const p = plazo(r.estado, r.diasParaVencer, r.vence);
-          return (
-            <FilaLista
-              key={r.id}
-              acciones={
-                <Boton variante="secundario" onClick={() => setAbierto(r.id)}>
-                  {r.estado === "PENDIENTE" ? "Responder" : "Ver hoja"}
-                </Boton>
+      <ListaConLateral
+        filasPorPagina={PAGINA}
+        barra={
+          <BarraLista
+            juntos
+            buscador={
+              <Campo
+                id="busqueda-reclamos"
+                etiqueta="Buscar por número, nombre o correo"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
+                placeholder="Número, nombre o correo"
+              />
+            }
+          >
+            <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
+            <CampoSelectorLista
+              id="filtro-reclamos"
+              ancho="amplio"
+              etiqueta="Estado del reclamo"
+              etiquetaOculta
+              valor={filtro}
+              opciones={opciones}
+              onCambio={(valor) => {
+                setFiltro(valor as FiltroReclamos);
+                setPagina(1);
+              }}
+            />
+            {filtro !== "PENDIENTE" || busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setFiltro("PENDIENTE");
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
+            ) : null}
+          </BarraLista>
+        }
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionado ? {} : { vacio: "Elige una hoja de la lista para ver su resumen." })}
+          >
+            {seleccionado ? (
+              <CuadrosReclamo
+                reclamoId={seleccionado.id}
+                principal={{
+                  etiqueta: seleccionado.estado === "PENDIENTE" ? "Responder" : "Ver hoja",
+                  onClick: () => setAbierto(seleccionado.id),
+                }}
+              />
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {lista.isPending ? (
+            <Cargando texto="Cargando reclamos…" />
+          ) : lista.isError ? (
+            <Alerta tono="error">{lista.error.message}</Alerta>
+          ) : visibles.length === 0 ? (
+            <EstadoVacio
+              titulo="Sin reclamos"
+              texto={
+                busqueda
+                  ? "Ninguna hoja coincide con esa búsqueda."
+                  : "No hay hojas en este estado."
               }
-            >
-              <strong>
-                {ETIQUETAS_TIPO_RECLAMO[r.tipo]} N.° {r.codigo}
-              </strong>
-              <span>
-                {r.nombre} · {r.email}
-              </span>
-              <span>
-                {FECHA_HORA.format(new Date(r.creadoEn))} · {r.descripcionBien}
-              </span>
-              <span>
-                <Insignia tono={p.tono}>{p.texto}</Insignia>
-              </span>
-            </FilaLista>
-          );
-        })
-      )}
-    </Tarjeta>
+            />
+          ) : (
+            <div>
+              {visibles.map((r) => {
+                const { dia, hora } = diaYHora(new Date(r.creadoEn));
+                return (
+                  <FilaPedido
+                    key={r.id}
+                    logo={<LogoIcono icono={<IconoLibro tamano={16} />} nombre="Hoja" />}
+                    titulo={`${ETIQUETAS_TIPO_RECLAMO[r.tipo]} N.° ${r.codigo}`}
+                    detalle={r.nombre}
+                    contenido={r.descripcionBien}
+                    centro={[dia, hora]}
+                    estado={plazoCorto(r.estado, r.diasParaVencer)}
+                    seleccionada={escritorio && seleccionado?.id === r.id}
+                    onAbrir={() => (escritorio ? setElegido(r.id) : setAbierto(r.id))}
+                    etiquetaAbrir={`${escritorio ? "Elegir" : "Ver"} hoja ${r.codigo}`}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
+    </>
+  );
+}
+
+/**
+ * La hoja en cuadros: plazo, consumidor y lo reclamado. La usan la vista
+ * previa y la cabecera del detalle.
+ */
+function CuadrosReclamo({ reclamoId, principal }: { reclamoId: string; principal: AccionBento }) {
+  const trpc = useTRPC();
+  const consulta = useQuery(trpc.panel.reclamos.detalle.queryOptions({ reclamoId }));
+
+  if (consulta.isPending) return <Cargando texto="Cargando hoja…" />;
+  if (consulta.isError) return <Alerta tono="error">{consulta.error.message}</Alerta>;
+
+  const r = consulta.data;
+  return (
+    <RejillaBento>
+      <CuadroMonto
+        logo={<LogoIcono icono={<IconoLibro tamano={16} />} nombre="Hoja" />}
+        estado={plazo(r.estado, r.diasParaVencer, r.vence)}
+        etiqueta={ETIQUETAS_TIPO_RECLAMO[r.tipo]}
+        monto={`N.° ${r.codigo}`}
+        texto
+        detalle={FECHA_HORA.format(new Date(r.creadoEn))}
+        acciones={[principal]}
+      />
+      <CuadroBento
+        icono={<IconoUsuario tamano={16} />}
+        titulo="Consumidor"
+        ancho="ancho"
+        detalle={r.email}
+        cifras={[
+          { valor: r.numeroDocumento, etiqueta: ETIQUETA_TIPO_DOCUMENTO[r.tipoDocumento] },
+          { valor: r.telefono, etiqueta: "Teléfono" },
+        ]}
+      >
+        {r.nombre}
+        {r.menorDeEdad ? ` · apoderado ${r.apoderado}` : ""}
+      </CuadroBento>
+      <CuadroBento
+        icono={<IconoCatalogo tamano={16} />}
+        titulo={ETIQUETAS_TIPO_BIEN[r.tipoBien]}
+        ancho="ancho"
+        {...(r.pedidoCodigo || r.monto !== null
+          ? {
+              detalle: [
+                r.pedidoCodigo ? `Pedido ${r.pedidoCodigo}` : null,
+                r.monto !== null ? `Reclama ${MONEDA.format(r.monto)}` : null,
+              ]
+                .filter(Boolean)
+                .join(" · "),
+            }
+          : {})}
+      >
+        {r.descripcionBien}
+      </CuadroBento>
+      <CuadroBento icono={<IconoMensaje tamano={16} />} titulo="Lo que pide" ancho="ancho">
+        {r.pedido}
+      </CuadroBento>
+    </RejillaBento>
   );
 }
 
@@ -140,23 +370,22 @@ function DetalleReclamo({ reclamoId, onVolver }: { reclamoId: string; onVolver: 
     }),
   );
 
-  const volver = (
-    <Boton variante="secundario" onClick={onVolver}>
-      ← Volver a reclamos
-    </Boton>
-  );
-
   if (consulta.isPending) return <Cargando texto="Cargando hoja…" />;
   if (consulta.isError) {
     return (
-      <Tarjeta acciones={volver}>
+      <Tarjeta
+        acciones={
+          <Boton variante="secundario" onClick={onVolver}>
+            ← Volver a reclamos
+          </Boton>
+        }
+      >
         <Alerta tono="error">{consulta.error.message}</Alerta>
       </Tarjeta>
     );
   }
 
   const r = consulta.data;
-  const p = plazo(r.estado, r.diasParaVencer, r.vence);
 
   return (
     <>
@@ -164,37 +393,13 @@ function DetalleReclamo({ reclamoId, onVolver }: { reclamoId: string; onVolver: 
         <Alerta tono="exito">Respuesta guardada y enviada a {r.email}.</Alerta>
       ) : null}
 
-      <Tarjeta titulo={`${ETIQUETAS_TIPO_RECLAMO[r.tipo]} N.° ${r.codigo}`} acciones={volver}>
-        <p>
-          <Insignia tono={p.tono}>{p.texto}</Insignia> Registrado el{" "}
-          {FECHA_HORA.format(new Date(r.creadoEn))}
-        </p>
-      </Tarjeta>
-
-      <FilaDetalles>
-        <BloqueDetalle titulo="Consumidor">
-          <p>{r.nombre}</p>
-          <p>
-            {ETIQUETA_TIPO_DOCUMENTO[r.tipoDocumento]} {r.numeroDocumento}
-          </p>
-          <p>{r.domicilio}</p>
-          <p>
-            {r.telefono} · {r.email}
-          </p>
-          {r.menorDeEdad ? <p>Menor de edad · Apoderado: {r.apoderado}</p> : null}
-        </BloqueDetalle>
-        <BloqueDetalle titulo={ETIQUETAS_TIPO_BIEN[r.tipoBien]}>
-          <p>{r.descripcionBien}</p>
-          {r.pedidoCodigo ? <p>Pedido {r.pedidoCodigo}</p> : null}
-          {r.monto !== null ? <p>Monto reclamado: {MONEDA.format(r.monto)}</p> : null}
-        </BloqueDetalle>
-      </FilaDetalles>
+      <CuadrosReclamo
+        reclamoId={reclamoId}
+        principal={{ etiqueta: "← Volver a reclamos", onClick: onVolver }}
+      />
 
       <Tarjeta titulo="Detalle">
         <p>{r.detalle}</p>
-      </Tarjeta>
-      <Tarjeta titulo="Lo que pide">
-        <p>{r.pedido}</p>
       </Tarjeta>
 
       {r.estado === "RESPONDIDO" ? (

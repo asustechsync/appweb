@@ -76,10 +76,13 @@ export function TarjetaPedido({
             <dd>−{MONEDA.format(descuento)}</dd>
           </div>
         ) : null}
-        <div>
-          <dt>Envío</dt>
-          <dd>{costoEnvio === 0 ? "Gratis" : MONEDA.format(costoEnvio)}</dd>
-        </div>
+        {/* Solo los pedidos de cuando la tienda cobraba el envio lo muestran. */}
+        {costoEnvio > 0 ? (
+          <div>
+            <dt>Envío</dt>
+            <dd>{MONEDA.format(costoEnvio)}</dd>
+          </div>
+        ) : null}
       </dl>
 
       <div className="ui-tarjeta-pedido__total">

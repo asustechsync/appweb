@@ -145,6 +145,21 @@ export const cuenta = router({
         creadoEn: true,
         envioMetodo: true,
         _count: { select: { items: true } },
+        items: {
+          take: 1,
+          select: {
+            nombreProducto: true,
+            variante: {
+              select: {
+                producto: {
+                  select: {
+                    imagenes: { orderBy: { orden: "asc" }, take: 1, select: { url: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -155,6 +170,8 @@ export const cuenta = router({
       creadoEn: pedido.creadoEn,
       envioMetodo: pedido.envioMetodo,
       lineas: pedido._count.items,
+      primerProducto: pedido.items[0]?.nombreProducto ?? null,
+      imagen: urlDeFoto(pedido.items[0]?.variante.producto.imagenes[0]?.url),
     }));
   }),
 

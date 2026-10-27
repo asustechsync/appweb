@@ -36,9 +36,9 @@ import {
   Tarjeta,
   TarjetaMetrica,
   VistaPrevia,
+  TONO_NIVEL,
 } from "@appweb/ui";
 
-import { TONO_NIVEL } from "@/lib/tonos-nivel";
 import { useEscritorio } from "@/lib/use-escritorio";
 import { useTRPC } from "@/lib/trpc";
 

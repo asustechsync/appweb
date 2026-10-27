@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, type ReactNode, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -10,25 +10,37 @@ import {
   Campo,
   Cargando,
   Casilla,
+  CuadroBento,
+  CuadroDesglose,
+  CuadroMonto,
   EstadoVacio,
-  FilaLista,
+  FilaPedido,
   FilaUnida,
   Formulario,
-  Insignia,
+  IconoCalendario,
+  IconoFlechaDerecha,
+  IconoGaleria,
+  IconoMensaje,
+  IconoPromociones,
+  IconoTicket,
+  ListaConLateral,
+  LogoIcono,
+  RejillaBento,
+  RejillaMetricas,
+  SelectorCalendario,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
 } from "@appweb/ui";
 
 import { revalidarTienda } from "@/lib/revalidar";
+import { useEscritorio } from "@/lib/use-escritorio";
 import { useTRPC } from "@/lib/trpc";
-import { MONEDA, numeroDesdeTexto } from "@appweb/core/formato";
+import { FECHA, MONEDA, diaDeLima, numeroDesdeTexto } from "@appweb/core/formato";
 
 /** Seccion "Portada" del grupo Promociones: los banners del carrusel. */
 export function Portada() {
-  return (
-    <Tarjeta titulo="Portada y banners">
-      <Banners />
-    </Tarjeta>
-  );
+  return <Banners />;
 }
 
 /**
@@ -36,10 +48,118 @@ export function Portada() {
  * niveles de recompensa tienen su propia seccion en Cuentas.
  */
 export function Promociones() {
+  return <Cupones />;
+}
+
+type Tono = "exito" | "alerta" | "error" | "neutro";
+
+interface PropsListaEditable<T extends { id: string }> {
+  /** "Cupones". */
+  titulo: string;
+  /** "+ Nuevo cupón". */
+  nuevo: string;
+  /** "Editar cupón". */
+  editar: string;
+  /** "← Volver a cupones". */
+  volver: string;
+  elementos: T[];
+  metricas: ReactNode;
+  vacio: { titulo: string; texto: string };
+  /** Sin nada elegido, en la vista previa. */
+  elegirAviso: string;
+  fila: (
+    elemento: T,
+    abrir: { seleccionada: boolean; onAbrir: () => void; movil: boolean },
+  ) => ReactNode;
+  vista: (elemento: T, editar: () => void) => ReactNode;
+  formulario: (elemento: T | null, onListo: () => void) => ReactNode;
+  /** Texto de ayuda sobre el formulario. */
+  ayuda: string;
+}
+
+/**
+ * Lo comun a banners y cupones: cifras arriba, lista con vista previa al lado
+ * y, al editar o crear, el formulario en lugar de la lista. Son pocos: sin
+ * buscador ni paginas.
+ */
+function ListaEditable<T extends { id: string }>({
+  titulo,
+  nuevo,
+  editar,
+  volver,
+  elementos,
+  metricas,
+  vacio,
+  elegirAviso,
+  fila,
+  vista,
+  formulario,
+  ayuda,
+}: PropsListaEditable<T>) {
+  const [editando, setEditando] = useState<string | null>(null);
+  const escritorio = useEscritorio();
+  const [elegido, setElegido] = useState<string | null>(null);
+  const seleccionado = elementos.find((e) => e.id === elegido) ?? elementos[0] ?? null;
+
+  if (editando !== null) {
+    const elemento = elementos.find((e) => e.id === editando) ?? null;
+    return (
+      <Tarjeta
+        titulo={elemento ? editar : nuevo.replace("+ ", "")}
+        acciones={
+          <Boton variante="secundario" onClick={() => setEditando(null)}>
+            {volver}
+          </Boton>
+        }
+      >
+        <p>{ayuda}</p>
+        {formulario(elemento, () => setEditando(null))}
+      </Tarjeta>
+    );
+  }
+
   return (
-    <Tarjeta titulo="Cupones">
-      <Cupones />
-    </Tarjeta>
+    <>
+      <Tarjeta
+        titulo={titulo}
+        sinMarco
+        acciones={<Boton onClick={() => setEditando("nuevo")}>{nuevo}</Boton>}
+      >
+        <RejillaMetricas>{metricas}</RejillaMetricas>
+      </Tarjeta>
+
+      <ListaConLateral
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionado ? {} : { vacio: elegirAviso })}
+          >
+            {seleccionado ? vista(seleccionado, () => setEditando(seleccionado.id)) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {elementos.length === 0 ? (
+            <EstadoVacio titulo={vacio.titulo} texto={vacio.texto} />
+          ) : (
+            <div>
+              {elementos.map((e) => (
+                <Fragment key={e.id}>
+                  {fila(e, {
+                    seleccionada: escritorio && seleccionado?.id === e.id,
+                    onAbrir: () => (escritorio ? setElegido(e.id) : setEditando(e.id)),
+                    movil: !escritorio,
+                  })}
+                </Fragment>
+              ))}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
+    </>
   );
 }
 
@@ -56,57 +176,90 @@ interface BannerDelPanel {
   activo: boolean;
 }
 
+function estadoDeBanner(b: BannerDelPanel): { texto: string; tono: Tono } {
+  return b.activo
+    ? { texto: `#${b.orden} en portada`, tono: "exito" }
+    : { texto: "Oculto", tono: "alerta" };
+}
+
 function Banners() {
   const trpc = useTRPC();
   const lista = useQuery(trpc.panel.promociones.banners.queryOptions());
-  const [editando, setEditando] = useState<string | null>(null);
 
   if (lista.isPending) return <Cargando texto="Cargando banners…" />;
   if (lista.isError) return <Alerta tono="error">{lista.error.message}</Alerta>;
 
+  const banners = lista.data;
+  const activos = banners.filter((b) => b.activo);
+  const destinos = new Set(activos.map((b) => b.href)).size;
+
   return (
-    <>
-      <p>
-        Las promociones que se turnan arriba en la portada, en este orden. Las ocultas no se
-        muestran.
-      </p>
-      {lista.data.length === 0 ? (
-        <EstadoVacio titulo="Sin banners" texto="La portada no muestra el carrusel." />
-      ) : null}
-      {lista.data.map((b) =>
-        editando === b.id ? (
-          <FormularioBanner key={b.id} banner={b} onListo={() => setEditando(null)} />
-        ) : (
-          <FilaLista
-            key={b.id}
-            acciones={
-              <Boton variante="secundario" onClick={() => setEditando(b.id)}>
-                Editar
-              </Boton>
+    <ListaEditable
+      titulo="Portada y banners"
+      nuevo="+ Nuevo banner"
+      editar="Editar banner"
+      volver="← Volver a la portada"
+      elementos={banners}
+      ayuda="Las promociones que se turnan arriba en la portada, en este orden. Las ocultas no se muestran."
+      metricas={
+        <>
+          <TarjetaMetrica
+            etiqueta="En la portada"
+            valor={String(activos.length)}
+            contexto={
+              activos.length === 0 ? "La portada no muestra el carrusel" : "Se turnan arriba"
             }
+          />
+          <TarjetaMetrica
+            etiqueta="Ocultos"
+            valor={String(banners.length - activos.length)}
+            contexto="Guardados sin mostrar"
+          />
+          <TarjetaMetrica
+            etiqueta="Destinos"
+            valor={String(destinos)}
+            contexto="Páginas a las que llevan"
+          />
+        </>
+      }
+      vacio={{ titulo: "Sin banners", texto: "La portada no muestra el carrusel." }}
+      elegirAviso="Elige un banner para ver cómo se lee."
+      fila={(b, abrir) => (
+        <FilaPedido
+          logo={<LogoIcono icono={<IconoGaleria tamano={16} />} nombre="Banner" />}
+          titulo={b.titulo}
+          detalle={b.etiqueta}
+          contenido={b.texto}
+          centro={[b.accion, b.href]}
+          estado={estadoDeBanner(b)}
+          seleccionada={abrir.seleccionada}
+          onAbrir={abrir.onAbrir}
+          etiquetaAbrir={`${abrir.movil ? "Editar" : "Elegir"} banner ${b.titulo}`}
+        />
+      )}
+      vista={(b, editar) => (
+        <RejillaBento>
+          <CuadroMonto
+            logo={<LogoIcono icono={<IconoGaleria tamano={16} />} nombre="Banner" />}
+            estado={estadoDeBanner(b)}
+            etiqueta={b.etiqueta}
+            monto={b.titulo}
+            texto
+            detalle={b.texto}
+            acciones={[{ etiqueta: "Editar banner", onClick: editar }]}
+          />
+          <CuadroBento
+            icono={<IconoFlechaDerecha tamano={16} />}
+            titulo="Botón"
+            ancho="ancho"
+            detalle={`Lleva a ${b.href}`}
           >
-            <span>
-              <Insignia tono={b.activo ? "exito" : "alerta"}>
-                {b.activo ? `#${b.orden} en portada` : "Oculto"}
-              </Insignia>{" "}
-              {b.etiqueta}
-            </span>
-            <strong>{b.titulo}</strong>
-            <span>{b.texto}</span>
-            <span>
-              Botón “{b.accion}” → {b.href}
-            </span>
-          </FilaLista>
-        ),
+            {b.accion}
+          </CuadroBento>
+        </RejillaBento>
       )}
-      {editando === "nuevo" ? (
-        <FormularioBanner banner={null} onListo={() => setEditando(null)} />
-      ) : (
-        <Boton variante="secundario" onClick={() => setEditando("nuevo")}>
-          + Nuevo banner
-        </Boton>
-      )}
-    </>
+      formulario={(b, onListo) => <FormularioBanner banner={b} onListo={onListo} />}
+    />
   );
 }
 
@@ -215,64 +368,127 @@ interface CuponDelPanel {
   activo: boolean;
 }
 
+/** Un "2026-10-26" del formulario como fecha legible: "26 oct 2026". */
+function fechaLegible(dia: string): string {
+  return FECHA.format(new Date(`${dia}T12:00:00-05:00`));
+}
+
+/**
+ * Apagado manda; luego si aun no empieza, si ya vencio o si se acabaron los
+ * usos. Solo es informativo: quien valida el cupon en la compra es core.
+ */
+function estadoDeCupon(c: CuponDelPanel, hoy: string): { texto: string; tono: Tono } {
+  if (!c.activo) return { texto: "Apagado", tono: "neutro" };
+  if (c.desde && c.desde > hoy) return { texto: "Programado", tono: "alerta" };
+  if (c.hasta && c.hasta < hoy) return { texto: "Vencido", tono: "error" };
+  if (c.usosMaximos !== null && c.usos >= c.usosMaximos) return { texto: "Agotado", tono: "error" };
+  return { texto: "Activo", tono: "exito" };
+}
+
+function vigencia(c: CuponDelPanel): string {
+  if (!c.desde && !c.hasta) return "Sin fecha de vencimiento";
+  const desde = c.desde ? `desde ${fechaLegible(c.desde)}` : "";
+  const hasta = c.hasta ? `hasta ${fechaLegible(c.hasta)}` : "";
+  return `Vigente ${desde} ${hasta}`.replace(/\s+/g, " ").trim();
+}
+
 function Cupones() {
   const trpc = useTRPC();
   const lista = useQuery(trpc.panel.promociones.cupones.queryOptions());
-  const [editando, setEditando] = useState<string | null>(null);
 
   if (lista.isPending) return <Cargando texto="Cargando cupones…" />;
   if (lista.isError) return <Alerta tono="error">{lista.error.message}</Alerta>;
 
+  const cupones = lista.data;
+  const hoy = diaDeLima(new Date());
+  const vigentes = cupones.filter((c) => estadoDeCupon(c, hoy).texto === "Activo");
+  const usos = cupones.reduce((suma, c) => suma + c.usos, 0);
+  const mayor = vigentes.reduce((max, c) => Math.max(max, c.porcentaje), 0);
+
   return (
-    <>
-      <p>
-        Códigos de descuento sobre el subtotal. No se suman al descuento de nivel: el cliente recibe
-        el mayor.
-      </p>
-      {lista.data.length === 0 ? (
-        <EstadoVacio titulo="Sin cupones" texto="Todavía no hay códigos de descuento." />
-      ) : null}
-      {lista.data.map((c) =>
-        editando === c.id ? (
-          <FormularioCupon key={c.id} cupon={c} onListo={() => setEditando(null)} />
-        ) : (
-          <FilaLista
-            key={c.id}
-            acciones={
-              <Boton variante="secundario" onClick={() => setEditando(c.id)}>
-                Editar
-              </Boton>
-            }
-          >
-            <strong>
-              {c.codigo} · {c.porcentaje}%
-            </strong>
-            <span>
-              {c.minimoCompra !== null ? `Desde ${MONEDA.format(c.minimoCompra)}` : "Sin mínimo"} ·{" "}
-              {c.usos} {c.usos === 1 ? "uso" : "usos"}
-              {c.usosMaximos !== null ? ` de ${c.usosMaximos}` : ""}
-            </span>
-            <span>
-              {c.desde || c.hasta
-                ? `Vigente ${c.desde ? `desde ${c.desde}` : ""} ${c.hasta ? `hasta ${c.hasta}` : ""}`
-                : "Sin fecha de vencimiento"}
-            </span>
-            <span>
-              <Insignia tono={c.activo ? "exito" : "alerta"}>
-                {c.activo ? "Activo" : "Apagado"}
-              </Insignia>
-            </span>
-          </FilaLista>
-        ),
+    <ListaEditable
+      titulo="Cupones"
+      nuevo="+ Nuevo cupón"
+      editar="Editar cupón"
+      volver="← Volver a cupones"
+      elementos={cupones}
+      ayuda="Códigos de descuento sobre el subtotal. No se suman al descuento de nivel: el cliente recibe el mayor."
+      metricas={
+        <>
+          <TarjetaMetrica
+            etiqueta="Vigentes"
+            valor={String(vigentes.length)}
+            contexto={`De ${cupones.length} creados`}
+          />
+          <TarjetaMetrica
+            etiqueta="Usos"
+            valor={String(usos)}
+            contexto="Pedidos que usaron un código"
+          />
+          <TarjetaMetrica
+            etiqueta="Mayor descuento"
+            valor={mayor === 0 ? "—" : `${mayor} %`}
+            contexto="Entre los vigentes"
+          />
+        </>
+      }
+      vacio={{ titulo: "Sin cupones", texto: "Todavía no hay códigos de descuento." }}
+      elegirAviso="Elige un cupón para ver sus condiciones."
+      fila={(c, abrir) => (
+        <FilaPedido
+          logo={<LogoIcono icono={<IconoTicket tamano={16} />} nombre="Cupón" />}
+          titulo={c.codigo}
+          detalle={`${c.porcentaje} %`}
+          contenido={
+            c.minimoCompra !== null ? `Desde ${MONEDA.format(c.minimoCompra)}` : "Sin mínimo"
+          }
+          centro={[
+            `${c.usos} ${c.usos === 1 ? "uso" : "usos"}`,
+            c.usosMaximos !== null ? `de ${c.usosMaximos}` : "sin límite",
+          ]}
+          estado={estadoDeCupon(c, hoy)}
+          {...(c.hasta ? { nota: `Hasta ${fechaLegible(c.hasta)}` } : {})}
+          seleccionada={abrir.seleccionada}
+          onAbrir={abrir.onAbrir}
+          etiquetaAbrir={`${abrir.movil ? "Editar" : "Elegir"} cupón ${c.codigo}`}
+        />
       )}
-      {editando === "nuevo" ? (
-        <FormularioCupon cupon={null} onListo={() => setEditando(null)} />
-      ) : (
-        <Boton variante="secundario" onClick={() => setEditando("nuevo")}>
-          + Nuevo cupón
-        </Boton>
+      vista={(c, editar) => (
+        <RejillaBento>
+          <CuadroMonto
+            logo={<LogoIcono icono={<IconoPromociones tamano={16} />} nombre="Cupón" />}
+            estado={estadoDeCupon(c, hoy)}
+            etiqueta={c.codigo}
+            monto={`${c.porcentaje} %`}
+            texto
+            detalle="de descuento sobre el subtotal"
+            acciones={[{ etiqueta: "Editar cupón", onClick: editar }]}
+          />
+          <CuadroDesglose
+            icono={<IconoTicket tamano={16} />}
+            titulo="Condiciones"
+            ancho="ancho"
+            lineas={[
+              {
+                etiqueta: "Compra mínima",
+                valor: c.minimoCompra !== null ? MONEDA.format(c.minimoCompra) : "Sin mínimo",
+              },
+              {
+                etiqueta: "Usos",
+                valor: c.usosMaximos !== null ? `${c.usos} de ${c.usosMaximos}` : String(c.usos),
+              },
+            ]}
+          />
+          <CuadroBento icono={<IconoCalendario tamano={16} />} titulo="Vigencia" ancho="ancho">
+            {vigencia(c)}
+          </CuadroBento>
+          <CuadroBento icono={<IconoMensaje tamano={16} />} titulo="Con niveles" ancho="ancho">
+            No se suma al descuento de nivel: el cliente recibe el mayor.
+          </CuadroBento>
+        </RejillaBento>
       )}
-    </>
+      formulario={(c, onListo) => <FormularioCupon cupon={c} onListo={onListo} />}
+    />
   );
 }
 
@@ -360,8 +576,23 @@ function FormularioCupon({ cupon, onListo }: { cupon: CuponDelPanel | null; onLi
         />
       </FilaUnida>
       <FilaUnida iguales>
-        <Campo id="cupon-desde" etiqueta="Desde" tipo="date" valor={desde} onCambio={setDesde} />
-        <Campo id="cupon-hasta" etiqueta="Hasta" tipo="date" valor={hasta} onCambio={setHasta} />
+        <SelectorCalendario
+          id="cupon-desde"
+          etiqueta="Desde"
+          placeholder="Sin fecha"
+          valor={desde}
+          onCambio={setDesde}
+          limpiable
+        />
+        <SelectorCalendario
+          id="cupon-hasta"
+          etiqueta="Hasta"
+          placeholder="Sin fecha"
+          valor={hasta}
+          onCambio={setHasta}
+          {...(desde ? { minimo: desde } : {})}
+          limpiable
+        />
       </FilaUnida>
       <Casilla
         id="cupon-activo"

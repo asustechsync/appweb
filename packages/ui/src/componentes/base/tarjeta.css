@@ -54,3 +54,21 @@
   border: 0;
   background: transparent;
 }
+
+/*
+ * Cabecera de las tarjetas de metricas (sin caja): el deslizable Dia/Semana/Mes
+ * mide una columna de la rejilla de abajo (4 columnas, con el mismo hueco entre
+ * tarjetas), asi queda justo encima de la ultima tarjeta con sus bordes
+ * alineados. "Elegir dia" queda compacto a su izquierda.
+ */
+@media (min-width: 48rem) {
+  .ui-tarjeta.ui-tarjeta--sin-marco {
+    container-type: inline-size;
+  }
+  .ui-tarjeta--sin-marco .ui-tarjeta__acciones {
+    gap: var(--espacio-3);
+  }
+  .ui-tarjeta--sin-marco .ui-tarjeta__acciones .ui-selector-segmentado {
+    inline-size: calc((100cqw - 3 * var(--espacio-3)) / 4);
+  }
+}

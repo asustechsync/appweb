@@ -8,15 +8,18 @@ import { ETIQUETAS_ESTADO_RESENA, MAX_LETRAS_COMENTARIO, type EstadoResena } fro
 import {
   Alerta,
   Boton,
+  CabeceraDetalle,
   Cargando,
   CampoTexto,
   EstadoVacio,
-  Estrellas,
-  FilaLista,
+  FilaPedido,
   Formulario,
-  Insignia,
+  IconoFlechaIzquierda,
+  LogoFoto,
+  RejillaMetricas,
   SelectorEstrellas,
   Tarjeta,
+  TarjetaMetrica,
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
@@ -61,57 +64,18 @@ export function Resenas() {
 
   const elegido = lista.data.find((p) => p.productoId === abierto) ?? null;
 
-  return (
-    <>
-      {guardado ? (
-        <Alerta tono="exito">Gracias. Tu reseña se publicará cuando la revisemos.</Alerta>
-      ) : null}
-
-      <Tarjeta titulo="Mis reseñas">
-        {lista.data.map((producto) => {
-          const editable = producto.resena?.estado !== "APROBADA";
-          return (
-            <FilaLista
-              key={producto.productoId}
-              acciones={
-                editable ? (
-                  <Boton
-                    variante="secundario"
-                    onClick={() => {
-                      setGuardado(false);
-                      setAbierto(abierto === producto.productoId ? null : producto.productoId);
-                    }}
-                  >
-                    {abierto === producto.productoId
-                      ? "Cerrar"
-                      : producto.resena
-                        ? "Editar"
-                        : "Calificar"}
-                  </Boton>
-                ) : null
-              }
-            >
-              <strong>{producto.nombre}</strong>
-              {producto.resena ? (
-                <>
-                  <span>
-                    <Estrellas valor={producto.resena.estrellas} tamano={14} />
-                  </span>
-                  <span>
-                    <Insignia tono={tonoDeEstado(producto.resena.estado)}>
-                      {ETIQUETAS_ESTADO_RESENA[producto.resena.estado]}
-                    </Insignia>
-                  </span>
-                </>
-              ) : (
-                <span>Aún no lo calificas</span>
-              )}
-            </FilaLista>
-          );
-        })}
-      </Tarjeta>
-
-      {elegido ? (
+  if (elegido) {
+    return (
+      <>
+        <CabeceraDetalle
+          titulo={elegido.nombre}
+          acciones={
+            <Boton variante="secundario" onClick={() => setAbierto(null)}>
+              <IconoFlechaIzquierda tamano={16} />
+              Mis reseñas
+            </Boton>
+          }
+        />
         <FormularioResena
           key={elegido.productoId}
           productoId={elegido.productoId}
@@ -122,7 +86,74 @@ export function Resenas() {
             setGuardado(true);
           }}
         />
+      </>
+    );
+  }
+
+  const productos = lista.data;
+  const porCalificar = productos.filter((p) => p.resena === null).length;
+  const publicadas = productos.filter((p) => p.resena?.estado === "APROBADA").length;
+  const enRevision = productos.filter((p) => p.resena?.estado === "PENDIENTE").length;
+
+  return (
+    <>
+      {guardado ? (
+        <Alerta tono="exito">Gracias. Tu reseña se publicará cuando la revisemos.</Alerta>
       ) : null}
+
+      <RejillaMetricas>
+        <TarjetaMetrica
+          etiqueta="Por calificar"
+          valor={String(porCalificar)}
+          contexto={porCalificar === 0 ? "Ya calificaste todo" : "Productos que ya recibiste"}
+        />
+        <TarjetaMetrica
+          etiqueta="Publicadas"
+          valor={String(publicadas)}
+          contexto="Se ven en la tienda"
+        />
+        <TarjetaMetrica
+          etiqueta="En revisión"
+          valor={String(enRevision)}
+          contexto="Las revisamos antes de publicarlas"
+        />
+      </RejillaMetricas>
+
+      <Tarjeta titulo="Mis reseñas">
+        <div>
+          {productos.map((producto) => {
+            const r = producto.resena;
+            const editable = r?.estado !== "APROBADA";
+            return (
+              <FilaPedido
+                key={producto.productoId}
+                logo={<LogoFoto src={producto.imagenUrl} nombre={producto.nombre} />}
+                titulo={producto.nombre}
+                contenido={
+                  r ? (r.comentario ?? "Solo estrellas, sin comentario") : "Aún no lo calificas"
+                }
+                centro={r ? [`${r.estrellas} de 5`, "estrellas"] : ["—", "sin calificar"]}
+                estado={
+                  r
+                    ? { texto: ETIQUETAS_ESTADO_RESENA[r.estado], tono: tonoDeEstado(r.estado) }
+                    : { texto: "Por calificar", tono: "neutro" }
+                }
+                {...(editable ? { nota: r ? "Toca para editar" : "Toca para calificar" } : {})}
+                onAbrir={() => {
+                  if (!editable) return;
+                  setGuardado(false);
+                  setAbierto(producto.productoId);
+                }}
+                etiquetaAbrir={
+                  editable
+                    ? `${r ? "Editar" : "Calificar"} ${producto.nombre}`
+                    : `${producto.nombre}: reseña publicada`
+                }
+              />
+            );
+          })}
+        </div>
+      </Tarjeta>
     </>
   );
 }
@@ -156,7 +187,7 @@ function FormularioResena({
   );
 
   return (
-    <Tarjeta titulo={`Calificar ${nombre}`}>
+    <Tarjeta titulo={actual ? "Editar tu reseña" : "Tu reseña"}>
       {actual?.estado === "RECHAZADA" ? (
         <Alerta tono="info">
           Tu reseña anterior no se publicó. Puedes corregirla y enviarla otra vez.

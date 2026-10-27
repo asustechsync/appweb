@@ -113,6 +113,7 @@
   --color-graficoAmbar: #e9a23b;
   --color-graficoCoral: #e07a6f;
   --color-graficoGrafito: #6b6b70;
+  --color-graficoPiedra: #cfcec8;
   --espacio-0: 0;
   --espacio-1: 4px;
   --espacio-2: 8px;
@@ -126,6 +127,9 @@
   --espacio-16: 64px;
   --espacio-20: 80px;
   --espacio-24: 96px;
+  --espacio-28: 112px;
+  --espacio-32: 128px;
+  --espacio-36: 144px;
   --radio-ninguno: 0;
   --radio-sm: 4px;
   --radio-etiqueta: 6px;
@@ -248,6 +252,7 @@
     --color-graficoAmbar: #f0b254;
     --color-graficoCoral: #ec8d83;
     --color-graficoGrafito: #8a8a93;
+    --color-graficoPiedra: #4a4a50;
     --color-oferta: #f07c81;
     --color-agotado: #6b6b74;
     --color-favorito: #f79544;
@@ -333,6 +338,7 @@
   --color-graficoAmbar: #f0b254;
   --color-graficoCoral: #ec8d83;
   --color-graficoGrafito: #8a8a93;
+  --color-graficoPiedra: #4a4a50;
   --color-oferta: #f07c81;
   --color-agotado: #6b6b74;
   --color-favorito: #f79544;

@@ -28,4 +28,15 @@
   .ui-lista-con-lateral__lateral {
     display: block;
   }
+  /* Alto de una pagina completa: filas de 69 px con 8 px entre ellas y el relleno de la tarjeta. */
+  .ui-lista-con-lateral--alto-fijo .ui-lista-con-lateral__lista > .ui-tarjeta {
+    min-block-size: calc(
+      var(--ui-filas-pagina) *
+      4.3125rem +
+      (var(--ui-filas-pagina) - 1) *
+      var(--espacio-2) +
+      2 *
+      var(--espacio-5)
+    );
+  }
 }

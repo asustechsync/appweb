@@ -51,7 +51,6 @@ import {
   type ContactoCheckout,
   type NivelCheckout,
 } from "./acciones";
-import { MONEDA } from "@appweb/core/formato";
 
 export interface PropsCheckoutCliente {
   metodos: MetodoDeEnvio[];
@@ -204,22 +203,6 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
           : {}),
       }),
     [lineasCalculo, metodoElegido, cupon.aplicado, descuentoNivelPct],
-  );
-
-  /** Lo que costaria cada metodo con este carrito: el gratis-desde ya aplicado. */
-  const costoPorMetodo = useMemo(
-    () =>
-      new Map(
-        metodos.map((metodo) => [
-          metodo.id,
-          calcularTotales(lineasCalculo, {
-            cupon: cupon.aplicado,
-            descuentoNivelPct,
-            metodoEnvio: { costo: metodo.costo, gratisDesde: metodo.gratisDesde },
-          }).costoEnvio ?? metodo.costo,
-        ]),
-      ),
-    [metodos, lineasCalculo, cupon.aplicado, descuentoNivelPct],
   );
 
   function limpiarError(campo: string) {
@@ -576,7 +559,6 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       <SeccionCheckout numero={3} titulo="Método de envío" descripcion="Elige cómo te llega.">
         <GrupoOpciones etiqueta="Método de envío">
           {metodos.map((metodo) => {
-            const costo = costoPorMetodo.get(metodo.id) ?? metodo.costo;
             const llega = metodosQueLlegan.some((m) => m.id === metodo.id);
             return (
               <TarjetaSeleccionable
@@ -587,13 +569,15 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
                 onChange={() => setMetodoId(metodo.id)}
                 disabled={!llega}
                 icono={<IconoPedidos tamano={20} />}
-                extra={costo === 0 ? "Gratis" : MONEDA.format(costo)}
+                // El envio lo paga el cliente al courier: solo el metodo sin
+                // costo (recojo en tienda) lo dice; el resto no muestra monto.
+                {...(metodo.costo === 0 ? { extra: "Gratis" } : {})}
               >
                 <strong>{metodo.nombre}</strong>
                 {!llega ? (
                   <span>No llega a {departamentoDestino}</span>
-                ) : metodo.gratisDesde !== null && costo > 0 ? (
-                  <span>Gratis desde {MONEDA.format(metodo.gratisDesde)}</span>
+                ) : metodo.costo > 0 ? (
+                  <span>Recoges en la agencia de tu ciudad y pagas el envío allí</span>
                 ) : null}
               </TarjetaSeleccionable>
             );

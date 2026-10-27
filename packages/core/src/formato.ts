@@ -59,6 +59,11 @@ const DIA_MES = new Intl.DateTimeFormat("es-PE", {
 /** El dia en Lima como "2026-10-18": para saber si dos instantes caen el mismo dia. */
 const DIA_LIMA = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA });
 
+/** El dia en Lima de un instante, como "2026-10-18": para filtrar una lista por dia. */
+export function diaDeLima(fecha: Date): string {
+  return DIA_LIMA.format(fecha);
+}
+
 /**
  * Cuando paso algo reciente, como en una lista de actividad: "9:30 p. m." si
  * fue hoy, "Ayer, 9:30 p. m." si fue ayer y "16 oct, 9:30 p. m." si antes.
@@ -69,6 +74,33 @@ export function cuandoFue(fecha: Date, ahora = new Date()): string {
   if (dia === DIA_LIMA.format(ahora)) return hora;
   if (dia === DIA_LIMA.format(new Date(ahora.getTime() - 86_400_000))) return `Ayer, ${hora}`;
   return `${DIA_MES.format(fecha).replace(".", "")}, ${hora}`;
+}
+
+/**
+ * Lo mismo que `cuandoFue`, partido en dos lineas: el dia ("Hoy", "Ayer",
+ * "16 oct") y la hora ("9:30 p. m.").
+ */
+export function diaYHora(fecha: Date, ahora = new Date()): { dia: string; hora: string } {
+  const hora = HORA.format(fecha);
+  const dia = DIA_LIMA.format(fecha);
+  if (dia === DIA_LIMA.format(ahora)) return { dia: "Hoy", hora };
+  if (dia === DIA_LIMA.format(new Date(ahora.getTime() - 86_400_000))) return { dia: "Ayer", hora };
+  return { dia: DIA_MES.format(fecha).replace(".", ""), hora };
+}
+
+/** Hace cuanto paso algo, en la unidad que se lee mejor: "hace 6 min", "hace 2 h", "hace 3 d". */
+export function haceCuanto(fecha: Date, ahora = new Date()): string {
+  const minutos = Math.max(0, Math.floor((ahora.getTime() - fecha.getTime()) / 60_000));
+  if (minutos < 1) return "hace un momento";
+  if (minutos < 60) return `hace ${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) return `hace ${horas} h`;
+  return `hace ${Math.floor(horas / 24)} d`;
+}
+
+/** Solo la hora, sin minutos cuando es en punto: "7 p. m.", "7:30 p. m.". */
+export function horaCorta(fecha: Date): string {
+  return HORA.format(fecha).replace(":00", "");
 }
 
 /** Una diferencia con su signo siempre visible: "+S/ 12.00", "−3". */

@@ -1,31 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { totalDeCompra } from "@appweb/core";
 import {
   Alerta,
-  BloqueDetalle,
+  BarraLista,
   Boton,
   Campo,
   CampoTexto,
   Cargando,
   Casilla,
+  CuadroBento,
+  CuadroMonto,
   EstadoVacio,
-  FilaDetalles,
   FilaLista,
+  FilaMovimiento,
+  FilaPedido,
   FilaUnida,
   Formulario,
-  Insignia,
+  IconoBuscar,
+  IconoMensaje,
+  IconoProveedor,
+  IconoTelefono,
+  LimpiarFiltros,
+  ListaConLateral,
+  LogoIcono,
+  Paginador,
+  RejillaBento,
+  RejillaMetricas,
   SelectorBuscable,
   Tarjeta,
+  TarjetaMetrica,
+  VistaPrevia,
+  type AccionBento,
 } from "@appweb/ui";
 
 import { revalidarTienda } from "@/lib/revalidar";
+import { useEscritorio } from "@/lib/use-escritorio";
+import { usePaginado } from "@/lib/use-paginado";
 import { useTRPC } from "@/lib/trpc";
-import { FECHA, FECHA_HORA, MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
+import {
+  FECHA,
+  MONEDA,
+  cuandoFue,
+  diaYHora,
+  mensajeDeFallo,
+  numeroDesdeTexto,
+} from "@appweb/core/formato";
 
 interface ProveedorDelPanel {
   id: string;
@@ -50,6 +74,23 @@ export function Proveedores() {
   const lista = useQuery(trpc.panel.proveedores.listar.queryOptions());
   const [editando, setEditando] = useState<string | null>(null);
   const [abierto, setAbierto] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState("");
+
+  const coinciden = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
+    return (lista.data ?? []).filter(
+      (p) =>
+        termino === "" ||
+        p.nombre.toLowerCase().includes(termino) ||
+        p.ruc.includes(termino) ||
+        p.contacto.toLowerCase().includes(termino),
+    );
+  }, [busqueda, lista.data]);
+  const { pagina, paginas, setPagina, visibles } = usePaginado(coinciden, PAGINA);
+
+  const escritorio = useEscritorio();
+  const [elegido, setElegido] = useState<string | null>(null);
+  const seleccionado = visibles.find((p) => p.id === elegido) ?? visibles[0] ?? null;
 
   if (lista.isPending) return <Cargando texto="Cargando proveedores…" />;
   if (lista.isError) return <Alerta tono="error">{lista.error.message}</Alerta>;
@@ -58,54 +99,200 @@ export function Proveedores() {
   if (proveedor)
     return <DetalleProveedor proveedor={proveedor} onVolver={() => setAbierto(null)} />;
 
+  if (editando !== null) {
+    const elegidoParaEditar = lista.data.find((p) => p.id === editando) ?? null;
+    return (
+      <Tarjeta
+        titulo={elegidoParaEditar ? `Editar ${elegidoParaEditar.nombre}` : "Nuevo proveedor"}
+        acciones={
+          <Boton variante="secundario" onClick={() => setEditando(null)}>
+            ← Volver a proveedores
+          </Boton>
+        }
+      >
+        <FormularioProveedor proveedor={elegidoParaEditar} onListo={() => setEditando(null)} />
+      </Tarjeta>
+    );
+  }
+
+  const proveedores = lista.data;
+  const activos = proveedores.filter((p) => p.activo).length;
+  const comprado = proveedores.reduce((suma, p) => suma + p.comprado, 0);
+  const compras = proveedores.reduce((suma, p) => suma + p.compras, 0);
+  const ultima = proveedores
+    .map((p) => p.ultimaCompra)
+    .filter((f): f is string => f !== null)
+    .sort()
+    .at(-1);
+
   return (
-    <Tarjeta titulo="Proveedores">
-      <p>
-        A quién le compras la mercadería. Abre uno para registrar una compra o ver su historial.
-      </p>
-      {lista.data.length === 0 ? (
-        <EstadoVacio titulo="Sin proveedores" texto="Agrega el primero para registrar compras." />
-      ) : null}
-      {lista.data.map((p) =>
-        editando === p.id ? (
-          <FormularioProveedor key={p.id} proveedor={p} onListo={() => setEditando(null)} />
-        ) : (
-          <FilaLista
-            key={p.id}
-            acciones={
-              <>
-                <Boton onClick={() => setAbierto(p.id)}>Compras</Boton>{" "}
-                <Boton variante="secundario" onClick={() => setEditando(p.id)}>
-                  Editar
-                </Boton>
-              </>
+    <>
+      <Tarjeta
+        titulo="Proveedores"
+        sinMarco
+        acciones={<Boton onClick={() => setEditando("nuevo")}>+ Nuevo proveedor</Boton>}
+      >
+        <RejillaMetricas>
+          <TarjetaMetrica
+            etiqueta="Activos"
+            valor={String(activos)}
+            contexto={`De ${proveedores.length} registrados`}
+          />
+          <TarjetaMetrica
+            etiqueta="Comprado"
+            valor={MONEDA.format(comprado)}
+            contexto="En todas las compras"
+          />
+          <TarjetaMetrica
+            etiqueta="Compras"
+            valor={String(compras)}
+            contexto={compras === 0 ? "Aún sin registrar" : "Cada una subió el stock"}
+          />
+          <TarjetaMetrica
+            etiqueta="Última compra"
+            valor={ultima ? FECHA.format(new Date(ultima)) : "—"}
+            contexto={ultima ? cuandoFue(new Date(ultima)) : "Sin compras"}
+          />
+        </RejillaMetricas>
+      </Tarjeta>
+
+      <ListaConLateral
+        filasPorPagina={PAGINA}
+        barra={
+          <BarraLista
+            juntos
+            buscador={
+              <Campo
+                id="busqueda-proveedores"
+                etiqueta="Buscar por nombre, RUC o contacto"
+                etiquetaOculta
+                icono={<IconoBuscar tamano={16} />}
+                valor={busqueda}
+                onCambio={(valor) => {
+                  setBusqueda(valor);
+                  setPagina(1);
+                }}
+                placeholder="Nombre, RUC o contacto"
+              />
             }
           >
-            <strong>{p.nombre}</strong>
-            <span>
-              {[p.ruc && `RUC ${p.ruc}`, p.contacto, p.telefono].filter(Boolean).join(" · ") ||
-                "Sin datos de contacto"}
-            </span>
-            <span>
-              {p.compras} {p.compras === 1 ? "compra" : "compras"} · {MONEDA.format(p.comprado)}
-              {p.ultimaCompra ? ` · última el ${FECHA.format(new Date(p.ultimaCompra))}` : ""}
-            </span>
-            {!p.activo ? (
-              <span>
-                <Insignia tono="alerta">Desactivado</Insignia>
-              </span>
+            <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
+            {busqueda !== "" ? (
+              <LimpiarFiltros
+                onClick={() => {
+                  setBusqueda("");
+                  setPagina(1);
+                }}
+              />
             ) : null}
-          </FilaLista>
-        ),
-      )}
-      {editando === "nuevo" ? (
-        <FormularioProveedor proveedor={null} onListo={() => setEditando(null)} />
-      ) : (
-        <Boton variante="secundario" onClick={() => setEditando("nuevo")}>
-          + Nuevo proveedor
-        </Boton>
-      )}
-    </Tarjeta>
+          </BarraLista>
+        }
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionado ? {} : { vacio: "Elige un proveedor para ver su resumen." })}
+          >
+            {seleccionado ? (
+              <CuadrosProveedor
+                proveedor={seleccionado}
+                acciones={[
+                  { etiqueta: "Ver compras", onClick: () => setAbierto(seleccionado.id) },
+                  { etiqueta: "Editar", onClick: () => setEditando(seleccionado.id) },
+                ]}
+              />
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          {visibles.length === 0 ? (
+            <EstadoVacio
+              titulo="Sin proveedores"
+              texto={
+                proveedores.length === 0
+                  ? "Agrega el primero para registrar compras."
+                  : "Ningún proveedor coincide con esa búsqueda."
+              }
+            />
+          ) : (
+            <div>
+              {visibles.map((p) => (
+                <FilaPedido
+                  key={p.id}
+                  logo={<LogoIcono icono={<IconoProveedor tamano={16} />} nombre={p.nombre} />}
+                  titulo={p.nombre}
+                  {...(p.contacto ? { detalle: p.contacto } : {})}
+                  contenido={
+                    [p.ruc && `RUC ${p.ruc}`, p.telefono].filter(Boolean).join(" · ") ||
+                    "Sin datos de contacto"
+                  }
+                  centro={[
+                    MONEDA.format(p.comprado),
+                    `${p.compras} ${p.compras === 1 ? "compra" : "compras"}`,
+                  ]}
+                  estado={estadoDeProveedor(p)}
+                  {...(p.ultimaCompra
+                    ? { nota: `Última ${FECHA.format(new Date(p.ultimaCompra))}` }
+                    : {})}
+                  seleccionada={escritorio && seleccionado?.id === p.id}
+                  onAbrir={() => (escritorio ? setElegido(p.id) : setAbierto(p.id))}
+                  etiquetaAbrir={`${escritorio ? "Elegir" : "Ver compras de"} ${p.nombre}`}
+                />
+              ))}
+            </div>
+          )}
+        </Tarjeta>
+      </ListaConLateral>
+    </>
+  );
+}
+
+/** Cuantos proveedores se ven por pagina. */
+const PAGINA = 10;
+
+function estadoDeProveedor(p: { activo: boolean }): { texto: string; tono: "exito" | "alerta" } {
+  return p.activo ? { texto: "Activo", tono: "exito" } : { texto: "Desactivado", tono: "alerta" };
+}
+
+/** El proveedor en cuadros: lo comprado, el contacto y la nota. Vista previa y cabecera. */
+function CuadrosProveedor({
+  proveedor: p,
+  acciones,
+}: {
+  proveedor: ProveedorDelPanel;
+  acciones: AccionBento[];
+}) {
+  return (
+    <RejillaBento>
+      <CuadroMonto
+        logo={<LogoIcono icono={<IconoProveedor tamano={16} />} nombre={p.nombre} />}
+        estado={estadoDeProveedor(p)}
+        etiqueta={p.nombre}
+        monto={MONEDA.format(p.comprado)}
+        detalle={`${p.compras} ${p.compras === 1 ? "compra" : "compras"}${
+          p.ultimaCompra ? ` · última ${cuandoFue(new Date(p.ultimaCompra))}` : ""
+        }`}
+        acciones={acciones}
+      />
+      <CuadroBento
+        icono={<IconoTelefono tamano={16} />}
+        titulo="Contacto"
+        ancho="ancho"
+        vacio={!p.contacto && !p.telefono && !p.email}
+        {...(p.email ? { detalle: p.email } : {})}
+        {...(p.ruc ? { cifras: [{ valor: p.ruc, etiqueta: "RUC" }] } : {})}
+      >
+        {[p.contacto, p.telefono].filter(Boolean).join(" · ") || "Sin datos de contacto"}
+      </CuadroBento>
+      {p.nota ? (
+        <CuadroBento icono={<IconoMensaje tamano={16} />} titulo="Nota" ancho="ancho">
+          {p.nota}
+        </CuadroBento>
+      ) : null}
+    </RejillaBento>
   );
 }
 
@@ -229,30 +416,15 @@ function DetalleProveedor({
   return (
     <>
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-      <Tarjeta
-        titulo={proveedor.nombre}
-        acciones={
-          <Boton variante="secundario" onClick={onVolver}>
-            ← Volver a proveedores
-          </Boton>
-        }
-      >
-        <FilaDetalles>
-          <BloqueDetalle titulo="Contacto">
-            {proveedor.ruc ? <p>RUC {proveedor.ruc}</p> : null}
-            {proveedor.contacto ? <p>{proveedor.contacto}</p> : null}
-            {proveedor.telefono ? <p>{proveedor.telefono}</p> : null}
-            {proveedor.email ? <p>{proveedor.email}</p> : null}
-            {proveedor.nota ? <p>{proveedor.nota}</p> : null}
-          </BloqueDetalle>
-          <BloqueDetalle titulo="Compras">
-            <p>
-              {proveedor.compras} {proveedor.compras === 1 ? "compra" : "compras"}
-            </p>
-            <p>{MONEDA.format(proveedor.comprado)} en total</p>
-          </BloqueDetalle>
-        </FilaDetalles>
-      </Tarjeta>
+      <CuadrosProveedor
+        proveedor={proveedor}
+        acciones={[
+          { etiqueta: "← Volver a proveedores", onClick: onVolver },
+          ...(proveedor.activo && !nueva
+            ? [{ etiqueta: "+ Registrar compra", onClick: () => setNueva(true) }]
+            : []),
+        ]}
+      />
 
       {!proveedor.activo ? (
         <Alerta tono="info">
@@ -266,9 +438,7 @@ function DetalleProveedor({
             if (mensaje) setAviso(mensaje);
           }}
         />
-      ) : (
-        <Boton onClick={() => setNueva(true)}>+ Registrar compra</Boton>
-      )}
+      ) : null}
 
       <Tarjeta titulo="Historial de compras">
         {compras.isPending ? (
@@ -278,23 +448,28 @@ function DetalleProveedor({
         ) : compras.data.length === 0 ? (
           <EstadoVacio titulo="Sin compras" texto="Todavía no se registró ninguna." />
         ) : (
-          compras.data.map((c) => (
-            <FilaLista key={c.id}>
-              <strong>
-                {FECHA_HORA.format(new Date(c.creadoEn))} · {MONEDA.format(c.total)}
-              </strong>
-              <span>
-                {c.documento ? `${c.documento} · ` : ""}Registró {c.usuario}
-              </span>
-              {c.items.map((i) => (
-                <span key={i.id}>
-                  {i.cantidad} × {i.producto} ({i.color}, {i.talla}) a{" "}
-                  {MONEDA.format(i.costoUnitario)}
-                </span>
-              ))}
-              {c.nota ? <span>{c.nota}</span> : null}
-            </FilaLista>
-          ))
+          <div>
+            {compras.data.map((c) => {
+              const { dia, hora } = diaYHora(new Date(c.creadoEn));
+              const unidades = c.items.reduce((suma, i) => suma + i.cantidad, 0);
+              return (
+                <FilaMovimiento
+                  key={c.id}
+                  logo={<LogoIcono icono={<IconoProveedor tamano={16} />} nombre="Compra" />}
+                  titulo={c.documento || "Compra"}
+                  detalle={c.usuario}
+                  subtitulo={
+                    c.items
+                      .map((i) => `${i.cantidad} × ${i.producto} (${i.color}, ${i.talla})`)
+                      .join(" · ") + (c.nota ? ` — ${c.nota}` : "")
+                  }
+                  estado={{ texto: `${unidades} u.`, tono: "exito" }}
+                  valor={MONEDA.format(c.total)}
+                  centro={[dia, hora]}
+                />
+              );
+            })}
+          </div>
         )}
       </Tarjeta>
     </>

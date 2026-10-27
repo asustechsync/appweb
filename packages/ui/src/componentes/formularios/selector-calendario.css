@@ -4,10 +4,15 @@
 .ui-selector-calendario {
   position: relative;
 }
-.ui-selector-calendario__disparador {
+/* Un poco mas compacto que los selectores de lista: cabe "Elegir dia" con aire. */
+.ui-campo--calendario {
+  min-inline-size: calc(var(--espacio-24) * 1.75);
+}
+.ui-selector-calendario .ui-selector-calendario__disparador {
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
+  padding-inline: var(--espacio-3);
   /* Mismo alto que el buscador de las cabeceras. */
   block-size: var(--espacio-12);
   border-radius: var(--radio-bloque);

@@ -86,17 +86,11 @@ export function calcularTotales(
   const descuentoAplicado = redondear(Math.min(Math.max(descuento, 0), subtotal));
   const base = redondear(subtotal - descuentoAplicado);
 
-  let costoEnvio: number | null = null;
-  let faltaEnvioGratis: number | null = null;
-
-  if (metodoEnvio) {
-    const tieneGratis = metodoEnvio.gratisDesde !== null && base >= metodoEnvio.gratisDesde;
-    costoEnvio = tieneGratis ? 0 : redondear(metodoEnvio.costo);
-
-    if (metodoEnvio.gratisDesde !== null && !tieneGratis) {
-      faltaEnvioGratis = redondear(metodoEnvio.gratisDesde - base);
-    }
-  }
+  // La tienda no cobra el envio: el cliente se lo paga al courier o a la
+  // agencia al recibir. El metodo solo dice como llega; el total no lo suma.
+  void metodoEnvio;
+  const costoEnvio: number | null = null;
+  const faltaEnvioGratis: number | null = null;
 
   const lineasSinStock = lineas
     .filter((linea) => linea.cantidad > linea.stock)

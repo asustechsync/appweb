@@ -21,3 +21,13 @@ export interface PropsPilaGraficos {
 export function PilaGraficos({ children }: PropsPilaGraficos) {
   return <div className="ui-fila-graficos__pila">{children}</div>;
 }
+
+export interface PropsParejaListas {
+  /** Dos `ListaActividad`; con una sola, ocupa todo el ancho. */
+  children: ReactNode;
+}
+
+/** Dos listas lado a lado desde tablet, a partes iguales. En movil, una bajo otra. */
+export function ParejaListas({ children }: PropsParejaListas) {
+  return <div className="ui-fila-graficos__pareja">{children}</div>;
+}

@@ -20,6 +20,7 @@ import {
 } from "@appweb/core";
 import {
   esquemaCambioActivoVariante,
+  esquemaCostoVariante,
   esquemaEdicionProducto,
   esquemaProducto,
   esquemaVarianteNueva,
@@ -108,6 +109,7 @@ export const productos = router({
         categoria: { select: { nombre: true } },
         marca: { select: { nombre: true } },
         variantes: { select: { stock: true, activo: true } },
+        imagenes: { take: 1, orderBy: { orden: "asc" }, select: { url: true } },
       },
     });
     return filas.map((p) => ({
@@ -120,6 +122,7 @@ export const productos = router({
       destacado: p.destacado,
       categoria: p.categoria.nombre,
       marca: p.marca?.nombre ?? null,
+      imagen: p.imagenes[0]?.url ?? null,
       variantes: p.variantes.filter((v) => v.activo).length,
       stockTotal: p.variantes.filter((v) => v.activo).reduce((suma, v) => suma + v.stock, 0),
     }));
@@ -295,6 +298,19 @@ export const productos = router({
       };
       return { revalidar };
     }),
+
+  /**
+   * Costo de una variante a mano, sin compra ni cambio de stock. Solo mira
+   * hacia adelante: las ventas ya hechas conservan el costo que congelaron.
+   */
+  fijarCosto: gestionar.input(esquemaCostoVariante).mutation(async ({ ctx, input }) => {
+    await ctx.prisma.variante.update({
+      where: { id: input.varianteId },
+      data: { costo: input.costo },
+    });
+    return { ok: true };
+  }),
+
   /**
    * Quita una foto del producto y la borra del almacen. Si era la ultima, el
    * producto vuelve a la imagen de relleno: la ficha nunca queda sin imagen.

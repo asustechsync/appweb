@@ -5,7 +5,7 @@
 }
 /* Selector suelto con aire: no se encoge al ancho de su texto. */
 .ui-campo--amplio {
-  min-inline-size: calc(var(--espacio-24) * 1.5);
+  min-inline-size: calc(var(--espacio-24) * 2);
 }
 .ui-campo label {
   color: var(--color-textoSuave);

@@ -176,11 +176,12 @@ async function cambiarEnTransaccion(
     });
 
     if (hacia === "CANCELADO") {
-      // El pago que se esperaba ya no se acepta. Uno confirmado se deja
-      // como esta: devolver la plata es un paso aparte y manual.
+      // El pago que se esperaba ya no se acepta: queda ANULADO, no RECHAZADO,
+      // porque nadie intento cobrar. Uno confirmado se deja como esta:
+      // devolver la plata es un paso aparte y manual.
       await tx.pago.updateMany({
         where: { pedidoId: pedido.id, estado: "PENDIENTE" },
-        data: { estado: "RECHAZADO" },
+        data: { estado: "ANULADO" },
       });
     }
 
@@ -229,9 +230,12 @@ export const pedidos = router({
   listar: ver.input(esquemaFiltroPedidos).query(async ({ ctx, input }) => {
     const [filas, conteo] = await Promise.all([
       ctx.prisma.pedido.findMany({
-        where: input.estado ? { estado: input.estado } : {},
+        where: input.estados?.length ? { estado: { in: input.estados } } : {},
         // Los pendientes, del mas viejo al mas nuevo: el que mas espera, arriba.
-        orderBy: { creadoEn: input.estado === "PENDIENTE_PAGO" ? "asc" : "desc" },
+        orderBy: {
+          creadoEn:
+            input.estados?.length === 1 && input.estados[0] === "PENDIENTE_PAGO" ? "asc" : "desc",
+        },
         take: TOPE_LISTA,
         select: {
           id: true,
@@ -243,10 +247,43 @@ export const pedidos = router({
           envioDepartamento: true,
           usuario: { select: { nombre: true, email: true } },
           _count: { select: { items: true } },
+          // Pagos que esperan al equipo: si el cliente ya mando referencia o voucher, toca confirmarlos.
+          pagos: {
+            where: { estado: "PENDIENTE" },
+            select: { referencia: true, comprobanteUrl: true },
+          },
+          // Solo la foto del primer producto: es la miniatura de la fila.
+          items: {
+            take: 1,
+            orderBy: { id: "asc" },
+            select: {
+              nombreProducto: true,
+              variante: {
+                select: {
+                  producto: {
+                    select: {
+                      imagenes: { take: 1, orderBy: { orden: "asc" }, select: { url: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       }),
       ctx.prisma.pedido.groupBy({ by: ["estado"], _count: { _all: true } }),
     ]);
+
+    // Unidades por pedido: la suma de las cantidades de sus lineas.
+    const unidades = new Map(
+      (
+        await ctx.prisma.itemPedido.groupBy({
+          by: ["pedidoId"],
+          where: { pedidoId: { in: filas.map((p) => p.id) } },
+          _sum: { cantidad: true },
+        })
+      ).map((g) => [g.pedidoId, g._sum.cantidad ?? 0]),
+    );
 
     const porEstado = Object.fromEntries(ESTADOS_PEDIDO.map((e) => [e, 0])) as Record<
       EstadoPedido,
@@ -267,6 +304,14 @@ export const pedidos = router({
         cliente: p.usuario.nombre,
         email: p.usuario.email,
         lineas: p._count.items,
+        unidades: unidades.get(p.id) ?? 0,
+        // Pendiente de pago, pero el cliente ya envio su comprobante: falta que el equipo lo confirme.
+        porConfirmar:
+          p.estado === "PENDIENTE_PAGO" &&
+          p.medioPago !== "CONTRA_ENTREGA" &&
+          p.pagos.some((g) => g.referencia !== null || g.comprobanteUrl !== null),
+        primerProducto: p.items[0]?.nombreProducto ?? null,
+        imagen: p.items[0]?.variante.producto.imagenes[0]?.url ?? null,
       })),
     };
   }),

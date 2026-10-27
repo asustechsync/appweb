@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import "./lista-con-lateral.css";
 
@@ -9,17 +9,37 @@ export interface PropsListaConLateral {
   barra?: ReactNode;
   /** El bloque de al lado: una `VistaPrevia`. Solo se ve en escritorio. */
   lateral: ReactNode;
+  /**
+   * Cuantas filas caben en una pagina completa. Con esto, la lista conserva el
+   * alto de ese tamano aunque haya menos resultados (o ninguno): el bloque no
+   * se encoge ni salta al filtrar. Solo en escritorio.
+   */
+  filasPorPagina?: number;
 }
 
 /**
  * Lista con un bloque fijo a su derecha. El bloque se queda a la vista al
  * bajar por la lista. Bajo el escritorio desaparece: ahi la lista ocupa todo.
  */
-export function ListaConLateral({ children, lateral, barra }: PropsListaConLateral) {
+export function ListaConLateral({
+  children,
+  lateral,
+  barra,
+  filasPorPagina,
+}: PropsListaConLateral) {
   return (
     <div className="ui-lista-con-lateral-conjunto">
       {barra}
-      <div className="ui-lista-con-lateral">
+      <div
+        className={
+          filasPorPagina
+            ? "ui-lista-con-lateral ui-lista-con-lateral--alto-fijo"
+            : "ui-lista-con-lateral"
+        }
+        {...(filasPorPagina
+          ? { style: { "--ui-filas-pagina": filasPorPagina } as CSSProperties }
+          : {})}
+      >
         <div className="ui-lista-con-lateral__lista">{children}</div>
         <aside className="ui-lista-con-lateral__lateral">{lateral}</aside>
       </div>

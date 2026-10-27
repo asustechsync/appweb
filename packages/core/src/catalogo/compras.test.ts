@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import { creariaCiclo } from "./arbol";
-import { margenDe, movimientosDeCompra, revisarCompra, totalDeCompra } from "./compras";
+import {
+  factorDeDescuento,
+  margenDe,
+  margenDeVentas,
+  vendidoDe,
+  movimientosDeCompra,
+  revisarCompra,
+  totalDeCompra,
+} from "./compras";
 import {
   ahorroDePack,
   costoDePack,
@@ -52,6 +60,22 @@ describe("compras", () => {
   it("calcula el margen sobre el precio", () => {
     expect(margenDe(25, 8)).toEqual({ monto: 17, porcentaje: 68 });
     expect(margenDe(25, null)).toBeNull();
+  });
+
+  it("suma el margen de lo vendido y deja fuera las lineas sin costo", () => {
+    expect(
+      margenDeVentas([
+        { precioUnitario: 25, costoUnitario: 10, cantidad: 2 },
+        { precioUnitario: 50, costoUnitario: null, cantidad: 1 },
+      ]),
+    ).toEqual({ ganancia: 30, costo: 20, porcentaje: 60, cobertura: 50 });
+    expect(margenDeVentas([])).toEqual({ ganancia: 0, costo: 0, porcentaje: 0, cobertura: 0 });
+  });
+
+  it("cuenta como venta los productos menos el descuento, sin el envio", () => {
+    expect(vendidoDe({ subtotal: 100, descuento: 10 })).toBe(90);
+    expect(factorDeDescuento(100, 10)).toBe(0.9);
+    expect(factorDeDescuento(0, 0)).toBe(1);
   });
 });
 

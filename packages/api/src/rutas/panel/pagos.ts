@@ -65,10 +65,16 @@ async function listarPagos(
     ? {
         OR: [
           { referencia: { contains: busqueda, mode: "insensitive" as const } },
-          { pedido: { codigo: { contains: busqueda, mode: "insensitive" as const } } },
           {
             pedido: {
-              usuario: { nombre: { contains: busqueda, mode: "insensitive" as const } },
+              codigo: { contains: busqueda, mode: "insensitive" as const },
+            },
+          },
+          {
+            pedido: {
+              usuario: {
+                nombre: { contains: busqueda, mode: "insensitive" as const },
+              },
             },
           },
         ],
@@ -103,10 +109,35 @@ export const pagos = router({
   listar: ver.input(esquemaFiltroPagos).query(async ({ ctx, input }) => {
     const [encontrados, totales] = await Promise.all([
       listarPagos(ctx.prisma, input.estado, input.busqueda || undefined, input.limite),
-      ctx.prisma.pago.groupBy({ by: ["estado"], _count: { _all: true }, _sum: { monto: true } }),
+      ctx.prisma.pago.groupBy({
+        by: ["estado"],
+        _count: { _all: true },
+        _sum: { monto: true },
+      }),
     ]);
 
-    const filas = encontrados.slice(0, input.limite);
+    // Sin filtro, un pedido sale una sola vez: sus intentos rechazados y el
+    // pendiente que se anula al cancelar eran filas repetidas. Entra la
+    // primera de cada pedido (el pendiente, o si no el pago mas nuevo) y se
+    // cuenta cuantos rechazos llevo. Con un estado elegido la lista es de
+    // pagos, no de pedidos, y se deja tal cual.
+    const unicos = input.estado
+      ? encontrados
+      : encontrados.filter((p, i) => encontrados.findIndex((o) => o.pedidoId === p.pedidoId) === i);
+    const filas = unicos.slice(0, input.limite);
+
+    const rechazosPorPedido = new Map(
+      (
+        await ctx.prisma.pago.groupBy({
+          by: ["pedidoId"],
+          where: {
+            estado: "RECHAZADO",
+            pedidoId: { in: filas.map((p) => p.pedidoId) },
+          },
+          _count: { _all: true },
+        })
+      ).map((r) => [r.pedidoId, r._count._all]),
+    );
 
     const porEstado = Object.fromEntries(
       ESTADOS_PAGO.map((e) => [e, { cantidad: 0, monto: 0 }]),
@@ -120,7 +151,7 @@ export const pagos = router({
 
     return {
       porEstado,
-      hayMas: encontrados.length > input.limite,
+      hayMas: unicos.length > input.limite,
       pagos: filas.map((p) => ({
         id: p.id,
         medio: p.medio,
@@ -138,6 +169,9 @@ export const pagos = router({
         estadoPedido: p.pedido.estado,
         cliente: p.pedido.usuario.nombre,
         email: p.pedido.usuario.email,
+        // Rechazos del pedido, sin contar este pago si es el rechazado de la fila.
+        rechazosPrevios:
+          (rechazosPorPedido.get(p.pedidoId) ?? 0) - (p.estado === "RECHAZADO" ? 1 : 0),
       })),
     };
   }),
@@ -168,7 +202,13 @@ export const pagos = router({
             envioTelefono: true,
             total: true,
             usuario: {
-              select: { id: true, nombre: true, email: true, telefono: true, creadoEn: true },
+              select: {
+                id: true,
+                nombre: true,
+                email: true,
+                telefono: true,
+                creadoEn: true,
+              },
             },
             items: { select: { cantidad: true } },
             pagos: {
@@ -185,7 +225,11 @@ export const pagos = router({
         },
       },
     });
-    if (pago === null) throw new TRPCError({ code: "NOT_FOUND", message: "Ese pago no existe." });
+    if (pago === null)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Ese pago no existe.",
+      });
 
     // Quien es el cliente para la tienda: su nivel sale de lo que ya compro.
     const nivel = await nivelDeUsuario(ctx.prisma, pago.pedido.usuario.id);
@@ -199,7 +243,10 @@ export const pagos = router({
       comprobanteUrl: pago.comprobanteUrl,
       tarjeta:
         pago.medio === "TARJETA"
-          ? { marca: marcaDeTarjeta(pago.tarjetaMarca), ultimos: pago.tarjetaUltimos }
+          ? {
+              marca: marcaDeTarjeta(pago.tarjetaMarca),
+              ultimos: pago.tarjetaUltimos,
+            }
           : null,
       creadoEn: pago.creadoEn.toISOString(),
       confirmadoPor: pago.confirmadoPor?.nombre ?? null,
@@ -251,7 +298,12 @@ export const pagos = router({
       ? ventanaDeFecha(input.fecha, ahora)
       : ventanaDe(input.periodo, ahora);
     const registros = await ctx.prisma.pago.findMany({
-      where: { creadoEn: { gte: periodo.previoDesde, lt: periodo.hasta ?? periodo.fin } },
+      where: {
+        creadoEn: {
+          gte: periodo.previoDesde,
+          lt: periodo.hasta ?? periodo.fin,
+        },
+      },
       select: { estado: true, monto: true, creadoEn: true },
     });
 
@@ -291,7 +343,11 @@ export const pagos = router({
       }
     >;
 
-    return { titulo: periodo.titulo, etiquetaAnterior: periodo.etiquetaPrevio, porEstado };
+    return {
+      titulo: periodo.titulo,
+      etiquetaAnterior: periodo.etiquetaPrevio,
+      porEstado,
+    };
   }),
 
   /** PENDIENTE -> RECHAZADO, y un pago pendiente nuevo para el reintento. */
@@ -301,7 +357,11 @@ export const pagos = router({
         where: { id: input.pagoId, pedidoId: input.pedidoId },
         include: { pedido: { select: { codigo: true, estado: true } } },
       });
-      if (pago === null) throw new TRPCError({ code: "NOT_FOUND", message: "Ese pago no existe." });
+      if (pago === null)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Ese pago no existe.",
+        });
 
       const rechazo = revisarRechazoPago({
         estadoPedido: pago.pedido.estado,
@@ -326,7 +386,11 @@ export const pagos = router({
       }
 
       await tx.pago.create({
-        data: { pedidoId: input.pedidoId, medio: pago.medio, monto: pago.monto },
+        data: {
+          pedidoId: input.pedidoId,
+          medio: pago.medio,
+          monto: pago.monto,
+        },
       });
 
       await tx.historialPedido.create({

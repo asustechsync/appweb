@@ -21,6 +21,7 @@ import {
   esquemaMetodoEnvio,
   esquemaMetricasEnvios,
 } from "@appweb/core/tipos";
+import { z } from "zod";
 
 import { rechazar } from "../../stock";
 import { exige, router } from "../../trpc";
@@ -30,64 +31,72 @@ const despachar = exige("despachar_envios");
 const ajustar = exige("gestionar_ajustes");
 
 export const envios = router({
-  /** Pedidos por preparar, en preparacion y en camino; los mas viejos primero. */
-  cola: despachar.query(async ({ ctx }) => {
-    const pedidos = await ctx.prisma.pedido.findMany({
-      where: { estado: { in: [...ESTADOS_DESPACHO] } },
-      orderBy: { creadoEn: "asc" },
-      take: 200,
-      select: {
-        id: true,
-        codigo: true,
-        estado: true,
-        medioPago: true,
-        creadoEn: true,
-        envioDestinatario: true,
-        envioTelefono: true,
-        envioDepartamento: true,
-        envioProvincia: true,
-        envioDistrito: true,
-        envioCalle: true,
-        envioReferencia: true,
-        envioMetodo: true,
-        transportista: true,
-        codigoSeguimiento: true,
-        usuario: { select: { nombre: true, telefono: true } },
-        items: {
-          select: { nombreProducto: true, sku: true, talla: true, color: true, cantidad: true },
+  /**
+   * Pedidos por preparar, en preparacion y en camino; los mas viejos primero.
+   * Con `historial`, los ya entregados: los ultimos 100, el mas reciente arriba.
+   */
+  cola: despachar
+    .input(z.object({ historial: z.boolean().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      const historial = input?.historial === true;
+      const pedidos = await ctx.prisma.pedido.findMany({
+        where: historial ? { estado: "ENTREGADO" } : { estado: { in: [...ESTADOS_DESPACHO] } },
+        orderBy: historial ? { entregadoEn: { sort: "desc", nulls: "last" } } : { creadoEn: "asc" },
+        take: historial ? 100 : 200,
+        select: {
+          id: true,
+          codigo: true,
+          estado: true,
+          medioPago: true,
+          creadoEn: true,
+          envioDestinatario: true,
+          envioTelefono: true,
+          envioDepartamento: true,
+          envioProvincia: true,
+          envioDistrito: true,
+          envioCalle: true,
+          envioReferencia: true,
+          envioMetodo: true,
+          transportista: true,
+          codigoSeguimiento: true,
+          usuario: { select: { nombre: true, telefono: true } },
+          items: {
+            select: { nombreProducto: true, sku: true, talla: true, color: true, cantidad: true },
+          },
+          // El recorrido del paquete: cuando paso por cada paso del despacho.
+          historial: {
+            orderBy: { creadoEn: "asc" },
+            select: { estadoNuevo: true, creadoEn: true, usuario: { select: { nombre: true } } },
+          },
         },
-        // El recorrido del paquete: cuando paso por cada paso del despacho.
-        historial: {
-          orderBy: { creadoEn: "asc" },
-          select: { estadoNuevo: true, creadoEn: true, usuario: { select: { nombre: true } } },
-        },
-      },
-    });
+      });
 
-    return pedidos.map((p) => ({
-      id: p.id,
-      codigo: p.codigo,
-      estado: p.estado as EstadoPedido,
-      // Para el repartidor: si tiene que cobrar al entregar.
-      cobrarAlEntregar: p.medioPago === "CONTRA_ENTREGA",
-      creadoEn: p.creadoEn.toISOString(),
-      destinatario: p.envioDestinatario ?? p.usuario.nombre,
-      telefono: p.envioTelefono ?? p.usuario.telefono,
-      direccion: [p.envioCalle, p.envioDistrito, p.envioProvincia, p.envioDepartamento].join(", "),
-      distrito: p.envioDistrito,
-      departamento: p.envioDepartamento,
-      referencia: p.envioReferencia,
-      metodo: p.envioMetodo,
-      transportista: p.transportista,
-      codigoSeguimiento: p.codigoSeguimiento,
-      items: p.items,
-      recorrido: p.historial.map((h) => ({
-        estado: h.estadoNuevo as EstadoPedido,
-        usuario: h.usuario?.nombre ?? null,
-        creadoEn: h.creadoEn.toISOString(),
-      })),
-    }));
-  }),
+      return pedidos.map((p) => ({
+        id: p.id,
+        codigo: p.codigo,
+        estado: p.estado as EstadoPedido,
+        // Para el repartidor: si tiene que cobrar al entregar.
+        cobrarAlEntregar: p.medioPago === "CONTRA_ENTREGA",
+        creadoEn: p.creadoEn.toISOString(),
+        destinatario: p.envioDestinatario ?? p.usuario.nombre,
+        telefono: p.envioTelefono ?? p.usuario.telefono,
+        direccion: [p.envioCalle, p.envioDistrito, p.envioProvincia, p.envioDepartamento].join(
+          ", ",
+        ),
+        distrito: p.envioDistrito,
+        departamento: p.envioDepartamento,
+        referencia: p.envioReferencia,
+        metodo: p.envioMetodo,
+        transportista: p.transportista,
+        codigoSeguimiento: p.codigoSeguimiento,
+        items: p.items,
+        recorrido: p.historial.map((h) => ({
+          estado: h.estadoNuevo as EstadoPedido,
+          usuario: h.usuario?.nombre ?? null,
+          creadoEn: h.creadoEn.toISOString(),
+        })),
+      }));
+    }),
 
   /**
    * Tarjetas de la seccion. Tres colas de ahora mismo (por despachar, en
