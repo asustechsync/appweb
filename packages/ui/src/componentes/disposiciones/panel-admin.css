@@ -14,6 +14,12 @@
   box-shadow: var(--sombra-difusa);
 }
 
+/* Los bloques del panel van separados por 12 px, igual que dentro de cada fila.
+   El espacio lo pone `__contenido`, que envuelve las secciones. */
+.ui-panel-admin .ui-disposicion-cuenta__contenido {
+  gap: var(--espacio-3);
+}
+
 /* Desde lg el menu lateral llega hasta abajo, a la altura del contenido: el
    bloque del menu absorbe lo que sobra y "Volver a la tienda" queda al pie. */
 @media (min-width: 64rem) {

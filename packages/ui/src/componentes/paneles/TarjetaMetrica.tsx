@@ -1,4 +1,4 @@
-import { IconoTendenciaAlza, IconoTendenciaBaja } from "../../iconos";
+import { IconoMarcar, IconoTendenciaAlza, IconoTendenciaBaja } from "../../iconos";
 import { Minigrafico } from "./Minigrafico";
 import "./tarjeta-metrica.css";
 
@@ -20,6 +20,9 @@ export interface PropsTarjetaMetrica {
   contexto?: string;
   /** Para cifras donde bajar es lo bueno (rechazos, reembolsos): invierte verde y rojo. */
   menosEsMejor?: boolean;
+  /** Con `onSeleccionar`, la tarjeta lleva un check: marcado = es la que se ve en la grafica. */
+  seleccionada?: boolean;
+  onSeleccionar?: () => void;
 }
 
 /** Separa el simbolo de moneda del resto de la cifra: "S/ 12.50" -> ["S/", " 12.50"]. */
@@ -46,6 +49,8 @@ export function TarjetaMetrica({
   seriePrevia,
   contexto,
   menosEsMejor = false,
+  seleccionada = false,
+  onSeleccionar,
 }: PropsTarjetaMetrica) {
   const tono = cambio === undefined ? null : tonoDe(cambio);
   // La flecha sigue la direccion; el color, si el cambio es bueno o malo.
@@ -58,7 +63,24 @@ export function TarjetaMetrica({
   return (
     <article className="ui-tarjeta-metrica">
       <header className="ui-tarjeta-metrica__cabecera">
-        <span className="ui-tarjeta-metrica__etiqueta">{etiqueta}</span>
+        <span className="ui-tarjeta-metrica__titulo">
+          {onSeleccionar ? (
+            <button
+              type="button"
+              className={
+                seleccionada
+                  ? "ui-tarjeta-metrica__check ui-tarjeta-metrica__check--marcado"
+                  : "ui-tarjeta-metrica__check"
+              }
+              aria-pressed={seleccionada}
+              aria-label={`Ver ${etiqueta} en la gráfica`}
+              onClick={onSeleccionar}
+            >
+              <IconoMarcar tamano={14} />
+            </button>
+          ) : null}
+          <span className="ui-tarjeta-metrica__etiqueta">{etiqueta}</span>
+        </span>
         {cambio === undefined ? null : (
           <span className={`ui-tarjeta-metrica__cambio ui-tarjeta-metrica__cambio--${color}`}>
             {cambio > 0 ? "+" : cambio < 0 ? "−" : ""}

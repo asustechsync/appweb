@@ -130,10 +130,10 @@ export const tokens = {
     // Gris plano de la opcion seleccionada en el menu del panel.
     fondoSeleccion: "#F0F0F0",
     // Opcion activa del selector segmentado (Dia, Semana, Mes).
-    fondoSegmento: "#EEF0F2",
+    fondoSegmento: "#FFFFFF",
     // Campos de los controles del panel (calendario, selector segmentado): en
     // claro, el blanco de la tarjeta; en oscuro, un paso sobre ella.
-    fondoControl: "#F6F7F8",
+    fondoControl: "#EFF1F3",
     // Fondo de la portada: gris con un toque azulado.
     fondoPortada: "#F1F5F9",
     // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.

@@ -113,7 +113,9 @@ export function SelectorCalendario({
       : "ui-selector-calendario__panel";
 
   return (
-    <div className="ui-campo ui-campo--calendario">
+    <div
+      className={elegida ? "ui-campo ui-campo--calendario" : "ui-campo ui-campo--calendario-icono"}
+    >
       <label htmlFor={id} className={claseEtiquetaOculta(etiquetaOculta)}>
         {etiqueta}
       </label>
@@ -122,6 +124,7 @@ export function SelectorCalendario({
           type="button"
           id={id}
           className="ui-selector-calendario__disparador"
+          aria-label={elegida ? undefined : (placeholder ?? etiqueta)}
           disabled={disabled}
           aria-haspopup="dialog"
           aria-expanded={abierto}
@@ -129,9 +132,7 @@ export function SelectorCalendario({
           onClick={() => (abierto ? setAbierto(false) : abrir())}
         >
           <IconoCalendario tamano={20} />
-          <span className={elegida ? undefined : "ui-selector-calendario__vacio"}>
-            {elegida ? enTexto(valor) : (placeholder ?? etiqueta)}
-          </span>
+          {elegida ? <span>{enTexto(valor)}</span> : null}
         </button>
 
         {abierto ? (

@@ -9,9 +9,46 @@
 }
 .ui-tarjeta-metrica__cabecera {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--espacio-2);
+}
+/* Check y nombre, juntos a la izquierda; el porcentaje queda a la derecha. */
+.ui-tarjeta-metrica__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+/* Check cuadrado con radio: vacio = la grafica muestra otra cifra; marcado = esta. */
+.ui-tarjeta-metrica__check {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--espacio-5);
+  block-size: var(--espacio-5);
+  padding: 0;
+  border: 1px solid var(--color-bordeFuerte);
+  border-radius: var(--radio-sm);
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  transition:
+    background var(--transicion-rapida),
+    border-color var(--transicion-rapida);
+}
+.ui-tarjeta-metrica__check:hover {
+  color: var(--color-textoTenue);
+}
+.ui-tarjeta-metrica__check--marcado,
+.ui-tarjeta-metrica__check--marcado:hover {
+  border-color: var(--color-info);
+  background: var(--color-info);
+  color: var(--color-fondo);
+}
+.ui-tarjeta-metrica__check:focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
 }
 .ui-tarjeta-metrica__etiqueta {
   color: var(--color-texto);

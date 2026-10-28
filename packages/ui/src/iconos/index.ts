@@ -57,6 +57,7 @@ export { IconoFlechaSubida } from "./generados/IconoFlechaSubida";
 export { IconoGaleria } from "./generados/IconoGaleria";
 export { IconoLlama } from "./generados/IconoLlama";
 export { IconoLuna } from "./generados/IconoLuna";
+export { IconoMarcar } from "./generados/IconoMarcar";
 export { IconoMensaje } from "./generados/IconoMensaje";
 export { IconoNotificacion } from "./generados/IconoNotificacion";
 export { IconoOjoTachado } from "./generados/IconoOjoTachado";

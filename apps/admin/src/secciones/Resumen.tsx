@@ -87,6 +87,10 @@ export interface PropsResumen {
   onVerResenas?: () => void;
 }
 
+type MetricaGrafica = "ventas" | "pedidos" | "ticket" | "clientes";
+
+const ENTERO = (valor: number) => String(Math.round(valor));
+
 /** Cuantas filas se ven por lista: es un resumen, no la seccion. */
 const FILAS_RESUMEN = 5;
 
@@ -103,6 +107,8 @@ export function Resumen({
   const [periodo, setPeriodo] = useState<Periodo>("dia");
   // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
   const [fecha, setFecha] = useState("");
+  // Que cifra dibuja la grafica grande: la que tiene el check marcado.
+  const [metrica, setMetrica] = useState<MetricaGrafica>("ventas");
   // El periodo cambia solo las cifras: se conserva lo anterior mientras llegan
   // las nuevas para que el resumen no parpadee a "Cargando".
   const datos = useQuery({
@@ -132,6 +138,47 @@ export function Resumen({
     titulo,
   } = datos.data;
   const anterior = (valor: string) => ({ etiqueta: etiquetaAnterior, valor });
+  // Lo que pinta la grafica segun el check: cada cifra con su serie y su formato.
+  const grafica = metricas
+    ? {
+        ventas: {
+          titulo: "Ventas",
+          etiqueta: "Ventas acumuladas del periodo contra el anterior",
+          serie: metricas.serieVentas,
+          previa: metricas.serieVentasPrevia,
+          valor: MONEDA.format(metricas.ventas),
+          previo: MONEDA.format(metricas.anteriores.ventas),
+          formatear: (valor: number) => MONEDA.format(valor),
+        },
+        pedidos: {
+          titulo: "Pedidos",
+          etiqueta: "Pedidos del periodo contra el anterior",
+          serie: metricas.seriePedidos,
+          previa: metricas.seriePedidosPrevia,
+          valor: String(metricas.pedidos),
+          previo: String(metricas.anteriores.pedidos),
+          formatear: ENTERO,
+        },
+        ticket: {
+          titulo: "Ticket promedio",
+          etiqueta: "Ticket promedio del periodo contra el anterior",
+          serie: metricas.serieTicket,
+          previa: metricas.serieTicketPrevia,
+          valor: MONEDA.format(metricas.ticket),
+          previo: MONEDA.format(metricas.anteriores.ticket),
+          formatear: (valor: number) => MONEDA.format(valor),
+        },
+        clientes: {
+          titulo: "Clientes nuevos",
+          etiqueta: "Clientes nuevos del periodo contra el anterior",
+          serie: metricas.serieClientesNuevos,
+          previa: metricas.serieClientesNuevosPrevia,
+          valor: String(metricas.clientesNuevos),
+          previo: String(metricas.anteriores.clientesNuevos),
+          formatear: ENTERO,
+        },
+      }[metrica]
+    : null;
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
   const filaPago = (pago: (typeof ultimosPagos)[number]) => (
@@ -247,11 +294,13 @@ export function Resumen({
 
   return (
     <>
-      {metricas ? (
+      {metricas && grafica ? (
         <Tarjeta sinMarco>
           <RejillaMetricas>
             <TarjetaMetrica
               etiqueta="Ventas"
+              seleccionada={metrica === "ventas"}
+              onSeleccionar={() => setMetrica("ventas")}
               valor={MONEDA.format(metricas.ventas)}
               cambio={metricas.cambioVentas}
               serie={metricas.serieVentas}
@@ -261,6 +310,8 @@ export function Resumen({
             />
             <TarjetaMetrica
               etiqueta="Pedidos"
+              seleccionada={metrica === "pedidos"}
+              onSeleccionar={() => setMetrica("pedidos")}
               valor={String(metricas.pedidos)}
               cambio={metricas.cambioPedidos}
               serie={metricas.seriePedidos}
@@ -270,6 +321,8 @@ export function Resumen({
             />
             <TarjetaMetrica
               etiqueta="Ticket promedio"
+              seleccionada={metrica === "ticket"}
+              onSeleccionar={() => setMetrica("ticket")}
               valor={MONEDA.format(metricas.ticket)}
               cambio={metricas.cambioTicket}
               serie={metricas.serieTicket}
@@ -279,6 +332,8 @@ export function Resumen({
             />
             <TarjetaMetrica
               etiqueta="Clientes nuevos"
+              seleccionada={metrica === "clientes"}
+              onSeleccionar={() => setMetrica("clientes")}
               valor={String(metricas.clientesNuevos)}
               cambio={metricas.cambioClientesNuevos}
               serie={metricas.serieClientesNuevos}
@@ -290,9 +345,9 @@ export function Resumen({
           <FilaGraficos>
             <PilaGraficos>
               <GraficoTendencia
-                serie={metricas.serieVentas}
-                seriePrevia={metricas.serieVentasPrevia}
-                titulo="Ventas"
+                serie={grafica.serie}
+                seriePrevia={grafica.previa}
+                titulo={grafica.titulo}
                 controles={
                   <>
                     <SelectorCalendario
@@ -321,23 +376,23 @@ export function Resumen({
                   </>
                 }
                 etiquetaActual={titulo}
-                valor={MONEDA.format(metricas.ventas)}
+                valor={grafica.valor}
                 // El total ya esta en la tarjeta de Ventas y la rentabilidad, debajo:
                 // la cabecera solo nombra las dos lineas.
                 cifras={[]}
-                {...(metricas.ultimaVenta
-                  ? { nota: `Última venta ${haceCuanto(new Date(metricas.ultimaVenta))}` }
+                {...(metrica === "ventas" && metricas.ultimaVenta
+                  ? { nota: haceCuanto(new Date(metricas.ultimaVenta)) }
                   : {})}
-                valorPrevio={MONEDA.format(metricas.anteriores.ventas)}
+                valorPrevio={grafica.previo}
                 etiquetaPrevia={etiquetaAnterior}
                 marcas={marcasEje}
-                etiqueta="Ventas acumuladas del periodo contra el anterior"
+                etiqueta={grafica.etiqueta}
                 etiquetasPunto={etiquetasDelEje(
                   datos.data.inicioPeriodo,
                   datos.data.finPeriodo,
-                  metricas.serieVentas.length,
+                  grafica.serie.length,
                 )}
-                formatear={(valor) => MONEDA.format(valor)}
+                formatear={grafica.formatear}
               />
               {/* Rentabilidad: cada tarjeta con su parte del precio de lista. */}
               <TarjetasGanancia

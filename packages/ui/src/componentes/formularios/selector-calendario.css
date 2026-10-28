@@ -6,13 +6,26 @@
 }
 /* Un poco mas compacto que los selectores de lista: cabe "Elegir dia" con aire. */
 .ui-campo--calendario {
-  min-inline-size: calc(var(--espacio-24) * 1.75);
+  min-inline-size: calc(var(--espacio-24) * 1.25);
+}
+/* Sin fecha elegida, el boton es solo el icono: un cuadrado del alto de los filtros. */
+.ui-campo--calendario-icono {
+  inline-size: var(--espacio-12);
+}
+.ui-campo--calendario-icono .ui-selector-calendario .ui-selector-calendario__disparador {
+  justify-content: center;
+  padding-inline: 0;
+  /* Mismo tono que el icono "Ver todos" de la lista de actividad. */
+  color: var(--color-textoSuave);
+}
+.ui-campo--calendario-icono .ui-selector-calendario .ui-selector-calendario__disparador:hover {
+  color: var(--color-texto);
 }
 .ui-selector-calendario .ui-selector-calendario__disparador {
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
-  padding-inline: var(--espacio-3);
+  padding-inline: var(--espacio-2);
   /* Mismo alto que el buscador de las cabeceras. */
   block-size: var(--espacio-12);
   border-radius: var(--radio-bloque);
