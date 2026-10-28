@@ -29,7 +29,7 @@ import { type ProductoTocado, revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 import { urlVisible } from "@/lib/url-visible";
 import { MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
-import { URL_TIENDA } from "@appweb/api/urls";
+import { URL_TIENDA, urlTiendaEnNavegador } from "@appweb/api/urls";
 
 interface DatosFormulario {
   nombre: string;
@@ -252,6 +252,8 @@ function FormularioProducto({
   const queryClient = useQueryClient();
   const nuevo = productoId === null;
 
+  const [urlTienda, setUrlTienda] = useState(URL_TIENDA);
+  useEffect(() => setUrlTienda(urlTiendaEnNavegador()), []);
   const [nombre, setNombre] = useState(inicial.nombre);
   const [slug, setSlug] = useState(inicial.slug);
   // En un producto nuevo el slug sigue al nombre hasta que alguien lo toca.
@@ -331,7 +333,7 @@ function FormularioProducto({
         acciones={
           <>
             {!nuevo && inicial.activo ? (
-              <Boton variante="secundario" href={`${URL_TIENDA}/productos/${inicial.slug}`}>
+              <Boton variante="secundario" href={`${urlTienda}/productos/${inicial.slug}`}>
                 Ver en la tienda
                 <IconoFlechaDerecha tamano={16} />
               </Boton>

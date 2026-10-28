@@ -6,11 +6,14 @@
  */
 
 import {
+  armarRanking,
   ESTADOS_VENTA,
   IDS_NIVEL,
   nivelPorCompras,
+  type CompraDeCliente,
   type EstadoNivel,
   type Nivel,
+  type PuestoRanking,
 } from "@appweb/core";
 import type { PrismaClient } from "@appweb/db";
 
@@ -45,4 +48,55 @@ export async function nivelDeUsuario(
     { total: Number(comprado._sum.total ?? 0), pedidos: comprado._count._all },
     niveles,
   );
+}
+
+/**
+ * Los clientes que mas compraron, por gasto y por cantidad de pedidos, cada uno
+ * con su nivel. Cuenta todo lo comprado (pedidos pagados en adelante): son dos
+ * agrupaciones con tope en la base, no se leen todos los clientes.
+ */
+export async function rankingDeClientes(
+  prisma: PrismaClient,
+  limite: number,
+): Promise<{ porGasto: PuestoRanking[]; porPedidos: PuestoRanking[] }> {
+  const where = { estado: { in: [...ESTADOS_VENTA] } };
+  const [porGasto, porPedidos, niveles] = await Promise.all([
+    prisma.pedido.groupBy({
+      by: ["usuarioId"],
+      where,
+      _sum: { total: true },
+      _count: { _all: true },
+      orderBy: { _sum: { total: "desc" } },
+      take: limite,
+    }),
+    prisma.pedido.groupBy({
+      by: ["usuarioId"],
+      where,
+      _sum: { total: true },
+      _count: { _all: true },
+      orderBy: { _count: { usuarioId: "desc" } },
+      take: limite,
+    }),
+    nivelesVigentes(prisma),
+  ]);
+
+  const ids = [...new Set([...porGasto, ...porPedidos].map((fila) => fila.usuarioId))];
+  const usuarios = await prisma.usuario.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, nombre: true },
+  });
+  const nombres = new Map(usuarios.map((usuario) => [usuario.id, usuario.nombre]));
+
+  const aCompras = (filas: typeof porGasto): CompraDeCliente[] =>
+    filas.map((fila) => ({
+      usuarioId: fila.usuarioId,
+      nombre: nombres.get(fila.usuarioId) ?? "Cliente",
+      total: Number(fila._sum.total ?? 0),
+      pedidos: fila._count._all,
+    }));
+
+  return {
+    porGasto: armarRanking(aCompras(porGasto), niveles, "gasto", limite),
+    porPedidos: armarRanking(aCompras(porPedidos), niveles, "pedidos", limite),
+  };
 }

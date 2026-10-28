@@ -118,6 +118,12 @@ export {
   type IdNivel,
   type Nivel,
 } from "./clientes/niveles";
+export {
+  armarRanking,
+  type CompraDeCliente,
+  type CriterioRanking,
+  type PuestoRanking,
+} from "./clientes/ranking";
 
 // Envios
 export { cubreDepartamento, departamentosDesdeTexto } from "./envios/zonas";

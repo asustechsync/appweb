@@ -13,3 +13,21 @@
   border-color: transparent;
   box-shadow: var(--sombra-difusa);
 }
+
+/* Desde lg el menu lateral llega hasta abajo, a la altura del contenido: el
+   bloque del menu absorbe lo que sobra y "Volver a la tienda" queda al pie. */
+@media (min-width: 64rem) {
+  .ui-panel-admin .ui-disposicion-cuenta__lateral {
+    position: static;
+    align-self: stretch;
+  }
+  .ui-panel-admin .ui-disposicion-cuenta__pestanas--agrupadas {
+    flex: 1 1 auto;
+  }
+}
+
+/* "Volver a la tienda" va dentro del bloque del menu, al pie y sin marco propio. */
+.ui-panel-admin .ui-disposicion-cuenta__ir-panel--en-menu {
+  margin-block-start: auto;
+  border-color: var(--color-borde);
+}

@@ -320,9 +320,18 @@ export function DisposicionCuenta({
                   Salir
                 </button>
               ) : null}
+              {enlace && hayGrupos ? (
+                <a
+                  href={enlace.href}
+                  className="ui-disposicion-cuenta__ir-panel ui-disposicion-cuenta__ir-panel--en-menu"
+                >
+                  {enlace.etiqueta}
+                  <IconoFlechaDerecha tamano={16} />
+                </a>
+              ) : null}
             </nav>
 
-            {enlace ? (
+            {enlace && !hayGrupos ? (
               <a href={enlace.href} className="ui-disposicion-cuenta__ir-panel">
                 {enlace.etiqueta}
                 <IconoFlechaDerecha tamano={16} />

@@ -27,11 +27,16 @@ function temaVigente(): Tema {
  * (icono vacio) y no hay aviso de hidratacion.
  */
 export interface PropsAlternarTema {
-  /** `interruptor`: switch de encendido para filas de ajustes ("Modo oscuro"). */
-  variante?: "boton" | "interruptor";
+  /**
+   * `interruptor`: switch de encendido para filas de ajustes ("Modo oscuro").
+   * `icono`: el mismo cuadrado de `ui-boton-icono` que la campana del panel.
+   */
+  variante?: "boton" | "interruptor" | "icono";
+  /** Clases extra del boton: para colocarlo en una barra sin tocar su estilo. */
+  className?: string;
 }
 
-export function AlternarTema({ variante = "boton" }: PropsAlternarTema) {
+export function AlternarTema({ variante = "boton", className }: PropsAlternarTema) {
   const [tema, setTema] = useState<Tema | null>(null);
 
   useEffect(() => {
@@ -66,6 +71,20 @@ export function AlternarTema({ variante = "boton" }: PropsAlternarTema) {
         aria-label="Modo oscuro"
       >
         <span className="ui-interruptor__perilla" aria-hidden="true" />
+      </button>
+    );
+  }
+
+  if (variante === "icono") {
+    return (
+      <button
+        type="button"
+        className={className ? `ui-boton-icono ${className}` : "ui-boton-icono"}
+        onClick={alternar}
+        aria-label={esOscuro ? "Activar modo claro" : "Activar modo oscuro"}
+        title={esOscuro ? "Modo claro" : "Modo oscuro"}
+      >
+        {tema === null ? null : esOscuro ? <IconoSol tamano={20} /> : <IconoLuna tamano={20} />}
       </button>
     );
   }

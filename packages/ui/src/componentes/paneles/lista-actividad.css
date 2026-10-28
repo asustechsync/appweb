@@ -13,18 +13,21 @@
   justify-content: space-between;
   gap: var(--espacio-3);
 }
-/* "Ver todos" en texto suave con su cuadrito de flecha, como en la referencia. */
+/* "Ver todos" es solo el icono: un cuadrado del alto del selector de pestanas,
+   con el mismo fondo de control. El nombre lo dan aria-label y title. */
 .ui-lista-actividad__ver-todos {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--espacio-2);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
   padding: 0;
   border: 0;
-  background: none;
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoControl);
   color: var(--color-textoSuave);
-  font: inherit;
-  font-size: var(--tipo-tamano-sm);
   cursor: pointer;
+  transition: color var(--transicion-rapida);
 }
 .ui-lista-actividad__ver-todos:hover {
   color: var(--color-texto);
@@ -32,15 +35,6 @@
 .ui-lista-actividad__ver-todos:focus-visible {
   outline: 2px solid var(--color-marca-500);
   outline-offset: var(--espacio-1);
-  border-radius: var(--radio-sm);
-}
-.ui-lista-actividad__flecha {
-  display: inline-grid;
-  place-items: center;
-  inline-size: var(--espacio-5);
-  block-size: var(--espacio-5);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
 }
 .ui-lista-actividad__titulo {
   color: var(--color-texto);
@@ -161,6 +155,23 @@
   text-decoration: line-through;
 }
 
+/* En las listas del resumen (las que reservan filas) cada hecho mide lo mismo
+   que una fila del ranking de clientes: los bloques quedan a la par. */
+.ui-lista-actividad--reserva .ui-tarjeta-actividad {
+  --ui-actividad-alto: var(--espacio-10);
+}
+.ui-lista-actividad--reserva .ui-tarjeta-actividad__cuerpo {
+  gap: var(--espacio-2);
+  min-block-size: var(--ui-alto-fila, auto);
+  box-sizing: border-box;
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radio-md);
+}
+.ui-lista-actividad--reserva .ui-tarjeta-actividad__valor {
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+
 /* Logo del medio de pago: cuadrado redondeado con el color de la marca. */
 .ui-logo-medio-pago {
   display: inline-grid;
@@ -272,17 +283,10 @@
   min-inline-size: 0;
 }
 
-/* Pestanas compactas: a todo el ancho, sin caja blanca ni sombra. */
+/* Pestanas a todo el ancho: la misma caja, pildora y alto que el selector
+   Dia/Semana/Mes, sin sombra. */
 .ui-lista-actividad__pestanas .ui-selector-segmentado {
-  block-size: var(--espacio-10);
-  padding: 0;
-  background: transparent;
   box-shadow: none;
-}
-.ui-lista-actividad__pestanas .ui-selector-segmentado__pildora {
-  inset-block: 0;
-  inset-inline-start: 0;
-  inline-size: calc(100% / var(--segmentos));
 }
 .ui-lista-actividad__pestanas .ui-selector-segmentado__opcion {
   block-size: 100%;

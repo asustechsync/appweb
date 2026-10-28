@@ -37,12 +37,15 @@ import {
 } from "@appweb/core";
 import { esquemaResumen } from "@appweb/core/tipos";
 
+import { rankingDeClientes } from "../../clientes";
 import { exige, router } from "../../trpc";
 
 const entrar = exige("entrar_panel");
 
 /** Cuantas filas trae cada lista del resumen: es un vistazo, no un listado. */
 const TOPE_LISTA = 5;
+/** Cuantos clientes entran en el ranking del inicio. */
+const FILAS_RANKING = 5;
 
 /** Lo que el margen necesita de cada linea vendida y de su pedido. */
 const SELECCION_LINEA_VENDIDA = {
@@ -113,6 +116,7 @@ export const resumen = router({
       resenasPendientes,
       lineasVendidas,
       lineasVendidasPrevias,
+      rankingClientes,
     ] = await Promise.all([
       verVentas
         ? ctx.prisma.pedido.findMany({
@@ -282,6 +286,8 @@ export const resumen = router({
             select: SELECCION_LINEA_VENDIDA,
           })
         : [],
+      // Los que mas compraron, de siempre: no depende del periodo elegido.
+      verVentas ? rankingDeClientes(ctx.prisma, FILAS_RANKING) : null,
     ]);
 
     // Ventas = productos menos descuentos, sin el envio.
@@ -435,6 +441,7 @@ export const resumen = router({
         estado: pedido.estado as EstadoPedido,
         creadoEn: pedido.creadoEn.toISOString(),
       })),
+      rankingClientes,
       ultimosUsuarios: ultimosUsuarios.map((usuario) => ({
         id: usuario.id,
         nombre: usuario.nombre,

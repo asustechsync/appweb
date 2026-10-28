@@ -364,6 +364,10 @@ export {
   type PropsContadoresResumen,
 } from "./componentes/paneles/ContadoresResumen";
 export { FilaResumen, type PropsFilaResumen } from "./componentes/paneles/FilaResumen";
+export {
+  FilaRanking,
+  type PropsFilaRanking,
+} from "./componentes/paneles/FilaRanking";
 export { Paginador, type PropsPaginador } from "./componentes/paneles/Paginador";
 export { FilaPedido, type PropsFilaPedido } from "./componentes/paneles/FilaPedido";
 export { ListaConLateral, type PropsListaConLateral } from "./componentes/paneles/ListaConLateral";

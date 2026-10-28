@@ -16,6 +16,7 @@
   /* Mismo alto que el buscador de las cabeceras. */
   block-size: var(--espacio-12);
   border-radius: var(--radio-bloque);
+  background: var(--color-fondoControl);
   inline-size: 100%;
   cursor: pointer;
 }

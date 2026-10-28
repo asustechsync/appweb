@@ -67,10 +67,13 @@
   font-size: var(--tipo-tamano-sm);
 }
 
-/* La campana es un `ui-boton-icono`, el mismo de la cabecera de la tienda;
-   aqui solo se empuja a la derecha. */
-.ui-barra-panel__campana {
+/* La campana y el tema son `ui-boton-icono`, el mismo de la cabecera de la
+   tienda; el tema va primero y empuja a los dos a la derecha. */
+.ui-barra-panel__tema {
   margin-inline-start: auto;
+  border-radius: var(--radio-bloque);
+}
+.ui-barra-panel__campana {
   border-radius: var(--radio-bloque);
 }
 
@@ -117,5 +120,69 @@
 @media (min-width: 640px) {
   .ui-barra-panel__usuario-texto {
     display: flex;
+  }
+}
+
+/* Aviso de algo nuevo (un pedido): una pildora verde del alto de los botones,
+   a la izquierda de las acciones. Movil primero: solo el icono y los botones;
+   el texto aparece desde `sm`. */
+.ui-barra-panel__aviso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+  block-size: var(--espacio-12);
+  margin-inline-start: auto;
+  padding-inline: var(--espacio-3);
+  border-radius: var(--radio-bloque);
+  background: color-mix(in srgb, var(--color-exito) 12%, var(--color-fondo));
+  color: var(--color-exito);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-barra-panel__aviso + .ui-barra-panel__tema {
+  margin-inline-start: 0;
+}
+.ui-barra-panel__aviso-icono {
+  display: inline-flex;
+  flex: none;
+}
+.ui-barra-panel__aviso-texto {
+  display: none;
+  white-space: nowrap;
+}
+.ui-barra-panel__aviso-accion {
+  flex: none;
+  padding: var(--espacio-1) var(--espacio-3);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: color-mix(in srgb, var(--color-exito) 18%, transparent);
+  color: inherit;
+  font: inherit;
+  font-weight: var(--tipo-peso-medio);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ui-barra-panel__aviso-accion:hover {
+  background: color-mix(in srgb, var(--color-exito) 28%, transparent);
+}
+.ui-barra-panel__aviso-cerrar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--espacio-6);
+  block-size: var(--espacio-6);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.ui-barra-panel__aviso-cerrar:hover {
+  background: color-mix(in srgb, var(--color-exito) 18%, transparent);
+}
+@media (min-width: 40rem) {
+  .ui-barra-panel__aviso-texto {
+    display: inline;
   }
 }

@@ -1,15 +1,26 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { type ReactNode, useId, useRef, useState } from "react";
 
-import { IconoBuscar, IconoNotificacion } from "../../iconos";
+import { IconoBuscar, IconoCerrar, IconoNotificacion, IconoVerificado } from "../../iconos";
+import { AlternarTema } from "../base/AlternarTema";
 import { Insignia } from "../base/Insignia";
 import type { SeccionDePanel } from "./DisposicionPanel";
 
 import "../estilos.css";
 
+/** Aviso que llega mientras se trabaja ("Llego el pedido…"): vive junto a las acciones. */
+export interface AvisoBarraPanel {
+  texto: ReactNode;
+  /** Etiqueta del boton que lleva al detalle: "Ver pedidos". */
+  accion: string;
+  onAccion: () => void;
+  onCerrar: () => void;
+}
+
 export interface PropsBarraSuperiorPanel {
   secciones: SeccionDePanel[];
+  aviso?: AvisoBarraPanel | undefined;
   onSeccion: (id: string) => void;
   nombreUsuario: string;
   rolUsuario: string;
@@ -30,6 +41,7 @@ function normalizar(texto: string) {
  */
 export function BarraSuperiorPanel({
   secciones,
+  aviso,
   onSeccion,
   nombreUsuario,
   rolUsuario,
@@ -117,6 +129,29 @@ export function BarraSuperiorPanel({
           </ul>
         ) : null}
       </div>
+
+      {aviso ? (
+        <div className="ui-barra-panel__aviso" role="status">
+          <span className="ui-barra-panel__aviso-icono" aria-hidden="true">
+            <IconoVerificado tamano={18} />
+          </span>
+          <span className="ui-barra-panel__aviso-texto">{aviso.texto}</span>
+          <button type="button" className="ui-barra-panel__aviso-accion" onClick={aviso.onAccion}>
+            {aviso.accion}
+          </button>
+          <button
+            type="button"
+            className="ui-barra-panel__aviso-cerrar"
+            onClick={aviso.onCerrar}
+            aria-label="Cerrar aviso"
+            title="Cerrar"
+          >
+            <IconoCerrar tamano={14} />
+          </button>
+        </div>
+      ) : null}
+
+      <AlternarTema variante="icono" className="ui-barra-panel__tema" />
 
       <button
         type="button"

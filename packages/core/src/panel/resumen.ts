@@ -350,7 +350,7 @@ export function ventanaDeFecha(iso: string, ahora = new Date()): VentanaResumen 
     previoDesde,
     previoHasta: elegida,
     etiquetaPrevio: "Día anterior",
-    titulo: new Intl.DateTimeFormat("es-PE", { dateStyle: "long" }).format(elegida),
+    titulo: new Intl.DateTimeFormat("es-PE", { dateStyle: "medium" }).format(elegida),
     contexto: "más que el día anterior",
   };
 }

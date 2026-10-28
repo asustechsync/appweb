@@ -1,0 +1,99 @@
+/* Fila del ranking de clientes. El color del nivel lo ponen `InsigniaNivel` y las clases de niveles.css. */
+.ui-fila-ranking {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--espacio-2);
+  align-items: center;
+  inline-size: 100%;
+  /* El alto que la lista reserva por fila: las filas llenan la capsula sin dejar hueco abajo. */
+  min-block-size: var(--ui-alto-fila, auto);
+  box-sizing: border-box;
+  padding: var(--espacio-1) var(--espacio-3);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+  color: var(--color-texto);
+  font: inherit;
+  text-align: start;
+}
+.ui-fila-ranking--clicable {
+  cursor: pointer;
+}
+.ui-fila-ranking--clicable:hover {
+  background: var(--color-fondoSutil);
+}
+.ui-fila-ranking--clicable:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: -2px;
+}
+.ui-fila-ranking__marca {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--espacio-6);
+  block-size: var(--espacio-6);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondoCapsula);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-fila-ranking__texto {
+  display: grid;
+  min-inline-size: 0;
+}
+.ui-fila-ranking__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+.ui-fila-ranking__nombre {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  line-height: 1.4;
+}
+/* La etiqueta del nivel, mas pequena que en la escalera: aqui comparte linea con el nombre. */
+.ui-fila-ranking .ui-insignia-nivel {
+  flex: none;
+  padding: 0 calc(var(--espacio-1) * 1.5);
+  font-size: var(--tipo-tamano-etiqueta);
+  line-height: 1.4;
+}
+/* Segunda linea: la barra ocupa lo que sobra y "falta" va a su lado. */
+.ui-fila-ranking__avance-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+.ui-fila-ranking__barra {
+  display: block;
+  flex: 1 1 auto;
+  block-size: var(--espacio-1);
+  overflow: hidden;
+  border-radius: var(--radio-completo);
+  background: var(--color-fondoSeleccion);
+}
+.ui-fila-ranking__avance {
+  display: block;
+  block-size: 100%;
+  border-radius: var(--radio-completo);
+}
+.ui-fila-ranking__cifra {
+  flex: none;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  line-height: 1.4;
+}
+.ui-fila-ranking__falta {
+  flex: none;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  line-height: 1.4;
+  white-space: nowrap;
+}

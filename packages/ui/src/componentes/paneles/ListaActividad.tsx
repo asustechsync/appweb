@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import {
   IconoBanco,
   IconoCamion,
-  IconoFlechaDerecha,
+  IconoExportar,
   IconoGaleria,
   IconoMastercard,
   IconoPlin,
@@ -56,11 +56,14 @@ export function ListaActividad({
           <h3 className="ui-lista-actividad__titulo">{titulo}</h3>
         )}
         {onVerTodos ? (
-          <button type="button" className="ui-lista-actividad__ver-todos" onClick={onVerTodos}>
-            Ver todos
-            <span className="ui-lista-actividad__flecha" aria-hidden="true">
-              <IconoFlechaDerecha tamano={12} />
-            </span>
+          <button
+            type="button"
+            className="ui-lista-actividad__ver-todos"
+            onClick={onVerTodos}
+            aria-label="Ver todos"
+            title="Ver todos"
+          >
+            <IconoExportar tamano={20} />
           </button>
         ) : null}
       </div>

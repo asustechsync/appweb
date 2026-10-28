@@ -4,8 +4,6 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { apartadoDeSeccion, grupoDeSeccion, puede, type Rol } from "@appweb/core";
 import {
-  Alerta,
-  Boton,
   DisposicionPanel,
   EstadoVacio,
   IconoCamion,
@@ -51,7 +49,7 @@ import { Reclamos } from "./Reclamos";
 import { Resenas } from "./Resenas";
 import { Resumen } from "./Resumen";
 import { Usuarios } from "./Usuarios";
-import { URL_TIENDA } from "@appweb/api/urls";
+import { URL_TIENDA, urlTiendaEnNavegador } from "@appweb/api/urls";
 
 // El orden y el grupo de cada seccion los decide `seccionesDelPanel` de
 // @appweb/core; aqui solo se le pone nombre e icono.
@@ -136,6 +134,11 @@ export function Panel({
   rol,
 }: PropsPanel) {
   const [activa, setActiva] = useState(seccionInicial);
+  const [urlTienda, setUrlTienda] = useState(URL_TIENDA);
+
+  useEffect(() => {
+    setUrlTienda(urlTiendaEnNavegador());
+  }, []);
   // Pedido a abrir al llegar a Pedidos desde otra seccion (el detalle de un pago).
   const [pedidoAbierto, setPedidoAbierto] = useState<string | null>(null);
   // Detalle de pago abierto por la URL y cuantas veces se eligio una seccion:
@@ -164,7 +167,7 @@ export function Panel({
 
   async function salir() {
     await fetch("/api/sesion", { method: "DELETE" });
-    window.location.href = `${URL_TIENDA}/ingresar`;
+    window.location.href = `${urlTienda}/ingresar`;
   }
 
   // En escritorio no hay pantalla de menu: sin seccion se ve la primera.
@@ -193,29 +196,29 @@ export function Panel({
       iconosGrupo={ICONOS_GRUPO}
       seccionActiva={activa}
       onSeccion={ir}
-      marcaLateral={<Logo href={URL_TIENDA} />}
+      marcaLateral={<Logo href={urlTienda} />}
       nombreUsuario={nombre}
       rolUsuario={rol}
       onSalir={salir}
-      hrefTienda={URL_TIENDA}
+      hrefTienda={urlTienda}
+      aviso={
+        avisos.nuevo && secciones.includes("pedidos")
+          ? {
+              texto: (
+                <>
+                  Llegó el pedido <strong>{avisos.nuevo}</strong>
+                </>
+              ),
+              accion: "Ver pedidos",
+              onAccion: () => {
+                avisos.descartar();
+                ir("pedidos");
+              },
+              onCerrar: avisos.descartar,
+            }
+          : undefined
+      }
     >
-      {avisos.nuevo && secciones.includes("pedidos") ? (
-        <Alerta tono="exito">
-          Llegó el pedido <strong>{avisos.nuevo}</strong>.{" "}
-          <Boton
-            variante="secundario"
-            onClick={() => {
-              avisos.descartar();
-              ir("pedidos");
-            }}
-          >
-            Ver pedidos
-          </Boton>{" "}
-          <Boton variante="secundario" onClick={avisos.descartar}>
-            Cerrar
-          </Boton>
-        </Alerta>
-      ) : null}
       {visible === "inicio" ? (
         <Resumen
           {...(secciones.includes("pagos") ? { onVerPagos: () => ir("pagos") } : {})}

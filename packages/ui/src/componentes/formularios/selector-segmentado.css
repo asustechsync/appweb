@@ -8,7 +8,7 @@
   block-size: var(--espacio-12);
   padding: var(--espacio-1);
   border-radius: var(--radio-bloque);
-  background: var(--color-fondo);
+  background: var(--color-fondoControl);
   box-shadow: var(--sombra-difusa);
 }
 .ui-selector-segmentado__pildora {

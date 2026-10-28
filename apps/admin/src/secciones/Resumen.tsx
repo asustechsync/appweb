@@ -21,6 +21,7 @@ import {
   Cargando,
   EstadoVacio,
   FilaGraficos,
+  FilaRanking,
   FilaResumen,
   TarjetasGanancia,
   GraficoTendencia,
@@ -37,6 +38,7 @@ import {
   TarjetaActividad,
   TarjetaMetrica,
   LogoMedioPago,
+  TONO_NIVEL,
 } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
@@ -61,11 +63,6 @@ function etiquetasDelEje(inicio: string, fin: string, puntos: number): string[] 
     const { dia } = diaYHora(momento);
     return dias <= 8 ? `${dia} ${horaCorta(momento)}` : dia;
   });
-}
-
-/** La cuenta ya se lee sola: el pie solo sale para avisar que la ganancia es parcial. */
-function notaDeGanancia(cobertura: number): string {
-  return `Solo el ${cobertura}% de lo vendido tiene costo registrado: la ganancia es parcial.`;
 }
 
 /**
@@ -131,6 +128,7 @@ export function Resumen({
     pagosRechazados,
     ultimosPedidos,
     ultimosUsuarios,
+    rankingClientes,
     titulo,
   } = datos.data;
   const anterior = (valor: string) => ({ etiqueta: etiquetaAnterior, valor });
@@ -203,6 +201,27 @@ export function Resumen({
       }}
     />
   ));
+  // Lo comprado de siempre, con el nivel de cada cliente y cuanto le falta para el siguiente.
+  const filasRanking = (
+    puestos: NonNullable<typeof rankingClientes>["porGasto"],
+    por: "gasto" | "pedidos",
+  ) =>
+    puestos.map((puesto) => {
+      const cantidad = `${puesto.pedidos} ${puesto.pedidos === 1 ? "pedido" : "pedidos"}`;
+      const cifra = por === "gasto" ? MONEDA.format(puesto.totalComprado) : cantidad;
+      return (
+        <FilaRanking
+          key={puesto.usuarioId}
+          inicial={puesto.nombre.charAt(0).toUpperCase()}
+          nombre={puesto.nombre}
+          nivel={{ nombre: puesto.nivel.nombre, tono: TONO_NIVEL[puesto.nivel.id] }}
+          progreso={puesto.progresoPct}
+          cifra={cifra}
+          falta={puesto.faltaTexto ? `falta ${puesto.faltaTexto}` : "nivel máximo"}
+          {...(onVerClientes ? { onAbrir: onVerClientes } : {})}
+        />
+      );
+    });
   const filasCuentas = ultimosUsuarios
     .slice(0, FILAS_RESUMEN)
     .map((usuario) => (
@@ -229,37 +248,7 @@ export function Resumen({
   return (
     <>
       {metricas ? (
-        <Tarjeta
-          titulo={titulo}
-          sinMarco
-          acciones={
-            <>
-              <SelectorCalendario
-                id="fecha-metricas"
-                etiqueta="Elegir un día"
-                etiquetaOculta
-                placeholder="Elegir día"
-                valor={fecha}
-                onCambio={setFecha}
-                limpiable
-                alineacion="fin"
-              />
-              <SelectorSegmentado
-                etiqueta="Periodo de las métricas"
-                // Con un dia del calendario elegido, ningun periodo esta activo.
-                valor={fecha ? "" : periodo}
-                opciones={PERIODOS.map((id) => ({
-                  valor: id,
-                  etiqueta: ETIQUETAS_PERIODO[id],
-                }))}
-                onCambio={(valor) => {
-                  setFecha("");
-                  setPeriodo(valor as Periodo);
-                }}
-              />
-            </>
-          }
-        >
+        <Tarjeta sinMarco>
           <RejillaMetricas>
             <TarjetaMetrica
               etiqueta="Ventas"
@@ -304,6 +293,33 @@ export function Resumen({
                 serie={metricas.serieVentas}
                 seriePrevia={metricas.serieVentasPrevia}
                 titulo="Ventas"
+                controles={
+                  <>
+                    <SelectorCalendario
+                      id="fecha-metricas"
+                      etiqueta="Elegir un día"
+                      etiquetaOculta
+                      placeholder="Elegir día"
+                      valor={fecha}
+                      onCambio={setFecha}
+                      limpiable
+                      alineacion="fin"
+                    />
+                    <SelectorSegmentado
+                      etiqueta="Periodo de las métricas"
+                      // Con un dia del calendario elegido, ningun periodo esta activo.
+                      valor={fecha ? "" : periodo}
+                      opciones={PERIODOS.map((id) => ({
+                        valor: id,
+                        etiqueta: ETIQUETAS_PERIODO[id],
+                      }))}
+                      onCambio={(valor) => {
+                        setFecha("");
+                        setPeriodo(valor as Periodo);
+                      }}
+                    />
+                  </>
+                }
                 etiquetaActual={titulo}
                 valor={MONEDA.format(metricas.ventas)}
                 // El total ya esta en la tarjeta de Ventas y la rentabilidad, debajo:
@@ -339,15 +355,11 @@ export function Resumen({
                 }}
                 etiquetaPrevia={etiquetaAnterior}
                 formatear={(valor) => MONEDA.format(valor)}
-                {...(metricas.margen.cobertura < 100
-                  ? { nota: notaDeGanancia(metricas.margen.cobertura) }
-                  : {})}
               />
             </PilaGraficos>
             <ListaConPestanas
               etiqueta="Pagos"
               reservar={FILAS_RESUMEN}
-              filasAltas
               pestanas={[
                 {
                   valor: "recientes",
@@ -440,6 +452,30 @@ export function Resumen({
             },
           ]}
         />
+        {rankingClientes ? (
+          <ListaConPestanas
+            etiqueta="Ranking de clientes"
+            reservar={FILAS_RESUMEN}
+            pestanas={[
+              {
+                valor: "gasto",
+                etiqueta: "Gasto",
+                titulo: "Clientes que más compraron",
+                vacio: "Todavía no hay compras.",
+                ...(onVerClientes ? { onVerTodos: onVerClientes } : {}),
+                filas: filasRanking(rankingClientes.porGasto, "gasto"),
+              },
+              {
+                valor: "pedidos",
+                etiqueta: "Pedidos",
+                titulo: "Clientes con más pedidos",
+                vacio: "Todavía no hay compras.",
+                ...(onVerClientes ? { onVerTodos: onVerClientes } : {}),
+                filas: filasRanking(rankingClientes.porPedidos, "pedidos"),
+              },
+            ]}
+          />
+        ) : null}
       </ParejaListas>
 
       {!hayAlertas && metricas === null && ultimosPedidos.length === 0 ? (

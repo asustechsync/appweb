@@ -6,7 +6,7 @@
   gap: var(--espacio-3);
   margin: 0;
   padding: var(--espacio-4);
-  overflow: hidden;
+  overflow: visible; /* el calendario de la cabecera se despliega fuera de la tarjeta */
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-bloque);
   background: var(--color-fondo);
@@ -57,6 +57,19 @@
 .ui-grafico-tendencia__nota {
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
+}
+
+/* Controles del periodo: pegados a la derecha de la cabecera. */
+.ui-grafico-tendencia__controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+@media (min-width: 40rem) {
+  .ui-grafico-tendencia__controles {
+    margin-inline-start: auto;
+  }
 }
 
 .ui-grafico-tendencia__cifras {

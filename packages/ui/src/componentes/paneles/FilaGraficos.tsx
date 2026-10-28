@@ -7,7 +7,7 @@ export interface PropsFilaGraficos {
   children: ReactNode;
 }
 
-/** Dos columnas lado a lado desde escritorio: cinco octavos y tres octavos. En movil, una bajo otra. */
+/** Dos columnas lado a lado desde escritorio: dos tercios y un tercio. En movil, una bajo otra. */
 export function FilaGraficos({ children }: PropsFilaGraficos) {
   return <div className="ui-fila-graficos">{children}</div>;
 }
@@ -23,11 +23,11 @@ export function PilaGraficos({ children }: PropsPilaGraficos) {
 }
 
 export interface PropsParejaListas {
-  /** Dos `ListaActividad`; con una sola, ocupa todo el ancho. */
+  /** Dos o tres `ListaActividad`; con una sola, ocupa todo el ancho. */
   children: ReactNode;
 }
 
-/** Dos listas lado a lado desde tablet, a partes iguales. En movil, una bajo otra. */
+/** Las listas lado a lado desde tablet, a partes iguales. En movil, una bajo otra. */
 export function ParejaListas({ children }: PropsParejaListas) {
   return <div className="ui-fila-graficos__pareja">{children}</div>;
 }

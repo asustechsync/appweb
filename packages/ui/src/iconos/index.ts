@@ -46,9 +46,11 @@ export { IconoUsuario } from "./generados/IconoUsuario";
 // interfaz
 export { IconoCalendario } from "./generados/IconoCalendario";
 export { IconoCamara } from "./generados/IconoCamara";
+export { IconoCerrar } from "./generados/IconoCerrar";
 export { IconoCopiar } from "./generados/IconoCopiar";
 export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
 export { IconoEstrella } from "./generados/IconoEstrella";
+export { IconoExportar } from "./generados/IconoExportar";
 export { IconoFlash } from "./generados/IconoFlash";
 export { IconoFlechaBajada } from "./generados/IconoFlechaBajada";
 export { IconoFlechaSubida } from "./generados/IconoFlechaSubida";

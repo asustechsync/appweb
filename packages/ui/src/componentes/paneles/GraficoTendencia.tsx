@@ -1,6 +1,6 @@
 "use client";
 
-import { type PointerEvent, useId, useState } from "react";
+import { type PointerEvent, type ReactNode, useId, useState } from "react";
 
 import { suavizar, trazo } from "./trazo-serie";
 import "./grafico-tendencia.css";
@@ -44,6 +44,8 @@ export interface PropsGraficoTendencia {
   formatear: (valor: number) => string;
   /** Los numeros del eje vertical; por defecto, compactos: 500, 1k. */
   formatearEje?: (valor: number) => string;
+  /** Controles del periodo (selector, calendario) a la derecha de la cabecera. */
+  controles?: ReactNode;
 }
 
 const ANCHO = 640;
@@ -93,6 +95,7 @@ export function GraficoTendencia({
   etiquetasPunto,
   formatear,
   formatearEje = compacto,
+  controles,
 }: PropsGraficoTendencia) {
   const idDegradado = useId();
   // El punto que se explora y si el cursor esta encima: al salir, el tooltip
@@ -221,6 +224,7 @@ export function GraficoTendencia({
             ) : null}
           </span>
         )}
+        {controles ? <span className="ui-grafico-tendencia__controles">{controles}</span> : null}
       </figcaption>
 
       <div className="ui-grafico-tendencia__cuerpo">

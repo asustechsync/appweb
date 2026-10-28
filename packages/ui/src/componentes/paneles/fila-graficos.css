@@ -1,4 +1,4 @@
-/* FIRST MOBILE: una columna bajo otra; desde lg, cinco octavos y tres octavos: la segunda columna da aire a los pagos recientes. */
+/* FIRST MOBILE: una columna bajo otra; desde lg, tres columnas iguales: graficos y tarjetas ocupan dos y los pagos recientes una. Son las mismas tres de `ParejaListas`, asi los pagos quedan a nivel con la lista de abajo. */
 .ui-fila-graficos {
   display: grid;
   /* Las dos columnas terminan a la misma altura: la mas corta se estira. */
@@ -22,7 +22,10 @@
 
 @media (min-width: 64rem) {
   .ui-fila-graficos {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .ui-fila-graficos > :first-child {
+    grid-column: span 2;
   }
 }
 

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import { IconoLuna } from "../../iconos";
 import { AlternarTema } from "../base/AlternarTema";
-import { BarraSuperiorPanel } from "./BarraSuperiorPanel";
+import { type AvisoBarraPanel, BarraSuperiorPanel } from "./BarraSuperiorPanel";
 import { DisposicionCuenta } from "./DisposicionCuenta";
 import { MenuCuenta, type GrupoMenuCuenta } from "../navegacion/MenuCuenta";
 import "../estilos.css";
@@ -37,6 +37,8 @@ export interface PropsDisposicionPanel {
   hrefTienda?: string;
   /** Marca del lateral (el logo); sustituye la tarjeta del usuario. */
   marcaLateral?: ReactNode;
+  /** Aviso de algo que acaba de llegar, en la barra superior junto a las acciones. */
+  aviso?: AvisoBarraPanel | undefined;
   children: ReactNode;
 }
 
@@ -62,6 +64,7 @@ export function DisposicionPanel({
   onSalir,
   hrefTienda,
   marcaLateral,
+  aviso,
   children,
 }: PropsDisposicionPanel) {
   const visible = seccionActiva || (secciones[0]?.id ?? "");
@@ -97,6 +100,7 @@ export function DisposicionPanel({
         barraSuperior={
           <BarraSuperiorPanel
             secciones={secciones}
+            aviso={aviso}
             onSeccion={onSeccion}
             nombreUsuario={nombreUsuario}
             rolUsuario={rolUsuario}

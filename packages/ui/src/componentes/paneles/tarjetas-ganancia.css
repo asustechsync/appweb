@@ -108,3 +108,32 @@
   color: var(--color-textoTenue);
   font-size: var(--tipo-tamano-xs);
 }
+
+/* Desde lg las cuatro tarjetas van en vertical, a la derecha de la grafica y a
+   su misma altura; los pagos recientes siguen en su tercio. */
+@media (min-width: 64rem) {
+  /* La columna arranca donde la tarjeta "Ticket promedio" de arriba (3.a de cuatro). */
+  .ui-fila-graficos__pila:has(> .ui-tarjetas-ganancia) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) calc(25% - 0.75 * var(--espacio-3));
+    align-items: stretch;
+  }
+  .ui-fila-graficos__pila > .ui-tarjetas-ganancia:last-child {
+    flex: none;
+  }
+  .ui-fila-graficos__pila > .ui-tarjetas-ganancia .ui-tarjetas-ganancia__rejilla {
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+    gap: var(--espacio-2);
+  }
+  /* Compactas: menos aire dentro de cada tarjeta y una columna algo mas estrecha. */
+  .ui-fila-graficos__pila > .ui-tarjetas-ganancia .ui-tarjetas-ganancia__tarjeta {
+    justify-content: center;
+    gap: 0;
+    padding: var(--espacio-2) var(--espacio-3);
+  }
+  .ui-fila-graficos__pila > .ui-tarjetas-ganancia .ui-tarjetas-ganancia__pista {
+    margin-block: var(--espacio-1);
+  }
+}
