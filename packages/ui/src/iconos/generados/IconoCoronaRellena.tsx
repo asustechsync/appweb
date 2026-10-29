@@ -1,0 +1,18 @@
+// GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
+// Fuente: src/iconos/fuente/interfaz/corona-rellena.svg
+import type { PropsIcono } from "../tipos";
+
+export function IconoCoronaRellena({ tamano = 16, className }: PropsIcono) {
+  return (
+    <svg
+      width={tamano}
+      height={tamano}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M17 21.0396H7C3.83 21.0396 1.25 18.4596 1.25 15.2896V5.70961C1.25 4.40961 1.85 3.95961 2.21 3.80961C2.57 3.65961 3.31 3.54961 4.23 4.46961L6.82 7.05961C6.92 7.15961 7.08 7.15961 7.17 7.05961L10.76 3.46961C11.42 2.80961 12.58 2.80961 13.23 3.46961L16.82 7.05961C16.92 7.15961 17.08 7.15961 17.17 7.05961L19.76 4.46961C20.68 3.54961 21.42 3.66961 21.78 3.80961C22.14 3.95961 22.74 4.39961 22.74 5.70961V15.2996C22.75 18.7296 20.44 21.0396 17 21.0396Z" />
+    </svg>
+  );
+}

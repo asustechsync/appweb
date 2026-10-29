@@ -295,7 +295,7 @@
 
 /* Alto reservado para N filas, con el hueco entre ellas: no salta al cambiar de pestana. */
 .ui-lista-actividad--reserva {
-  --ui-alto-fila: 3.25rem;
+  --ui-alto-fila: 52.39px;
   align-content: start;
   min-block-size: calc(
     var(--ui-reserva) *

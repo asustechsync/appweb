@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens": "./src/tokens.ts",
+    "./tokens.native": "./src/tokens.native.ts",
     "./marca": "./src/marca.ts",
     "./base-web.css": "./src/base-web.css",
     "./theme.css": "./src/theme.css"
@@ -29,6 +30,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@types/react": "^19.2.2"
+    "@types/react": "~19.3.0"
   }
 }

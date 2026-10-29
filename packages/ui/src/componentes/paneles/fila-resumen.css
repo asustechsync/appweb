@@ -4,6 +4,9 @@
   gap: var(--espacio-3);
   align-items: center;
   inline-size: 100%;
+  /* El alto que la lista reserva por fila: igual que pagos y ranking. */
+  min-block-size: var(--ui-alto-fila, auto);
+  box-sizing: border-box;
   padding: var(--espacio-2) var(--espacio-3);
   border: 0;
   border-radius: var(--radio-md);

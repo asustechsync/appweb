@@ -4,6 +4,8 @@
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--espacio-2);
   align-items: center;
+  /* La pista mide lo que el texto, no el alto minimo: el cuadro del puesto lo cubre justo. */
+  align-content: center;
   inline-size: 100%;
   /* El alto que la lista reserva por fila: las filas llenan la capsula sin dejar hueco abajo. */
   min-block-size: var(--ui-alto-fila, auto);
@@ -29,13 +31,15 @@
 .ui-fila-ranking__marca {
   display: inline-grid;
   place-items: center;
-  inline-size: var(--espacio-6);
-  block-size: var(--espacio-6);
-  border-radius: var(--radio-completo);
-  background: var(--color-fondoCapsula);
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
-  font-weight: var(--tipo-peso-medio);
+  /* Cuadrado del alto de las dos lineas de texto. */
+  align-self: stretch;
+  aspect-ratio: 1;
+  border-radius: var(--radio-etiqueta);
+  /* El tono lo pone la clase del nivel (`ui-insignia-nivel--*`): el fondo y el numero llevan el color del nivel del cliente. */
+  background: color-mix(in srgb, var(--ui-tono-nivel, var(--color-nivelBasico)) 22%, transparent);
+  color: color-mix(in srgb, var(--ui-tono-nivel, var(--color-nivelBasico)) 55%, var(--color-texto));
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
 }
 .ui-fila-ranking__texto {
   display: grid;
@@ -48,7 +52,7 @@
   min-inline-size: 0;
 }
 .ui-fila-ranking__nombre {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -61,37 +65,33 @@
 .ui-fila-ranking .ui-insignia-nivel {
   flex: none;
   padding: 0 calc(var(--espacio-1) * 1.5);
+  border-radius: var(--radio-sm);
   font-size: var(--tipo-tamano-etiqueta);
   line-height: 1.4;
 }
-/* Segunda linea: la barra ocupa lo que sobra y "falta" va a su lado. */
+/* Segunda linea: la etiqueta del nivel y, a la derecha, lo que falta. */
 .ui-fila-ranking__avance-fila {
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
   min-inline-size: 0;
 }
-.ui-fila-ranking__barra {
-  display: block;
-  flex: 1 1 auto;
-  block-size: var(--espacio-1);
-  overflow: hidden;
-  border-radius: var(--radio-completo);
-  background: var(--color-fondoSeleccion);
-}
-.ui-fila-ranking__avance {
-  display: block;
-  block-size: 100%;
-  border-radius: var(--radio-completo);
-}
 .ui-fila-ranking__cifra {
   flex: none;
+  margin-inline-start: auto;
   font-size: var(--tipo-tamano-sm);
   font-weight: var(--tipo-peso-medio);
   line-height: 1.4;
 }
+/* La corona del primero, al lado de la etiqueta del nivel, en el oro del puesto. */
+.ui-fila-ranking__corona {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-nivelOro);
+}
 .ui-fila-ranking__falta {
   flex: none;
+  margin-inline-start: auto;
   color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-xs);
   line-height: 1.4;

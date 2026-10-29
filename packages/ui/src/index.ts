@@ -46,6 +46,8 @@ export {
   IconoEscudo,
   IconoConfiguracion,
   IconoPremio,
+  IconoCorona,
+  IconoCoronaRellena,
   IconoFavorito,
   IconoLibro,
   IconoBuscar,

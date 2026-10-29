@@ -48,6 +48,8 @@ export { IconoCalendario } from "./generados/IconoCalendario";
 export { IconoCamara } from "./generados/IconoCamara";
 export { IconoCerrar } from "./generados/IconoCerrar";
 export { IconoCopiar } from "./generados/IconoCopiar";
+export { IconoCoronaRellena } from "./generados/IconoCoronaRellena";
+export { IconoCorona } from "./generados/IconoCorona";
 export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
 export { IconoEstrella } from "./generados/IconoEstrella";
 export { IconoExportar } from "./generados/IconoExportar";

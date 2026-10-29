@@ -253,16 +253,15 @@ export function Resumen({
     puestos: NonNullable<typeof rankingClientes>["porGasto"],
     por: "gasto" | "pedidos",
   ) =>
-    puestos.map((puesto) => {
+    puestos.map((puesto, indice) => {
       const cantidad = `${puesto.pedidos} ${puesto.pedidos === 1 ? "pedido" : "pedidos"}`;
       const cifra = por === "gasto" ? MONEDA.format(puesto.totalComprado) : cantidad;
       return (
         <FilaRanking
           key={puesto.usuarioId}
-          inicial={puesto.nombre.charAt(0).toUpperCase()}
+          puesto={indice + 1}
           nombre={puesto.nombre}
           nivel={{ nombre: puesto.nivel.nombre, tono: TONO_NIVEL[puesto.nivel.id] }}
-          progreso={puesto.progresoPct}
           cifra={cifra}
           falta={puesto.faltaTexto ? `falta ${puesto.faltaTexto}` : "nivel máximo"}
           {...(onVerClientes ? { onAbrir: onVerClientes } : {})}
