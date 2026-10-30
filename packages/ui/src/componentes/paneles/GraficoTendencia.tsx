@@ -48,6 +48,15 @@ export interface PropsGraficoTendencia {
   controles?: ReactNode;
 }
 
+export interface DatoResumenTendencia {
+  etiqueta: string;
+  valor: string;
+  previo: string;
+  cambio: string;
+  tono: "sube" | "baja" | "igual";
+  parte: number;
+}
+
 const ANCHO = 640;
 const ALTO = 160;
 /** Aire arriba para que la linea no toque el borde. */
@@ -143,13 +152,13 @@ export function GraficoTendencia({
   const pct = (v: number) => `${(v / ALTO) * 100}%`;
 
   return (
-    <figure
-      className={
-        explorando
-          ? "ui-grafico-tendencia ui-grafico-tendencia--explorando"
-          : "ui-grafico-tendencia"
-      }
-    >
+      <figure
+        className={
+          explorando
+            ? "ui-grafico-tendencia ui-grafico-tendencia--explorando"
+            : "ui-grafico-tendencia"
+        }
+      >
       <figcaption className="ui-grafico-tendencia__cabecera">
         <span className="ui-grafico-tendencia__titulos">
           <span className="ui-grafico-tendencia__titulo">{titulo}</span>
@@ -354,6 +363,37 @@ export function GraficoTendencia({
           </div>
         </div>
       </div>
-    </figure>
+      </figure>
+  );
+}
+
+/** Tarjetas comparativas que pueden ubicarse aparte de la gráfica. */
+export function ResumenTendencia({ datos }: { datos: DatoResumenTendencia[] }) {
+  if (datos.length === 0) return null;
+  return (
+    <div className="ui-grafico-tendencia__resumen" aria-label="Resumen del periodo">
+      {datos.map((dato) => (
+        <div key={dato.etiqueta} className="ui-grafico-tendencia__resumen-dato">
+          <span className="ui-grafico-tendencia__resumen-cabecera">
+            <span className="ui-grafico-tendencia__resumen-etiqueta">{dato.etiqueta}</span>
+            <span
+              className={`ui-grafico-tendencia__resumen-cambio ui-grafico-tendencia__resumen-cambio--${dato.tono}`}
+            >
+              {dato.cambio}
+            </span>
+          </span>
+          <strong className="ui-grafico-tendencia__resumen-valor">{dato.valor}</strong>
+          <span className="ui-grafico-tendencia__resumen-pista" aria-hidden="true">
+            <span
+              className="ui-grafico-tendencia__resumen-barra"
+              style={{ inlineSize: `${Math.max(0, Math.min(100, dato.parte))}%` }}
+            />
+          </span>
+          <span className="ui-grafico-tendencia__resumen-pie">
+            <span className="ui-grafico-tendencia__resumen-previo">{dato.previo}</span>
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }

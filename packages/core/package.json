@@ -9,8 +9,15 @@
   "exports": {
     ".": "./src/index.ts",
     "./calendario": "./src/calendario.ts",
+    "./carrito": "./src/carrito/index.ts",
+    "./clave": "./src/usuarios/requisitos-clave.ts",
+    "./estados-pedido": "./src/pedidos/estados.ts",
+    "./gestion-pedidos": "./src/pedidos/gestion.ts",
+    "./filtros": "./src/catalogo/filtros.ts",
     "./formato": "./src/formato.ts",
+    "./niveles": "./src/clientes/niveles.ts",
     "./puertos": "./src/puertos/index.ts",
+    "./resenas": "./src/resenas/resenas.ts",
     "./tipos": "./src/tipos/index.ts"
   },
   "scripts": {

@@ -4,7 +4,12 @@ import { useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { ETIQUETAS_ESTADO_RESENA, MAX_LETRAS_COMENTARIO, type EstadoResena } from "@appweb/core";
+import {
+  ETIQUETAS_ESTADO_RESENA,
+  MAX_LETRAS_COMENTARIO,
+  tonoDeEstadoResena,
+  type EstadoResena,
+} from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -23,13 +28,6 @@ import {
 } from "@appweb/ui";
 
 import { useTRPC } from "@/lib/trpc";
-
-/** Verde publicada, ambar mientras espera revision, rojo si no se publico. */
-function tonoDeEstado(estado: EstadoResena): "exito" | "alerta" | "error" {
-  if (estado === "APROBADA") return "exito";
-  if (estado === "PENDIENTE") return "alerta";
-  return "error";
-}
 
 interface ResenaPropia {
   estrellas: number;
@@ -135,7 +133,10 @@ export function Resenas() {
                 centro={r ? [`${r.estrellas} de 5`, "estrellas"] : ["—", "sin calificar"]}
                 estado={
                   r
-                    ? { texto: ETIQUETAS_ESTADO_RESENA[r.estado], tono: tonoDeEstado(r.estado) }
+                    ? {
+                        texto: ETIQUETAS_ESTADO_RESENA[r.estado],
+                        tono: tonoDeEstadoResena(r.estado),
+                      }
                     : { texto: "Por calificar", tono: "neutro" }
                 }
                 {...(editable ? { nota: r ? "Toca para editar" : "Toca para calificar" } : {})}

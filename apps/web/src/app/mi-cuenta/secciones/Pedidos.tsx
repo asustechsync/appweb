@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { ETIQUETAS, pasosDelPedido, type EstadoPedido } from "@appweb/core";
+import { ETIQUETAS, pasosDelPedido, tonoDeEstado, type EstadoPedido } from "@appweb/core";
 import {
   Alerta,
   BarraLista,
@@ -33,14 +33,6 @@ import {
 
 import { useTRPC } from "@/lib/trpc";
 import { FECHA_HORA, MONEDA, diaYHora } from "@appweb/core/formato";
-
-/** Verde cuando llego, ambar mientras espera el pago, rojo si se cancelo. */
-function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "error" | "neutro" {
-  if (estado === "ENTREGADO") return "exito";
-  if (estado === "PENDIENTE_PAGO") return "alerta";
-  if (estado === "CANCELADO") return "error";
-  return "neutro";
-}
 
 /** Barra de la fila: los pasos tras el pedido recibido, con los ya cumplidos. Cancelado, sin barra. */
 function avanceDeEntrega(estado: EstadoPedido) {

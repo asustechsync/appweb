@@ -13,6 +13,7 @@ import {
   PERIODOS,
   TRAMOS_SERIE,
   type Periodo,
+  variacion,
 } from "@appweb/core";
 import {
   Alerta,
@@ -23,7 +24,6 @@ import {
   FilaGraficos,
   FilaRanking,
   FilaResumen,
-  TarjetasGanancia,
   GraficoTendencia,
   PilaGraficos,
   ParejaListas,
@@ -38,8 +38,11 @@ import {
   TarjetaActividad,
   TarjetaMetrica,
   LogoMedioPago,
+  LogoBanco,
+  ResumenTendencia,
   TONO_NIVEL,
 } from "@appweb/ui";
+import type { BancoTransferencia } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
@@ -47,6 +50,15 @@ import { useTRPC } from "@/lib/trpc";
 
 import { tonoDeEstado } from "./Pedidos";
 import { MONEDA, conSigno, cuandoFue, diaYHora, haceCuanto, horaCorta } from "@appweb/core/formato";
+
+const BANCOS_TRANSFERENCIA = new Set<BancoTransferencia>([
+  "BCP",
+  "INTERBANK",
+  "BBVA",
+  "SCOTIABANK",
+  "BANCO_NACION",
+  "OTRO",
+]);
 
 /**
  * Como se llama cada punto de la serie (el tooltip y la pildora del eje): la
@@ -69,7 +81,7 @@ function etiquetasDelEje(inicio: string, fin: string, puntos: number): string[] 
  * Resumen del panel, en tres niveles y en ese orden:
  *
  *   1. Como va el negocio — cuatro numeros del periodo con el anterior al pie.
- *   2. Lo que necesita atencion hoy — pedidos parados y stock por acabarse.
+ *   2. Lo que necesita atencion hoy — pedidos parados y envios en camino.
  *   3. Que paso ultimamente — ultimos pedidos y ultimas altas.
  *
  * Los bloques que el rol no puede ver llegan vacios desde la API; aqui solo
@@ -93,6 +105,28 @@ const ENTERO = (valor: number) => String(Math.round(valor));
 
 /** Cuantas filas se ven por lista: es un resumen, no la seccion. */
 const FILAS_RESUMEN = 5;
+const FILAS_PAGOS_RESUMEN = 5;
+
+function variacionVisual(actual: number, previo: number, subirEsBueno = true) {
+  const porcentaje = variacion(actual, previo);
+  const tono = porcentaje === 0 ? "igual" : (porcentaje > 0) === subirEsBueno ? "sube" : "baja";
+  return { cambio: `${conSigno(porcentaje)}%`, tono } as const;
+}
+
+function variacionMargen(actual: number, previo: number) {
+  const puntos = Math.round((actual - previo) * 10) / 10;
+  const texto = new Intl.NumberFormat("es-PE", { maximumFractionDigits: 1 }).format(
+    Math.abs(puntos),
+  );
+  return {
+    cambio: `${puntos < 0 ? "−" : puntos > 0 ? "+" : ""}${texto} pts`,
+    tono: puntos === 0 ? "igual" : puntos > 0 ? "sube" : "baja",
+  } as const;
+}
+
+function montoDescuento(valor: number): string {
+  return valor > 0 ? `−${MONEDA.format(valor)}` : MONEDA.format(0);
+}
 
 export function Resumen({
   onVerPagos,
@@ -138,6 +172,13 @@ export function Resumen({
     titulo,
   } = datos.data;
   const anterior = (valor: string) => ({ etiqueta: etiquetaAnterior, valor });
+  const baseRentabilidad = metricas
+    ? Math.max(0, metricas.margen.ganancia) +
+      Math.max(0, metricas.margen.costo) +
+      Math.max(0, metricas.descuentos)
+    : 0;
+  const parteRentabilidad = (valor: number) =>
+    baseRentabilidad > 0 ? Math.round((Math.max(0, valor) / baseRentabilidad) * 100) : 0;
   // Lo que pinta la grafica segun el check: cada cifra con su serie y su formato.
   const grafica = metricas
     ? {
@@ -179,6 +220,113 @@ export function Resumen({
         },
       }[metrica]
     : null;
+  const parteComparativa = (actual: number, previo: number) => {
+    const escala = Math.max(actual, previo);
+    return escala > 0 ? Math.round((Math.max(0, actual) / escala) * 100) : 0;
+  };
+  const resumenGrafica = metricas
+    ? metrica === "ventas"
+      ? [
+          {
+            etiqueta: "Ganancia",
+            valor: MONEDA.format(metricas.margen.ganancia),
+            previo: `${etiquetaAnterior} ${MONEDA.format(metricas.margenPrevio.ganancia)}`,
+            ...variacionVisual(metricas.margen.ganancia, metricas.margenPrevio.ganancia),
+            parte: parteRentabilidad(metricas.margen.ganancia),
+          },
+          {
+            etiqueta: "Margen",
+            valor: `${new Intl.NumberFormat("es-PE", { maximumFractionDigits: 1 }).format(metricas.margen.porcentaje)}%`,
+            previo: `${etiquetaAnterior} ${new Intl.NumberFormat("es-PE", { maximumFractionDigits: 1 }).format(metricas.margenPrevio.porcentaje)}%`,
+            ...variacionMargen(metricas.margen.porcentaje, metricas.margenPrevio.porcentaje),
+            parte: Math.max(0, Math.min(100, metricas.margen.porcentaje)),
+          },
+          {
+            etiqueta: "Descuentos",
+            valor: montoDescuento(metricas.descuentos),
+            previo: `${etiquetaAnterior} ${montoDescuento(metricas.descuentosPrevios)}`,
+            ...variacionVisual(metricas.descuentos, metricas.descuentosPrevios, false),
+            parte: parteRentabilidad(metricas.descuentos),
+          },
+        ]
+      : metrica === "pedidos"
+        ? [
+            {
+              etiqueta: "Recibidos",
+              valor: ENTERO(metricas.pedidosRecibidos),
+              previo: `${etiquetaAnterior} ${ENTERO(metricas.pedidosRecibidosPrevios)}`,
+              ...variacionVisual(metricas.pedidosRecibidos, metricas.pedidosRecibidosPrevios),
+              parte: parteComparativa(metricas.pedidosRecibidos, metricas.pedidosRecibidosPrevios),
+            },
+            {
+              etiqueta: "Pagados",
+              valor: ENTERO(metricas.pedidosPagados),
+              previo: `${etiquetaAnterior} ${ENTERO(metricas.pedidosPagadosPrevios)}`,
+              ...variacionVisual(metricas.pedidosPagados, metricas.pedidosPagadosPrevios),
+              parte:
+                metricas.pedidosRecibidos > 0
+                  ? Math.round((metricas.pedidosPagados / metricas.pedidosRecibidos) * 100)
+                  : 0,
+            },
+            {
+              etiqueta: "Cancelados",
+              valor: ENTERO(metricas.pedidosCancelados),
+              previo: `${etiquetaAnterior} ${ENTERO(metricas.pedidosCanceladosPrevios)}`,
+              ...variacionVisual(metricas.pedidosCancelados, metricas.pedidosCanceladosPrevios, false),
+              parte:
+                metricas.pedidosRecibidos > 0
+                  ? Math.round((metricas.pedidosCancelados / metricas.pedidosRecibidos) * 100)
+                  : 0,
+            },
+          ]
+        : metrica === "ticket"
+          ? [
+              {
+                etiqueta: "Promedio",
+                valor: MONEDA.format(metricas.ticket),
+                previo: `${etiquetaAnterior} ${MONEDA.format(metricas.anteriores.ticket)}`,
+                ...variacionVisual(metricas.ticket, metricas.anteriores.ticket),
+                parte: parteComparativa(metricas.ticket, metricas.anteriores.ticket),
+              },
+              {
+                etiqueta: "Más alto",
+                valor: MONEDA.format(metricas.ticketMaximo),
+                previo: `${etiquetaAnterior} ${MONEDA.format(metricas.ticketMaximoPrevio)}`,
+                ...variacionVisual(metricas.ticketMaximo, metricas.ticketMaximoPrevio),
+                parte: parteComparativa(metricas.ticketMaximo, metricas.ticketMaximoPrevio),
+              },
+              {
+                etiqueta: "Más bajo",
+                valor: MONEDA.format(metricas.ticketMinimo),
+                previo: `${etiquetaAnterior} ${MONEDA.format(metricas.ticketMinimoPrevio)}`,
+                ...variacionVisual(metricas.ticketMinimo, metricas.ticketMinimoPrevio),
+                parte: parteComparativa(metricas.ticketMinimo, metricas.ticketMinimoPrevio),
+              },
+            ]
+          : [
+              {
+                etiqueta: "Nuevos",
+                valor: ENTERO(metricas.clientesNuevos),
+                previo: `${etiquetaAnterior} ${ENTERO(metricas.anteriores.clientesNuevos)}`,
+                ...variacionVisual(metricas.clientesNuevos, metricas.anteriores.clientesNuevos),
+                parte: parteComparativa(metricas.clientesNuevos, metricas.anteriores.clientesNuevos),
+              },
+              {
+                etiqueta: "Compradores",
+                valor: ENTERO(metricas.clientesCompradores),
+                previo: `${etiquetaAnterior} ${ENTERO(metricas.clientesCompradoresPrevios)}`,
+                ...variacionVisual(metricas.clientesCompradores, metricas.clientesCompradoresPrevios),
+                parte: parteComparativa(metricas.clientesCompradores, metricas.clientesCompradoresPrevios),
+              },
+              {
+                etiqueta: "Recurrentes",
+                valor: ENTERO(metricas.clientesRecurrentes),
+                previo: `${etiquetaAnterior} ${ENTERO(metricas.clientesRecurrentesPrevios)}`,
+                ...variacionVisual(metricas.clientesRecurrentes, metricas.clientesRecurrentesPrevios),
+                parte: parteComparativa(metricas.clientesRecurrentes, metricas.clientesRecurrentesPrevios),
+              },
+            ]
+    : [];
   const hayAlertas = alertas.pedidosPendientes.length > 0 || alertas.variantesBajas.length > 0;
 
   const filaPago = (pago: (typeof ultimosPagos)[number]) => (
@@ -189,10 +337,16 @@ export function Resumen({
       tonoEstado={ESTADO_PAGO[pago.estado].tono}
       fecha={cuandoFue(new Date(pago.creadoEn))}
       logo={
-        <LogoMedioPago
-          medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio]}
-          nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
-        />
+        pago.medio === "TRANSFERENCIA" &&
+        pago.bancoTransferencia &&
+        BANCOS_TRANSFERENCIA.has(pago.bancoTransferencia as BancoTransferencia) ? (
+          <LogoBanco banco={pago.bancoTransferencia as BancoTransferencia} />
+        ) : (
+          <LogoMedioPago
+            medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio]}
+            nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
+          />
+        )
       }
       // Numero de orden sin el prefijo: "N.º 20261023-F52U".
       titulo={`N.º ${codigoCorto(pago.codigo)}`}
@@ -376,12 +530,15 @@ export function Resumen({
                 }
                 etiquetaActual={titulo}
                 valor={grafica.valor}
-                // El total ya esta en la tarjeta de Ventas y la rentabilidad, debajo:
-                // la cabecera solo nombra las dos lineas.
+                // La cabecera nombra las series; el detalle del periodo va abajo.
                 cifras={[]}
-                {...(metrica === "ventas" && metricas.ultimaVenta
-                  ? { nota: haceCuanto(new Date(metricas.ultimaVenta)) }
-                  : {})}
+                // Se reserva siempre la linea de nota para que el area del
+                // grafico no cambie de posicion al alternar metricas.
+                nota={
+                  metrica === "ventas" && metricas.ultimaVenta
+                    ? haceCuanto(new Date(metricas.ultimaVenta))
+                    : "\u00a0"
+                }
                 valorPrevio={grafica.previo}
                 etiquetaPrevia={etiquetaAnterior}
                 marcas={marcasEje}
@@ -393,27 +550,11 @@ export function Resumen({
                 )}
                 formatear={grafica.formatear}
               />
-              {/* Rentabilidad: cada tarjeta con su parte del precio de lista. */}
-              <TarjetasGanancia
-                actual={{
-                  ganancia: metricas.margen.ganancia,
-                  costo: metricas.margen.costo,
-                  descuentos: metricas.descuentos,
-                  margen: metricas.margen.porcentaje,
-                }}
-                previo={{
-                  ganancia: metricas.margenPrevio.ganancia,
-                  costo: metricas.margenPrevio.costo,
-                  descuentos: metricas.descuentosPrevios,
-                  margen: metricas.margenPrevio.porcentaje,
-                }}
-                etiquetaPrevia={etiquetaAnterior}
-                formatear={(valor) => MONEDA.format(valor)}
-              />
             </PilaGraficos>
+            <ResumenTendencia datos={resumenGrafica} />
             <ListaConPestanas
               etiqueta="Pagos"
-              reservar={FILAS_RESUMEN}
+              reservar={FILAS_PAGOS_RESUMEN}
               pestanas={[
                 {
                   valor: "recientes",
@@ -439,7 +580,7 @@ export function Resumen({
 
       <ParejaListas>
         <ListaConPestanas
-          etiqueta="Pedidos, stock y envíos"
+          etiqueta="Pedidos y envíos"
           reservar={FILAS_RESUMEN}
           pestanas={[
             ...(metricas
@@ -454,14 +595,6 @@ export function Resumen({
                   },
                 ]
               : []),
-            {
-              valor: "stock",
-              etiqueta: "Stock",
-              titulo: "Stock por acabarse",
-              vacio: "No hay stock bajo.",
-              ...(onVerInventario ? { onVerTodos: onVerInventario } : {}),
-              filas: filasStock,
-            },
             ...(metricas
               ? [
                   {
@@ -477,7 +610,7 @@ export function Resumen({
           ]}
         />
         <ListaConPestanas
-          etiqueta="Registros, reclamos y reseñas"
+          etiqueta="Registros y reclamos"
           reservar={FILAS_RESUMEN}
           pestanas={[
             {
@@ -495,14 +628,6 @@ export function Resumen({
               vacio: "No hay reclamos pendientes.",
               ...(onVerReclamos ? { onVerTodos: onVerReclamos } : {}),
               filas: filasReclamos,
-            },
-            {
-              valor: "resenas",
-              etiqueta: "Reseñas",
-              titulo: "Reseñas por moderar",
-              vacio: "No hay reseñas pendientes.",
-              ...(onVerResenas ? { onVerTodos: onVerResenas } : {}),
-              filas: filasResenas,
             },
           ]}
         />

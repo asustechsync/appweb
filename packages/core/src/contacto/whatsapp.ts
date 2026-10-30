@@ -39,6 +39,18 @@ export function mensajeConsultaWhatsApp(): string {
   return "Hola, tengo una consulta sobre sus productos.";
 }
 
+/** Duda sobre un producto concreto, desde su ficha: la tienda sabe de cual le hablan. */
+export function mensajeProductoWhatsApp(datos: {
+  nombre: string;
+  talla?: string | null | undefined;
+  color?: string | null | undefined;
+}): string {
+  const detalle = [datos.talla ? `talla ${datos.talla}` : null, datos.color]
+    .filter(Boolean)
+    .join(", ");
+  return `Hola, tengo una consulta sobre ${datos.nombre}${detalle ? ` (${detalle})` : ""}.`;
+}
+
 /** Del cliente a la tienda: manda su comprobante de pago. */
 export function mensajeComprobanteWhatsApp(datos: { codigo: string; total: number }): string {
   return `Hola, les envío el comprobante de pago de mi pedido ${datos.codigo} por ${MONEDA.format(datos.total)}.`;

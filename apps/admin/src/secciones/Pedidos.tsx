@@ -196,34 +196,7 @@ export function Pedidos({ puedeGestionar, pedidoInicial = null }: PropsPedidos) 
   return (
     <>
       {cifras ? (
-        <Tarjeta
-          titulo={cifras.titulo}
-          sinMarco
-          acciones={
-            <>
-              <SelectorCalendario
-                id="fecha-metricas-pedidos"
-                etiqueta="Elegir un día"
-                etiquetaOculta
-                placeholder="Elegir día"
-                valor={fecha}
-                onCambio={setFecha}
-                limpiable
-                alineacion="fin"
-              />
-              <SelectorSegmentado
-                etiqueta="Periodo de las métricas"
-                // Con un dia del calendario elegido, ningun periodo esta activo.
-                valor={fecha ? "" : periodo}
-                opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
-                onCambio={(valor) => {
-                  setFecha("");
-                  setPeriodo(valor as Periodo);
-                }}
-              />
-            </>
-          }
-        >
+        <Tarjeta sinMarco>
           <RejillaMetricas>
             {/* Lo que espera es una cola, no un periodo: se muestra entero y sin comparar. */}
             <TarjetaMetrica
@@ -258,9 +231,48 @@ export function Pedidos({ puedeGestionar, pedidoInicial = null }: PropsPedidos) 
 
       <ListaConLateral
         filasPorPagina={PAGINA}
-        barra={
+        lateral={
+          <VistaPrevia
+            logo={null}
+            estado={{ texto: "", tono: "neutro" }}
+            etiqueta=""
+            monto=""
+            {...(seleccionado ? {} : { vacio: "Elige un pedido de la lista para ver su resumen." })}
+          >
+            {seleccionado ? (
+              <CuadrosPedido
+                pedidoId={seleccionado.id}
+                principal={{ etiqueta: "Abrir pedido", onClick: () => setAbierto(seleccionado.id) }}
+              />
+            ) : null}
+          </VistaPrevia>
+        }
+      >
+        <Tarjeta>
+          <BarraLista>
+            <SelectorCalendario
+              id="fecha-metricas-pedidos"
+              etiqueta="Elegir un día"
+              etiquetaOculta
+              placeholder="Elegir día"
+              valor={fecha}
+              onCambio={setFecha}
+              limpiable
+              alineacion="fin"
+            />
+            <SelectorSegmentado
+              etiqueta="Periodo de las métricas"
+              // Con un dia del calendario elegido, ningun periodo esta activo.
+              valor={fecha ? "" : periodo}
+              opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
+              onCambio={(valor) => {
+                setFecha("");
+                setPeriodo(valor as Periodo);
+              }}
+            />
+          </BarraLista>
           <BarraLista
-            juntos
+            fondoBuscador="control"
             buscador={
               <Campo
                 id="busqueda-pedidos"
@@ -312,25 +324,6 @@ export function Pedidos({ puedeGestionar, pedidoInicial = null }: PropsPedidos) 
               />
             ) : null}
           </BarraLista>
-        }
-        lateral={
-          <VistaPrevia
-            logo={null}
-            estado={{ texto: "", tono: "neutro" }}
-            etiqueta=""
-            monto=""
-            {...(seleccionado ? {} : { vacio: "Elige un pedido de la lista para ver su resumen." })}
-          >
-            {seleccionado ? (
-              <CuadrosPedido
-                pedidoId={seleccionado.id}
-                principal={{ etiqueta: "Abrir pedido", onClick: () => setAbierto(seleccionado.id) }}
-              />
-            ) : null}
-          </VistaPrevia>
-        }
-      >
-        <Tarjeta>
           {lista.isPending ? (
             <Cargando texto="Cargando pedidos…" />
           ) : lista.isError ? (

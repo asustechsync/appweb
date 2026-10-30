@@ -400,6 +400,7 @@ export const pedidos = router({
       codigo: p.codigo,
       estado: p.estado,
       medioPago: p.medioPago,
+      bancoTransferencia: p.bancoTransferencia,
       creadoEn: p.creadoEn.toISOString(),
       subtotal: Number(p.subtotal),
       descuento: Number(p.descuento),

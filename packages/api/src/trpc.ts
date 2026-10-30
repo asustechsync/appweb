@@ -8,8 +8,35 @@
 
 import { initTRPC, TRPCError } from "@trpc/server";
 
-import { puede, type Accion, type Rol } from "@appweb/core";
+import {
+  puede,
+  type Accion,
+  type BannerDePortada,
+  type FiltrosListado,
+  type Rol,
+} from "@appweb/core";
 import { prisma } from "@appweb/db";
+
+import {
+  type CategoriaDeListado,
+  type Facetas,
+  leerBanners,
+  leerBusqueda,
+  leerCategoria,
+  leerCategorias,
+  leerFacetas,
+  leerFicha,
+  leerListado,
+  leerMarca,
+  leerNovedades,
+  leerOfertas,
+  leerPorSlugs,
+  leerVarianteDeCarrito,
+  type MarcaConProductos,
+  type ProductoDeFicha,
+  type ProductoDeRejilla,
+  type VarianteDeCarrito,
+} from "./catalogo";
 
 export interface Sesion {
   usuarioId: string;
@@ -18,13 +45,54 @@ export interface Sesion {
   nombre: string;
 }
 
+/**
+ * Lecturas del catalogo publico. La tienda web pasa las suyas, envueltas en
+ * `use cache`; sin ellas se lee directo de la base (panel y pruebas).
+ */
+export interface LecturasCatalogo {
+  novedades(limite: number): Promise<ProductoDeRejilla[]>;
+  ofertas(limite: number): Promise<ProductoDeRejilla[]>;
+  categorias(): Promise<{ slug: string; nombre: string }[]>;
+  banners(): Promise<BannerDePortada[]>;
+  ficha(slug: string): Promise<ProductoDeFicha | null>;
+  variante(varianteId: string): Promise<VarianteDeCarrito | null>;
+  categoria(slug: string): Promise<CategoriaDeListado | null>;
+  facetas(slug: string): Promise<Facetas>;
+  listado(slug: string, filtros: FiltrosListado): Promise<ProductoDeRejilla[]>;
+  busqueda(terminos: string[]): Promise<ProductoDeRejilla[]>;
+  marca(slug: string): Promise<MarcaConProductos | null>;
+  porSlugs(slugs: string[]): Promise<ProductoDeRejilla[]>;
+}
+
 export interface Contexto {
   prisma: typeof prisma;
   sesion: Sesion | null;
+  catalogo: LecturasCatalogo;
+  /** IP de quien pregunta: la usan los limites de ingreso y registro. */
+  ip: string;
 }
 
-export function crearContexto(sesion: Sesion | null): Contexto {
-  return { prisma, sesion };
+const CATALOGO_DIRECTO: LecturasCatalogo = {
+  novedades: leerNovedades,
+  ofertas: leerOfertas,
+  categorias: leerCategorias,
+  banners: leerBanners,
+  ficha: leerFicha,
+  variante: leerVarianteDeCarrito,
+  categoria: leerCategoria,
+  facetas: leerFacetas,
+  listado: leerListado,
+  busqueda: leerBusqueda,
+  marca: leerMarca,
+  porSlugs: leerPorSlugs,
+};
+
+export function crearContexto(
+  sesion: Sesion | null,
+  catalogo: LecturasCatalogo = CATALOGO_DIRECTO,
+  ip = "desconocida",
+): Contexto {
+  return { prisma, sesion, catalogo, ip };
 }
 
 const t = initTRPC.context<Contexto>().create({

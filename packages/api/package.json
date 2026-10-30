@@ -8,9 +8,12 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./acceso": "./src/acceso.ts",
     "./almacen": "./src/almacen.ts",
+    "./catalogo": "./src/catalogo.ts",
     "./correo": "./src/correo.ts",
     "./entorno": "./src/entorno.ts",
+    "./limites": "./src/limites.ts",
     "./tienda": "./src/tienda.ts",
     "./urls": "./src/urls.ts"
   },

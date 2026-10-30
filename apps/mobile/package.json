@@ -5,12 +5,19 @@
   "dependencies": {
     "@appweb/core": "*",
     "@appweb/ui": "*",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@trpc/client": "^11.8.1",
     "expo": "^58.0.0",
+    "expo-constants": "~58.0.14",
+    "expo-secure-store": "~58.0.2",
     "expo-status-bar": "~58.0.4",
     "react": "19.3.0",
-    "react-native": "0.88.1"
+    "react-native": "0.88.1",
+    "react-native-safe-area-context": "~5.10.1",
+    "react-native-svg": "15.16.0"
   },
   "devDependencies": {
+    "@appweb/api": "*",
     "@types/react": "~19.3.0",
     "typescript": "~6.0.3"
   },

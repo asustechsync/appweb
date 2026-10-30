@@ -74,7 +74,8 @@
 .ui-tarjeta-actividad__logo .ui-logo-medio-pago {
   inline-size: var(--ui-actividad-alto);
   block-size: var(--ui-actividad-alto);
-  border-radius: var(--radio-md);
+  aspect-ratio: 1;
+  border-radius: var(--radio-etiqueta);
   font-size: var(--tipo-tamano-sm);
 }
 .ui-tarjeta-actividad__datos {
@@ -158,7 +159,8 @@
 /* En las listas del resumen (las que reservan filas) cada hecho mide lo mismo
    que una fila del ranking de clientes: los bloques quedan a la par. */
 .ui-lista-actividad--reserva .ui-tarjeta-actividad {
-  --ui-actividad-alto: var(--espacio-10);
+  /* Igual que la insignia del ranking: alto de fila menos el relleno vertical. */
+  --ui-actividad-alto: calc(var(--ui-alto-fila) - var(--espacio-2) - var(--espacio-2));
 }
 .ui-lista-actividad--reserva .ui-tarjeta-actividad__cuerpo {
   gap: var(--espacio-2);
@@ -183,11 +185,15 @@
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-negrita);
   letter-spacing: -0.02em;
-  /* Fondo liso con el color del medio (`--ui-logo-base`) y una sombra neutra y suave. */
-  background: var(--ui-logo-base);
+  /* Volumen suave tipo icono de app; el radio actual se conserva. */
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ui-logo-base) 82%, white),
+    var(--ui-logo-base)
+  );
   box-shadow:
-    0 1px 2px color-mix(in srgb, var(--color-texto) 6%, transparent),
-    0 4px 10px -2px color-mix(in srgb, var(--color-texto) 10%, transparent);
+    0 1px 2px color-mix(in srgb, var(--color-texto) 8%, transparent),
+    0 4px 8px -3px color-mix(in srgb, var(--color-texto) 16%, transparent);
 }
 .ui-logo-medio-pago--yape {
   --ui-logo-base: var(--color-yape);
@@ -216,32 +222,21 @@
   block-size: 100%;
   object-fit: cover;
 }
-/* Area segura comun: en todos los cuadros el logo deja unos 9 px de aire por
-   lado (en el de 48). Los lienzos de 24 no ocupan lo mismo — Visa y
-   Mastercard llegan a 20 de ancho, Yape a 19 de alto — asi que el svg se
-   dibuja al 75 % del cuadro. Plin solo ocupa 16 de 24 (su burbuja ya es el
-   fondo), y va al 100 % para quedar del mismo tamaño visual. Los iconos
-   genericos (tarjeta, transferencia) llenan casi todo su lienzo: al 50 %. */
 .ui-logo-medio-pago svg {
-  inline-size: 50%;
-  block-size: 50%;
+  inline-size: 65%;
+  block-size: 65%;
 }
 .ui-logo-medio-pago--yape svg,
 .ui-logo-medio-pago--visa svg,
-.ui-logo-medio-pago--mastercard svg {
-  inline-size: 75%;
-  block-size: 75%;
-}
+.ui-logo-medio-pago--mastercard svg,
 .ui-logo-medio-pago--plin svg {
-  inline-size: 100%;
-  block-size: 100%;
+  inline-size: 88%;
+  block-size: 88%;
 }
-/* Tarjeta de una marca que no se distingue: el icono, en el tono de transferencia. */
 .ui-logo-medio-pago--tarjeta {
   --ui-logo-base: color-mix(in srgb, var(--color-graficoGrafito) 18%, var(--color-fondo));
   color: var(--color-graficoGrafito);
 }
-/* Transferencia: cuadro blanco con el icono en grafito. */
 .ui-logo-medio-pago--transferencia {
   --ui-logo-base: var(--color-fondo);
   color: var(--color-graficoGrafito);
@@ -251,8 +246,6 @@
   color: var(--color-alerta);
 }
 
-/* Medios con fondo oscuro o saturado: degradado vertical como los iconos de
-   iOS 15, mas claro arriba y el color pleno de la marca abajo. Sin relieve. */
 .ui-logo-medio-pago--yape,
 .ui-logo-medio-pago--visa,
 .ui-logo-medio-pago--mastercard {
@@ -263,8 +256,6 @@
   );
 }
 
-/* Plin y transferencia son blancos y no pueden aclararse: degradado vertical de
-   blanco arriba a un gris muy tenue abajo, como en la referencia. */
 .ui-logo-medio-pago--plin,
 .ui-logo-medio-pago--transferencia {
   background: linear-gradient(
@@ -272,9 +263,32 @@
     var(--ui-logo-base),
     color-mix(in srgb, var(--ui-logo-base) 98%, var(--color-graficoGrafito))
   );
+}
+
+/* En oscuro se conserva el fondo claro de Plin y transferencia, pero se quitan
+   los brillos y sombras que forman un contorno claro sobre la tarjeta oscura. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) .ui-logo-medio-pago {
+    box-shadow:
+      0 1px 2px color-mix(in srgb, black 28%, transparent),
+      0 4px 8px -3px color-mix(in srgb, black 42%, transparent);
+  }
+
+  :root:not([data-tema="claro"]) .ui-logo-medio-pago--plin,
+  :root:not([data-tema="claro"]) .ui-logo-medio-pago--transferencia {
+    background: #fff;
+  }
+}
+
+:root[data-tema="oscuro"] .ui-logo-medio-pago {
   box-shadow:
-    0 1px 2px color-mix(in srgb, var(--color-texto) 2%, transparent),
-    0 4px 10px -2px color-mix(in srgb, var(--color-texto) 3%, transparent);
+    0 1px 2px color-mix(in srgb, black 28%, transparent),
+    0 4px 8px -3px color-mix(in srgb, black 42%, transparent);
+}
+
+:root[data-tema="oscuro"] .ui-logo-medio-pago--plin,
+:root[data-tema="oscuro"] .ui-logo-medio-pago--transferencia {
+  background: #fff;
 }
 
 /* Las pestanas ocupan el sitio del titulo y dejan "Ver todos" a la derecha. */

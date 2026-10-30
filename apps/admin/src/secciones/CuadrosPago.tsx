@@ -25,15 +25,35 @@ import {
   IconoVerificado,
   IconoWhatsAppLinea,
   InsigniaNivel,
+  LogoBanco,
   LogoMedioPago,
   RejillaBento,
   TONO_NIVEL,
 } from "@appweb/ui";
+import type { BancoTransferencia } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
 import { useTRPC } from "@/lib/trpc";
 import { FECHA, FECHA_HORA, MONEDA, cuandoFue } from "@appweb/core/formato";
+
+const BANCOS_TRANSFERENCIA = new Set<BancoTransferencia>([
+  "BCP",
+  "INTERBANK",
+  "BBVA",
+  "SCOTIABANK",
+  "BANCO_NACION",
+  "OTRO",
+]);
+
+const ETIQUETAS_BANCO: Record<BancoTransferencia, string> = {
+  BCP: "BCP",
+  INTERBANK: "Interbank",
+  BBVA: "BBVA",
+  SCOTIABANK: "Scotiabank",
+  BANCO_NACION: "Banco de la Nación",
+  OTRO: "Otro banco",
+};
 
 /**
  * Los cuadros de un pago: monto, operacion, quien confirmo, pedido, cliente y
@@ -59,6 +79,10 @@ export function CuadrosPago({
   const pago = detalle.data;
   const medio = ETIQUETAS_MEDIO_PAGO[pago.medio];
   const logo = pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio];
+  const codigoBanco = pago.pedido.bancoTransferencia;
+  const banco = codigoBanco && BANCOS_TRANSFERENCIA.has(codigoBanco as BancoTransferencia)
+    ? (codigoBanco as BancoTransferencia)
+    : null;
   // Abre el chat con el mensaje escrito; quien lo envia es el que pulsa. Sin
   // un telefono valido WhatsApp abre igual y se elige el chat a mano.
   const mensajeWhatsApp =
@@ -118,13 +142,25 @@ export function CuadrosPago({
   return (
     <RejillaBento>
       <CuadroMonto
-        logo={<LogoMedioPago medio={logo} nombre={medio} />}
+        logo={
+          banco && pago.medio === "TRANSFERENCIA" ? (
+            <LogoBanco banco={banco} />
+          ) : (
+            <LogoMedioPago medio={logo} nombre={medio} />
+          )
+        }
         estado={{
           texto: ETIQUETA_PAGO_RECIENTE[pago.estado] ?? ETIQUETAS_PAGO[pago.estado],
           tono: ESTADO_PAGO[pago.estado].tono,
           icono: ESTADO_PAGO[pago.estado].icono,
         }}
-        etiqueta={pago.tarjeta?.ultimos ? `${medio} •••• ${pago.tarjeta.ultimos}` : medio}
+        etiqueta={
+          banco && pago.medio === "TRANSFERENCIA"
+            ? `${medio} · ${ETIQUETAS_BANCO[banco]}`
+            : pago.tarjeta?.ultimos
+              ? `${medio} •••• ${pago.tarjeta.ultimos}`
+              : medio
+        }
         monto={MONEDA.format(pago.monto)}
         detalle={FECHA_HORA.format(new Date(pago.creadoEn))}
         anulado={pago.estado === "RECHAZADO"}

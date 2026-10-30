@@ -31,6 +31,15 @@ export const instant = false;
 
 export const metadata = { title: "Pedido confirmado" };
 
+const ETIQUETAS_BANCO: Record<string, string> = {
+  BCP: "BCP",
+  INTERBANK: "Interbank",
+  BBVA: "BBVA",
+  SCOTIABANK: "Scotiabank",
+  BANCO_NACION: "Banco de la Nación",
+  OTRO: "Otro banco",
+};
+
 interface Props {
   params: Promise<{ codigo: string }>;
 }
@@ -116,6 +125,11 @@ export default async function PaginaPedido({ params }: Props) {
           {instrucciones ? (
             <BloqueDetalle titulo="Cómo pagar" icono={<IconoMoneda tamano={20} />} destacado>
               <span>{ETIQUETAS_MEDIO[medio]?.etiqueta ?? "Pago"}</span>
+              {pedido.bancoTransferencia ? (
+                <span>
+                  Banco de destino: {ETIQUETAS_BANCO[pedido.bancoTransferencia] ?? pedido.bancoTransferencia}
+                </span>
+              ) : null}
               <MontoDetalle>{MONEDA.format(pedido.total)}</MontoDetalle>
               <p>{instrucciones}</p>
               {enviarComprobante ? (

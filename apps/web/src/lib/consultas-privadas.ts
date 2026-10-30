@@ -55,6 +55,7 @@ export interface PedidoDelUsuario {
   documento: string;
   razonSocial: string | null;
   medioPago: string;
+  bancoTransferencia: string | null;
   creadoEn: Date;
   items: {
     nombreProducto: string;
@@ -112,6 +113,7 @@ export async function pedidoDelUsuario(
     documento: pedido.documento,
     razonSocial: pedido.razonSocial,
     medioPago: pedido.medioPago,
+    bancoTransferencia: pedido.bancoTransferencia,
     creadoEn: pedido.creadoEn,
     items: pedido.items.map((item) => ({
       nombreProducto: item.nombreProducto,

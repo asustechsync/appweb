@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { AccionesCuenta } from "./AccionesCuenta";
 import { Buscador } from "./Buscador";
+import { AlternarTema } from "../base/AlternarTema";
 import { Logo } from "../base/Logo";
 import { IconoOpciones, IconoBuscar } from "../../iconos";
 import "./header.css";
@@ -83,6 +84,7 @@ export function Header({ categorias = [], carrito, carritoJuntoAlBuscador = fals
         </details>
 
         <div className="ui-header__acciones">
+          <AlternarTema variante="icono" className="ui-header__tema" />
           <details className="ui-header__lupa">
             <summary className="ui-boton-icono" aria-label="Buscar" title="Buscar">
               <IconoBuscar tamano={20} />

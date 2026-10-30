@@ -10,6 +10,7 @@
     ".": "./src/index.ts",
     "./tokens": "./src/tokens.ts",
     "./tokens.native": "./src/tokens.native.ts",
+    "./iconos.nativos": "./src/iconos/nativos/index.ts",
     "./marca": "./src/marca.ts",
     "./base-web.css": "./src/base-web.css",
     "./theme.css": "./src/theme.css"

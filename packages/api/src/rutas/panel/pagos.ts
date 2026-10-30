@@ -43,6 +43,7 @@ const INCLUDE_LISTA = {
       id: true,
       codigo: true,
       estado: true,
+      bancoTransferencia: true,
       usuario: { select: { nombre: true, email: true } },
     },
   },
@@ -166,6 +167,7 @@ export const pagos = router({
         confirmadoEn: p.confirmadoEn?.toISOString() ?? null,
         pedidoId: p.pedido.id,
         codigo: p.pedido.codigo,
+        bancoTransferencia: p.pedido.bancoTransferencia,
         estadoPedido: p.pedido.estado,
         cliente: p.pedido.usuario.nombre,
         email: p.pedido.usuario.email,
@@ -195,6 +197,7 @@ export const pagos = router({
             id: true,
             codigo: true,
             estado: true,
+            bancoTransferencia: true,
             subtotal: true,
             descuento: true,
             costoEnvio: true,
@@ -255,6 +258,7 @@ export const pagos = router({
         id: pago.pedido.id,
         codigo: pago.pedido.codigo,
         estado: pago.pedido.estado,
+        bancoTransferencia: pago.pedido.bancoTransferencia,
         total: Number(pago.pedido.total),
         // Desglose congelado en el pedido. El descuento es el del cupon o el
         // del nivel, el que fuera mayor al comprar: no se suman.

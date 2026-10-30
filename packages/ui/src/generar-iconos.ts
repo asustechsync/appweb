@@ -5,7 +5,8 @@
  *
  * El .svg es la unica fuente: para añadir un icono se deja el archivo en su
  * carpeta (comercio, cuenta...) y se corre el comando. Nadie edita a mano
- * src/iconos/generados ni src/iconos/index.ts.
+ * src/iconos/generados, src/iconos/nativos (los de la app movil) ni
+ * src/iconos/index.ts.
  *
  * Reglas que se comprueban al generar, para que todos los iconos se vean igual:
  * - `viewBox` obligatorio y `width` = `height` (es el tamaño por defecto).
@@ -22,6 +23,7 @@ const aqui = dirname(fileURLToPath(import.meta.url));
 const carpetaIconos = join(aqui, "iconos");
 const carpetaFuente = join(carpetaIconos, "fuente");
 const carpetaGenerados = join(carpetaIconos, "generados");
+const carpetaNativos = join(carpetaIconos, "nativos");
 
 const AVISO = "// GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos";
 
@@ -134,6 +136,61 @@ ${doc}export function ${icono.nombre}({ tamano = ${icono.tamano}, className }: P
 `;
 }
 
+/** Etiquetas del svg y su componente en react-native-svg. */
+const ETIQUETAS_NATIVAS: Record<string, string> = {
+  circle: "Circle",
+  defs: "Defs",
+  ellipse: "Ellipse",
+  g: "G",
+  linearGradient: "LinearGradient",
+  path: "Path",
+  rect: "Rect",
+  stop: "Stop",
+};
+
+/**
+ * El mismo icono para la app movil, con react-native-svg. `currentColor` toma
+ * el `color` que recibe: en React Native no hay texto padre del que heredar.
+ */
+function componenteNativo(icono: Icono): string {
+  const usadas = new Set<string>();
+  const cuerpo = icono.cuerpo.replace(
+    /<(\/?)([a-zA-Z]+)/g,
+    (_, cierre: string, etiqueta: string) => {
+      const nativa = ETIQUETAS_NATIVAS[etiqueta];
+      if (!nativa) throw new Error(`${icono.archivo}: <${etiqueta}> no tiene version nativa.`);
+      usadas.add(nativa);
+      return `<${cierre}${nativa}`;
+    },
+  );
+  const atributos = icono.atributos.map(([clave, valor]) => `${aJsx(clave)}="${valor}"`).join(" ");
+  const importados = [...usadas].sort().join(", ");
+  const doc = icono.descripcion ? `/** ${icono.descripcion} */\n` : "";
+
+  return `${AVISO}
+// Fuente: src/iconos/fuente/${icono.archivo}
+import Svg, { ${importados} } from "react-native-svg";
+
+import type { PropsIconoNativo } from "../tipos";
+
+${doc}export function ${icono.nombre}({ tamano = ${icono.tamano}, color }: PropsIconoNativo) {
+  return (
+    <Svg width={tamano} height={tamano} ${atributos} {...(color ? { color } : {})}>
+      ${cuerpo}
+    </Svg>
+  );
+}
+`;
+}
+
+function indiceNativo(iconos: Icono[]): string {
+  const lineas = [AVISO, "", 'export type { PropsIconoNativo } from "../tipos";'];
+  for (const icono of iconos) {
+    lineas.push(`export { ${icono.nombre} } from "./${icono.nombre}";`);
+  }
+  return `${lineas.join("\n")}\n`;
+}
+
 function indice(iconos: Icono[]): string {
   const lineas = [AVISO, "", 'export type { PropsIcono } from "./tipos";'];
   let categoria = "";
@@ -174,9 +231,19 @@ for (const icono of iconos) {
 }
 writeFileSync(join(carpetaIconos, "index.ts"), indice(iconos));
 
-// Mismo formato que el resto del proyecto.
-execSync(`npx biome format --write "${carpetaGenerados}" "${join(carpetaIconos, "index.ts")}"`, {
-  stdio: "ignore",
-});
+rmSync(carpetaNativos, { recursive: true, force: true });
+mkdirSync(carpetaNativos);
+for (const icono of iconos) {
+  writeFileSync(join(carpetaNativos, `${icono.nombre}.tsx`), componenteNativo(icono));
+}
+writeFileSync(join(carpetaNativos, "index.ts"), indiceNativo(iconos));
 
-console.log(`${iconos.length} iconos generados en src/iconos/generados.`);
+// Mismo formato que el resto del proyecto.
+execSync(
+  `npx biome format --write "${carpetaGenerados}" "${carpetaNativos}" "${join(carpetaIconos, "index.ts")}"`,
+  {
+    stdio: "ignore",
+  },
+);
+
+console.log(`${iconos.length} iconos generados en src/iconos/generados y src/iconos/nativos.`);

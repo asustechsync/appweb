@@ -158,6 +158,101 @@
   flex: 1 1 auto;
   align-content: center;
 }
+.ui-grafico-tendencia__resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-2);
+  align-content: stretch;
+}
+.ui-grafico-tendencia__resumen-dato {
+  display: grid;
+  min-inline-size: 0;
+  gap: var(--espacio-1);
+  align-content: center;
+  padding: var(--espacio-3);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+}
+.ui-grafico-tendencia__resumen-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+.ui-grafico-tendencia__resumen-etiqueta {
+  overflow: hidden;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-grafico-tendencia__resumen-valor {
+  overflow: hidden;
+  color: var(--color-texto);
+  font-family: var(--tipo-familia-cifras);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-fuerte);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-grafico-tendencia__resumen-pista {
+  display: block;
+  block-size: 3px;
+  margin-block: var(--espacio-1);
+  overflow: hidden;
+  border-radius: var(--radio-completo);
+  background: var(--color-bordeFuerte);
+}
+.ui-grafico-tendencia__resumen-barra {
+  display: block;
+  block-size: 100%;
+  border-radius: var(--radio-completo);
+  background: var(--color-info);
+}
+.ui-grafico-tendencia__resumen-pie {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+}
+.ui-grafico-tendencia__resumen-previo {
+  overflow: hidden;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-grafico-tendencia__resumen-cambio {
+  flex: none;
+  padding: 0 var(--espacio-1);
+  border-radius: var(--radio-sm);
+  background: color-mix(in srgb, var(--color-textoTenue) 8%, transparent);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  white-space: nowrap;
+}
+.ui-grafico-tendencia__resumen-cambio--sube {
+  background: color-mix(in srgb, var(--color-exito) 8%, transparent);
+  color: var(--color-exito);
+}
+.ui-grafico-tendencia__resumen-cambio--baja {
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+  color: var(--color-error);
+}
+@media (max-width: 39.99rem) {
+  .ui-grafico-tendencia__resumen-dato {
+    padding: var(--espacio-3);
+  }
+}
+@media (min-width: 64rem) {
+  .ui-grafico-tendencia__resumen {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+}
 .ui-grafico-tendencia__escala {
   position: relative;
   min-inline-size: var(--espacio-6);

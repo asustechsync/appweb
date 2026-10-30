@@ -4,20 +4,20 @@
   gap: 0.25rem;
   color: inherit;
 }
-/* Listado: la tarjeta entera con el mismo borde y sombra que la de oferta.
+/* Listado: superficie blanca y separacion por sombra, como las tarjetas del panel.
    Sin relleno: la foto llega a los bordes y el texto lleva su propio margen. */
 .ui-tarjeta-producto--vertical {
   overflow: hidden;
   padding: 0;
-  border: 1px solid var(--color-borde);
+  border: 0;
   border-radius: var(--radio-bloque);
   background: var(--color-fondo);
-  box-shadow: var(--sombra-md);
+  box-shadow: var(--sombra-difusa);
 }
 .ui-tarjeta-producto--vertical .ui-tarjeta-producto__imagen {
   border-radius: 0;
   padding-inline: 0;
-  background: var(--color-neutro-50);
+  background: var(--color-superficie);
 }
 .ui-tarjeta-producto--vertical .ui-tarjeta-producto__contenido {
   gap: 0.125rem;

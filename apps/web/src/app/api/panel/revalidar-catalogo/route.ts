@@ -1,9 +1,8 @@
-import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { COOKIE_SESION, sesionDesdeToken } from "@appweb/api";
+import { sesionDesdeToken, tokenDePeticion } from "@appweb/api";
 import { puede } from "@appweb/core";
 
 import { etiquetas, etiquetasDeProducto } from "@/lib/cache";
@@ -29,8 +28,8 @@ const esquema = z.object({
  * Las etiquetas salen de `etiquetasDeProducto`, nunca escritas a mano.
  */
 export async function POST(peticion: Request) {
-  const almacen = await cookies();
-  const sesion = sesionDesdeToken(almacen.get(COOKIE_SESION)?.value);
+  // El panel web manda su cookie; la app movil, `Authorization: Bearer`.
+  const sesion = sesionDesdeToken(tokenDePeticion(peticion.headers));
   if (!sesion) return NextResponse.json({ error: "Sesión requerida." }, { status: 401 });
 
   const permitido = [

@@ -1,0 +1,27 @@
+.ui-logo-banco {
+  border-radius: var(--radio-etiqueta);
+  color: var(--color-medioPagoTexto);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-fuerte);
+  letter-spacing: -0.04em;
+  text-align: center;
+  text-shadow: 0 1px 1px color-mix(in srgb, black 18%, transparent);
+}
+.ui-logo-banco--bcp {
+  --ui-logo-base: var(--color-error);
+}
+.ui-logo-banco--interbank {
+  --ui-logo-base: var(--color-exito);
+}
+.ui-logo-banco--bbva {
+  --ui-logo-base: var(--color-visa);
+}
+.ui-logo-banco--scotiabank {
+  --ui-logo-base: var(--color-error);
+}
+.ui-logo-banco--banco_nacion {
+  --ui-logo-base: var(--color-info);
+}
+.ui-logo-banco--otro {
+  --ui-logo-base: var(--color-graficoGrafito);
+}

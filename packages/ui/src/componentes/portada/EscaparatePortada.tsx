@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import type { BannerDePortada } from "@appweb/core";
+
 import { Beneficio, type PropsBeneficio } from "./Beneficio";
 import { Carrusel } from "./Carrusel";
 import { CarruselMarcas } from "./CarruselMarcas";
@@ -59,13 +61,8 @@ const FIN_OFERTA_PROVISIONAL = "2026-12-31T23:59:59-05:00";
 const TONOS: BannerDeslizable["tono"][] = ["oferta", "nuevo", "disponible"];
 
 /** Una promocion del carrusel, tal como la edita el panel. */
-export interface BannerDePortada {
-  etiqueta: string;
-  titulo: string;
-  detalle: string;
-  href: string;
-  accion: string;
-}
+// La forma del banner vive en @appweb/core: la comparte la app movil.
+export type { BannerDePortada };
 
 /**
  * Portada en panel de control. Arriba, un solo slide donde se turnan tres

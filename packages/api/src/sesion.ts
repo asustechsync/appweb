@@ -62,3 +62,13 @@ export function tokenDeCabeceraCookie(cabecera: string | null): string | undefin
 
   return undefined;
 }
+
+/**
+ * El token de una peticion a /api/trpc. La app movil no tiene cookies: lo
+ * manda en `Authorization: Bearer <token>`. La web sigue mandando su cookie.
+ */
+export function tokenDePeticion(cabeceras: Headers): string | undefined {
+  const autorizacion = cabeceras.get("authorization");
+  if (autorizacion?.startsWith("Bearer ")) return autorizacion.slice("Bearer ".length).trim();
+  return tokenDeCabeceraCookie(cabeceras.get("cookie"));
+}

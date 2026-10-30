@@ -24,6 +24,7 @@ export {
 export { IMAGEN_DEMO, slugDesdeTexto, skuDeVariante, varianteRepetida } from "./catalogo/gestion";
 
 export { creariaCiclo } from "./catalogo/arbol";
+export type { BannerDePortada } from "./catalogo/banners";
 
 export {
   revisarCompra,
@@ -168,6 +169,7 @@ export {
   esFinal,
   afectaStock,
   pasosDelPedido,
+  tonoDeEstado,
   ETIQUETAS,
   ESTADOS_PEDIDO,
   type EstadoPedido,
@@ -231,6 +233,7 @@ export {
   enlaceWhatsApp,
   enlaceCompartirWhatsApp,
   mensajeConsultaWhatsApp,
+  mensajeProductoWhatsApp,
   mensajeComprobanteWhatsApp,
   mensajeAlClienteWhatsApp,
   mensajePagoRecibidoWhatsApp,
@@ -274,6 +277,7 @@ export {
   ESTADOS_RESENA,
   DECISIONES_RESENA,
   ETIQUETAS_ESTADO_RESENA,
+  tonoDeEstadoResena,
   MIN_ESTRELLAS,
   MAX_ESTRELLAS,
   MAX_LETRAS_COMENTARIO,

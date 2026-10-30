@@ -315,6 +315,7 @@ export {
   type PropsLogoMedioPago,
   type PropsTarjetaActividad,
 } from "./componentes/paneles/ListaActividad";
+export { LogoBanco, type BancoTransferencia } from "./componentes/paneles/LogoBanco";
 export {
   FilaGraficos,
   PilaGraficos,
@@ -335,6 +336,8 @@ export {
 } from "./componentes/paneles/TarjetasGanancia";
 export {
   GraficoTendencia,
+  ResumenTendencia,
+  type DatoResumenTendencia,
   type PropsGraficoTendencia,
 } from "./componentes/paneles/GraficoTendencia";
 export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";

@@ -158,6 +158,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     cupon,
     tarjetaMarca,
     tarjetaUltimos,
+    bancoTransferencia,
   } = analizado.data;
 
   // El navegador puede mandar cualquier medio: solo vale el que la pasarela
@@ -167,6 +168,9 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
   }
   if (medioPago === "tarjeta" && (!tarjetaMarca || !tarjetaUltimos)) {
     return { ok: false, error: "Elige la marca y escribe los últimos 4 dígitos de la tarjeta." };
+  }
+  if (medioPago === "transferencia" && !bancoTransferencia) {
+    return { ok: false, error: "Elige el banco al que harás la transferencia." };
   }
 
   const errorDocumento = errorDocumentoComprobante(comprobante, documento);
@@ -321,6 +325,8 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
           documento,
           razonSocial: razonSocial ?? null,
           medioPago: MEDIO_A_ENUM[medioPago],
+          bancoTransferencia:
+            medioPago === "transferencia" && bancoTransferencia ? bancoTransferencia : null,
           items: {
             create: itemsPedido.map((item) => ({
               varianteId: item.varianteId,

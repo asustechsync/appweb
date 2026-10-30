@@ -583,6 +583,9 @@ export const esquemaCheckout = z.object({
   // "tarjeta" solo llega cuando el entorno enciende la tarjeta de prueba; el
   // servidor revisa que la pasarela lo soporte.
   medioPago: z.enum(["yape", "plin", "transferencia", "tarjeta"]),
+  bancoTransferencia: z
+    .enum(["BCP", "INTERBANK", "BBVA", "SCOTIABANK", "BANCO_NACION", "OTRO"])
+    .optional(),
   // Tarjeta de prueba: la marca y los ultimos 4 digitos, nunca el numero entero.
   tarjetaMarca: z.enum(["visa", "mastercard"]).optional(),
   tarjetaUltimos: z

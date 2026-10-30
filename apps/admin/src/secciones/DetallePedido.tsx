@@ -54,6 +54,15 @@ export function tonoDePago(estado: EstadoPago): "exito" | "alerta" | "error" | "
   return "neutro";
 }
 
+const ETIQUETAS_BANCO: Record<string, string> = {
+  BCP: "BCP",
+  INTERBANK: "Interbank",
+  BBVA: "BBVA",
+  SCOTIABANK: "Scotiabank",
+  BANCO_NACION: "Banco de la Nación",
+  OTRO: "Otro banco",
+};
+
 /** Como se lee cada cambio en el selector. */
 function etiquetaDeCambio(hacia: EstadoPedido, contraEntrega: boolean): string {
   if (hacia === "PREPARANDO" && contraEntrega) return "Confirmar pedido (se cobra al entregar)";
@@ -180,7 +189,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
           estado={{ texto: ETIQUETAS[p.estado], tono: tonoDeEstado(p.estado) }}
           etiqueta={`Total · ${ETIQUETAS_MEDIO_PAGO[p.medioPago]}`}
           monto={MONEDA.format(p.total)}
-          detalle={FECHA_HORA.format(new Date(p.creadoEn))}
+          detalle={`${p.bancoTransferencia ? `Banco: ${ETIQUETAS_BANCO[p.bancoTransferencia] ?? p.bancoTransferencia} · ` : ""}${FECHA_HORA.format(new Date(p.creadoEn))}`}
         />
         <CuadroBento
           icono={<IconoUsuario tamano={16} />}

@@ -449,6 +449,8 @@ model Pedido {
   // las instrucciones de pago sin volver a preguntar. Los cobros reales van en
   // la tabla `pagos`.
   medioPago MedioPago
+  // Banco de destino elegido al pagar manualmente por transferencia.
+  bancoTransferencia String?
 
   // Envio. Direccion COPIADA, no referenciada: si el cliente edita su
   // direccion, este pedido tiene que seguir diciendo a donde se envio de verdad.

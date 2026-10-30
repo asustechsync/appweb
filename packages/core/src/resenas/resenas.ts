@@ -25,6 +25,13 @@ export const ETIQUETAS_ESTADO_RESENA: Record<EstadoResena, string> = {
   RECHAZADA: "No publicada",
 };
 
+/** Tono de la etiqueta: verde publicada, ambar mientras espera revision, rojo si no se publico. */
+export function tonoDeEstadoResena(estado: EstadoResena): "exito" | "alerta" | "error" {
+  if (estado === "APROBADA") return "exito";
+  if (estado === "PENDIENTE") return "alerta";
+  return "error";
+}
+
 export const MIN_ESTRELLAS = 1;
 export const MAX_ESTRELLAS = 5;
 export const MAX_LETRAS_COMENTARIO = 1000;

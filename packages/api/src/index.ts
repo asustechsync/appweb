@@ -1,3 +1,5 @@
+import { accesoApp } from "./rutas/acceso";
+import { catalogo } from "./rutas/catalogo";
 import { cuenta } from "./rutas/cuenta";
 import { avisos } from "./rutas/panel/avisos";
 import { categorias, marcas } from "./rutas/panel/categorias";
@@ -15,9 +17,10 @@ import { reclamos } from "./rutas/panel/reclamos";
 import { resenas } from "./rutas/panel/resenas";
 import { stock } from "./rutas/panel/stock";
 import { usuarios } from "./rutas/panel/usuarios";
+import { tienda } from "./rutas/tienda";
 import { router } from "./trpc";
 
-export { crearContexto, type Contexto, type Sesion } from "./trpc";
+export { crearContexto, type Contexto, type LecturasCatalogo, type Sesion } from "./trpc";
 export { publico, privado, exige, router } from "./trpc";
 export {
   COOKIE_SESION,
@@ -25,6 +28,7 @@ export {
   secretoSesion,
   sesionDesdeToken,
   tokenDeCabeceraCookie,
+  tokenDePeticion,
 } from "./sesion";
 export { nivelDeUsuario, nivelesVigentes } from "./clientes";
 export { subirImagenProducto, type ResultadoSubida } from "./imagenes";
@@ -38,7 +42,10 @@ export { subirImagenProducto, type ResultadoSubida } from "./imagenes";
  *   panel     -> exige(...)    productos, pedidos, reclamos, reseñas, envios, usuarios
  */
 export const enrutador = router({
+  acceso: accesoApp,
+  catalogo,
   cuenta,
+  tienda,
   panel: router({
     resumen,
     avisos,

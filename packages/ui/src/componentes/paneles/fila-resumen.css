@@ -28,13 +28,13 @@
 .ui-fila-resumen__marca {
   display: inline-grid;
   place-items: center;
-  inline-size: var(--espacio-8);
-  block-size: var(--espacio-8);
-  border-radius: var(--radio-md);
-  background: var(--color-fondoCapsula);
-  color: var(--color-textoSuave);
+  align-self: stretch;
+  aspect-ratio: 1;
+  border-radius: var(--radio-etiqueta);
+  background: color-mix(in srgb, var(--color-marca-500) 22%, transparent);
+  color: color-mix(in srgb, var(--color-marca-500) 55%, var(--color-texto));
   font-size: var(--tipo-tamano-sm);
-  font-weight: var(--tipo-peso-medio);
+  font-weight: var(--tipo-peso-fuerte);
 }
 .ui-fila-resumen__texto {
   display: grid;

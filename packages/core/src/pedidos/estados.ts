@@ -54,6 +54,14 @@ export const ETIQUETAS: Record<EstadoPedido, string> = {
   CANCELADO: "Cancelado",
 };
 
+/** Tono de la etiqueta del estado: verde cuando llego, ambar mientras espera el pago, rojo si se cancelo. */
+export function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "error" | "neutro" {
+  if (estado === "ENTREGADO") return "exito";
+  if (estado === "PENDIENTE_PAGO") return "alerta";
+  if (estado === "CANCELADO") return "error";
+  return "neutro";
+}
+
 export function puedePasarA(
   desde: EstadoPedido,
   hacia: EstadoPedido,

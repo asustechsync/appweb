@@ -10,6 +10,9 @@
   box-shadow: var(--sombra-difusa);
   transition: box-shadow var(--transicion-rapida);
 }
+.ui-barra-lista__buscador--control :is(.ui-campo__input, .ui-campo__grupo) {
+  background: var(--color-fondoControl);
+}
 .ui-barra-lista__buscador :is(.ui-campo__input:focus, .ui-campo__grupo:focus-within) {
   box-shadow:
     var(--sombra-difusa),

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 
 import { COOKIE_SESION, opcionesCookieSesion, secretoSesion } from "@appweb/api";
+import { DURACION_SESION_CORTA_MS, DURACION_SESION_MS } from "@appweb/api/acceso";
 import { crearTokenSesion, verificarTokenSesion, type CargaSesion, type Rol } from "@appweb/core";
 
 /**
@@ -15,9 +16,6 @@ import { crearTokenSesion, verificarTokenSesion, type CargaSesion, type Rol } fr
  * actions, route handlers) que ya son dinamicas por su cuenta.
  */
 
-const DURACION_MS = 1000 * 60 * 60 * 24 * 30; // 30 dias
-const DURACION_SIN_RECORDAR_MS = 1000 * 60 * 60 * 24; // 1 dia, y la cookie muere al cerrar el navegador
-
 export interface Sesion {
   usuarioId: string;
   rol: Rol;
@@ -28,13 +26,13 @@ export async function crearCookieSesion(carga: CargaSesion, recordar = true): Pr
   const token = crearTokenSesion(
     carga,
     secretoSesion(),
-    recordar ? DURACION_MS : DURACION_SIN_RECORDAR_MS,
+    recordar ? DURACION_SESION_MS : DURACION_SESION_CORTA_MS,
   );
   const almacen = await cookies();
   almacen.set(COOKIE_SESION, token, {
     ...opcionesCookieSesion(),
     // Sin maxAge la cookie es de sesion: se borra al cerrar el navegador.
-    ...(recordar ? { maxAge: DURACION_MS / 1000 } : {}),
+    ...(recordar ? { maxAge: DURACION_SESION_MS / 1000 } : {}),
   });
 }
 

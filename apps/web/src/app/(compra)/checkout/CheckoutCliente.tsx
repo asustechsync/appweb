@@ -19,6 +19,7 @@ import {
   ArticulosResumen,
   Boton,
   Campo,
+  CampoSelect,
   Cargando,
   CodigoPromocional,
   DatosSeccion,
@@ -90,6 +91,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
   const [documento, setDocumento] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
   const [medioPago, setMedioPago] = useState<MedioPago | null>(mediosDePago[0]?.valor ?? null);
+  const [bancoTransferencia, setBancoTransferencia] = useState("");
   // Tarjeta de prueba: solo la marca y los ultimos 4 digitos, nunca el numero.
   const [tarjetaMarca, setTarjetaMarca] = useState<"visa" | "mastercard">("visa");
   const [tarjetaUltimos, setTarjetaUltimos] = useState("");
@@ -287,12 +289,17 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
     if (medioPago === "tarjeta" && !/^\d{4}$/.test(tarjetaUltimos)) {
       nuevos["tarjetaUltimos"] = "Escribe los últimos 4 dígitos.";
     }
+    if (medioPago === "transferencia" && !bancoTransferencia) {
+      nuevos["bancoTransferencia"] = "Elige el banco al que harás la transferencia.";
+    }
     setErrores(nuevos);
     if (Object.keys(nuevos).length > 0) {
       mostrarError(
         nuevos["tarjetaUltimos"] && Object.keys(nuevos).length === 1
           ? "Revisa los datos de la tarjeta."
-          : "Revisa los datos del comprobante.",
+          : nuevos["bancoTransferencia"]
+            ? "Elige el banco de la transferencia."
+            : "Revisa los datos del comprobante.",
       );
       return;
     }
@@ -309,6 +316,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       lineas: guardadas,
       cupon: cupon.aplicado?.codigo,
       ...(medioPago === "tarjeta" ? { tarjetaMarca, tarjetaUltimos } : {}),
+      ...(medioPago === "transferencia" ? { bancoTransferencia } : {}),
     });
 
     if (!resultado.ok || !resultado.codigo) {
@@ -701,6 +709,26 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
               />
             </FilaCampos>
           </>
+        ) : null}
+        {medioPago === "transferencia" ? (
+          <CampoSelect
+            id="bancoTransferencia"
+            etiqueta="Banco de destino de la transferencia"
+            valor={bancoTransferencia}
+            opciones={[
+              { valor: "", etiqueta: "Elige un banco" },
+              { valor: "BCP", etiqueta: "BCP" },
+              { valor: "INTERBANK", etiqueta: "Interbank" },
+              { valor: "BBVA", etiqueta: "BBVA" },
+              { valor: "SCOTIABANK", etiqueta: "Scotiabank" },
+              { valor: "BANCO_NACION", etiqueta: "Banco de la Nación" },
+              { valor: "OTRO", etiqueta: "Otro banco" },
+            ]}
+            onCambio={(valor) => {
+              setBancoTransferencia(valor);
+              setErrores((anteriores) => ({ ...anteriores, bancoTransferencia: "" }));
+            }}
+          />
         ) : null}
       </SeccionCheckout>
     </DisposicionCompra>

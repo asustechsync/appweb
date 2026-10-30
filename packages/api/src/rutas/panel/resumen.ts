@@ -117,6 +117,8 @@ export const resumen = router({
       lineasVendidas,
       lineasVendidasPrevias,
       rankingClientes,
+      pedidosPorEstado,
+      pedidosPorEstadoPrevios,
     ] = await Promise.all([
       verVentas
         ? ctx.prisma.pedido.findMany({
@@ -175,7 +177,7 @@ export const resumen = router({
       verVentas
         ? ctx.prisma.pedido.findMany({
             where: { estado: { in: estadosVenta }, creadoEn: ventana },
-            select: { creadoEn: true, subtotal: true, descuento: true },
+            select: { creadoEn: true, subtotal: true, descuento: true, usuarioId: true },
           })
         : [],
       verVentas
@@ -185,7 +187,7 @@ export const resumen = router({
       verVentas
         ? ctx.prisma.pedido.findMany({
             where: { estado: { in: estadosVenta }, creadoEn: ventanaPrevia },
-            select: { creadoEn: true, subtotal: true, descuento: true },
+            select: { creadoEn: true, subtotal: true, descuento: true, usuarioId: true },
           })
         : [],
       verVentas
@@ -208,7 +210,7 @@ export const resumen = router({
               creadoEn: true,
               tarjetaMarca: true,
               tarjetaUltimos: true,
-              pedido: { select: { codigo: true } },
+              pedido: { select: { codigo: true, bancoTransferencia: true } },
             },
           })
         : [],
@@ -226,7 +228,7 @@ export const resumen = router({
               creadoEn: true,
               tarjetaMarca: true,
               tarjetaUltimos: true,
-              pedido: { select: { codigo: true } },
+              pedido: { select: { codigo: true, bancoTransferencia: true } },
             },
           })
         : [],
@@ -288,6 +290,20 @@ export const resumen = router({
         : [],
       // Los que mas compraron, de siempre: no depende del periodo elegido.
       verVentas ? rankingDeClientes(ctx.prisma, FILAS_RANKING) : null,
+      verVentas
+        ? ctx.prisma.pedido.groupBy({
+            by: ["estado"],
+            where: { creadoEn: ventana },
+            _count: { _all: true },
+          })
+        : [],
+      verVentas
+        ? ctx.prisma.pedido.groupBy({
+            by: ["estado"],
+            where: { creadoEn: ventanaPrevia },
+            _count: { _all: true },
+          })
+        : [],
     ]);
 
     // Ventas = productos menos descuentos, sin el envio.
@@ -297,6 +313,66 @@ export const resumen = router({
     const cantidadPedidosPrevios = pedidosVentanaPrevia?._count ?? 0;
     const ticket = cantidadPedidos > 0 ? ventas / cantidadPedidos : 0;
     const ticketPrevio = cantidadPedidosPrevios > 0 ? ventasPrevias / cantidadPedidosPrevios : 0;
+    const contarEstado = (estados: typeof pedidosPorEstado, estado: string) =>
+      estados.find((fila) => fila.estado === estado)?._count._all ?? 0;
+    const pedidosRecibidos = pedidosPorEstado.reduce((total, fila) => total + fila._count._all, 0);
+    const pedidosRecibidosPrevios = pedidosPorEstadoPrevios.reduce(
+      (total, fila) => total + fila._count._all,
+      0,
+    );
+    const pedidosPagados = estadosVenta.reduce(
+      (total, estado) => total + contarEstado(pedidosPorEstado, estado),
+      0,
+    );
+    const pedidosPagadosPrevios = estadosVenta.reduce(
+      (total, estado) => total + contarEstado(pedidosPorEstadoPrevios, estado),
+      0,
+    );
+    const pedidosCancelados = contarEstado(pedidosPorEstado, "CANCELADO");
+    const pedidosCanceladosPrevios = contarEstado(pedidosPorEstadoPrevios, "CANCELADO");
+    const extremosTicket = (pedidos: typeof pedidosSerie) =>
+      pedidos.reduce(
+        (extremos, pedido) => {
+          const monto = vendidoDe(pedido);
+          return {
+            minimo: Math.min(extremos.minimo, monto),
+            maximo: Math.max(extremos.maximo, monto),
+          };
+        },
+        { minimo: Number.POSITIVE_INFINITY, maximo: 0 },
+      );
+    const extremosTicketActual = extremosTicket(pedidosSerie);
+    const extremosTicketPrevios = extremosTicket(pedidosSeriePrevia);
+    const ticketMinimo = Number.isFinite(extremosTicketActual.minimo)
+      ? extremosTicketActual.minimo
+      : 0;
+    const ticketMinimoPrevio = Number.isFinite(extremosTicketPrevios.minimo)
+      ? extremosTicketPrevios.minimo
+      : 0;
+    const compradores = [...new Set(pedidosSerie.map((pedido) => pedido.usuarioId))];
+    const compradoresPrevios = [...new Set(pedidosSeriePrevia.map((pedido) => pedido.usuarioId))];
+    const [compradoresRecurrentes, compradoresRecurrentesPrevios] = await Promise.all([
+      compradores.length > 0
+        ? ctx.prisma.pedido.groupBy({
+            by: ["usuarioId"],
+            where: {
+              usuarioId: { in: compradores },
+              estado: { in: estadosVenta },
+              creadoEn: { lt: periodo.desde },
+            },
+          })
+        : [],
+      compradoresPrevios.length > 0
+        ? ctx.prisma.pedido.groupBy({
+            by: ["usuarioId"],
+            where: {
+              usuarioId: { in: compradoresPrevios },
+              estado: { in: estadosVenta },
+              creadoEn: { lt: periodo.previoDesde },
+            },
+          })
+        : [],
+    ]);
 
     // Las dos lineas comparten el eje del periodo entero: la actual se corta
     // en ahora y la anterior llega completa, asi se ve cuanto falta.
@@ -341,6 +417,7 @@ export const resumen = router({
         monto: Number(pago.monto),
         creadoEn: pago.creadoEn.toISOString(),
         codigo: pago.pedido.codigo,
+        bancoTransferencia: pago.pedido.bancoTransferencia,
         // Solo con tarjeta: la marca reconocida y los ultimos 4 digitos.
         tarjeta:
           pago.medio === "TARJETA"
@@ -354,6 +431,7 @@ export const resumen = router({
         monto: Number(pago.monto),
         creadoEn: pago.creadoEn.toISOString(),
         codigo: pago.pedido.codigo,
+        bancoTransferencia: pago.pedido.bancoTransferencia,
         // Solo con tarjeta: la marca reconocida y los ultimos 4 digitos.
         tarjeta:
           pago.medio === "TARJETA"
@@ -416,6 +494,20 @@ export const resumen = router({
             serieClientesNuevos: series.clientesNuevos,
             serieClientesNuevosPrevia: seriesPrevias.clientesNuevos,
             diferenciaClientesNuevos: clientesNuevos - clientesNuevosPrevios,
+            pedidosRecibidos,
+            pedidosRecibidosPrevios,
+            pedidosPagados,
+            pedidosPagadosPrevios,
+            pedidosCancelados,
+            pedidosCanceladosPrevios,
+            ticketMaximo: extremosTicketActual.maximo,
+            ticketMaximoPrevio: extremosTicketPrevios.maximo,
+            ticketMinimo,
+            ticketMinimoPrevio,
+            clientesCompradores: compradores.length,
+            clientesCompradoresPrevios: compradoresPrevios.length,
+            clientesRecurrentes: compradoresRecurrentes.length,
+            clientesRecurrentesPrevios: compradoresRecurrentesPrevios.length,
             // Lo que se dejo de cobrar por cupones y niveles en el periodo.
             descuentos: Number(pedidosVentana?._sum.descuento ?? 0),
             margen: margenDeLineas(lineasVendidas),

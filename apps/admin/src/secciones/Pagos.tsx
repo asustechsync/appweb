@@ -24,6 +24,7 @@ import {
   IconoBuscar,
   LimpiarFiltros,
   ListaConLateral,
+  LogoBanco,
   Paginador,
   LogoMedioPago,
   RejillaMetricas,
@@ -33,6 +34,7 @@ import {
   TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
+import type { BancoTransferencia } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
@@ -93,6 +95,15 @@ function subtituloDePago(
   if (rechazosPrevios === 0) return base;
   return `${base} · ${rechazosPrevios} ${rechazosPrevios === 1 ? "rechazo previo" : "rechazos previos"}`;
 }
+
+const BANCOS_TRANSFERENCIA = new Set<BancoTransferencia>([
+  "BCP",
+  "INTERBANK",
+  "BBVA",
+  "SCOTIABANK",
+  "BANCO_NACION",
+  "OTRO",
+]);
 
 export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: PropsPagos) {
   const trpc = useTRPC();
@@ -375,10 +386,16 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                     key={pago.id}
                     bloque
                     logo={
-                      <LogoMedioPago
-                        medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta] : LOGO_MEDIO[pago.medio]}
-                        nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
-                      />
+                      pago.medio === "TRANSFERENCIA" &&
+                      pago.bancoTransferencia &&
+                      BANCOS_TRANSFERENCIA.has(pago.bancoTransferencia as BancoTransferencia) ? (
+                        <LogoBanco banco={pago.bancoTransferencia as BancoTransferencia} />
+                      ) : (
+                        <LogoMedioPago
+                          medio={pago.tarjeta ? LOGO_MARCA[pago.tarjeta] : LOGO_MEDIO[pago.medio]}
+                          nombre={ETIQUETAS_MEDIO_PAGO[pago.medio]}
+                        />
+                      )
                     }
                     titulo={pago.codigo}
                     detalle={pago.cliente}
