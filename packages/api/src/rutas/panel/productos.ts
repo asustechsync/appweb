@@ -15,15 +15,23 @@ import {
   esImagenDemo,
   IMAGEN_DEMO,
   planMovimientoManual,
+  codigoDeDiseno,
+  colorRegistrado,
+  combinacionesDeVariantes,
+  listoParaPublicar,
+  MAX_DISENOS,
+  mismoNombre,
+  requisitosDePublicacion,
+  siguienteCodigoProducto,
   skuDeVariante,
-  varianteRepetida,
 } from "@appweb/core";
 import {
   esquemaCambioActivoVariante,
   esquemaCostoVariante,
   esquemaEdicionProducto,
-  esquemaProducto,
-  esquemaVarianteNueva,
+  type esquemaProducto,
+  esquemaProductoNuevo,
+  esquemaVariantesNuevas,
 } from "@appweb/core/tipos";
 import { Prisma } from "@appweb/db";
 import { z } from "zod";
@@ -71,10 +79,33 @@ function traducirError(error: unknown): never {
   throw error;
 }
 
+/**
+ * La etiqueta tiene que ser una de las visibles en Atributos. La que el
+ * producto ya tenia se acepta aunque se haya ocultado: guardar otra cosa del
+ * producto no obliga a cambiarla.
+ */
+async function exigirEtiqueta(
+  prisma: Prisma.TransactionClient,
+  etiqueta: string | undefined,
+  anterior: string | null,
+): Promise<void> {
+  if (!etiqueta || (anterior !== null && mismoNombre(etiqueta, anterior))) return;
+  const visibles = await prisma.atributo.findMany({
+    where: { clase: "ETIQUETA", activo: true },
+    select: { nombre: true },
+  });
+  if (!visibles.some((e) => mismoNombre(e.nombre, etiqueta))) {
+    rechazar("Elige una etiqueta de la lista.");
+  }
+}
+
 export const productos = router({
-  /** Categorias y marcas para los selectores del formulario. */
+  /**
+   * Lo que el formulario ofrece elegir: categorias y marcas, los tipos con
+   * sus tallas y los colores, diseños y etiquetas visibles.
+   */
   opciones: gestionar.query(async ({ ctx }) => {
-    const [categorias, marcas] = await Promise.all([
+    const [categorias, marcas, tipos, atributos] = await Promise.all([
       ctx.prisma.categoria.findMany({
         orderBy: [{ orden: "asc" }, { nombre: "asc" }],
         select: { id: true, nombre: true, activo: true, padre: { select: { nombre: true } } },
@@ -83,8 +114,26 @@ export const productos = router({
         orderBy: { nombre: "asc" },
         select: { id: true, nombre: true, activo: true },
       }),
+      // Tambien los ocultos: un producto de un tipo oculto sigue ofreciendo sus tallas.
+      ctx.prisma.tipoPrenda.findMany({
+        orderBy: [{ orden: "asc" }, { nombre: "asc" }],
+        select: { codigo: true, nombre: true, palabras: true, tallas: true, activo: true },
+      }),
+      ctx.prisma.atributo.findMany({
+        where: { activo: true },
+        orderBy: [{ orden: "asc" }, { codigo: "asc" }, { nombre: "asc" }],
+        select: { clase: true, codigo: true, nombre: true, hex: true },
+      }),
     ]);
+    const deClase = (clase: (typeof atributos)[number]["clase"]) =>
+      atributos.filter((a) => a.clase === clase).map((a) => a.nombre);
     return {
+      tipos,
+      colores: atributos
+        .filter((a) => a.clase === "COLOR")
+        .map((a) => ({ nombre: a.nombre, hex: a.hex })),
+      disenos: deClase("DISENO"),
+      etiquetas: deClase("ETIQUETA"),
       categorias: categorias.map((c) => ({
         id: c.id,
         nombre: c.padre ? `${c.padre.nombre} › ${c.nombre}` : c.nombre,
@@ -136,11 +185,12 @@ export const productos = router({
         include: {
           imagenes: { orderBy: { orden: "asc" }, select: { id: true, url: true, alt: true } },
           variantes: {
-            orderBy: [{ talla: "asc" }, { color: "asc" }],
+            orderBy: [{ talla: "asc" }, { color: "asc" }, { disenoCodigo: "asc" }],
             select: {
               id: true,
               talla: true,
               color: true,
+              diseno: true,
               sku: true,
               stock: true,
               costo: true,
@@ -153,6 +203,7 @@ export const productos = router({
 
       return {
         id: p.id,
+        codigo: p.codigo,
         datos: {
           nombre: p.nombre,
           slug: p.slug,
@@ -177,13 +228,30 @@ export const productos = router({
       };
     }),
 
-  /** Alta. Nace con la imagen demo hasta que existan las fotos propias. */
-  crear: gestionar.input(esquemaProducto).mutation(async ({ ctx, input }) => {
+  /**
+   * Alta. Nace oculta y con la imagen demo: se muestra cuando cumple los
+   * requisitos de publicacion, que piden al menos una variante con stock.
+   */
+  crear: gestionar.input(esquemaProductoNuevo).mutation(async ({ ctx, input }) => {
+    const tipo = await ctx.prisma.tipoPrenda.findUnique({ where: { codigo: input.tipo } });
+    if (tipo === null || !tipo.activo) rechazar("Elige un tipo de prenda de la lista.");
+    await exigirEtiqueta(ctx.prisma, input.datos.etiqueta, null);
     try {
+      // Codigo de modelo: el siguiente del tipo elegido. Si dos altas chocan,
+      // el indice unico rechaza la segunda.
+      const usados = await ctx.prisma.producto.findMany({
+        where: { codigo: { startsWith: input.tipo } },
+        select: { codigo: true },
+      });
       const producto = await ctx.prisma.producto.create({
         data: {
-          ...datosDeProducto(input),
-          imagenes: { create: { url: IMAGEN_DEMO, alt: input.nombre, orden: 0 } },
+          ...datosDeProducto(input.datos),
+          activo: false,
+          codigo: siguienteCodigoProducto(
+            input.tipo,
+            usados.flatMap((u) => (u.codigo ? [u.codigo] : [])),
+          ),
+          imagenes: { create: { url: IMAGEN_DEMO, alt: input.datos.nombre, orden: 0 } },
         },
         select: { id: true, slug: true, categoria: { select: { slug: true } } },
       });
@@ -200,9 +268,35 @@ export const productos = router({
   editar: gestionar.input(esquemaEdicionProducto).mutation(async ({ ctx, input }) => {
     const antes = await ctx.prisma.producto.findUnique({
       where: { id: input.productoId },
-      select: { slug: true, activo: true, categoria: { select: { slug: true } } },
+      select: {
+        slug: true,
+        activo: true,
+        categoria: { select: { slug: true } },
+        variantes: { select: { activo: true, stock: true } },
+        imagenes: { select: { url: true } },
+        etiqueta: true,
+      },
     });
     if (antes === null) rechazar("Ese producto no existe.", "NOT_FOUND");
+    await exigirEtiqueta(ctx.prisma, input.datos.etiqueta, antes.etiqueta);
+
+    // Solo se exige al pasar de oculto a visible: un producto que ya se vende
+    // no queda bloqueado si mañana se agota.
+    if (!antes.activo && input.datos.activo) {
+      const requisitos = requisitosDePublicacion({
+        precio: input.datos.precio,
+        variantes: antes.variantes,
+        fotosPropias: antes.imagenes.filter((i) => !esImagenDemo(i.url)).length,
+        descripcionCorta: input.datos.descripcionCorta ?? "",
+      });
+      if (!listoParaPublicar(requisitos)) {
+        const faltan = requisitos.filter((r) => r.obligatorio && !r.cumplido);
+        rechazar(
+          `Aún no se puede mostrar: ${faltan.map((r) => r.texto.toLowerCase()).join(" y ")}.`,
+          "CONFLICT",
+        );
+      }
+    }
 
     try {
       const despues = await ctx.prisma.producto.update({
@@ -230,51 +324,93 @@ export const productos = router({
     }
   }),
 
-  /** Variante nueva. El stock inicial entra como INGRESO, en la misma transaccion. */
-  agregarVariante: gestionar.input(esquemaVarianteNueva).mutation(async ({ ctx, input }) => {
+  /**
+   * Variantes en bloque: cada talla con cada color, en un mismo diseño. Las que
+   * ya existen se saltan y se avisan. El stock inicial de cada una entra como
+   * INGRESO, todo en la misma transaccion: o se crean todas o ninguna.
+   */
+  agregarVariantes: gestionar.input(esquemaVariantesNuevas).mutation(async ({ ctx, input }) => {
     try {
       return await ctx.prisma.$transaction(async (tx) => {
         const producto = await tx.producto.findUnique({
           where: { id: input.productoId },
           select: {
             slug: true,
+            codigo: true,
             categoria: { select: { slug: true } },
-            variantes: { select: { talla: true, color: true } },
+            variantes: {
+              select: { talla: true, color: true, diseno: true, disenoCodigo: true },
+            },
           },
         });
         if (producto === null) rechazar("Ese producto no existe.", "NOT_FOUND");
-        if (varianteRepetida(producto.variantes, input)) {
-          rechazar(`Ya existe la talla ${input.talla} en color ${input.color}.`, "CONFLICT");
+        if (producto.codigo === null) {
+          rechazar("Este producto aún no tiene código de modelo. Regenera los SKU.", "CONFLICT");
+        }
+        const codigoProducto = producto.codigo;
+
+        const atributos = await tx.atributo.findMany({
+          where: { clase: { in: ["COLOR", "DISENO"] }, activo: true },
+          select: { clase: true, codigo: true, nombre: true },
+        });
+        const colores = atributos.flatMap((a) =>
+          a.clase === "COLOR" && a.codigo ? [{ codigo: a.codigo, nombre: a.nombre }] : [],
+        );
+        const diseno = atributos.find(
+          (a) => a.clase === "DISENO" && mismoNombre(a.nombre, input.diseno),
+        );
+        if (diseno === undefined) rechazar("Elige un diseño de la lista.");
+
+        const disenoCodigo = codigoDeDiseno(producto.variantes, diseno.nombre);
+        if (disenoCodigo === null) {
+          rechazar(`Un producto admite hasta ${MAX_DISENOS} diseños.`, "CONFLICT");
         }
 
-        const variante = await tx.variante.create({
-          data: {
-            productoId: input.productoId,
-            talla: input.talla,
-            color: input.color,
-            sku: skuDeVariante(producto.slug, input.talla, input.color),
-          },
+        const { nuevas, yaExistian } = combinacionesDeVariantes(producto.variantes, {
+          ...input,
+          diseno: diseno.nombre,
+        });
+        if (nuevas.length === 0) {
+          rechazar("Todas esas combinaciones ya existen en este producto.", "CONFLICT");
+        }
+
+        const creadas = await tx.variante.createManyAndReturn({
+          data: nuevas.map((v) => {
+            const color = colorRegistrado(v.color, colores);
+            if (color === null) rechazar("Elige colores de la lista.", "BAD_REQUEST");
+            return {
+              productoId: input.productoId,
+              talla: v.talla,
+              // El nombre de la lista, no el que llego: "azul MARINO" -> "Azul marino".
+              color: color.nombre,
+              diseno: v.diseno,
+              disenoCodigo,
+              sku: skuDeVariante(codigoProducto, v.talla, color.codigo, disenoCodigo),
+              costo: input.costo,
+            };
+          }),
           select: { id: true },
         });
 
         if (input.stockInicial > 0) {
-          const plan = planMovimientoManual({
-            tipo: "INGRESO",
-            varianteId: variante.id,
-            cantidad: input.stockInicial,
-            stockActual: 0,
-            nota: "Stock inicial",
+          const movimientos = creadas.flatMap((variante) => {
+            const plan = planMovimientoManual({
+              tipo: "INGRESO",
+              varianteId: variante.id,
+              cantidad: input.stockInicial,
+              stockActual: 0,
+              nota: "Stock inicial",
+            });
+            return "movimiento" in plan ? [plan.movimiento] : [];
           });
-          if ("movimiento" in plan) {
-            await aplicarMovimientos(tx, [plan.movimiento], ctx.sesion.usuarioId);
-          }
+          await aplicarMovimientos(tx, movimientos, ctx.sesion.usuarioId);
         }
 
         const revalidar: Revalidar = {
           productos: [{ slug: producto.slug, slugCategoria: producto.categoria.slug }],
           catalogo: false,
         };
-        return { revalidar };
+        return { creadas: creadas.length, yaExistian, revalidar };
       });
     } catch (error) {
       traducirError(error);

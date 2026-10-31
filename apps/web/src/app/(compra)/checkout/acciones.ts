@@ -214,6 +214,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
     sku: string;
     talla: string;
     color: string;
+    diseno: string;
     precioUnitario: number;
     costoUnitario: number | null;
     cantidad: number;
@@ -243,6 +244,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
       sku: variante.sku,
       talla: variante.talla,
       color: variante.color,
+      diseno: variante.diseno,
       precioUnitario: precio.precio,
       // Congelado como el precio (regla 7): el margen de esta venta no cambia
       // si mañana se compra mas caro.
@@ -334,6 +336,7 @@ export async function crearPedido(datos: unknown): Promise<ResultadoPedido> {
               sku: item.sku,
               talla: item.talla,
               color: item.color,
+              diseno: item.diseno,
               precioUnitario: item.precioUnitario,
               costoUnitario: item.costoUnitario,
               cantidad: item.cantidad,

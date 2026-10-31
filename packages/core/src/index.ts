@@ -21,7 +21,36 @@ export {
   type OpcionDeTalla,
 } from "./catalogo/variantes";
 
-export { IMAGEN_DEMO, slugDesdeTexto, skuDeVariante, varianteRepetida } from "./catalogo/gestion";
+export {
+  CLASES_ATRIBUTO,
+  COLORES,
+  codigoDeDiseno,
+  colorRegistrado,
+  combinacionesDeVariantes,
+  DISENO_POR_DEFECTO,
+  DISENOS,
+  esCodigoTipo,
+  esHex,
+  ETIQUETAS_PRODUCTO,
+  FAMILIAS_COLOR,
+  IMAGEN_DEMO,
+  listoParaPublicar,
+  MAX_DISENOS,
+  MAX_VARIANTES_POR_LOTE,
+  mismoNombre,
+  requisitosDePublicacion,
+  siguienteCodigoColor,
+  siguienteCodigoProducto,
+  skuDeVariante,
+  slugDesdeTexto,
+  tallaParaSku,
+  TIPO_POR_DEFECTO,
+  tipoDeCodigo,
+  tipoDesdeNombre,
+  TIPOS_PRENDA,
+  varianteRepetida,
+} from "./catalogo/gestion";
+export type { ClaseAtributo, RequisitoPublicacion } from "./catalogo/gestion";
 
 export { creariaCiclo } from "./catalogo/arbol";
 export type { BannerDePortada } from "./catalogo/banners";

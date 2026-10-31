@@ -56,6 +56,10 @@ export const tokens = {
     // Color de Yape: el cuadro de su logo en los pagos, igual en los dos temas.
     // Plin no lleva: su logo trae su propia burbuja de color.
     yape: "#742284",
+    scotiabank: "#EC111A",
+    interbank: "#00AE42",
+    bcp: "#004192",
+    bbva: "#004481",
     // Tarjetas: azul de Visa (el de su logo actual, mas vivo que el #1A1F71 de
     // su guia de 2017) y el fondo oscuro donde se ven los circulos de Mastercard.
     visa: "#1434CB",

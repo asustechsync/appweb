@@ -16,10 +16,13 @@
     "demo-stock": "tsx prisma/demo-stock.ts",
     "demo-pagos": "tsx prisma/demo-pagos.ts",
     "demo-costos": "tsx prisma/demo-costos.ts",
+    "regenerar-sku": "tsx prisma/regenerar-sku.ts",
+    "atributos": "tsx prisma/atributos.ts",
     "studio": "prisma studio",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@appweb/core": "*",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "dotenv": "^17.4.2",

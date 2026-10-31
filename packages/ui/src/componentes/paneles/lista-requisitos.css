@@ -1,0 +1,36 @@
+.ui-lista-requisitos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-lista-requisitos__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-lista-requisitos__icono {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: var(--espacio-5);
+  block-size: var(--espacio-5);
+  border-radius: var(--radio-completo);
+  color: var(--color-textoInverso);
+}
+.ui-lista-requisitos__fila--cumplido .ui-lista-requisitos__icono {
+  background: var(--color-exito);
+}
+.ui-lista-requisitos__fila--falta .ui-lista-requisitos__icono {
+  background: var(--color-error);
+}
+.ui-lista-requisitos__fila--sugerido {
+  color: var(--color-textoSuave);
+}
+.ui-lista-requisitos__fila--sugerido .ui-lista-requisitos__icono {
+  background: var(--color-alerta);
+}

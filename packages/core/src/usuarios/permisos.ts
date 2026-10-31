@@ -74,25 +74,46 @@ export function accionesDe(rol: Rol): readonly Accion[] {
  * lo que se usa a diario y "Preferencias" para lo que se configura.
  */
 const SECCIONES_PANEL = [
-  { id: "inicio", apartado: "Menú", accion: "entrar_panel" },
-  { id: "pedidos", apartado: "Menú", grupo: "Ventas", accion: "ver_ventas" },
-  { id: "pagos", apartado: "Menú", grupo: "Ventas", accion: "ver_ventas" },
-  { id: "envios", apartado: "Menú", grupo: "Ventas", accion: "despachar_envios" },
-  { id: "devoluciones", apartado: "Menú", grupo: "Ventas", accion: "ver_ventas" },
-  { id: "productos", apartado: "Menú", grupo: "Catálogo", accion: "gestionar_productos" },
-  { id: "inventario", apartado: "Menú", grupo: "Catálogo", accion: "ajustar_stock" },
-  { id: "categorias", apartado: "Menú", grupo: "Catálogo", accion: "gestionar_productos" },
-  { id: "marcas", apartado: "Menú", grupo: "Catálogo", accion: "gestionar_productos" },
-  { id: "proveedores", apartado: "Menú", grupo: "Catálogo", accion: "gestionar_productos" },
-  { id: "packs", apartado: "Menú", grupo: "Catálogo", accion: "gestionar_productos" },
-  { id: "clientes", apartado: "Menú", grupo: "Cuentas", accion: "gestionar_usuarios" },
-  { id: "equipo", apartado: "Menú", grupo: "Cuentas", accion: "gestionar_usuarios" },
-  { id: "niveles", apartado: "Menú", grupo: "Cuentas", accion: "gestionar_ajustes" },
-  { id: "resenas", apartado: "Menú", grupo: "Opiniones", accion: "moderar_resenas" },
-  { id: "reclamos", apartado: "Menú", grupo: "Opiniones", accion: "atender_reclamos" },
-  { id: "cupones", apartado: "Menú", grupo: "Promociones", accion: "gestionar_ajustes" },
-  { id: "portada", apartado: "Menú", grupo: "Promociones", accion: "gestionar_ajustes" },
-  { id: "tienda", apartado: "Preferencias", grupo: "Configuración", accion: "gestionar_ajustes" },
+  // General: el resumen del dia.
+  { id: "inicio", apartado: "General", accion: "entrar_panel" },
+  // Comercial: vender y atraer clientes.
+  { id: "pedidos", apartado: "Comercial", grupo: "Ventas", accion: "ver_ventas" },
+  { id: "pagos", apartado: "Comercial", grupo: "Ventas", accion: "ver_ventas" },
+  { id: "envios", apartado: "Comercial", grupo: "Ventas", accion: "despachar_envios" },
+  { id: "devoluciones", apartado: "Comercial", grupo: "Ventas", accion: "ver_ventas" },
+  { id: "clientes", apartado: "Comercial", grupo: "Clientes", accion: "gestionar_usuarios" },
+  { id: "niveles", apartado: "Comercial", grupo: "Clientes", accion: "gestionar_ajustes" },
+  { id: "cupones", apartado: "Comercial", grupo: "Marketing", accion: "gestionar_ajustes" },
+  { id: "portada", apartado: "Comercial", grupo: "Marketing", accion: "gestionar_ajustes" },
+  // Operaciones: lo que hay que tener listo para vender. Categorias, marcas y
+  // atributos van con los productos: son lo que se elige al crearlos.
+  { id: "productos", apartado: "Operaciones", grupo: "Productos", accion: "gestionar_productos" },
+  { id: "packs", apartado: "Operaciones", grupo: "Productos", accion: "gestionar_productos" },
+  {
+    id: "categorias",
+    apartado: "Operaciones",
+    grupo: "Productos",
+    accion: "gestionar_productos",
+  },
+  { id: "marcas", apartado: "Operaciones", grupo: "Productos", accion: "gestionar_productos" },
+  {
+    id: "atributos",
+    apartado: "Operaciones",
+    grupo: "Productos",
+    accion: "gestionar_productos",
+  },
+  { id: "inventario", apartado: "Operaciones", grupo: "Inventario", accion: "ajustar_stock" },
+  {
+    id: "proveedores",
+    apartado: "Operaciones",
+    grupo: "Inventario",
+    accion: "gestionar_productos",
+  },
+  { id: "resenas", apartado: "Operaciones", grupo: "Atención", accion: "moderar_resenas" },
+  { id: "reclamos", apartado: "Operaciones", grupo: "Atención", accion: "atender_reclamos" },
+  // Configuracion: se ajusta una vez.
+  { id: "tienda", apartado: "Configuración", grupo: "Ajustes", accion: "gestionar_ajustes" },
+  { id: "equipo", apartado: "Configuración", grupo: "Ajustes", accion: "gestionar_usuarios" },
 ] as const satisfies readonly { id: string; apartado: string; grupo?: string; accion: Accion }[];
 
 /** Secciones del panel que este rol debe ver en el menu, en orden. */
@@ -109,7 +130,7 @@ export function grupoDeSeccion(id: string): string | undefined {
   return seccion && "grupo" in seccion ? seccion.grupo : undefined;
 }
 
-/** Apartado del menu ("Menú", "Preferencias") al que pertenece una seccion. */
+/** Apartado del menu ("Comercial", "Configuración") al que pertenece una seccion. */
 export function apartadoDeSeccion(id: string): string | undefined {
   return SECCIONES_PANEL.find((candidata) => candidata.id === id)?.apartado;
 }

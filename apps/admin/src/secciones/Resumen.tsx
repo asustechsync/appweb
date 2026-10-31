@@ -109,7 +109,7 @@ const FILAS_PAGOS_RESUMEN = 5;
 
 function variacionVisual(actual: number, previo: number, subirEsBueno = true) {
   const porcentaje = variacion(actual, previo);
-  const tono = porcentaje === 0 ? "igual" : (porcentaje > 0) === subirEsBueno ? "sube" : "baja";
+  const tono = porcentaje === 0 ? "igual" : porcentaje > 0 === subirEsBueno ? "sube" : "baja";
   return { cambio: `${conSigno(porcentaje)}%`, tono } as const;
 }
 
@@ -272,7 +272,11 @@ export function Resumen({
               etiqueta: "Cancelados",
               valor: ENTERO(metricas.pedidosCancelados),
               previo: `${etiquetaAnterior} ${ENTERO(metricas.pedidosCanceladosPrevios)}`,
-              ...variacionVisual(metricas.pedidosCancelados, metricas.pedidosCanceladosPrevios, false),
+              ...variacionVisual(
+                metricas.pedidosCancelados,
+                metricas.pedidosCanceladosPrevios,
+                false,
+              ),
               parte:
                 metricas.pedidosRecibidos > 0
                   ? Math.round((metricas.pedidosCancelados / metricas.pedidosRecibidos) * 100)
@@ -309,21 +313,36 @@ export function Resumen({
                 valor: ENTERO(metricas.clientesNuevos),
                 previo: `${etiquetaAnterior} ${ENTERO(metricas.anteriores.clientesNuevos)}`,
                 ...variacionVisual(metricas.clientesNuevos, metricas.anteriores.clientesNuevos),
-                parte: parteComparativa(metricas.clientesNuevos, metricas.anteriores.clientesNuevos),
+                parte: parteComparativa(
+                  metricas.clientesNuevos,
+                  metricas.anteriores.clientesNuevos,
+                ),
               },
               {
                 etiqueta: "Compradores",
                 valor: ENTERO(metricas.clientesCompradores),
                 previo: `${etiquetaAnterior} ${ENTERO(metricas.clientesCompradoresPrevios)}`,
-                ...variacionVisual(metricas.clientesCompradores, metricas.clientesCompradoresPrevios),
-                parte: parteComparativa(metricas.clientesCompradores, metricas.clientesCompradoresPrevios),
+                ...variacionVisual(
+                  metricas.clientesCompradores,
+                  metricas.clientesCompradoresPrevios,
+                ),
+                parte: parteComparativa(
+                  metricas.clientesCompradores,
+                  metricas.clientesCompradoresPrevios,
+                ),
               },
               {
                 etiqueta: "Recurrentes",
                 valor: ENTERO(metricas.clientesRecurrentes),
                 previo: `${etiquetaAnterior} ${ENTERO(metricas.clientesRecurrentesPrevios)}`,
-                ...variacionVisual(metricas.clientesRecurrentes, metricas.clientesRecurrentesPrevios),
-                parte: parteComparativa(metricas.clientesRecurrentes, metricas.clientesRecurrentesPrevios),
+                ...variacionVisual(
+                  metricas.clientesRecurrentes,
+                  metricas.clientesRecurrentesPrevios,
+                ),
+                parte: parteComparativa(
+                  metricas.clientesRecurrentes,
+                  metricas.clientesRecurrentesPrevios,
+                ),
               },
             ]
     : [];

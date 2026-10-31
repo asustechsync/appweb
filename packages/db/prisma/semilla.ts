@@ -13,7 +13,16 @@ import { config } from "dotenv";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+import {
+  COLORES,
+  colorRegistrado,
+  siguienteCodigoProducto,
+  skuDeVariante,
+  tipoDesdeNombre,
+  TIPOS_PRENDA,
+} from "@appweb/core";
 import { cadenaConexion } from "../src/conexion";
+import { sembrarAtributos } from "./atributos-iniciales";
 
 config({ path: "../../.env.local" });
 
@@ -788,10 +797,11 @@ function slugDe(texto: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function skuDe(slugProducto: string, variante: VarianteSeed): string {
-  const talla = variante.talla.replace(/\s+/g, "").toUpperCase();
-  const color = variante.color.replace(/\s+/g, "-").toUpperCase();
-  return `${slugProducto}-${talla}-${color}`.toUpperCase();
+/** SKU con las reglas del nucleo; todos los colores de la semilla estan en `COLORES`. */
+function skuDe(codigoProducto: string, variante: VarianteSeed): string {
+  const color = colorRegistrado(variante.color, COLORES);
+  if (color === null) throw new Error(`Color sin codigo en la semilla: ${variante.color}`);
+  return skuDeVariante(codigoProducto, variante.talla, color.codigo, 1);
 }
 
 async function crearCategorias() {
@@ -806,6 +816,11 @@ async function crearCategorias() {
 }
 
 async function crearProductos() {
+  // Codigos de modelo ya tomados: un producto nuevo recibe el siguiente de su tipo.
+  const usados = (
+    await prisma.producto.findMany({ where: { codigo: { not: null } }, select: { codigo: true } })
+  ).flatMap((p) => (p.codigo ? [p.codigo] : []));
+
   for (const p of productos) {
     const categoria = await prisma.categoria.findUniqueOrThrow({
       where: { slug: p.categoriaSlug },
@@ -820,10 +835,19 @@ async function crearProductos() {
       create: { nombre: nombreMarca, slug: slugDe(nombreMarca) },
     });
 
+    // El codigo se pone solo al crear: un producto que ya lo tiene lo conserva.
+    const yaCreado = await prisma.producto.findUnique({
+      where: { slug: p.slug },
+      select: { codigo: true },
+    });
+    const codigo =
+      yaCreado?.codigo ?? siguienteCodigoProducto(tipoDesdeNombre(p.nombre, TIPOS_PRENDA), usados);
+    if (yaCreado?.codigo == null) usados.push(codigo);
+
     const producto = await prisma.producto.upsert({
       where: { slug: p.slug },
-      update: { ...datosProducto, categoriaId: categoria.id, marcaId: marca.id },
-      create: { ...datosProducto, categoriaId: categoria.id, marcaId: marca.id },
+      update: { ...datosProducto, codigo, categoriaId: categoria.id, marcaId: marca.id },
+      create: { ...datosProducto, codigo, categoriaId: categoria.id, marcaId: marca.id },
     });
 
     // Las variantes no se borran: un pedido o un movimiento de stock las
@@ -845,7 +869,7 @@ async function crearProductos() {
           talla: v.talla,
           color: v.color,
           stock: v.stock,
-          sku: skuDe(p.slug, v),
+          sku: skuDe(codigo, v),
         })),
       });
     }
@@ -986,6 +1010,8 @@ async function main() {
   await crearBanners();
   console.log("");
   await crearCupones();
+  console.log("");
+  await sembrarAtributos(prisma);
 }
 
 main()

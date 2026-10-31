@@ -1,0 +1,66 @@
+.ui-selector-multiple {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ui-selector-multiple__titulo {
+  padding: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+/* FIRST MOBILE: las pastillas bajan de linea cuando no caben. */
+.ui-selector-multiple__opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+.ui-selector-multiple__opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-block-size: var(--espacio-8);
+  padding-inline: var(--espacio-3);
+  border: 1px solid var(--color-bordeFuerte);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  cursor: pointer;
+  transition:
+    border-color var(--transicion-rapida),
+    background var(--transicion-rapida),
+    color var(--transicion-rapida);
+}
+.ui-selector-multiple__opcion:hover {
+  border-color: var(--color-texto);
+}
+.ui-selector-multiple__opcion:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}
+.ui-selector-multiple__opcion--activa,
+.ui-selector-multiple__opcion--activa:hover {
+  border-color: var(--color-texto);
+  background: var(--color-texto);
+  color: var(--color-textoInverso);
+}
+.ui-selector-multiple:disabled .ui-selector-multiple__opcion {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+/* El color sale del dato (el hex guardado), no de un token. */
+.ui-selector-multiple__muestra {
+  flex-shrink: 0;
+  inline-size: var(--espacio-3);
+  block-size: var(--espacio-3);
+  border: 1px solid var(--color-bordeFuerte);
+  border-radius: var(--radio-completo);
+  background: var(--muestra);
+}

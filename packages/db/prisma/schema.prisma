@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  ESQUEMA — veintitres tablas en nueve dominios:
+//  ESQUEMA — veinticinco tablas en nueve dominios:
 //
 //      Cuenta      usuarios, direcciones, niveles
 //      Catalogo    categorias, marcas, productos, variantes, imagenes_producto,
-//                  packs, items_pack
+//                  packs, items_pack, tipos_prenda, atributos
 //      Contenido   banners
 //      Stock       movimientos_stock
 //      Compra      proveedores, compras, items_compra
@@ -25,6 +25,9 @@
 //  ellas no hay costo, y el costo de lo ya comprado no se recupera despues.
 //  Pack e ItemPack los pidio el negocio: un pack es una receta de variantes
 //  con precio propio, y su stock sale del de sus componentes.
+//  TipoPrenda y Atributo sacan del codigo las listas que el panel ofrece al
+//  crear un producto (tipos con sus tallas, colores, diseños, etiquetas): el
+//  negocio las amplia sin desplegar.
 //
 //  Orden de columnas dentro de cada modelo: identidad, contenido, relaciones,
 //  montos o precio, SEO, estado, fechas. El orden fisico en la base es el de
@@ -210,18 +213,75 @@ model Marca {
   @@map("marcas")
 }
 
+// Tipo de prenda: sus dos letras son el prefijo del codigo de modelo ("BX"
+// en "BX012"), por eso `codigo` no cambia nunca. Las tallas son las que el
+// panel ofrece marcar al crear variantes de ese tipo.
+model TipoPrenda {
+  // Identidad
+  id       String   @id @default(cuid())
+  codigo   String   @unique
+  nombre   String   @unique
+  // Contenido
+  // Palabras que lo delatan en el nombre del producto: "boxer", "medias".
+  palabras String[] @default([])
+  tallas   String[] @default([])
+  // Estado. Oculto = ya no se ofrece al crear; los productos que lo usan siguen igual.
+  orden    Int      @default(0)
+  activo   Boolean  @default(true)
+  // Fechas
+  creadoEn DateTime @default(now())
+
+  @@map("tipos_prenda")
+}
+
+enum ClaseAtributo {
+  COLOR
+  DISENO
+  ETIQUETA
+}
+
+// Valores que el panel ofrece elegir al crear un producto. La variante y el
+// producto guardan el nombre como texto (congelado, como en el pedido), asi
+// que el nombre no se edita: se oculta y se crea otro.
+model Atributo {
+  // Identidad
+  id       String        @id @default(cuid())
+  clase    ClaseAtributo
+  // Solo colores: los dos digitos que van en el SKU ("11" = Azul marino).
+  codigo   String?
+  nombre   String
+  // Solo colores: la muestra que se pinta en el panel ("#1E2A4A"). Editable:
+  // no va en el SKU ni se congela en ninguna venta.
+  hex      String?
+  // Estado
+  orden    Int           @default(0)
+  activo   Boolean       @default(true)
+  // Fechas
+  creadoEn DateTime      @default(now())
+
+  @@unique([clase, nombre])
+  @@unique([clase, codigo])
+  @@map("atributos")
+}
+
 // El producto es la ficha que se ve; lo que se vende es la Variante.
 model Producto {
   // Identidad
   id               String   @id @default(cuid())
   slug             String   @unique
+  // Codigo del modelo para el SKU: tipo de prenda + numero ("BX012"). Lo
+  // asigna `siguienteCodigoProducto` al crear y no cambia nunca, aunque el
+  // producto se renombre. Opcional solo para los productos anteriores a el;
+  // `npm run regenerar-sku -w @appweb/db` se los pone.
+  codigo           String?  @unique
   nombre           String
   // Contenido
   descripcion      String?
   // Resumen de una linea para la tarjeta del listado; `descripcion` es para
   // la ficha completa y no cabe ahi.
   descripcionCorta String?
-  // Insignia corta sobre la imagen: "Nuevo", "Mas vendido". Texto libre.
+  // Insignia corta sobre la imagen: "Nuevo", "Mas vendido". Se elige de los
+  // atributos ETIQUETA y se guarda como texto.
   etiqueta         String?
   // Muestra "Envío gratis" sobre la foto de la tarjeta. Lo marca el panel a mano.
   envioGratis      Boolean  @default(false)
@@ -263,22 +323,26 @@ model Producto {
 
 // Lo que se vende y se cuenta en almacen: un producto en una talla y un color.
 model Variante {
-  id         String   @id @default(cuid())
-  productoId String
+  id           String   @id @default(cuid())
+  productoId   String
   // Talla y color son columnas, no un sistema generico de atributos. Para ropa
   // basica la dimension no cambia nunca, y esto ahorra cinco tablas y un join
   // en cada consulta del catalogo.
-  talla      String
-  color      String
-  sku        String   @unique
+  talla        String
+  color        String
+  // Diseño dentro del producto ("Liso", "Rayas") y su numero, el ultimo
+  // digito del SKU. El numero se cuenta por producto (ver `codigoDeDiseno`).
+  diseno       String   @default("Liso")
+  disenoCodigo Int      @default(1)
+  sku          String   @unique
   // Cache del saldo. La verdad es la suma de MovimientoStock; esta columna
   // existe solo para no sumar el historico en cada lectura del catalogo.
-  stock      Int      @default(0)
+  stock        Int      @default(0)
   // Cache del costo de la ultima compra. La verdad es ItemCompra; esta columna
   // solo evita buscar la ultima compra para mostrar el margen. `null` = nunca
   // se compro con costo registrado.
-  costo      Decimal? @db.Decimal(10, 2)
-  activo     Boolean  @default(true)
+  costo        Decimal? @db.Decimal(10, 2)
+  activo       Boolean  @default(true)
 
   producto    Producto          @relation(fields: [productoId], references: [id], onDelete: Cascade)
   movimientos MovimientoStock[]
@@ -286,7 +350,7 @@ model Variante {
   itemsCompra ItemCompra[]
   itemsPack   ItemPack[]
 
-  @@unique([productoId, talla, color])
+  @@unique([productoId, talla, color, diseno])
   @@index([productoId, activo])
   @@map("variantes")
 }
@@ -448,7 +512,7 @@ model Pedido {
   // Pago. Elegido en el checkout; `PasarelaPago` lo necesita para recalcular
   // las instrucciones de pago sin volver a preguntar. Los cobros reales van en
   // la tabla `pagos`.
-  medioPago MedioPago
+  medioPago          MedioPago
   // Banco de destino elegido al pagar manualmente por transferencia.
   bancoTransferencia String?
 
@@ -503,6 +567,7 @@ model ItemPedido {
   sku            String
   talla          String
   color          String
+  diseno         String   @default("Liso")
   precioUnitario Decimal  @db.Decimal(10, 2)
   // Costo de la variante al vender, congelado como el precio: si mañana se
   // compra mas caro, el margen de esta venta no cambia. `null` = sin costo.

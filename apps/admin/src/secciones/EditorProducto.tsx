@@ -4,7 +4,21 @@ import { useEffect, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { margenDe, MAX_IMAGENES_POR_PRODUCTO, slugDesdeTexto, TIPOS_IMAGEN } from "@appweb/core";
+import {
+  DISENO_POR_DEFECTO,
+  esImagenDemo,
+  FAMILIAS_COLOR,
+  listoParaPublicar,
+  margenDe,
+  MAX_IMAGENES_POR_PRODUCTO,
+  MAX_VARIANTES_POR_LOTE,
+  requisitosDePublicacion,
+  slugDesdeTexto,
+  TIPO_POR_DEFECTO,
+  tipoDeCodigo,
+  tipoDesdeNombre,
+  TIPOS_IMAGEN,
+} from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -12,16 +26,20 @@ import {
   CampoSelect,
   CampoTexto,
   CabeceraDetalle,
+  ChipAgregar,
   Cargando,
   Casilla,
   FilaMovimiento,
   FilaUnida,
   Formulario,
   GaleriaEditable,
+  GrupoChips,
   IconoCatalogo,
   IconoFlechaDerecha,
   IconoFlechaIzquierda,
+  ListaRequisitos,
   LogoIcono,
+  SelectorMultiple,
   Tarjeta,
 } from "@appweb/ui";
 
@@ -61,6 +79,15 @@ const VACIO: DatosFormulario = {
   destacado: false,
   activo: false,
 };
+
+/** Un tipo de prenda tal como lo da `productos.opciones`. */
+interface TipoDeOpciones {
+  codigo: string;
+  nombre: string;
+  palabras: string[];
+  tallas: string[];
+  activo: boolean;
+}
 
 interface PropsEditorProducto {
   /** `null` = producto nuevo. */
@@ -109,17 +136,37 @@ export function EditorProducto({
         key={productoId ?? "nuevo"}
         productoId={productoId}
         inicial={detalle.data?.datos ?? VACIO}
+        codigo={detalle.data?.codigo ?? null}
         categorias={opciones.data.categorias}
         marcas={opciones.data.marcas}
+        tipos={opciones.data.tipos}
+        etiquetas={opciones.data.etiquetas}
         volver={volver}
         onCreado={onCreado}
       />
+      {productoId !== null && detalle.data ? (
+        <RequisitosProducto
+          activo={detalle.data.datos.activo}
+          requisitos={requisitosDePublicacion({
+            precio: detalle.data.datos.precio,
+            variantes: detalle.data.variantes,
+            fotosPropias: detalle.data.imagenes.filter((i) => !esImagenDemo(i.url)).length,
+            descripcionCorta: detalle.data.datos.descripcionCorta,
+          })}
+        />
+      ) : null}
       {productoId !== null && detalle.data ? (
         <FotosProducto productoId={productoId} imagenes={detalle.data.imagenes} />
       ) : null}
       {productoId !== null && detalle.data ? (
         <VariantesProducto
           productoId={productoId}
+          tallasDelTipo={
+            opciones.data.tipos.find((t) => t.codigo === tipoDeCodigo(detalle.data.codigo))
+              ?.tallas ?? []
+          }
+          colores={opciones.data.colores}
+          disenos={opciones.data.disenos}
           variantes={detalle.data.variantes}
           precio={detalle.data.datos.precio}
           avisoInicial={
@@ -132,6 +179,32 @@ export function EditorProducto({
         </Tarjeta>
       )}
     </>
+  );
+}
+
+// ── Antes de publicar ───────────────────────────────────────────────────────
+
+/**
+ * Lo que le falta al producto para mostrarse. Los mismos requisitos que el
+ * servidor exige al pasar de oculto a visible, calculados con lo ya guardado.
+ */
+function RequisitosProducto({
+  activo,
+  requisitos,
+}: {
+  activo: boolean;
+  requisitos: ReturnType<typeof requisitosDePublicacion>;
+}) {
+  const listo = listoParaPublicar(requisitos);
+  return (
+    <Tarjeta titulo="Antes de publicar">
+      <ListaRequisitos requisitos={requisitos} />
+      {activo ? null : listo ? (
+        <Alerta tono="exito">Listo: marca "Visible en la tienda" y guarda.</Alerta>
+      ) : (
+        <Alerta tono="info">Cuando cumpla lo obligatorio podrás mostrarlo en la tienda.</Alerta>
+      )}
+    </Tarjeta>
   );
 }
 
@@ -234,8 +307,14 @@ function FotosProducto({
 interface PropsFormularioProducto {
   productoId: string | null;
   inicial: DatosFormulario;
+  /** Codigo de modelo ("BX008"); `null` en un producto nuevo. */
+  codigo: string | null;
   categorias: { id: string; nombre: string; activo: boolean }[];
   marcas: { id: string; nombre: string; activo: boolean }[];
+  /** Tipos de prenda de Atributos; al crear solo se ofrecen los visibles. */
+  tipos: TipoDeOpciones[];
+  /** Etiquetas visibles de Atributos. */
+  etiquetas: string[];
   volver: React.ReactNode;
   onCreado: (id: string) => void;
 }
@@ -243,8 +322,11 @@ interface PropsFormularioProducto {
 function FormularioProducto({
   productoId,
   inicial,
+  codigo,
   categorias,
   marcas,
+  tipos,
+  etiquetas,
   volver,
   onCreado,
 }: PropsFormularioProducto) {
@@ -258,6 +340,14 @@ function FormularioProducto({
   const [slug, setSlug] = useState(inicial.slug);
   // En un producto nuevo el slug sigue al nombre hasta que alguien lo toca.
   const [slugTocado, setSlugTocado] = useState(!nuevo);
+  // El tipo tambien se sugiere desde el nombre hasta que alguien lo elige.
+  const tiposVisibles = tipos.filter((t) => t.activo);
+  const [tipo, setTipo] = useState(
+    tiposVisibles.some((t) => t.codigo === TIPO_POR_DEFECTO)
+      ? TIPO_POR_DEFECTO
+      : (tiposVisibles[0]?.codigo ?? ""),
+  );
+  const [tipoTocado, setTipoTocado] = useState(false);
   const [categoriaId, setCategoriaId] = useState(inicial.categoriaId);
   const [marcaId, setMarcaId] = useState(inicial.marcaId ?? "");
   const [precio, setPrecio] = useState(inicial.precio === null ? "" : String(inicial.precio));
@@ -349,7 +439,7 @@ function FormularioProducto({
           ancho="completo"
           onSubmit={(evento) => {
             evento.preventDefault();
-            if (nuevo) crear.mutate(datos());
+            if (nuevo) crear.mutate({ datos: datos(), tipo });
             else editar.mutate({ productoId, datos: datos() });
           }}
         >
@@ -360,6 +450,10 @@ function FormularioProducto({
             onCambio={(valor) => {
               setNombre(valor);
               if (!slugTocado) setSlug(slugDesdeTexto(valor));
+              if (nuevo && !tipoTocado) {
+                const sugerido = tipoDesdeNombre(valor, tiposVisibles);
+                if (tiposVisibles.some((t) => t.codigo === sugerido)) setTipo(sugerido);
+              }
             }}
             requerido
           />
@@ -374,6 +468,32 @@ function FormularioProducto({
             placeholder="boxer-algodon-pima"
             requerido
           />
+          {nuevo ? (
+            <CampoSelect
+              id="producto-tipo"
+              etiqueta="Tipo de prenda (fija el código del modelo)"
+              valor={tipo}
+              opciones={[
+                ...(tipo === "" ? [{ valor: "", etiqueta: "Crea un tipo en Atributos" }] : []),
+                ...tiposVisibles.map((t) => ({
+                  valor: t.codigo,
+                  etiqueta: `${t.codigo} · ${t.nombre}`,
+                })),
+              ]}
+              onCambio={(valor) => {
+                setTipoTocado(true);
+                setTipo(valor);
+              }}
+            />
+          ) : (
+            <Campo
+              id="producto-codigo"
+              etiqueta="Código del modelo (no cambia)"
+              valor={codigo ?? "Sin código"}
+              onCambio={() => {}}
+              disabled
+            />
+          )}
           <CampoSelect
             id="producto-categoria"
             etiqueta="Categoría"
@@ -428,12 +548,19 @@ function FormularioProducto({
             onCambio={setDescripcion}
             filas={5}
           />
-          <Campo
+          <CampoSelect
             id="producto-insignia"
-            etiqueta="Insignia sobre la foto (opcional)"
+            etiqueta="Etiqueta sobre la foto (se crean en Atributos)"
             valor={etiqueta}
+            opciones={[
+              { valor: "", etiqueta: "Sin etiqueta" },
+              // La que ya tenia sigue a la vista aunque se haya ocultado en Atributos.
+              ...(inicial.etiqueta !== "" && !etiquetas.includes(inicial.etiqueta)
+                ? [{ valor: inicial.etiqueta, etiqueta: `${inicial.etiqueta} (oculta)` }]
+                : []),
+              ...etiquetas.map((e) => ({ valor: e, etiqueta: e })),
+            ]}
             onCambio={setEtiqueta}
-            placeholder="Nuevo, Más vendido…"
           />
           <Casilla
             id="producto-envio-gratis"
@@ -447,16 +574,19 @@ function FormularioProducto({
             marcada={destacado}
             onCambio={setDestacado}
           />
-          <Casilla
-            id="producto-activo"
-            etiqueta="Visible en la tienda"
-            marcada={activo}
-            onCambio={setActivo}
-          />
-          <Alerta tono="info">
-            Por ahora el producto usa la foto de demostración. La subida de fotos llega en una fase
-            posterior.
-          </Alerta>
+          {nuevo ? (
+            <Alerta tono="info">
+              El producto se crea oculto. Después agrégale fotos y variantes con stock para
+              mostrarlo en la tienda.
+            </Alerta>
+          ) : (
+            <Casilla
+              id="producto-activo"
+              etiqueta="Visible en la tienda"
+              marcada={activo}
+              onCambio={setActivo}
+            />
+          )}
           <Boton tipo="submit" disabled={guardando}>
             {guardando ? "Guardando…" : nuevo ? "Crear producto" : "Guardar cambios"}
           </Boton>
@@ -470,6 +600,11 @@ function FormularioProducto({
 
 interface PropsVariantesProducto {
   productoId: string;
+  /** Tallas del tipo de prenda del modelo: las que se ofrecen marcar. */
+  tallasDelTipo: string[];
+  /** Colores y diseños visibles en Atributos. */
+  colores: { nombre: string; hex: string | null }[];
+  disenos: string[];
   avisoInicial: string | null;
   /** Precio de venta del producto: con el costo de cada variante da el margen. */
   precio: number;
@@ -477,6 +612,7 @@ interface PropsVariantesProducto {
     id: string;
     talla: string;
     color: string;
+    diseno: string;
     sku: string;
     stock: number;
     /** Costo puesto a mano o el de la ultima compra, que lo vuelve a fijar. */
@@ -529,12 +665,25 @@ function CostoDeVariante({
   );
 }
 
+/** "XXXL, 3XL ,," -> ["XXXL", "3XL"]: las tallas escritas a mano, separadas por comas. */
+function tallasEscritas(texto: string): string[] {
+  return texto
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
 /**
- * Tallas y colores. El stock no se edita aqui: el inicial entra como ingreso
- * y despues todo pasa por la seccion Stock, que deja el movimiento escrito.
+ * Tallas y colores. Se crean en bloque: cada talla marcada con cada color
+ * marcado, en un mismo diseño. El stock no se edita aqui: el inicial entra
+ * como ingreso y despues todo pasa por la seccion Stock, que deja el
+ * movimiento escrito.
  */
 function VariantesProducto({
   productoId,
+  tallasDelTipo,
+  colores: coloresDisponibles,
+  disenos,
   variantes,
   precio,
   avisoInicial,
@@ -542,9 +691,15 @@ function VariantesProducto({
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const [talla, setTalla] = useState("");
-  const [color, setColor] = useState("");
+  const [tallas, setTallas] = useState<string[]>([]);
+  const [otrasTallas, setOtrasTallas] = useState("");
+  const [colores, setColores] = useState<string[]>([]);
+  const disenoInicial = disenos.includes(DISENO_POR_DEFECTO)
+    ? DISENO_POR_DEFECTO
+    : (disenos[0] ?? "");
+  const [diseno, setDiseno] = useState(disenoInicial);
   const [stockInicial, setStockInicial] = useState("0");
+  const [costo, setCosto] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(avisoInicial);
 
@@ -565,16 +720,26 @@ function VariantesProducto({
   }
 
   const agregar = useMutation(
-    trpc.panel.productos.agregarVariante.mutationOptions({
-      onSuccess: async (r, v) => {
-        setTalla("");
-        setColor("");
+    trpc.panel.productos.agregarVariantes.mutationOptions({
+      onSuccess: async (r) => {
+        setTallas([]);
+        setOtrasTallas("");
+        setColores([]);
+        setDiseno(disenoInicial);
         setStockInicial("0");
-        await alTerminar(`Talla ${v.talla} en ${v.color} agregada.`, r.revalidar);
+        setCosto("");
+        const saltadas = r.yaExistian > 0 ? ` ${r.yaExistian} ya existían y se saltaron.` : "";
+        await alTerminar(
+          `${r.creadas} ${r.creadas === 1 ? "variante agregada" : "variantes agregadas"}.${saltadas}`,
+          r.revalidar,
+        );
       },
       onError: alFallar,
     }),
   );
+
+  const todasLasTallas = [...tallas, ...tallasEscritas(otrasTallas)];
+  const cuantas = todasLasTallas.length * colores.length;
 
   const cambiarActivo = useMutation(
     trpc.panel.productos.cambiarActivoVariante.mutationOptions({
@@ -596,7 +761,29 @@ function VariantesProducto({
     }),
   );
 
-  const trabajando = agregar.isPending || cambiarActivo.isPending || fijarCosto.isPending;
+  // Un color o diseño que falta se crea aqui mismo, sin ir a Atributos, y
+  // queda elegido. Se guarda en Atributos como cualquier otro.
+  const [familiaNueva, setFamiliaNueva] = useState("0");
+  const altaRapida = useMutation(
+    trpc.panel.atributos.guardar.mutationOptions({
+      onSuccess: (r, v) => {
+        setError(null);
+        if (v.clase === "COLOR") setColores((actuales) => [...actuales, v.nombre]);
+        else setDiseno(v.nombre);
+        setAviso(
+          r.codigo
+            ? `Color ${v.nombre} creado con el código ${r.codigo}.`
+            : `Diseño ${v.nombre} creado.`,
+        );
+        void queryClient.invalidateQueries(trpc.panel.productos.opciones.pathFilter());
+        void queryClient.invalidateQueries(trpc.panel.atributos.pathFilter());
+      },
+      onError: alFallar,
+    }),
+  );
+
+  const trabajando =
+    agregar.isPending || cambiarActivo.isPending || fijarCosto.isPending || altaRapida.isPending;
 
   return (
     <Tarjeta titulo="Tallas y colores">
@@ -611,7 +798,7 @@ function VariantesProducto({
             <FilaMovimiento
               key={v.id}
               logo={<LogoIcono icono={<IconoCatalogo tamano={16} />} nombre="Variante" />}
-              titulo={`Talla ${v.talla} · ${v.color}`}
+              titulo={`Talla ${v.talla} · ${v.color} · ${v.diseno}`}
               detalle={`SKU ${v.sku}`}
               subtitulo={textoDeCosto(precio, v.costo)}
               estado={
@@ -650,38 +837,115 @@ function VariantesProducto({
           evento.preventDefault();
           agregar.mutate({
             productoId,
-            talla,
-            color,
+            tallas: todasLasTallas,
+            colores,
+            diseno,
             stockInicial: numeroDesdeTexto(stockInicial),
+            costo: costo.trim() === "" ? null : numeroDesdeTexto(costo),
           });
         }}
       >
+        <SelectorMultiple
+          etiqueta="Tallas (las de su tipo de prenda)"
+          opciones={tallasDelTipo.map((t) => ({ valor: t, etiqueta: t }))}
+          valores={tallas}
+          onCambio={setTallas}
+          disabled={trabajando}
+        />
+        <Campo
+          id="variante-otras-tallas"
+          etiqueta="Otras tallas (separadas por comas)"
+          valor={otrasTallas}
+          onCambio={setOtrasTallas}
+          placeholder="XXXL, 6M, 12"
+        />
+        <SelectorMultiple
+          etiqueta="Colores"
+          opciones={coloresDisponibles.map((c) => ({
+            valor: c.nombre,
+            etiqueta: c.nombre,
+            muestra: c.hex,
+          }))}
+          valores={colores}
+          onCambio={setColores}
+          disabled={trabajando}
+        />
+        <FilaUnida iguales>
+          <CampoSelect
+            id="variante-familia-nueva"
+            etiqueta="¿Falta un color? Elige su familia"
+            valor={familiaNueva}
+            opciones={FAMILIAS_COLOR.map((f) => ({
+              valor: String(f.decena),
+              etiqueta: `${f.decena}x · ${f.nombre}`,
+            }))}
+            onCambio={setFamiliaNueva}
+          />
+          <GrupoChips titulo="y escríbelo">
+            <ChipAgregar
+              texto="+ Nuevo color"
+              etiqueta="Nombre del color nuevo"
+              placeholder="Plateado"
+              disabled={trabajando}
+              onAgregar={(nombre) =>
+                altaRapida.mutate({
+                  clase: "COLOR",
+                  nombre,
+                  familia: Number(familiaNueva),
+                  activo: true,
+                })
+              }
+            />
+          </GrupoChips>
+        </FilaUnida>
+        <CampoSelect
+          id="variante-diseno"
+          etiqueta="Diseño"
+          valor={diseno}
+          opciones={disenos.map((d) => ({ valor: d, etiqueta: d }))}
+          onCambio={setDiseno}
+        />
+        <GrupoChips>
+          <ChipAgregar
+            texto="+ Nuevo diseño"
+            etiqueta="Nombre del diseño nuevo"
+            placeholder="Encaje"
+            disabled={trabajando}
+            onAgregar={(nombre) => altaRapida.mutate({ clase: "DISENO", nombre, activo: true })}
+          />
+        </GrupoChips>
         <FilaUnida iguales>
           <Campo
-            id="variante-talla"
-            etiqueta="Talla"
-            valor={talla}
-            onCambio={setTalla}
-            placeholder="M, 6M, Única…"
-            requerido
+            id="variante-stock"
+            etiqueta="Stock inicial de cada una"
+            valor={stockInicial}
+            onCambio={setStockInicial}
+            modoTeclado="numeric"
           />
           <Campo
-            id="variante-color"
-            etiqueta="Color"
-            valor={color}
-            onCambio={setColor}
-            placeholder="Negro"
-            requerido
+            id="variante-costo"
+            etiqueta="Costo por unidad (opcional)"
+            valor={costo}
+            onCambio={setCosto}
+            placeholder="S/ 8.50"
+            modoTeclado="decimal"
           />
         </FilaUnida>
-        <Campo
-          id="variante-stock"
-          etiqueta="Stock inicial (entra como ingreso)"
-          valor={stockInicial}
-          onCambio={setStockInicial}
-        />
-        <Boton tipo="submit" variante="secundario" disabled={trabajando}>
-          {agregar.isPending ? "Agregando…" : "+ Agregar talla y color"}
+        {cuantas > MAX_VARIANTES_POR_LOTE ? (
+          <Alerta tono="error">
+            Son {cuantas} combinaciones: se crean hasta {MAX_VARIANTES_POR_LOTE} de una vez.
+          </Alerta>
+        ) : null}
+        <Boton
+          tipo="submit"
+          variante="secundario"
+          disabled={trabajando || cuantas === 0 || cuantas > MAX_VARIANTES_POR_LOTE}
+        >
+          {agregar.isPending
+            ? "Agregando…"
+            : cuantas === 0
+              ? "Marca tallas y colores"
+              : `+ Agregar ${cuantas} ${cuantas === 1 ? "variante" : "variantes"}`}
         </Boton>
       </Formulario>
     </Tarjeta>

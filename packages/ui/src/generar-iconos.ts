@@ -30,6 +30,7 @@ const AVISO = "// GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: np
 /** Atributos que el svg escribe con guion y React en camelCase. */
 const ATRIBUTOS_REACT: Record<string, string> = {
   class: "className",
+  style: "style",
   "clip-rule": "clipRule",
   "clip-path": "clipPath",
   "fill-rule": "fillRule",
@@ -77,13 +78,28 @@ function aJsx(clave: string): string {
   return ATRIBUTOS_REACT[clave] ?? clave;
 }
 
+/** Convierte estilos SVG inline a props SVG compatibles con React DOM y React Native. */
+function normalizarEstilos(texto: string): string {
+  return texto.replace(/\sstyle="([^"]*)"/g, (_, estilos: string) => {
+    const atributos = estilos
+      .split(";")
+      .map((regla) => regla.trim())
+      .filter(Boolean)
+      .map((regla) => {
+        const separador = regla.indexOf(":");
+        if (separador < 0) return regla;
+        const clave = regla.slice(0, separador).trim();
+        const valor = regla.slice(separador + 1).trim();
+        return `${aJsx(clave)}="${valor}"`;
+      });
+    return ` ${atributos.join(" ")}`;
+  });
+}
 function leerIcono(categoria: string, archivo: string): Icono {
   const ruta = `${categoria}/${archivo}`;
-  const texto = readFileSync(join(carpetaFuente, categoria, archivo), "utf8").replace(
-    /\r\n/g,
-    "\n",
+  const texto = normalizarEstilos(
+    readFileSync(join(carpetaFuente, categoria, archivo), "utf8").replace(/\r\n/g, "\n"),
   );
-
   const descripcion = texto.match(/<!--\s*([\s\S]*?)\s*-->/)?.[1]?.replace(/\s+/g, " ") ?? null;
   const svg = texto.match(/<svg\b([^>]*)>([\s\S]*?)<\/svg>/);
   if (!svg) throw new Error(`${ruta}: no tiene <svg>.`);

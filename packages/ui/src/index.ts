@@ -246,6 +246,24 @@ export {
   type PropsSelectorEstrellas,
 } from "./componentes/formularios/SelectorEstrellas";
 export { Casilla, type PropsCasilla } from "./componentes/formularios/Casilla";
+export {
+  SelectorMultiple,
+  type OpcionMultiple,
+  type PropsSelectorMultiple,
+} from "./componentes/formularios/SelectorMultiple";
+export {
+  ListaRequisitos,
+  type PropsListaRequisitos,
+  type RequisitoDeLista,
+} from "./componentes/paneles/ListaRequisitos";
+export {
+  ChipAgregar,
+  ChipAtributo,
+  GrupoChips,
+  type PropsChipAgregar,
+  type PropsChipAtributo,
+  type PropsGrupoChips,
+} from "./componentes/paneles/ChipsAtributo";
 export { AccesoSocial } from "./componentes/navegacion/AccesoSocial";
 export { FilaCampos, type PropsFilaCampos } from "./componentes/formularios/FilaCampos";
 export { FilaUnida, type PropsFilaUnida } from "./componentes/paneles/FilaUnida";

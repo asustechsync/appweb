@@ -80,9 +80,10 @@ export function CuadrosPago({
   const medio = ETIQUETAS_MEDIO_PAGO[pago.medio];
   const logo = pago.tarjeta ? LOGO_MARCA[pago.tarjeta.marca] : LOGO_MEDIO[pago.medio];
   const codigoBanco = pago.pedido.bancoTransferencia;
-  const banco = codigoBanco && BANCOS_TRANSFERENCIA.has(codigoBanco as BancoTransferencia)
-    ? (codigoBanco as BancoTransferencia)
-    : null;
+  const banco =
+    codigoBanco && BANCOS_TRANSFERENCIA.has(codigoBanco as BancoTransferencia)
+      ? (codigoBanco as BancoTransferencia)
+      : null;
   // Abre el chat con el mensaje escrito; quien lo envia es el que pulsa. Sin
   // un telefono valido WhatsApp abre igual y se elige el chat a mano.
   const mensajeWhatsApp =

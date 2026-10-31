@@ -1,8 +1,32 @@
 import { describe, expect, it } from "vitest";
 
-import { esquemaBanner, esquemaCupon, esquemaProducto } from "../tipos";
+import {
+  esquemaAtributo,
+  esquemaBanner,
+  esquemaCupon,
+  esquemaProducto,
+  esquemaTipoPrenda,
+  esquemaVariantesNuevas,
+} from "../tipos";
 import { planMovimientoManual } from "../stock/manual";
-import { skuDeVariante, slugDesdeTexto, varianteRepetida } from "./gestion";
+import {
+  codigoDeDiseno,
+  COLORES,
+  colorRegistrado,
+  combinacionesDeVariantes,
+  esHex,
+  listoParaPublicar,
+  mismoNombre,
+  requisitosDePublicacion,
+  siguienteCodigoColor,
+  tipoDeCodigo,
+  siguienteCodigoProducto,
+  skuDeVariante,
+  slugDesdeTexto,
+  tipoDesdeNombre,
+  TIPOS_PRENDA,
+  varianteRepetida,
+} from "./gestion";
 
 describe("slug y SKU", () => {
   it("el slug no lleva tildes, ñ ni simbolos", () => {
@@ -10,17 +34,142 @@ describe("slug y SKU", () => {
     expect(slugDesdeTexto("¡¡¡")).toBe("");
   });
 
-  it("el SKU sigue el formato de la semilla, sin tildes", () => {
-    expect(skuDeVariante("medias-premium-xy-mujer", "Única", "Beige")).toBe(
-      "MEDIAS-PREMIUM-XY-MUJER-UNICA-BEIGE",
-    );
-    expect(skuDeVariante("boxer-pima", "M", "Azul marino")).toBe("BOXER-PIMA-M-AZUL-MARINO");
+  it("el tipo de prenda sale del nombre", () => {
+    expect(tipoDesdeNombre("Boxer algodón pack x3", TIPOS_PRENDA)).toBe("BX");
+    expect(tipoDesdeNombre("Medias térmicas de invierno", TIPOS_PRENDA)).toBe("MD");
+    expect(tipoDesdeNombre("Calzón microfibra invisible", TIPOS_PRENDA)).toBe("CZ");
+    expect(tipoDesdeNombre("Gorro de lana", TIPOS_PRENDA)).toBe("AC");
+    // Un tipo creado en el panel, con palabras escritas con tilde.
+    const gorros = [{ codigo: "GO", palabras: ["Gorro"] }];
+    expect(tipoDesdeNombre("Gorro de lana", gorros)).toBe("GO");
   });
 
-  it("detecta talla y color repetidos sin importar mayusculas ni tildes", () => {
-    const existentes = [{ talla: "Única", color: "Negro" }];
-    expect(varianteRepetida(existentes, { talla: "unica", color: " NEGRO " })).toBe(true);
-    expect(varianteRepetida(existentes, { talla: "Única", color: "Gris" })).toBe(false);
+  it("el codigo de modelo sigue al mayor de su tipo y no rellena huecos", () => {
+    expect(siguienteCodigoProducto("BX", [])).toBe("BX001");
+    expect(siguienteCodigoProducto("BX", ["BX001", "BX012", "MD030"])).toBe("BX013");
+  });
+
+  it("el SKU es modelo, talla y color con diseño", () => {
+    expect(skuDeVariante("BX012", "M", "11", 2)).toBe("BX012-M-112");
+    expect(skuDeVariante("MD007", "35-40", "01", 1)).toBe("MD007-3540-011");
+    expect(skuDeVariante("GU003", "Única", "01", 1)).toBe("GU003-U-011");
+    expect(skuDeVariante("BR005", "34b", "30", 2)).toBe("BR005-34B-302");
+  });
+
+  it("los colores se reconocen sin importar mayusculas ni tildes", () => {
+    expect(colorRegistrado(" azul MARINO ", COLORES)?.codigo).toBe("11");
+    expect(colorRegistrado("cafe", COLORES)?.codigo).toBe("32");
+    expect(colorRegistrado("Plateado", COLORES)).toBeNull();
+    expect(mismoNombre("Más vendido", " mas VENDIDO")).toBe(true);
+  });
+
+  it("un color nuevo toma el siguiente numero de su familia", () => {
+    const usados = COLORES.map((c) => c.codigo);
+    expect(siguienteCodigoColor(1, usados)).toBe("14");
+    expect(siguienteCodigoColor(7, usados)).toBe("70");
+    expect(siguienteCodigoColor(0, [])).toBe("01");
+    expect(siguienteCodigoColor(9, ["99"])).toBeNull();
+    expect(esHex("#1e2a4a")).toBe(true);
+    expect(esHex("1E2A4A")).toBe(false);
+  });
+
+  it("el diseño se numera dentro del producto", () => {
+    const existentes = [
+      { diseno: "Liso", disenoCodigo: 1 },
+      { diseno: "Rayas", disenoCodigo: 2 },
+    ];
+    expect(codigoDeDiseno([], "Liso")).toBe(1);
+    expect(codigoDeDiseno(existentes, "rayas")).toBe(2);
+    expect(codigoDeDiseno(existentes, "Encaje")).toBe(3);
+    expect(codigoDeDiseno([{ diseno: "X", disenoCodigo: 9 }], "Otro")).toBeNull();
+  });
+
+  it("detecta talla, color y diseño repetidos sin importar mayusculas ni tildes", () => {
+    const existentes = [{ talla: "Única", color: "Negro", diseno: "Liso" }];
+    expect(varianteRepetida(existentes, { talla: "unica", color: " NEGRO ", diseno: "liso" })).toBe(
+      true,
+    );
+    expect(varianteRepetida(existentes, { talla: "Única", color: "Negro", diseno: "Rayas" })).toBe(
+      false,
+    );
+  });
+});
+
+describe("variantes en bloque", () => {
+  it("cruza tallas y colores y salta las que ya existen o se repiten", () => {
+    const existentes = [{ talla: "M", color: "Negro", diseno: "Liso" }];
+    const r = combinacionesDeVariantes(existentes, {
+      tallas: ["S", "M", "m"],
+      colores: ["Negro", "Blanco"],
+      diseno: "Liso",
+    });
+    expect(r.nuevas).toEqual([
+      { talla: "S", color: "Negro", diseno: "Liso" },
+      { talla: "S", color: "Blanco", diseno: "Liso" },
+      { talla: "M", color: "Blanco", diseno: "Liso" },
+    ]);
+    expect(r.yaExistian).toBe(1);
+  });
+
+  it("el esquema pone Liso si no hay diseño y exige tallas y colores", () => {
+    const base = {
+      productoId: "p1",
+      tallas: ["M"],
+      colores: ["Negro"],
+      diseno: " ",
+      stockInicial: 0,
+    };
+    expect(esquemaVariantesNuevas.parse(base).diseno).toBe("Liso");
+    expect(esquemaVariantesNuevas.safeParse({ ...base, colores: [] }).success).toBe(false);
+    expect(esquemaVariantesNuevas.safeParse({ ...base, tallas: [] }).success).toBe(false);
+  });
+
+  it("el tipo sale del codigo de modelo", () => {
+    expect(tipoDeCodigo("BX008")).toBe("BX");
+    expect(tipoDeCodigo("GO001")).toBe("GO");
+    expect(tipoDeCodigo(null)).toBeNull();
+  });
+});
+
+describe("atributos", () => {
+  it("el tipo de prenda lleva dos letras y al menos una talla, sin repetir", () => {
+    const tipo = esquemaTipoPrenda.parse({
+      codigo: " go ",
+      nombre: "Gorros",
+      tallas: ["Única", "Única", " "],
+      palabras: [],
+      orden: 0,
+    });
+    expect(tipo.codigo).toBe("GO");
+    expect(tipo.tallas).toEqual(["Única"]);
+    expect(
+      esquemaTipoPrenda.safeParse({ ...tipo, codigo: "GOR" }).success ||
+        esquemaTipoPrenda.safeParse({ ...tipo, tallas: [] }).success,
+    ).toBe(false);
+  });
+
+  it("un color nuevo pide su familia; diseños y etiquetas no", () => {
+    const base = { clase: "COLOR" as const, nombre: "Plateado", orden: 0 };
+    expect(esquemaAtributo.safeParse(base).success).toBe(false);
+    expect(esquemaAtributo.safeParse({ ...base, familia: 0 }).success).toBe(true);
+    expect(esquemaAtributo.safeParse({ ...base, familia: 8 }).success).toBe(false);
+    expect(esquemaAtributo.safeParse({ ...base, clase: "DISENO" }).success).toBe(true);
+  });
+});
+
+describe("requisitos de publicacion", () => {
+  const base = { precio: 29.9, variantes: [], fotosPropias: 0, descripcionCorta: "" };
+
+  it("sin una variante con stock no se puede publicar", () => {
+    expect(listoParaPublicar(requisitosDePublicacion(base))).toBe(false);
+    const oculta = { ...base, variantes: [{ activo: false, stock: 5 }] };
+    expect(listoParaPublicar(requisitosDePublicacion(oculta))).toBe(false);
+  });
+
+  it("la foto y el resumen se recomiendan pero no bloquean", () => {
+    const lista = requisitosDePublicacion({ ...base, variantes: [{ activo: true, stock: 3 }] });
+    expect(listoParaPublicar(lista)).toBe(true);
+    expect(lista.filter((r) => !r.cumplido).map((r) => r.id)).toEqual(["foto", "resumen"]);
   });
 });
 

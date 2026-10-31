@@ -1,27 +1,42 @@
 .ui-logo-banco {
-  border-radius: var(--radio-etiqueta);
-  color: var(--color-medioPagoTexto);
+  overflow: hidden;
+  border-radius: var(--radio-md);
+  background: #fff;
+  color: var(--color-texto);
   font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-fuerte);
   letter-spacing: -0.04em;
   text-align: center;
-  text-shadow: 0 1px 1px color-mix(in srgb, black 18%, transparent);
+  text-shadow: none;
 }
-.ui-logo-banco--bcp {
-  --ui-logo-base: var(--color-error);
+.ui-logo-banco__icono {
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+  object-fit: contain;
 }
-.ui-logo-banco--interbank {
-  --ui-logo-base: var(--color-exito);
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) .ui-logo-banco {
+    background: #fff;
+  }
 }
-.ui-logo-banco--bbva {
-  --ui-logo-base: var(--color-visa);
+:root[data-tema="oscuro"] .ui-logo-banco {
+  background: #fff;
 }
-.ui-logo-banco--scotiabank {
-  --ui-logo-base: var(--color-error);
+/* Los iconos de los bancos son blancos (menos Interbank y Banco de la Nación): el cuadro lleva el color de la marca. */
+.ui-logo-banco--bbva,
+:root[data-tema="oscuro"] .ui-logo-banco--bbva {
+  background: var(--color-bbva);
 }
-.ui-logo-banco--banco_nacion {
-  --ui-logo-base: var(--color-info);
+.ui-logo-banco--bcp,
+:root[data-tema="oscuro"] .ui-logo-banco--bcp {
+  background: var(--color-bcp);
 }
-.ui-logo-banco--otro {
-  --ui-logo-base: var(--color-graficoGrafito);
+.ui-logo-banco--interbank,
+:root[data-tema="oscuro"] .ui-logo-banco--interbank {
+  background: var(--color-interbank);
+}
+.ui-logo-banco--scotiabank,
+:root[data-tema="oscuro"] .ui-logo-banco--scotiabank {
+  background: var(--color-scotiabank);
 }

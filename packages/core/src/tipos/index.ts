@@ -12,6 +12,14 @@ import { GENEROS } from "../usuarios/genero";
 import { PERIODOS } from "../panel/resumen";
 import { ESTADOS_PEDIDO } from "../pedidos/estados";
 import { ESTADOS_PAGO } from "../pedidos/gestion";
+import {
+  CLASES_ATRIBUTO,
+  DISENO_POR_DEFECTO,
+  esCodigoTipo,
+  esHex,
+  FAMILIAS_COLOR,
+  MAX_VARIANTES_POR_LOTE,
+} from "../catalogo/gestion";
 import { ESTADOS_RECLAMO, TIPOS_BIEN, TIPOS_RECLAMO } from "../reclamos/libro";
 import {
   DECISIONES_RESENA,
@@ -420,18 +428,53 @@ export const esquemaEdicionProducto = z.object({
   datos: esquemaProducto,
 });
 
-/** Variante nueva. El SKU lo arma `skuDeVariante`; el stock inicial entra
-    como un INGRESO, nunca escrito directo en la columna. */
-export const esquemaVarianteNueva = z.object({
-  productoId: z.string().min(1),
-  talla: z.string().trim().min(1, "Escribe la talla").max(12, "La talla es demasiado larga"),
-  color: z.string().trim().min(1, "Escribe el color").max(40, "El color es demasiado largo"),
-  stockInicial: z
-    .number({ error: "Escribe el stock inicial" })
-    .int("El stock tiene que ser un número entero")
-    .min(0, "El stock no puede ser negativo")
-    .max(100000),
+/** Las dos letras de un tipo de prenda: "bx" -> "BX". */
+const esquemaCodigoTipo = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .refine(esCodigoTipo, "El código son dos letras, sin tildes: BX, MD");
+
+/** Alta de producto: los datos y el tipo de prenda, que fija su codigo de
+    modelo ("BX008") y ya no cambia. Que el tipo exista lo revisa la API. */
+export const esquemaProductoNuevo = z.object({
+  datos: esquemaProducto,
+  tipo: esquemaCodigoTipo,
 });
+
+/** Variantes nuevas en bloque: cada talla con cada color, en un mismo diseño.
+    El SKU lo arma `skuDeVariante`; el stock inicial de cada una entra como
+    INGRESO, nunca escrito directo en la columna. Que colores y diseño esten
+    en los atributos lo revisa la API: sin codigo de color no hay SKU. */
+export const esquemaVariantesNuevas = z
+  .object({
+    productoId: z.string().min(1),
+    tallas: z
+      .array(z.string().trim().min(1).max(12, "Una talla es demasiado larga"))
+      .min(1, "Marca al menos una talla"),
+    colores: z.array(z.string().trim().min(1)).min(1, "Marca al menos un color"),
+    diseno: z
+      .string()
+      .trim()
+      .max(30, "El diseño es demasiado largo")
+      .transform((diseno) => diseno || DISENO_POR_DEFECTO),
+    stockInicial: z
+      .number({ error: "Escribe el stock inicial" })
+      .int("El stock tiene que ser un número entero")
+      .min(0, "El stock no puede ser negativo")
+      .max(100000),
+    /** Costo por unidad, opcional: la proxima compra lo vuelve a fijar. */
+    costo: z
+      .number()
+      .min(0, "El costo no puede ser negativo")
+      .max(99999999)
+      .nullable()
+      .default(null),
+  })
+  .refine((v) => v.tallas.length * v.colores.length <= MAX_VARIANTES_POR_LOTE, {
+    message: `Se crean hasta ${MAX_VARIANTES_POR_LOTE} variantes de una vez`,
+    path: ["tallas"],
+  });
 
 export const esquemaCambioActivoVariante = z.object({
   varianteId: z.string().min(1),
@@ -490,6 +533,57 @@ export const esquemaMarca = z.object({
   orden: esquemaOrden,
   destacado: z.boolean().default(false),
   activo: z.boolean().default(true),
+});
+
+/** Lista de textos cortos sin repetir ni vacios: tallas, palabras. */
+const listaDeTextos = (maximo: number, largo: number) =>
+  z
+    .array(z.string().trim().max(largo, `Cada valor admite hasta ${largo} caracteres`))
+    .transform((lista) => [...new Set(lista.filter((t) => t !== ""))])
+    .refine((lista) => lista.length <= maximo, `Hasta ${maximo} valores`);
+
+/** Tipo de prenda. Sin `tipoId` se crea uno; al editar, el codigo no cambia. */
+export const esquemaTipoPrenda = z.object({
+  tipoId: z.string().min(1).optional(),
+  codigo: esquemaCodigoTipo,
+  nombre: z.string().trim().min(2, "Escribe el nombre").max(40, "El nombre es demasiado largo"),
+  tallas: listaDeTextos(20, 12).refine((t) => t.length > 0, "Escribe al menos una talla"),
+  palabras: listaDeTextos(20, 30),
+  orden: esquemaOrden,
+  activo: z.boolean().default(true),
+});
+
+/** Color, diseño o etiqueta. El nombre solo se fija al crear: las variantes y
+    los productos lo guardan como texto. `familia` (la decena del codigo) solo
+    la piden los colores nuevos; `hex` (la muestra) solo los colores, y se
+    puede cambiar cuando sea. */
+export const esquemaAtributo = z
+  .object({
+    atributoId: z.string().min(1).optional(),
+    clase: z.enum(CLASES_ATRIBUTO),
+    nombre: z.string().trim().min(2, "Escribe el nombre").max(20, "Hasta 20 caracteres"),
+    familia: z
+      .number()
+      .int()
+      .refine((d) => FAMILIAS_COLOR.some((f) => f.decena === d), "Elige la familia")
+      .optional(),
+    hex: z
+      .string()
+      .trim()
+      .refine(esHex, "La muestra es un color como #1E2A4A")
+      .nullable()
+      .optional(),
+    activo: z.boolean().default(true),
+  })
+  .refine((a) => a.atributoId || a.clase !== "COLOR" || a.familia !== undefined, {
+    message: "Elige la familia del color",
+    path: ["familia"],
+  });
+
+/** Nuevo orden de una clase de atributos: los ids en el orden en que se ven. */
+export const esquemaOrdenAtributos = z.object({
+  clase: z.enum(CLASES_ATRIBUTO),
+  ids: z.array(z.string().min(1)).min(1).max(500),
 });
 
 /** Proveedor. Sin `proveedorId` se crea uno nuevo. */
@@ -711,7 +805,7 @@ export type DatosPerfil = z.infer<typeof esquemaPerfil>;
 export type DatosUsuarioPanel = z.infer<typeof esquemaUsuarioPanel>;
 export type DatosDireccion = z.infer<typeof esquemaDireccion>;
 export type DatosProducto = z.infer<typeof esquemaProducto>;
-export type DatosVarianteNueva = z.infer<typeof esquemaVarianteNueva>;
+export type DatosVariantesNuevas = z.infer<typeof esquemaVariantesNuevas>;
 export type DatosMovimientoStock = z.infer<typeof esquemaMovimientoStock>;
 export type DatosCheckout = z.infer<typeof esquemaCheckout>;
 export type DatosReclamo = z.infer<typeof esquemaReclamo>;

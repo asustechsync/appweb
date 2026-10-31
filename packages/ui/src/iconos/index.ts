@@ -71,9 +71,14 @@ export { IconoVerificado } from "./generados/IconoVerificado";
 
 // marcas
 export { IconoApple } from "./generados/IconoApple";
+export { IconoBancoNacion } from "./generados/IconoBancoNacion";
+export { IconoBbva } from "./generados/IconoBbva";
+export { IconoBcp } from "./generados/IconoBcp";
 export { IconoGoogle } from "./generados/IconoGoogle";
+export { IconoInterbank } from "./generados/IconoInterbank";
 export { IconoMastercard } from "./generados/IconoMastercard";
 export { IconoPlin } from "./generados/IconoPlin";
+export { IconoScotiabank } from "./generados/IconoScotiabank";
 export { IconoVisa } from "./generados/IconoVisa";
 export { IconoWhatsApp } from "./generados/IconoWhatsApp";
 export { IconoYape } from "./generados/IconoYape";

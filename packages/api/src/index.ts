@@ -1,6 +1,7 @@
 import { accesoApp } from "./rutas/acceso";
 import { catalogo } from "./rutas/catalogo";
 import { cuenta } from "./rutas/cuenta";
+import { atributos } from "./rutas/panel/atributos";
 import { avisos } from "./rutas/panel/avisos";
 import { categorias, marcas } from "./rutas/panel/categorias";
 import { devoluciones } from "./rutas/panel/devoluciones";
@@ -58,6 +59,7 @@ export const enrutador = router({
     productos,
     categorias,
     marcas,
+    atributos,
     proveedores,
     packs,
     stock,

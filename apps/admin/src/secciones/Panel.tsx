@@ -21,6 +21,7 @@ import {
   IconoLibro,
   IconoMarca,
   IconoMoneda,
+  IconoOpciones,
   IconoOpiniones,
   IconoPack,
   IconoPedidos,
@@ -34,6 +35,7 @@ import {
 
 import { useAvisos } from "@/lib/use-avisos";
 
+import { Atributos } from "./Atributos";
 import { Categorias, Marcas } from "./Categorias";
 import { Devoluciones } from "./Devoluciones";
 import { Envios } from "./Envios";
@@ -60,19 +62,20 @@ const ETIQUETAS: Record<string, string> = {
   envios: "Envíos",
   devoluciones: "Devoluciones",
   productos: "Productos",
-  inventario: "Inventario",
+  inventario: "Stock",
   categorias: "Categorías",
   marcas: "Marcas",
+  atributos: "Atributos",
   proveedores: "Proveedores",
-  packs: "Packs y combos",
+  packs: "Packs",
   clientes: "Clientes",
   resenas: "Reseñas",
   reclamos: "Reclamos",
   cupones: "Cupones",
   portada: "Portada",
-  equipo: "Equipo y roles",
+  equipo: "Equipo",
   niveles: "Niveles",
-  tienda: "Datos de la tienda",
+  tienda: "Tienda",
 };
 
 const ICONOS: Record<string, ReactNode> = {
@@ -85,6 +88,7 @@ const ICONOS: Record<string, ReactNode> = {
   inventario: <IconoEtiqueta />,
   categorias: <IconoCategoria />,
   marcas: <IconoMarca />,
+  atributos: <IconoOpciones />,
   proveedores: <IconoProveedor />,
   packs: <IconoPack />,
   clientes: <IconoClientes />,
@@ -99,11 +103,12 @@ const ICONOS: Record<string, ReactNode> = {
 /** En el lateral el icono va en el titulo del grupo, no en cada seccion. */
 const ICONOS_GRUPO: Record<string, ReactNode> = {
   Ventas: <IconoVentas />,
-  Catálogo: <IconoCatalogo />,
-  Cuentas: <IconoClientes />,
-  Opiniones: <IconoOpiniones />,
-  Promociones: <IconoPromociones />,
-  Configuración: <IconoConfiguracion />,
+  Clientes: <IconoClientes />,
+  Marketing: <IconoPromociones />,
+  Productos: <IconoCatalogo />,
+  Inventario: <IconoPack />,
+  Atención: <IconoOpiniones />,
+  Ajustes: <IconoConfiguracion />,
 };
 
 export interface PropsPanel {
@@ -261,6 +266,8 @@ export function Panel({
         <Categorias />
       ) : visible === "marcas" ? (
         <Marcas />
+      ) : visible === "atributos" ? (
+        <Atributos />
       ) : visible === "proveedores" ? (
         <Proveedores />
       ) : visible === "packs" ? (
