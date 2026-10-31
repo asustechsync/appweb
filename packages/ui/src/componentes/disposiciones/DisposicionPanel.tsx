@@ -19,7 +19,7 @@ export interface SeccionDePanel {
   grupo?: string | undefined;
   /** Pendientes de la seccion (pedidos por confirmar, reclamos…). */
   contador?: number | undefined;
-  /** Titulo pequeño que separa el menu en bloques ("Menú", "Preferencias"). */
+  /** Titulo pequeño que separa el menu en bloques ("Comercial", "Operaciones"). */
   apartado?: string | undefined;
 }
 
@@ -90,7 +90,7 @@ export function DisposicionPanel({
         {...(onSalir ? { onSalir } : {})}
         {...(hrefTienda
           ? {
-              enlaceLateral: { href: hrefTienda, etiqueta: "Volver a la tienda" },
+              enlaceLateral: { href: hrefTienda, etiqueta: "Tienda" },
               hrefSalirMenu: hrefTienda,
             }
           : {})}

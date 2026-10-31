@@ -366,6 +366,22 @@
   background: none;
   color: var(--color-error);
 }
+/* Pie del menu del panel: tienda y salir, separados por una linea.
+   `margin-block-start: auto` lo empuja abajo cuando el menu llega hasta el pie. */
+.ui-disposicion-cuenta__pie {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  margin-block-start: auto;
+  padding-block-start: var(--espacio-3);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-disposicion-cuenta__pie > a {
+  text-decoration: none;
+}
+.ui-disposicion-cuenta__salir:hover {
+  color: var(--color-error);
+}
 
 .ui-disposicion-cuenta__contenido {
   display: flex;

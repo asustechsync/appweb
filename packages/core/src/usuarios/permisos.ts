@@ -70,51 +70,45 @@ export function accionesDe(rol: Rol): readonly Accion[] {
  * una vez. Cada seccion la ve quien tenga su accion; las que tienen grupo
  * cuelgan de el, y las que no (el inicio) van sueltas arriba.
  *
- * `apartado` es el titulo pequeño que separa el menu en bloques: "Menú" para
- * lo que se usa a diario y "Preferencias" para lo que se configura.
+ * `apartado` es el departamento (el titulo pequeño que separa el menu en
+ * bloques) y `grupo` el modulo desplegable dentro de el. Cada modulo es el
+ * trabajo de un mismo rol: quien vende no cobra, quien despacha no vende.
+ * Los nombres de grupo y apartado son de una sola palabra.
  */
 const SECCIONES_PANEL = [
-  // General: el resumen del dia.
-  { id: "inicio", apartado: "General", accion: "entrar_panel" },
-  // Comercial: vender y atraer clientes.
+  // El resumen del dia, suelto arriba.
+  { id: "inicio", accion: "entrar_panel" },
+  // Comercial: vender, conocer al cliente y atraerlo.
   { id: "pedidos", apartado: "Comercial", grupo: "Ventas", accion: "ver_ventas" },
-  { id: "pagos", apartado: "Comercial", grupo: "Ventas", accion: "ver_ventas" },
-  { id: "envios", apartado: "Comercial", grupo: "Ventas", accion: "despachar_envios" },
   { id: "devoluciones", apartado: "Comercial", grupo: "Ventas", accion: "ver_ventas" },
   { id: "clientes", apartado: "Comercial", grupo: "Clientes", accion: "gestionar_usuarios" },
   { id: "niveles", apartado: "Comercial", grupo: "Clientes", accion: "gestionar_ajustes" },
   { id: "cupones", apartado: "Comercial", grupo: "Marketing", accion: "gestionar_ajustes" },
   { id: "portada", apartado: "Comercial", grupo: "Marketing", accion: "gestionar_ajustes" },
-  // Operaciones: lo que hay que tener listo para vender. Categorias, marcas y
-  // atributos van con los productos: son lo que se elige al crearlos.
-  { id: "productos", apartado: "Operaciones", grupo: "Productos", accion: "gestionar_productos" },
-  { id: "packs", apartado: "Operaciones", grupo: "Productos", accion: "gestionar_productos" },
-  {
-    id: "categorias",
-    apartado: "Operaciones",
-    grupo: "Productos",
-    accion: "gestionar_productos",
-  },
-  { id: "marcas", apartado: "Operaciones", grupo: "Productos", accion: "gestionar_productos" },
-  {
-    id: "atributos",
-    apartado: "Operaciones",
-    grupo: "Productos",
-    accion: "gestionar_productos",
-  },
-  { id: "inventario", apartado: "Operaciones", grupo: "Inventario", accion: "ajustar_stock" },
+  // Operaciones: tener que vender, moverlo y responder por el. Categorias,
+  // marcas y atributos van con los productos: son lo que se elige al crearlos.
+  { id: "productos", apartado: "Operaciones", grupo: "Catálogo", accion: "gestionar_productos" },
+  { id: "packs", apartado: "Operaciones", grupo: "Catálogo", accion: "gestionar_productos" },
+  { id: "categorias", apartado: "Operaciones", grupo: "Catálogo", accion: "gestionar_productos" },
+  { id: "marcas", apartado: "Operaciones", grupo: "Catálogo", accion: "gestionar_productos" },
+  { id: "atributos", apartado: "Operaciones", grupo: "Catálogo", accion: "gestionar_productos" },
+  { id: "inventario", apartado: "Operaciones", grupo: "Logística", accion: "ajustar_stock" },
+  { id: "envios", apartado: "Operaciones", grupo: "Logística", accion: "despachar_envios" },
   {
     id: "proveedores",
     apartado: "Operaciones",
-    grupo: "Inventario",
+    grupo: "Logística",
     accion: "gestionar_productos",
   },
-  { id: "resenas", apartado: "Operaciones", grupo: "Atención", accion: "moderar_resenas" },
-  { id: "reclamos", apartado: "Operaciones", grupo: "Atención", accion: "atender_reclamos" },
-  // Configuracion: se ajusta una vez.
-  { id: "tienda", apartado: "Configuración", grupo: "Ajustes", accion: "gestionar_ajustes" },
-  { id: "equipo", apartado: "Configuración", grupo: "Ajustes", accion: "gestionar_usuarios" },
-] as const satisfies readonly { id: string; apartado: string; grupo?: string; accion: Accion }[];
+  { id: "reclamos", apartado: "Operaciones", grupo: "Soporte", accion: "atender_reclamos" },
+  { id: "resenas", apartado: "Operaciones", grupo: "Soporte", accion: "moderar_resenas" },
+  // Administracion: el dinero y lo que se configura una vez.
+  { id: "pagos", apartado: "Administración", grupo: "Finanzas", accion: "ver_ventas" },
+  // Sin pantalla aun: el panel muestra el estado vacio. Ver puertos/facturacion.ts.
+  { id: "facturacion", apartado: "Administración", grupo: "Finanzas", accion: "ver_ventas" },
+  { id: "tienda", apartado: "Administración", grupo: "Ajustes", accion: "gestionar_ajustes" },
+  { id: "equipo", apartado: "Administración", grupo: "Ajustes", accion: "gestionar_usuarios" },
+] as const satisfies readonly { id: string; apartado?: string; grupo?: string; accion: Accion }[];
 
 /** Secciones del panel que este rol debe ver en el menu, en orden. */
 export function seccionesDelPanel(rol: Rol): string[] {
@@ -130,7 +124,8 @@ export function grupoDeSeccion(id: string): string | undefined {
   return seccion && "grupo" in seccion ? seccion.grupo : undefined;
 }
 
-/** Apartado del menu ("Comercial", "Configuración") al que pertenece una seccion. */
+/** Departamento del menu ("Comercial", "Operaciones"…) al que pertenece una seccion. */
 export function apartadoDeSeccion(id: string): string | undefined {
-  return SECCIONES_PANEL.find((candidata) => candidata.id === id)?.apartado;
+  const seccion = SECCIONES_PANEL.find((candidata) => candidata.id === id);
+  return seccion && "apartado" in seccion ? seccion.apartado : undefined;
 }

@@ -4,14 +4,20 @@ export type { PropsIcono } from "./tipos";
 
 // comercio
 export { IconoBanco } from "./generados/IconoBanco";
+export { IconoBilletera } from "./generados/IconoBilletera";
+export { IconoCaja } from "./generados/IconoCaja";
+export { IconoCamionCarga } from "./generados/IconoCamionCarga";
 export { IconoCamion } from "./generados/IconoCamion";
 export { IconoCarrito } from "./generados/IconoCarrito";
 export { IconoCatalogo } from "./generados/IconoCatalogo";
 export { IconoCategoria } from "./generados/IconoCategoria";
+export { IconoCrecimiento } from "./generados/IconoCrecimiento";
 export { IconoDevolucion } from "./generados/IconoDevolucion";
+export { IconoDolar } from "./generados/IconoDolar";
 export { IconoEnvio } from "./generados/IconoEnvio";
 export { IconoEtiqueta } from "./generados/IconoEtiqueta";
 export { IconoFavorito } from "./generados/IconoFavorito";
+export { IconoGraficoBarras } from "./generados/IconoGraficoBarras";
 export { IconoMarca } from "./generados/IconoMarca";
 export { IconoMoneda } from "./generados/IconoMoneda";
 export { IconoPack } from "./generados/IconoPack";
@@ -19,9 +25,11 @@ export { IconoPedidos } from "./generados/IconoPedidos";
 export { IconoPromociones } from "./generados/IconoPromociones";
 export { IconoProveedor } from "./generados/IconoProveedor";
 export { IconoTicket } from "./generados/IconoTicket";
+export { IconoTienda } from "./generados/IconoTienda";
 export { IconoVentas } from "./generados/IconoVentas";
 
 // contacto
+export { IconoAuriculares } from "./generados/IconoAuriculares";
 export { IconoCorreo } from "./generados/IconoCorreo";
 export { IconoGlobo } from "./generados/IconoGlobo";
 export { IconoLibro } from "./generados/IconoLibro";

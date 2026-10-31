@@ -2,7 +2,13 @@
 
 import { Fragment, useEffect, useState, type ReactNode } from "react";
 
-import { IconoFlechaAbajo, IconoFlechaDerecha, IconoFlechaIzquierda } from "../../iconos";
+import {
+  IconoFlechaAbajo,
+  IconoFlechaDerecha,
+  IconoFlechaIzquierda,
+  IconoSalir,
+  IconoTienda,
+} from "../../iconos";
 import { Contenedor } from "../base/Contenedor";
 import { Insignia } from "../base/Insignia";
 
@@ -19,7 +25,7 @@ export interface SeccionDeCuenta {
   icono?: ReactNode;
   /** Pendientes de la seccion: se muestran como insignia. */
   contador?: number | undefined;
-  /** Titulo pequeño que separa el menu en bloques ("Menú", "Preferencias"). */
+  /** Titulo pequeño que separa el menu en bloques ("Comercial", "Operaciones"). */
   apartado?: string | undefined;
 }
 
@@ -113,6 +119,119 @@ export function DisposicionCuenta({
   function alternar(grupo: string) {
     setGrupoAbierto((previo) => (previo === grupo ? null : grupo));
   }
+  /** Pinta bloques del lateral; el titulo de apartado solo al cambiar de apartado. */
+  function pintarBloques(lista: typeof bloques) {
+    return lista.map((bloque, indice) => {
+      const pestanas = bloque.secciones.map((seccion) => {
+        const contenido = (
+          <>
+            {seccion.icono ? (
+              <span className="ui-disposicion-cuenta__pestana-icono" aria-hidden="true">
+                {seccion.icono}
+              </span>
+            ) : null}
+            {seccion.etiqueta}
+            {seccion.contador ? (
+              <span className="ui-disposicion-cuenta__contador">
+                <Insignia tono="alerta">{seccion.contador}</Insignia>
+              </span>
+            ) : null}
+          </>
+        );
+        return seccion.href ? (
+          <a key={seccion.id} href={seccion.href} className="ui-disposicion-cuenta__pestana">
+            {contenido}
+          </a>
+        ) : (
+          <button
+            key={seccion.id}
+            type="button"
+            className={
+              seccion.id === seccionActiva
+                ? "ui-disposicion-cuenta__pestana ui-disposicion-cuenta__pestana--activa"
+                : "ui-disposicion-cuenta__pestana"
+            }
+            onClick={() => onSeccion(seccion.id)}
+            aria-current={seccion.id === seccionActiva ? "page" : undefined}
+          >
+            {contenido}
+          </button>
+        );
+      });
+      const grupo = bloque.grupo;
+      const tituloApartado =
+        bloque.apartado && bloque.apartado !== lista[indice - 1]?.apartado ? (
+          <span className="ui-disposicion-cuenta__apartado">{bloque.apartado}</span>
+        ) : null;
+      if (!grupo)
+        return (
+          <Fragment key={`suelto-${indice}`}>
+            {tituloApartado}
+            {pestanas}
+          </Fragment>
+        );
+
+      const abierto = grupoAbierto === grupo;
+      const idLista = `grupo-cuenta-${indice}`;
+      // Cerrado, el grupo suma los pendientes de sus secciones para
+      // que ningun aviso quede escondido.
+      const pendientes = abierto
+        ? 0
+        : bloque.secciones.reduce((suma, seccion) => suma + (seccion.contador ?? 0), 0);
+      return (
+        <Fragment key={grupo}>
+          {tituloApartado}
+          <div className="ui-disposicion-cuenta__grupo">
+            <button
+              type="button"
+              className={
+                grupo === grupoActivo
+                  ? "ui-disposicion-cuenta__grupo-titulo ui-disposicion-cuenta__grupo-titulo--activo"
+                  : "ui-disposicion-cuenta__grupo-titulo"
+              }
+              aria-expanded={abierto}
+              aria-controls={idLista}
+              onClick={() => alternar(grupo)}
+            >
+              {iconosGrupo?.[grupo] ? (
+                <span className="ui-disposicion-cuenta__pestana-icono" aria-hidden="true">
+                  {iconosGrupo[grupo]}
+                </span>
+              ) : null}
+              {grupo}
+              {pendientes > 0 ? (
+                <span className="ui-disposicion-cuenta__contador">
+                  <Insignia tono="alerta">{pendientes}</Insignia>
+                </span>
+              ) : null}
+              <IconoFlechaAbajo
+                tamano={16}
+                className={
+                  abierto
+                    ? "ui-disposicion-cuenta__grupo-flecha ui-disposicion-cuenta__grupo-flecha--abierta"
+                    : "ui-disposicion-cuenta__grupo-flecha"
+                }
+              />
+            </button>
+            <div
+              className={
+                abierto
+                  ? "ui-disposicion-cuenta__despliegue ui-disposicion-cuenta__despliegue--abierto"
+                  : "ui-disposicion-cuenta__despliegue"
+              }
+            >
+              {/* Cerrada sigue en el arbol para poder animarla: `inert` la saca
+                            del foco y de los lectores de pantalla. */}
+              <div id={idLista} className="ui-disposicion-cuenta__grupo-lista" inert={!abierto}>
+                {pestanas}
+              </div>
+            </div>
+          </div>
+        </Fragment>
+      );
+    });
+  }
+
   const clase = menuMovil
     ? `ui-disposicion-cuenta ui-disposicion-cuenta--con-menu ${enMenu ? "ui-disposicion-cuenta--en-menu" : ""}`
     : "ui-disposicion-cuenta";
@@ -194,124 +313,32 @@ export function DisposicionCuenta({
               }
               aria-label="Secciones de mi cuenta"
             >
-              {bloques.map((bloque, indice) => {
-                const pestanas = bloque.secciones.map((seccion) => {
-                  const contenido = (
-                    <>
-                      {seccion.icono ? (
-                        <span className="ui-disposicion-cuenta__pestana-icono" aria-hidden="true">
-                          {seccion.icono}
-                        </span>
-                      ) : null}
-                      {seccion.etiqueta}
-                      {seccion.contador ? (
-                        <span className="ui-disposicion-cuenta__contador">
-                          <Insignia tono="alerta">{seccion.contador}</Insignia>
-                        </span>
-                      ) : null}
-                    </>
-                  );
-                  return seccion.href ? (
-                    <a
-                      key={seccion.id}
-                      href={seccion.href}
-                      className="ui-disposicion-cuenta__pestana"
-                    >
-                      {contenido}
+              {pintarBloques(bloques)}
+              {hayGrupos ? (
+                // Al pie: ir a la tienda y salir.
+                <div className="ui-disposicion-cuenta__pie">
+                  {enlace ? (
+                    <a href={enlace.href} className="ui-disposicion-cuenta__grupo-titulo">
+                      <span className="ui-disposicion-cuenta__pestana-icono" aria-hidden="true">
+                        <IconoTienda />
+                      </span>
+                      {enlace.etiqueta}
                     </a>
-                  ) : (
+                  ) : null}
+                  {onSalir ? (
                     <button
-                      key={seccion.id}
                       type="button"
-                      className={
-                        seccion.id === seccionActiva
-                          ? "ui-disposicion-cuenta__pestana ui-disposicion-cuenta__pestana--activa"
-                          : "ui-disposicion-cuenta__pestana"
-                      }
-                      onClick={() => onSeccion(seccion.id)}
-                      aria-current={seccion.id === seccionActiva ? "page" : undefined}
+                      className="ui-disposicion-cuenta__grupo-titulo ui-disposicion-cuenta__salir"
+                      onClick={onSalir}
                     >
-                      {contenido}
+                      <span className="ui-disposicion-cuenta__pestana-icono" aria-hidden="true">
+                        <IconoSalir />
+                      </span>
+                      Salir
                     </button>
-                  );
-                });
-                const grupo = bloque.grupo;
-                const tituloApartado =
-                  bloque.apartado && bloque.apartado !== bloques[indice - 1]?.apartado ? (
-                    <span className="ui-disposicion-cuenta__apartado">{bloque.apartado}</span>
-                  ) : null;
-                if (!grupo)
-                  return (
-                    <Fragment key={`suelto-${indice}`}>
-                      {tituloApartado}
-                      {pestanas}
-                    </Fragment>
-                  );
-
-                const abierto = grupoAbierto === grupo;
-                const idLista = `grupo-cuenta-${indice}`;
-                // Cerrado, el grupo suma los pendientes de sus secciones para
-                // que ningun aviso quede escondido.
-                const pendientes = abierto
-                  ? 0
-                  : bloque.secciones.reduce((suma, seccion) => suma + (seccion.contador ?? 0), 0);
-                return (
-                  <Fragment key={grupo}>
-                    {tituloApartado}
-                    <div className="ui-disposicion-cuenta__grupo">
-                      <button
-                        type="button"
-                        className={
-                          grupo === grupoActivo
-                            ? "ui-disposicion-cuenta__grupo-titulo ui-disposicion-cuenta__grupo-titulo--activo"
-                            : "ui-disposicion-cuenta__grupo-titulo"
-                        }
-                        aria-expanded={abierto}
-                        aria-controls={idLista}
-                        onClick={() => alternar(grupo)}
-                      >
-                        {iconosGrupo?.[grupo] ? (
-                          <span className="ui-disposicion-cuenta__pestana-icono" aria-hidden="true">
-                            {iconosGrupo[grupo]}
-                          </span>
-                        ) : null}
-                        {grupo}
-                        {pendientes > 0 ? (
-                          <span className="ui-disposicion-cuenta__contador">
-                            <Insignia tono="alerta">{pendientes}</Insignia>
-                          </span>
-                        ) : null}
-                        <IconoFlechaAbajo
-                          tamano={16}
-                          className={
-                            abierto
-                              ? "ui-disposicion-cuenta__grupo-flecha ui-disposicion-cuenta__grupo-flecha--abierta"
-                              : "ui-disposicion-cuenta__grupo-flecha"
-                          }
-                        />
-                      </button>
-                      <div
-                        className={
-                          abierto
-                            ? "ui-disposicion-cuenta__despliegue ui-disposicion-cuenta__despliegue--abierto"
-                            : "ui-disposicion-cuenta__despliegue"
-                        }
-                      >
-                        {/* Cerrada sigue en el arbol para poder animarla: `inert` la saca
-                            del foco y de los lectores de pantalla. */}
-                        <div
-                          id={idLista}
-                          className="ui-disposicion-cuenta__grupo-lista"
-                          inert={!abierto}
-                        >
-                          {pestanas}
-                        </div>
-                      </div>
-                    </div>
-                  </Fragment>
-                );
-              })}
-              {onSalir ? (
+                  ) : null}
+                </div>
+              ) : onSalir ? (
                 <button
                   type="button"
                   className="ui-disposicion-cuenta__pestana ui-disposicion-cuenta__pestana--salir"
@@ -319,15 +346,6 @@ export function DisposicionCuenta({
                 >
                   Salir
                 </button>
-              ) : null}
-              {enlace && hayGrupos ? (
-                <a
-                  href={enlace.href}
-                  className="ui-disposicion-cuenta__ir-panel ui-disposicion-cuenta__ir-panel--en-menu"
-                >
-                  {enlace.etiqueta}
-                  <IconoFlechaDerecha tamano={16} />
-                </a>
               ) : null}
             </nav>
 
