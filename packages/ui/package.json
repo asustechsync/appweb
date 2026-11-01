@@ -12,11 +12,14 @@
     "./tokens.native": "./src/tokens.native.ts",
     "./iconos.nativos": "./src/iconos/nativos/index.ts",
     "./marca": "./src/marca.ts",
+    "./paises": "./src/datos/paises.ts",
+    "./banderas": "./src/datos/banderas.generado.ts",
     "./base-web.css": "./src/base-web.css",
     "./theme.css": "./src/theme.css"
   },
   "scripts": {
     "iconos": "tsx src/generar-iconos.ts",
+    "banderas": "tsx src/generar-banderas.ts",
     "tokens": "tsx src/generar-theme.ts && tsx src/verificar-quiebres.ts",
     "quiebres": "tsx src/verificar-quiebres.ts",
     "typecheck": "tsc --noEmit"

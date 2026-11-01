@@ -279,7 +279,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[2],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
+    backgroundColor: t.color.fondoBloque,
   },
   fila: {
     flexDirection: "row",

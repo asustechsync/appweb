@@ -8,7 +8,6 @@ export function IconoInterbank({ tamano = 24, className }: PropsIcono) {
       width={tamano}
       height={tamano}
       viewBox="0 0 24 24"
-      version="1.1"
       aria-hidden="true"
       className={className}
     >

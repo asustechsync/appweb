@@ -6,13 +6,7 @@ import type { PropsIconoNativo } from "../tipos";
 
 export function IconoBbva({ tamano = 24, color }: PropsIconoNativo) {
   return (
-    <Svg
-      width={tamano}
-      height={tamano}
-      viewBox="0 0 24 24"
-      version="1.1"
-      {...(color ? { color } : {})}
-    >
+    <Svg width={tamano} height={tamano} viewBox="0 0 24 24" {...(color ? { color } : {})}>
       <G transform="matrix(0.00621,0,0,0.00621,12,12)">
         <G transform="matrix(1,0,0,1,-1771.6,-529.75)">
           <Path

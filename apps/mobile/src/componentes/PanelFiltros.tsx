@@ -170,7 +170,7 @@ function Interruptor({
       <Switch
         value={valor}
         onValueChange={onCambiar}
-        trackColor={{ true: t.color.marca[500], false: t.color.fondoSutil }}
+        trackColor={{ true: t.color.acentoMovil, false: t.color.fondoSutil }}
         thumbColor={t.color.fondo}
       />
     </View>
@@ -234,11 +234,10 @@ const estilos = StyleSheet.create({
     paddingHorizontal: t.espacio[4],
     paddingVertical: t.espacio[2],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   opcionActiva: {
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   textoOpcion: {
     color: t.color.texto,

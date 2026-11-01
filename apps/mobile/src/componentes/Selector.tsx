@@ -54,11 +54,10 @@ const estilos = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: t.espacio[3],
     borderRadius: t.radio.md,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   opcionActiva: {
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   texto: {
     color: t.color.texto,

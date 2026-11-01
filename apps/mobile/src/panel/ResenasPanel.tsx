@@ -148,8 +148,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   cabecera: {
     flexDirection: "row",
@@ -198,7 +197,7 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
   },
   aprobar: {
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   textoRechazar: {
     color: t.color.ofertaTexto,

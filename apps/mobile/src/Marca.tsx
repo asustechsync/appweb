@@ -87,8 +87,7 @@ const estilos = StyleSheet.create({
     marginHorizontal: t.espacio[4],
     padding: t.espacio[4],
     borderRadius: t.radio.xl,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   logo: {
     width: t.espacio[16],

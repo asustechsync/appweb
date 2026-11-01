@@ -174,8 +174,7 @@ const estilos = StyleSheet.create({
     alignSelf: "center",
     padding: t.espacio[1],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   opcion: {
     paddingHorizontal: t.espacio[5],
@@ -183,7 +182,7 @@ const estilos = StyleSheet.create({
     borderRadius: t.radio.completo,
   },
   opcionActiva: {
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   textoOpcion: {
     color: t.color.textoSuave,
@@ -206,8 +205,7 @@ const estilos = StyleSheet.create({
   fila: {
     overflow: "hidden",
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   cabecera: {
     flexDirection: "row",

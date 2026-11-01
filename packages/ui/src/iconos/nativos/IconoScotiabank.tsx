@@ -6,13 +6,7 @@ import type { PropsIconoNativo } from "../tipos";
 
 export function IconoScotiabank({ tamano = 24, color }: PropsIconoNativo) {
   return (
-    <Svg
-      width={tamano}
-      height={tamano}
-      viewBox="0 0 24 24"
-      version="1.1"
-      {...(color ? { color } : {})}
-    >
+    <Svg width={tamano} height={tamano} viewBox="0 0 24 24" {...(color ? { color } : {})}>
       <G transform="matrix(0.011732,0,0,0.011732,12,12)">
         <G transform="matrix(1,0,0,1,-724.5,-795.5)">
           <G>

@@ -51,8 +51,7 @@ const estilos = StyleSheet.create({
     paddingVertical: t.espacio[6],
     paddingHorizontal: t.espacio[5],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.lg,
+    backgroundColor: t.color.fondoBloque,
   },
   textos: {
     gap: 2,

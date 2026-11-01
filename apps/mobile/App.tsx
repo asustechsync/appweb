@@ -1,6 +1,6 @@
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { type ComponentProps, useEffect, useState } from "react";
 import { BackHandler, StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,7 +17,7 @@ import { MisResenas } from "./src/cuenta/MisResenas";
 import { DetalleProducto } from "./src/DetalleProducto";
 import { ProveedorCarrito } from "./src/estado-carrito";
 import { ProveedorFavoritos } from "./src/estado-favoritos";
-import { ProveedorSesion } from "./src/estado-sesion";
+import { ProveedorSesion, useSesion } from "./src/estado-sesion";
 import { Favoritos } from "./src/Favoritos";
 import { Marca } from "./src/Marca";
 import { DetallePedidoPanel } from "./src/panel/DetallePedidoPanel";
@@ -35,6 +35,13 @@ type Pantalla =
   | { tipo: "pedido"; codigo: string }
   | { tipo: "panel-pedido"; pedidoId: string }
   | { tipo: PantallaCuenta | PantallaPanel };
+
+/** La barra inferior, salvo en el ingreso: como en la web, esa pantalla va sola. */
+function BarraDeNavegacion(props: ComponentProps<typeof BarraInferior>) {
+  const { sesion } = useSesion();
+  if (props.actual === "cuenta" && sesion === null) return null;
+  return <BarraInferior {...props} />;
+}
 
 export default function App() {
   const [pestana, setPestana] = useState<Pestana>("inicio");
@@ -122,7 +129,7 @@ export default function App() {
       case "favoritos":
         return <Favoritos onAbrir={abrirProducto} />;
       case "cuenta":
-        return <Cuenta onAbrir={(tipo) => abrir({ tipo })} />;
+        return <Cuenta onAbrir={(tipo) => abrir({ tipo })} onVolver={() => setPestana("inicio")} />;
     }
   }
 
@@ -134,7 +141,11 @@ export default function App() {
             <SafeAreaView style={estilos.pantalla} edges={["top", "left", "right"]}>
               {encima ? pantallaDeEncima(encima) : pestanaActual()}
               {encima ? null : (
-                <BarraInferior actual={pestana} onCambiar={setPestana} onCarrito={abrirCarrito} />
+                <BarraDeNavegacion
+                  actual={pestana}
+                  onCambiar={setPestana}
+                  onCarrito={abrirCarrito}
+                />
               )}
               <StatusBar style="dark" />
             </SafeAreaView>

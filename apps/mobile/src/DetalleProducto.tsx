@@ -346,8 +346,7 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   favoritoActivo: {
     backgroundColor: t.color.ofertaFondo,
@@ -413,8 +412,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[3],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   iconoConsulta: {
     width: t.espacio[10],
@@ -454,7 +452,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[1],
     padding: t.espacio[3],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
+    backgroundColor: t.color.fondoBloque,
   },
   filaResena: {
     flexDirection: "row",
@@ -485,8 +483,7 @@ const estilos = StyleSheet.create({
     paddingLeft: t.espacio[5],
     paddingRight: t.espacio[2],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.lg,
+    backgroundColor: t.color.fondoBloque,
   },
   etiquetaTotal: {
     color: t.color.textoTenue,
@@ -504,7 +501,7 @@ const estilos = StyleSheet.create({
     height: t.espacio[12],
     paddingHorizontal: t.espacio[5],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   agregarApagado: {
     backgroundColor: t.color.textoTenue,

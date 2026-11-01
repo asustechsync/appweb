@@ -48,8 +48,7 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   cuadrado: {
     borderRadius: t.radio.lg,
@@ -67,7 +66,7 @@ const estilos = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: t.espacio[1],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   numero: {
     color: t.color.textoInverso,

@@ -97,12 +97,6 @@ export function Portada({ onAbrir, onCuenta }: PropsPortada) {
     >
       <View style={estilos.cabecera}>
         <Avatar nombre={sesion?.nombre} onPress={onCuenta} />
-        <View style={estilos.saludos}>
-          <Text style={estilos.saludo}>Hola de nuevo</Text>
-          <Text style={estilos.titulo} numberOfLines={1}>
-            {sesion?.nombre ?? "Básicos para hoy"}
-          </Text>
-        </View>
         <BotonRedondo etiqueta="Notificaciones" cuadrado>
           <IconoNotificacion tamano={22} color={t.color.texto} />
         </BotonRedondo>
@@ -174,18 +168,6 @@ const estilos = StyleSheet.create({
     flexDirection: "row",
     gap: t.espacio[3],
     paddingHorizontal: t.espacio[4],
-  },
-  saludos: {
-    flex: 1,
-  },
-  saludo: {
-    color: t.color.textoSuave,
-    fontSize: t.tipo.tamano.sm,
-  },
-  titulo: {
-    color: t.color.texto,
-    fontSize: t.tipo.tamano["2xl"],
-    fontWeight: "700",
   },
   seccion: {
     gap: t.espacio[3],

@@ -155,7 +155,7 @@ export function Direcciones({ onVolver }: { onVolver: () => void }) {
               <Switch
                 value={principal}
                 onValueChange={setPrincipal}
-                trackColor={{ true: t.color.marca[500], false: t.color.fondoSutil }}
+                trackColor={{ true: t.color.acentoMovil, false: t.color.fondoSutil }}
                 thumbColor={t.color.fondo}
               />
             </View>
@@ -188,8 +188,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   datos: {
     flex: 1,

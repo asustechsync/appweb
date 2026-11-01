@@ -59,7 +59,7 @@ const estilos = StyleSheet.create({
     aspectRatio: 1,
     overflow: "hidden",
     borderRadius: t.radio.xl,
-    backgroundColor: t.color.fondo,
+    backgroundColor: t.color.fondoBloque,
   },
   imagen: {
     width: "100%",
@@ -78,6 +78,6 @@ const estilos = StyleSheet.create({
   },
   puntoActivo: {
     width: t.espacio[5],
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
 });

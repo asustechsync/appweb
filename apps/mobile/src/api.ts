@@ -60,6 +60,11 @@ export async function revalidarTienda(
 }
 
 /** Las fotos guardadas con ruta relativa ("/fotos/...") se piden a la tienda. */
+/** Direccion completa de una pagina de la tienda web ("/terminos"). */
+export function urlDeTienda(ruta: string): string {
+  return `${TIENDA}${ruta}`;
+}
+
 export function urlDeImagen(url: string): string {
   return url.startsWith("/") ? `${TIENDA}${url}` : url;
 }

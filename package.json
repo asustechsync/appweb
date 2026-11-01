@@ -28,6 +28,7 @@
     "db:studio": "npm run studio -w @appweb/db",
     "ui:tokens": "npm run tokens -w @appweb/ui",
     "ui:iconos": "npm run iconos -w @appweb/ui",
+    "ui:banderas": "npm run banderas -w @appweb/ui",
     "ui:quiebres": "npm run quiebres -w @appweb/ui"
   },
   "devDependencies": {

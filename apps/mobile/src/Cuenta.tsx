@@ -55,7 +55,13 @@ const MENU: { pantalla: PantallaCuenta; texto: string; Icono: ComponentType<Prop
  * su avance, el acceso al panel (solo ADMIN) y el menu de pedidos, reseñas,
  * direcciones, datos y contraseña.
  */
-export function Cuenta({ onAbrir }: { onAbrir: (pantalla: PantallaCuenta) => void }) {
+export function Cuenta({
+  onAbrir,
+  onVolver,
+}: {
+  onAbrir: (pantalla: PantallaCuenta) => void;
+  onVolver?: () => void;
+}) {
   const { sesion, cerrar } = useSesion();
   const [nivel, setNivel] = useState<EstadoNivel | null>(null);
 
@@ -78,7 +84,7 @@ export function Cuenta({ onAbrir }: { onAbrir: (pantalla: PantallaCuenta) => voi
     );
   }
 
-  if (sesion === null) return <Acceso />;
+  if (sesion === null) return <Acceso onVolver={onVolver} />;
 
   function confirmarSalida() {
     Alert.alert("Cerrar sesión", "¿Quieres salir de tu cuenta en este celular?", [
@@ -293,8 +299,7 @@ const estilos = StyleSheet.create({
   menu: {
     overflow: "hidden",
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   fila: {
     flexDirection: "row",
@@ -329,8 +334,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   textoSalir: {
     color: t.color.ofertaTexto,

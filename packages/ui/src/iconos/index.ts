@@ -54,6 +54,8 @@ export { IconoUsuario } from "./generados/IconoUsuario";
 // interfaz
 export { IconoCalendario } from "./generados/IconoCalendario";
 export { IconoCamara } from "./generados/IconoCamara";
+export { IconoCerrarCirculo } from "./generados/IconoCerrarCirculo";
+export { IconoCerrarCuadrado } from "./generados/IconoCerrarCuadrado";
 export { IconoCerrar } from "./generados/IconoCerrar";
 export { IconoCopiar } from "./generados/IconoCopiar";
 export { IconoCoronaRellena } from "./generados/IconoCoronaRellena";
@@ -67,6 +69,9 @@ export { IconoFlechaSubida } from "./generados/IconoFlechaSubida";
 export { IconoGaleria } from "./generados/IconoGaleria";
 export { IconoLlama } from "./generados/IconoLlama";
 export { IconoLuna } from "./generados/IconoLuna";
+export { IconoMarcarCirculoRelleno } from "./generados/IconoMarcarCirculoRelleno";
+export { IconoMarcarCirculo } from "./generados/IconoMarcarCirculo";
+export { IconoMarcarCuadrado } from "./generados/IconoMarcarCuadrado";
 export { IconoMarcar } from "./generados/IconoMarcar";
 export { IconoMensaje } from "./generados/IconoMensaje";
 export { IconoNotificacion } from "./generados/IconoNotificacion";

@@ -57,8 +57,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[1],
     padding: t.espacio[1],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   boton: {
     width: t.espacio[8],

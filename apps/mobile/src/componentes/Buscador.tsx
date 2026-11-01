@@ -46,8 +46,7 @@ const estilos = StyleSheet.create({
   caja: {
     height: ALTO,
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.lg,
+    backgroundColor: t.color.fondoBloque,
   },
   campoCaja: {
     flex: 1,

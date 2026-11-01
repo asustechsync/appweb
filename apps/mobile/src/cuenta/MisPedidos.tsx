@@ -116,8 +116,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[2],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   presionada: {
     transform: [{ scale: 0.98 }],

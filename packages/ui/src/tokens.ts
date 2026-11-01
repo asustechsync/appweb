@@ -130,6 +130,12 @@ export const tokens = {
     // fondo. fondoSutil baja un poco para seguir distinguiendose encima de
     // superficie, que ya no es blanco puro.
     fondo: "#FFFFFF",
+    // Bloques de la app movil (tarjetas, buscador, botones): blancos sobre el gris del fondo, como el panel de administracion.
+    fondoBloque: "#FFFFFF",
+    // Acento de la app movil: botones principales, seleccion, interruptores y progreso.
+    acentoMovil: "#171717",
+    // Check de cada requisito cumplido de la clave en la app movil: verde menta suave.
+    claveMuyFuerte: "#62B58A",
     fondoSutil: "#ECECED",
     // Gris plano de la opcion seleccionada en el menu del panel.
     fondoSeleccion: "#F0F0F0",
@@ -139,7 +145,7 @@ export const tokens = {
     // claro, el blanco de la tarjeta; en oscuro, un paso sobre ella.
     fondoControl: "#EFF1F3",
     // Fondo de la portada: gris con un toque azulado.
-    fondoPortada: "#F1F5F9",
+    fondoPortada: "#EFF1F3",
     // Escena de la portada: cielo que se funde con el fondo, y vidrio encima.
     // Fondo de la caja de la foto en la ficha de producto.
     fondoFoto: "#F6F6F7",
@@ -343,6 +349,10 @@ export const tokensOscuro = {
       900: "#FFFFFF",
     },
     fondo: "#1F2023",
+    fondoBloque: "#1F2023",
+    acentoMovil: "#171717",
+    // Check de cada requisito cumplido de la clave en la app movil: verde menta suave.
+    claveMuyFuerte: "#62B58A",
     fondoSutil: "#25272B",
     fondoSeleccion: "#2A2C30",
     fondoSegmento: "#2F3135",

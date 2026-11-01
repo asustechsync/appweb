@@ -205,8 +205,7 @@ const estilos = StyleSheet.create({
     flexDirection: "row",
     padding: t.espacio[1],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   periodo: {
     flex: 1,
@@ -215,7 +214,7 @@ const estilos = StyleSheet.create({
     borderRadius: t.radio.completo,
   },
   periodoActivo: {
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   textoPeriodo: {
     color: t.color.textoSuave,
@@ -250,8 +249,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   presionado: {
     opacity: 0.7,

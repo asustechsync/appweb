@@ -194,8 +194,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   cabecera: {
     flexDirection: "row",

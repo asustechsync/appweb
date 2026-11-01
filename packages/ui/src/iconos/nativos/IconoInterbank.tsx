@@ -6,13 +6,7 @@ import type { PropsIconoNativo } from "../tipos";
 
 export function IconoInterbank({ tamano = 24, color }: PropsIconoNativo) {
   return (
-    <Svg
-      width={tamano}
-      height={tamano}
-      viewBox="0 0 24 24"
-      version="1.1"
-      {...(color ? { color } : {})}
-    >
+    <Svg width={tamano} height={tamano} viewBox="0 0 24 24" {...(color ? { color } : {})}>
       <G id="path4" transform="matrix(4.169,0,0,4.169,1.92,1.92)">
         <Path
           fill="#0060A9"

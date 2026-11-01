@@ -44,8 +44,8 @@ const ATRIBUTOS_REACT: Record<string, string> = {
   "stop-opacity": "stopOpacity",
 };
 
-/** Atributos de la raiz que el componente pone por su cuenta. */
-const RAIZ_PROPIA = new Set(["xmlns", "width", "height", "class", "aria-hidden"]);
+/** Atributos de la raiz que el componente pone por su cuenta, o que sobran (`version`, que react-native-svg no acepta). */
+const RAIZ_PROPIA = new Set(["xmlns", "version", "width", "height", "class", "aria-hidden"]);
 
 interface Icono {
   nombre: string;

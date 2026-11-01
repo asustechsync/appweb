@@ -79,8 +79,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[2],
     padding: t.espacio[2],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   columna: {
     flex: 1,
@@ -120,7 +119,7 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: t.radio.md,
-    backgroundColor: t.color.fondo,
+    backgroundColor: t.color.fondoBloque,
   },
   favoritoActivo: {
     backgroundColor: t.color.ofertaFondo,

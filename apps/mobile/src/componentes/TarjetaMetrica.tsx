@@ -38,8 +38,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[1],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   titulo: {
     color: t.color.textoSuave,

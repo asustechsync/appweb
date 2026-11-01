@@ -285,8 +285,7 @@ const estilos = StyleSheet.create({
     justifyContent: "center",
     marginBottom: t.espacio[2],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   tituloVacio: {
     color: t.color.texto,
@@ -307,8 +306,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     padding: t.espacio[2],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   foto: {
     width: t.espacio[24],
@@ -373,7 +371,7 @@ const estilos = StyleSheet.create({
     marginTop: t.espacio[2],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
+    backgroundColor: t.color.fondoBloque,
   },
   filaResumen: {
     flexDirection: "row",
@@ -406,8 +404,7 @@ const estilos = StyleSheet.create({
     paddingLeft: t.espacio[5],
     paddingRight: t.espacio[2],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.lg,
+    backgroundColor: t.color.fondoBloque,
   },
   etiquetaTotal: {
     color: t.color.textoTenue,
@@ -425,7 +422,7 @@ const estilos = StyleSheet.create({
     marginTop: t.espacio[2],
     paddingHorizontal: t.espacio[6],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   textoBotonOscuro: {
     color: t.color.textoInverso,

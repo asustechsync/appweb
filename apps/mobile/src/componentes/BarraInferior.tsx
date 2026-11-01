@@ -100,8 +100,7 @@ const estilos = StyleSheet.create({
     paddingHorizontal: t.espacio[3],
     borderTopLeftRadius: t.radio.xl,
     borderTopRightRadius: t.radio.xl,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.lg,
+    backgroundColor: t.color.fondoBloque,
   },
   boton: {
     flex: 1,

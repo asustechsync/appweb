@@ -141,11 +141,10 @@ const estilos = StyleSheet.create({
     paddingHorizontal: t.espacio[4],
     paddingVertical: t.espacio[2],
     borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.sm,
+    backgroundColor: t.color.fondoBloque,
   },
   pestanaActiva: {
-    backgroundColor: t.color.marca[500],
+    backgroundColor: t.color.acentoMovil,
   },
   textoPestana: {
     color: t.color.textoSuave,
@@ -169,8 +168,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[2],
     padding: t.espacio[4],
     borderRadius: t.radio.lg,
-    backgroundColor: t.color.fondo,
-    boxShadow: t.sombra.md,
+    backgroundColor: t.color.fondoBloque,
   },
   presionado: {
     transform: [{ scale: 0.98 }],
