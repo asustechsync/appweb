@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -105,15 +106,16 @@ const estilos = StyleSheet.create({
   inicial: {
     color: t.color.texto,
     fontSize: t.tipo.tamano["2xl"],
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.xl,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

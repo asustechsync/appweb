@@ -42,6 +42,8 @@ export interface PropsTarjetaProducto {
   descuentoPct?: number | null;
   /** Insignia libre sobre la imagen: "Nuevo", "Más vendido". */
   etiqueta?: string | null;
+  /** Todas las etiquetas del producto; las que no son `etiqueta` salen debajo de ella. */
+  etiquetas?: string[];
   /** Muestra "Envio gratis" sobre la foto, abajo. Sin el, no hay etiqueta. */
   envioGratis?: boolean;
   marca?: string | null;
@@ -63,6 +65,11 @@ export interface PropsTarjetaProducto {
    * @appweb/core. `null` = sin reseñas: la tarjeta dice "Sin opiniones".
    */
   calificacion?: { promedio: number; total: number } | null;
+  /**
+   * Para el panel: la misma tarjeta, pero sin enlace y con la foto sin
+   * optimizar. Asi la vista previa usa el markup real y no se desvia de la tienda.
+   */
+  vistaPrevia?: boolean;
 }
 
 /** Lo que muestra la tarjeta de un producto que aun no tiene reseñas. */
@@ -140,6 +147,7 @@ export function TarjetaProducto({
   entrega,
   descuentoPct,
   etiqueta,
+  etiquetas = [],
   envioGratis = false,
   marca,
   disponible,
@@ -149,8 +157,12 @@ export function TarjetaProducto({
   stockRestante,
   stockPct,
   calificacion,
+  vistaPrevia = false,
 }: PropsTarjetaProducto) {
   const portada = presentacion === "portada";
+  const etiquetasExtra = etiquetas.filter(
+    (e) => e.trim().toLowerCase() !== etiqueta?.trim().toLowerCase(),
+  );
   const claveEtiqueta = etiqueta?.trim().toLowerCase();
   // "Tendencia" era el nombre anterior de esta etiqueta: se sigue aceptando
   // para que datos viejos (o en cache) tambien muestren la pastilla "Top".
@@ -235,6 +247,7 @@ export function TarjetaProducto({
           sizes={portada ? ANCHOS.portada : ANCHOS[contexto === "portada" ? "rejilla" : contexto]}
           loading={portada ? "eager" : "lazy"}
           {...(portada ? { fetchPriority: "high" as const } : {})}
+          sinOptimizar={vistaPrevia}
         />
         {/* Esquina izquierda: Nuevo. Oferta va en la info. */}
         {!portada && esNuevo ? (
@@ -245,7 +258,7 @@ export function TarjetaProducto({
         {descuentoPct ? (
           <span className="ui-tarjeta-producto__insignia">-{descuentoPct}%</span>
         ) : null}
-        {!portada && (envioGratis || etiqueta) ? (
+        {!portada && (envioGratis || etiqueta || etiquetasExtra.length > 0) ? (
           <span className="ui-tarjeta-producto__apilado">
             {envioGratis ? <span className="ui-tarjeta-producto__envio">Envío gratis</span> : null}
             {etiqueta ? (
@@ -261,6 +274,11 @@ export function TarjetaProducto({
                 {etiqueta}
               </span>
             ) : null}
+            {etiquetasExtra.map((e) => (
+              <span key={e} className="ui-tarjeta-producto__etiqueta">
+                {e}
+              </span>
+            ))}
           </span>
         ) : null}
       </span>
@@ -351,7 +369,7 @@ export function TarjetaProducto({
     </>
   );
 
-  return portada ? (
+  return portada || vistaPrevia ? (
     <article className={claseTarjeta}>{contenido}</article>
   ) : (
     <Link className={claseTarjeta} href={`/productos/${slug}`}>

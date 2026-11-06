@@ -2,17 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  ETIQUETAS,
-  ETIQUETAS_PERIODO,
-  ESTADOS_DESPACHO,
-  PERIODOS,
-  pasosDelPedido,
-  type EstadoPedido,
-  type Periodo,
-} from "@appweb/core";
+import { ETIQUETAS, ESTADOS_DESPACHO, pasosDelPedido, type EstadoPedido } from "@appweb/core";
 import {
   Alerta,
   BarraLista,
@@ -26,11 +18,8 @@ import {
   ListaConLateral,
   Paginador,
   LogoFoto,
-  RejillaMetricas,
   SelectorCalendario,
-  SelectorSegmentado,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -40,7 +29,7 @@ import { urlVisible } from "@/lib/url-visible";
 
 import { CuadrosPedido } from "./CuadrosPedido";
 import { DetallePedido } from "./DetallePedido";
-import { conSigno, cuandoFue, diaDeLima, diaYHora } from "@appweb/core/formato";
+import { diaDeLima, diaYHora } from "@appweb/core/formato";
 
 /** Ambar mientras espera a alguien, verde cuando termino bien, rojo si se cayo. */
 export function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "error" | "neutro" {
@@ -78,18 +67,6 @@ function estadosDelFiltro(filtro: FiltroPedidos): EstadoPedido[] | undefined {
   return [filtro];
 }
 
-/** Las tarjetas que se miden en el periodo elegido contra el anterior. */
-const TARJETAS_DEL_PERIODO = [
-  { clave: "creados", etiqueta: "Pedidos", menosEsMejor: false },
-  { clave: "entregados", etiqueta: "Entregados", menosEsMejor: false },
-  { clave: "cancelados", etiqueta: "Cancelados", menosEsMejor: true },
-] as const;
-
-/** "+3 pedidos": la diferencia contada, no en soles. */
-function diferenciaDePedidos(diferencia: number): string {
-  return `${conSigno(diferencia)} ${Math.abs(diferencia) === 1 ? "pedido" : "pedidos"}`;
-}
-
 /** Cuantos pedidos se ven por pagina. */
 const PAGINA = 10;
 
@@ -115,16 +92,6 @@ export function Pedidos({ puedeGestionar, pedidoInicial = null }: PropsPedidos) 
   // Dia de la lista (no de las tarjetas): "" muestra todos.
   const [diaLista, setDiaLista] = useState("");
   const [abierto, setAbierto] = useState<string | null>(pedidoInicial);
-
-  const [periodo, setPeriodo] = useState<Periodo>("dia");
-  // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
-  const [fecha, setFecha] = useState("");
-  // Las tarjetas van aparte de la lista: cambiar el periodo no recarga la
-  // lista, y se conservan las cifras anteriores mientras llegan las nuevas.
-  const metricas = useQuery({
-    ...trpc.panel.pedidos.metricas.queryOptions({ periodo, ...(fecha ? { fecha } : {}) }),
-    placeholderData: keepPreviousData,
-  });
 
   const lista = useQuery(
     trpc.panel.pedidos.listar.queryOptions(
@@ -191,184 +158,124 @@ export function Pedidos({ puedeGestionar, pedidoInicial = null }: PropsPedidos) 
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
 
-  const cifras = metricas.data;
-
   return (
-    <>
-      {cifras ? (
-        <Tarjeta sinMarco>
-          <RejillaMetricas>
-            {/* Lo que espera es una cola, no un periodo: se muestra entero y sin comparar. */}
-            <TarjetaMetrica
-              etiqueta="Por preparar"
-              valor={String(cifras.porPreparar.cantidad)}
-              serie={cifras.porPreparar.serie}
-              contexto={
-                cifras.porPreparar.masAntiguo
-                  ? `${cifras.porPreparar.cantidad} ${cifras.porPreparar.cantidad === 1 ? "pedido espera" : "pedidos esperan"} · el más antiguo ${cuandoFue(new Date(cifras.porPreparar.masAntiguo)).toLowerCase()}`
-                  : "Nada esperando"
-              }
+    <ListaConLateral
+      filasPorPagina={PAGINA}
+      lateral={
+        <VistaPrevia
+          logo={null}
+          estado={{ texto: "", tono: "neutro" }}
+          etiqueta=""
+          monto=""
+          {...(seleccionado ? {} : { vacio: "Elige un pedido de la lista para ver su resumen." })}
+        >
+          {seleccionado ? (
+            <CuadrosPedido
+              pedidoId={seleccionado.id}
+              principal={{ etiqueta: "Abrir pedido", onClick: () => setAbierto(seleccionado.id) }}
             />
-            {TARJETAS_DEL_PERIODO.map(({ clave, etiqueta, menosEsMejor }) => {
-              const m = cifras[clave];
+          ) : null}
+        </VistaPrevia>
+      }
+    >
+      <Tarjeta>
+        <BarraLista
+          fondoBuscador="control"
+          buscador={
+            <Campo
+              id="busqueda-pedidos"
+              etiqueta="Buscar por código, cliente o correo"
+              etiquetaOculta
+              icono={<IconoBuscar tamano={16} />}
+              valor={busqueda}
+              onCambio={(valor) => {
+                setBusqueda(valor);
+                setPagina(1);
+              }}
+              placeholder="Pedido, cliente o correo"
+            />
+          }
+        >
+          <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
+          <CampoSelectorLista
+            id="filtro-pedidos"
+            ancho="amplio"
+            etiqueta="Estado del pedido"
+            etiquetaOculta
+            valor={filtro}
+            opciones={opciones}
+            onCambio={(valor) => {
+              setFiltro(valor as FiltroPedidos);
+              setPagina(1);
+            }}
+          />
+          <SelectorCalendario
+            id="dia-lista-pedidos"
+            etiqueta="Pedidos de un día"
+            etiquetaOculta
+            placeholder="Elegir día"
+            valor={diaLista}
+            onCambio={(valor) => {
+              setDiaLista(valor);
+              setPagina(1);
+            }}
+            limpiable
+          />
+          {filtro !== "TODOS" || diaLista !== "" || busqueda !== "" ? (
+            <LimpiarFiltros
+              onClick={() => {
+                setFiltro("TODOS");
+                setDiaLista("");
+                setBusqueda("");
+                setPagina(1);
+              }}
+            />
+          ) : null}
+        </BarraLista>
+        {lista.isPending ? (
+          <Cargando texto="Cargando pedidos…" />
+        ) : lista.isError ? (
+          <Alerta tono="error">{lista.error.message}</Alerta>
+        ) : visibles.length === 0 ? (
+          <EstadoVacio
+            titulo="Sin pedidos"
+            texto={
+              busqueda || diaLista
+                ? "Ningún pedido coincide con esa búsqueda o ese día."
+                : "No hay pedidos en este estado."
+            }
+          />
+        ) : (
+          <div>
+            {visibles.map((pedido) => {
+              const { dia, hora } = diaYHora(new Date(pedido.creadoEn));
               return (
-                <TarjetaMetrica
-                  key={clave}
-                  etiqueta={etiqueta}
-                  valor={String(m.cantidad)}
-                  cambio={m.cambio}
-                  serie={m.serie}
-                  seriePrevia={m.seriePrevia}
-                  diferencia={diferenciaDePedidos(m.cantidad - m.cantidadPrevia)}
-                  anterior={{ etiqueta: cifras.etiquetaAnterior, valor: String(m.cantidadPrevia) }}
-                  menosEsMejor={menosEsMejor}
+                <FilaPedido
+                  key={pedido.id}
+                  logo={
+                    <LogoFoto
+                      src={urlVisible(pedido.imagen)}
+                      nombre={pedido.primerProducto ?? "Pedido"}
+                    />
+                  }
+                  titulo={pedido.codigo}
+                  detalle={pedido.cliente}
+                  contenido={`${pedido.lineas} ${pedido.lineas === 1 ? "producto" : "productos"} · ${pedido.unidades} ${pedido.unidades === 1 ? "unidad" : "unidades"}`}
+                  centro={[dia, hora]}
+                  estado={{
+                    texto: pedido.porConfirmar ? "Por confirmar" : ETIQUETAS[pedido.estado],
+                    tono: tonoDeEstado(pedido.estado),
+                  }}
+                  {...avanceDeEntrega(pedido.estado)}
+                  seleccionada={escritorio && seleccionado?.id === pedido.id}
+                  onAbrir={() => (escritorio ? setElegido(pedido.id) : setAbierto(pedido.id))}
+                  etiquetaAbrir={`${escritorio ? "Elegir" : "Ver"} pedido ${pedido.codigo}`}
                 />
               );
             })}
-          </RejillaMetricas>
-        </Tarjeta>
-      ) : null}
-
-      <ListaConLateral
-        filasPorPagina={PAGINA}
-        lateral={
-          <VistaPrevia
-            logo={null}
-            estado={{ texto: "", tono: "neutro" }}
-            etiqueta=""
-            monto=""
-            {...(seleccionado ? {} : { vacio: "Elige un pedido de la lista para ver su resumen." })}
-          >
-            {seleccionado ? (
-              <CuadrosPedido
-                pedidoId={seleccionado.id}
-                principal={{ etiqueta: "Abrir pedido", onClick: () => setAbierto(seleccionado.id) }}
-              />
-            ) : null}
-          </VistaPrevia>
-        }
-      >
-        <Tarjeta>
-          <BarraLista>
-            <SelectorCalendario
-              id="fecha-metricas-pedidos"
-              etiqueta="Elegir un día"
-              etiquetaOculta
-              placeholder="Elegir día"
-              valor={fecha}
-              onCambio={setFecha}
-              limpiable
-              alineacion="fin"
-            />
-            <SelectorSegmentado
-              etiqueta="Periodo de las métricas"
-              // Con un dia del calendario elegido, ningun periodo esta activo.
-              valor={fecha ? "" : periodo}
-              opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
-              onCambio={(valor) => {
-                setFecha("");
-                setPeriodo(valor as Periodo);
-              }}
-            />
-          </BarraLista>
-          <BarraLista
-            fondoBuscador="control"
-            buscador={
-              <Campo
-                id="busqueda-pedidos"
-                etiqueta="Buscar por código, cliente o correo"
-                etiquetaOculta
-                icono={<IconoBuscar tamano={16} />}
-                valor={busqueda}
-                onCambio={(valor) => {
-                  setBusqueda(valor);
-                  setPagina(1);
-                }}
-                placeholder="Pedido, cliente o correo"
-              />
-            }
-          >
-            <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
-            <CampoSelectorLista
-              id="filtro-pedidos"
-              ancho="amplio"
-              etiqueta="Estado del pedido"
-              etiquetaOculta
-              valor={filtro}
-              opciones={opciones}
-              onCambio={(valor) => {
-                setFiltro(valor as FiltroPedidos);
-                setPagina(1);
-              }}
-            />
-            <SelectorCalendario
-              id="dia-lista-pedidos"
-              etiqueta="Pedidos de un día"
-              etiquetaOculta
-              placeholder="Elegir día"
-              valor={diaLista}
-              onCambio={(valor) => {
-                setDiaLista(valor);
-                setPagina(1);
-              }}
-              limpiable
-            />
-            {filtro !== "TODOS" || diaLista !== "" || busqueda !== "" ? (
-              <LimpiarFiltros
-                onClick={() => {
-                  setFiltro("TODOS");
-                  setDiaLista("");
-                  setBusqueda("");
-                  setPagina(1);
-                }}
-              />
-            ) : null}
-          </BarraLista>
-          {lista.isPending ? (
-            <Cargando texto="Cargando pedidos…" />
-          ) : lista.isError ? (
-            <Alerta tono="error">{lista.error.message}</Alerta>
-          ) : visibles.length === 0 ? (
-            <EstadoVacio
-              titulo="Sin pedidos"
-              texto={
-                busqueda || diaLista
-                  ? "Ningún pedido coincide con esa búsqueda o ese día."
-                  : "No hay pedidos en este estado."
-              }
-            />
-          ) : (
-            <div>
-              {visibles.map((pedido) => {
-                const { dia, hora } = diaYHora(new Date(pedido.creadoEn));
-                return (
-                  <FilaPedido
-                    key={pedido.id}
-                    logo={
-                      <LogoFoto
-                        src={urlVisible(pedido.imagen)}
-                        nombre={pedido.primerProducto ?? "Pedido"}
-                      />
-                    }
-                    titulo={pedido.codigo}
-                    detalle={pedido.cliente}
-                    contenido={`${pedido.lineas} ${pedido.lineas === 1 ? "producto" : "productos"} · ${pedido.unidades} ${pedido.unidades === 1 ? "unidad" : "unidades"}`}
-                    centro={[dia, hora]}
-                    estado={{
-                      texto: pedido.porConfirmar ? "Por confirmar" : ETIQUETAS[pedido.estado],
-                      tono: tonoDeEstado(pedido.estado),
-                    }}
-                    {...avanceDeEntrega(pedido.estado)}
-                    seleccionada={escritorio && seleccionado?.id === pedido.id}
-                    onAbrir={() => (escritorio ? setElegido(pedido.id) : setAbierto(pedido.id))}
-                    etiquetaAbrir={`${escritorio ? "Elegir" : "Ver"} pedido ${pedido.codigo}`}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </Tarjeta>
-      </ListaConLateral>
-    </>
+          </div>
+        )}
+      </Tarjeta>
+    </ListaConLateral>
   );
 }

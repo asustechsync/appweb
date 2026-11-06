@@ -282,6 +282,13 @@ export const cuenta = router({
    */
   guardarResena: privado.input(esquemaResena).mutation(async ({ ctx, input }) => {
     const usuarioId = ctx.sesion.usuarioId;
+    const producto = await ctx.prisma.producto.findUnique({
+      where: { id: input.productoId },
+      select: { permiteResenas: true },
+    });
+    if (producto === null || !producto.permiteResenas) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Este producto no recibe reseñas." });
+    }
     const [compras, actual] = await Promise.all([
       ctx.prisma.itemPedido.count({
         where: {

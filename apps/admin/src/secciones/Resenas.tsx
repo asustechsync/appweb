@@ -25,9 +25,7 @@ import {
   LogoFoto,
   Paginador,
   RejillaBento,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
   type AccionBento,
 } from "@appweb/ui";
@@ -38,7 +36,7 @@ import { usePaginado } from "@/lib/use-paginado";
 import { useTRPC } from "@/lib/trpc";
 import { urlVisible } from "@/lib/url-visible";
 
-import { CALIFICACION, FECHA_HORA, diaYHora } from "@appweb/core/formato";
+import { FECHA_HORA, diaYHora } from "@appweb/core/formato";
 
 type FiltroResenas = EstadoResena | "TODAS";
 
@@ -142,11 +140,11 @@ export function Resenas() {
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
   const publicadas = todas.filter((r) => r.estado === "APROBADA");
-  const promedio =
+  const _promedio =
     publicadas.length === 0
       ? null
       : publicadas.reduce((suma, r) => suma + r.estrellas, 0) / publicadas.length;
-  const bajas = todas.filter((r) => r.estado === "PENDIENTE" && r.estrellas <= 2).length;
+  const _bajas = todas.filter((r) => r.estado === "PENDIENTE" && r.estrellas <= 2).length;
 
   const movil = abiertaMovil ? todas.find((r) => r.id === abiertaMovil) : undefined;
   if (!escritorio && movil) {
@@ -167,33 +165,6 @@ export function Resenas() {
   return (
     <>
       {aviso ? <Alerta tono={aviso.tono}>{aviso.texto}</Alerta> : null}
-
-      <Tarjeta titulo="Reseñas" sinMarco>
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Por revisar"
-            valor={String(conteo?.PENDIENTE ?? 0)}
-            contexto={
-              bajas > 0 ? `${bajas} con 2 estrellas o menos` : "Nada sale sin pasar por aquí"
-            }
-          />
-          <TarjetaMetrica
-            etiqueta="Publicadas"
-            valor={String(conteo?.APROBADA ?? 0)}
-            contexto="Se ven en la ficha del producto"
-          />
-          <TarjetaMetrica
-            etiqueta="Calificación media"
-            valor={promedio === null ? "—" : CALIFICACION.format(promedio)}
-            contexto="De las publicadas, sobre 5"
-          />
-          <TarjetaMetrica
-            etiqueta="No publicadas"
-            valor={String(conteo?.RECHAZADA ?? 0)}
-            contexto="Retiradas o rechazadas"
-          />
-        </RejillaMetricas>
-      </Tarjeta>
 
       <ListaConLateral
         filasPorPagina={PAGINA}

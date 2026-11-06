@@ -32,9 +32,7 @@ import {
   LogoIcono,
   ProgresoNivel,
   RejillaBento,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
   TONO_NIVEL,
 } from "@appweb/ui";
@@ -315,16 +313,6 @@ function EditorNiveles({ vigentes, compras }: { vigentes: Nivel[]; compras: Comp
       {!escritorio && seleccion ? editor : null}
 
       <Tarjeta titulo="Clientes por nivel">
-        <RejillaMetricas>
-          {mostrados.map((nivel) => (
-            <TarjetaMetrica
-              key={nivel.id}
-              etiqueta={`En ${nivel.nombre}`}
-              valor={String(reparto[nivel.id])}
-              contexto={cambiado && motivo === null ? "si guardas estos cambios" : "hoy"}
-            />
-          ))}
-        </RejillaMetricas>
         {impacto === null || !cambiado ? null : impacto.suben + impacto.bajan === 0 ? (
           <Alerta tono="info">Con estos requisitos ningún cliente cambia de nivel.</Alerta>
         ) : (

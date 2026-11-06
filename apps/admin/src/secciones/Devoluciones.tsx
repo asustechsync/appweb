@@ -34,9 +34,7 @@ import {
   LogoIcono,
   Paginador,
   RejillaBento,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -139,7 +137,7 @@ export function Devoluciones({ puedeGestionar }: { puedeGestionar: boolean }) {
     const cantidad = f.id === "TODAS" ? 0 : contar(f.id);
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
-  const reembolsado = todas.reduce((suma, d) => suma + d.reembolso, 0);
+  const _reembolsado = todas.reduce((suma, d) => suma + d.reembolso, 0);
   const buscar = () => {
     if (codigo.trim() !== "") setBuscado(codigo.trim());
   };
@@ -167,30 +165,7 @@ export function Devoluciones({ puedeGestionar }: { puedeGestionar: boolean }) {
             </Boton>
           </>
         }
-      >
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Devoluciones"
-            valor={String(contar("DEVOLUCION"))}
-            contexto="Prendas que vuelven al almacén"
-          />
-          <TarjetaMetrica
-            etiqueta="Cambios"
-            valor={String(contar("CAMBIO"))}
-            contexto="Otra talla o color"
-          />
-          <TarjetaMetrica
-            etiqueta="Reembolsos"
-            valor={String(contar("REEMBOLSO"))}
-            contexto="Solo dinero, sin prendas"
-          />
-          <TarjetaMetrica
-            etiqueta="Reembolsado"
-            valor={MONEDA.format(reembolsado)}
-            contexto={`En ${todas.length} ${todas.length === 1 ? "registro" : "registros"}`}
-          />
-        </RejillaMetricas>
-      </Tarjeta>
+      />
 
       <ListaConLateral
         filasPorPagina={PAGINA}

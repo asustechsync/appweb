@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoFlechaIzquierda } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import type { ReactNode } from "react";
@@ -45,7 +46,7 @@ const estilos = StyleSheet.create({
     flex: 1,
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
     textAlign: "center",
   },
   hueco: {

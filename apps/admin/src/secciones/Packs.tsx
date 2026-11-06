@@ -28,10 +28,8 @@ import {
   LogoIcono,
   Paginador,
   RejillaBento,
-  RejillaMetricas,
   SelectorBuscable,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -98,13 +96,13 @@ export function Packs() {
 
   const packs = lista.data;
   const activos = packs.filter((p) => p.activo);
-  const agotados = activos.filter((p) => p.stock === 0).length;
+  const _agotados = activos.filter((p) => p.stock === 0).length;
   const conMargen = packs.filter((p) => p.margen !== null);
-  const margenMedio =
+  const _margenMedio =
     conMargen.length === 0
       ? null
       : conMargen.reduce((suma, p) => suma + (p.margen?.porcentaje ?? 0), 0) / conMargen.length;
-  const ahorroMedio =
+  const _ahorroMedio =
     packs.length === 0 ? 0 : packs.reduce((suma, p) => suma + p.ahorro, 0) / packs.length;
 
   return (
@@ -113,34 +111,7 @@ export function Packs() {
         titulo="Packs y combos"
         sinMarco
         acciones={<Boton onClick={() => setEditando("nuevo")}>+ Nuevo pack</Boton>}
-      >
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Activos"
-            valor={String(activos.length)}
-            contexto={`De ${packs.length} armados`}
-          />
-          <TarjetaMetrica
-            etiqueta="Sin stock"
-            valor={String(agotados)}
-            contexto={agotados === 0 ? "Todos alcanzan" : "Falta alguna prenda"}
-          />
-          <TarjetaMetrica
-            etiqueta="Ahorro medio"
-            valor={MONEDA.format(ahorroMedio)}
-            contexto="Frente a comprar suelto"
-          />
-          <TarjetaMetrica
-            etiqueta="Margen medio"
-            valor={margenMedio === null ? "—" : `${Math.round(margenMedio)} %`}
-            contexto={
-              conMargen.length === packs.length
-                ? "Con el costo de sus prendas"
-                : `${packs.length - conMargen.length} sin costo registrado`
-            }
-          />
-        </RejillaMetricas>
-      </Tarjeta>
+      />
 
       <ListaConLateral
         filasPorPagina={PAGINA}

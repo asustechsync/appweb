@@ -34,9 +34,7 @@ import {
   LogoIcono,
   Paginador,
   RejillaBento,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
   type AccionBento,
 } from "@appweb/ui";
@@ -154,140 +152,111 @@ export function Reclamos() {
     const cantidad = f.id === "TODOS" ? 0 : contar(f.id);
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
-  const porVencer = todos.filter(
+  const _porVencer = todos.filter(
     (r) => r.diasParaVencer !== null && r.diasParaVencer >= 0 && r.diasParaVencer <= 2,
   ).length;
-  const quejas = todos.filter((r) => r.tipo === "QUEJA").length;
+  const _quejas = todos.filter((r) => r.tipo === "QUEJA").length;
 
   return (
-    <>
-      <Tarjeta titulo="Libro de Reclamaciones" sinMarco>
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Por responder"
-            valor={String(contar("PENDIENTE"))}
-            contexto="El plazo legal corre desde que se registra"
-          />
-          <TarjetaMetrica
-            etiqueta="Por vencer"
-            valor={String(porVencer)}
-            contexto="Vencen en dos días o menos"
-          />
-          <TarjetaMetrica
-            etiqueta="Vencidos"
-            valor={String(contar("VENCIDOS"))}
-            contexto={contar("VENCIDOS") === 0 ? "Todo dentro del plazo" : "Responder cuanto antes"}
-          />
-          <TarjetaMetrica
-            etiqueta="Respondidos"
-            valor={String(contar("RESPONDIDO"))}
-            contexto={`${todos.length - quejas} reclamos · ${quejas} quejas`}
-          />
-        </RejillaMetricas>
-      </Tarjeta>
-
-      <ListaConLateral
-        filasPorPagina={PAGINA}
-        barra={
-          <BarraLista
-            juntos
-            buscador={
-              <Campo
-                id="busqueda-reclamos"
-                etiqueta="Buscar por número, nombre o correo"
-                etiquetaOculta
-                icono={<IconoBuscar tamano={16} />}
-                valor={busqueda}
-                onCambio={(valor) => {
-                  setBusqueda(valor);
-                  setPagina(1);
-                }}
-                placeholder="Número, nombre o correo"
-              />
-            }
-          >
-            <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
-            <CampoSelectorLista
-              id="filtro-reclamos"
-              ancho="amplio"
-              etiqueta="Estado del reclamo"
+    <ListaConLateral
+      filasPorPagina={PAGINA}
+      barra={
+        <BarraLista
+          juntos
+          buscador={
+            <Campo
+              id="busqueda-reclamos"
+              etiqueta="Buscar por número, nombre o correo"
               etiquetaOculta
-              valor={filtro}
-              opciones={opciones}
+              icono={<IconoBuscar tamano={16} />}
+              valor={busqueda}
               onCambio={(valor) => {
-                setFiltro(valor as FiltroReclamos);
+                setBusqueda(valor);
+                setPagina(1);
+              }}
+              placeholder="Número, nombre o correo"
+            />
+          }
+        >
+          <Paginador pagina={pagina} paginas={paginas} onCambio={setPagina} />
+          <CampoSelectorLista
+            id="filtro-reclamos"
+            ancho="amplio"
+            etiqueta="Estado del reclamo"
+            etiquetaOculta
+            valor={filtro}
+            opciones={opciones}
+            onCambio={(valor) => {
+              setFiltro(valor as FiltroReclamos);
+              setPagina(1);
+            }}
+          />
+          {filtro !== "PENDIENTE" || busqueda !== "" ? (
+            <LimpiarFiltros
+              onClick={() => {
+                setFiltro("PENDIENTE");
+                setBusqueda("");
                 setPagina(1);
               }}
             />
-            {filtro !== "PENDIENTE" || busqueda !== "" ? (
-              <LimpiarFiltros
-                onClick={() => {
-                  setFiltro("PENDIENTE");
-                  setBusqueda("");
-                  setPagina(1);
-                }}
-              />
-            ) : null}
-          </BarraLista>
-        }
-        lateral={
-          <VistaPrevia
-            logo={null}
-            estado={{ texto: "", tono: "neutro" }}
-            etiqueta=""
-            monto=""
-            {...(seleccionado ? {} : { vacio: "Elige una hoja de la lista para ver su resumen." })}
-          >
-            {seleccionado ? (
-              <CuadrosReclamo
-                reclamoId={seleccionado.id}
-                principal={{
-                  etiqueta: seleccionado.estado === "PENDIENTE" ? "Responder" : "Ver hoja",
-                  onClick: () => setAbierto(seleccionado.id),
-                }}
-              />
-            ) : null}
-          </VistaPrevia>
-        }
-      >
-        <Tarjeta>
-          {lista.isPending ? (
-            <Cargando texto="Cargando reclamos…" />
-          ) : lista.isError ? (
-            <Alerta tono="error">{lista.error.message}</Alerta>
-          ) : visibles.length === 0 ? (
-            <EstadoVacio
-              titulo="Sin reclamos"
-              texto={
-                busqueda
-                  ? "Ninguna hoja coincide con esa búsqueda."
-                  : "No hay hojas en este estado."
-              }
+          ) : null}
+        </BarraLista>
+      }
+      lateral={
+        <VistaPrevia
+          logo={null}
+          estado={{ texto: "", tono: "neutro" }}
+          etiqueta=""
+          monto=""
+          {...(seleccionado ? {} : { vacio: "Elige una hoja de la lista para ver su resumen." })}
+        >
+          {seleccionado ? (
+            <CuadrosReclamo
+              reclamoId={seleccionado.id}
+              principal={{
+                etiqueta: seleccionado.estado === "PENDIENTE" ? "Responder" : "Ver hoja",
+                onClick: () => setAbierto(seleccionado.id),
+              }}
             />
-          ) : (
-            <div>
-              {visibles.map((r) => {
-                const { dia, hora } = diaYHora(new Date(r.creadoEn));
-                return (
-                  <FilaPedido
-                    key={r.id}
-                    logo={<LogoIcono icono={<IconoLibro tamano={16} />} nombre="Hoja" />}
-                    titulo={`${ETIQUETAS_TIPO_RECLAMO[r.tipo]} N.° ${r.codigo}`}
-                    detalle={r.nombre}
-                    contenido={r.descripcionBien}
-                    centro={[dia, hora]}
-                    estado={plazoCorto(r.estado, r.diasParaVencer)}
-                    seleccionada={escritorio && seleccionado?.id === r.id}
-                    onAbrir={() => (escritorio ? setElegido(r.id) : setAbierto(r.id))}
-                    etiquetaAbrir={`${escritorio ? "Elegir" : "Ver"} hoja ${r.codigo}`}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </Tarjeta>
-      </ListaConLateral>
-    </>
+          ) : null}
+        </VistaPrevia>
+      }
+    >
+      <Tarjeta>
+        {lista.isPending ? (
+          <Cargando texto="Cargando reclamos…" />
+        ) : lista.isError ? (
+          <Alerta tono="error">{lista.error.message}</Alerta>
+        ) : visibles.length === 0 ? (
+          <EstadoVacio
+            titulo="Sin reclamos"
+            texto={
+              busqueda ? "Ninguna hoja coincide con esa búsqueda." : "No hay hojas en este estado."
+            }
+          />
+        ) : (
+          <div>
+            {visibles.map((r) => {
+              const { dia, hora } = diaYHora(new Date(r.creadoEn));
+              return (
+                <FilaPedido
+                  key={r.id}
+                  logo={<LogoIcono icono={<IconoLibro tamano={16} />} nombre="Hoja" />}
+                  titulo={`${ETIQUETAS_TIPO_RECLAMO[r.tipo]} N.° ${r.codigo}`}
+                  detalle={r.nombre}
+                  contenido={r.descripcionBien}
+                  centro={[dia, hora]}
+                  estado={plazoCorto(r.estado, r.diasParaVencer)}
+                  seleccionada={escritorio && seleccionado?.id === r.id}
+                  onAbrir={() => (escritorio ? setElegido(r.id) : setAbierto(r.id))}
+                  etiquetaAbrir={`${escritorio ? "Elegir" : "Ver"} hoja ${r.codigo}`}
+                />
+              );
+            })}
+          </div>
+        )}
+      </Tarjeta>
+    </ListaConLateral>
   );
 }
 

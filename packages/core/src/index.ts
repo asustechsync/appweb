@@ -12,6 +12,7 @@ export {
   type Disponibilidad,
   type NivelStock,
 } from "./catalogo/precios";
+export { etiquetaVigente } from "./catalogo/etiqueta";
 
 export {
   compararTallas,
@@ -22,8 +23,13 @@ export {
 } from "./catalogo/variantes";
 
 export {
+  AJUSTES,
+  CARACTERISTICAS,
   CLASES_ATRIBUTO,
   COLORES,
+  DETALLES_VACIOS,
+  detallesDeSpecs,
+  MATERIALES,
   codigoDeDiseno,
   colorRegistrado,
   combinacionesDeVariantes,
@@ -50,7 +56,7 @@ export {
   TIPOS_PRENDA,
   varianteRepetida,
 } from "./catalogo/gestion";
-export type { ClaseAtributo, RequisitoPublicacion } from "./catalogo/gestion";
+export type { ClaseAtributo, DetallesPrenda, RequisitoPublicacion } from "./catalogo/gestion";
 
 export { creariaCiclo } from "./catalogo/arbol";
 export type { BannerDePortada } from "./catalogo/banners";

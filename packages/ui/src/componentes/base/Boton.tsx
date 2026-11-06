@@ -16,6 +16,8 @@ export interface PropsBoton {
   href?: string;
   /** `href` a otro sitio (WhatsApp, un mapa): abre en una pestaña nueva. */
   externo?: boolean;
+  /** Id del formulario que envia, cuando el boton vive fuera de el (la cabecera). */
+  formulario?: string;
 }
 
 /** Boton de accion. Primario para el paso que avanza, secundario para todo lo demas. */
@@ -28,6 +30,7 @@ export function Boton({
   anchoCompleto,
   href,
   externo = false,
+  formulario,
 }: PropsBoton) {
   const clases = [
     "ui-boton",
@@ -54,7 +57,7 @@ export function Boton({
   }
 
   return (
-    <button type={tipo} onClick={onClick} disabled={disabled} className={clases}>
+    <button type={tipo} form={formulario} onClick={onClick} disabled={disabled} className={clases}>
       {children}
     </button>
   );

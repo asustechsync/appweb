@@ -12,6 +12,15 @@ export const URL_TIENDA = process.env["NEXT_PUBLIC_WEB_URL"] ?? "http://localhos
 export const URL_PANEL = process.env["NEXT_PUBLIC_ADMIN_URL"] ?? "http://localhost:3001";
 
 /**
+ * Esquema con el que se abre la app movil (`appweb://...`). Tiene que coincidir
+ * con `expo.scheme` de `apps/mobile/app.json`, que no puede importarlo.
+ */
+export const ESQUEMA_APP = "appweb";
+
+/** La misma ruta de la tienda, pero abierta en la app movil si esta instalada. */
+export const enlaceApp = (ruta: string) => `${ESQUEMA_APP}://${ruta.replace(/^\//, "")}`;
+
+/**
  * Una URL publica vista desde el navegador actual. Si apunta a `localhost`
  * pero la pagina se abrio por otra direccion (el movil entrando por la IP de
  * la red local), `localhost` seria el propio telefono: se reemplaza el host

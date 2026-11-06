@@ -238,6 +238,10 @@ enum ClaseAtributo {
   COLOR
   DISENO
   ETIQUETA
+  // Detalles de la prenda: se eligen en la ficha y se guardan en `Producto.specs`.
+  MATERIAL
+  AJUSTE
+  CARACTERISTICA
 }
 
 // Valores que el panel ofrece elegir al crear un producto. La variante y el
@@ -283,8 +287,24 @@ model Producto {
   // Insignia corta sobre la imagen: "Nuevo", "Mas vendido". Se elige de los
   // atributos ETIQUETA y se guarda como texto.
   etiqueta         String?
+  // Las demas etiquetas del producto, ademas de `etiqueta` (la principal, la
+  // que la tarjeta destaca). Tambien nombres de atributos ETIQUETA.
+  etiquetasExtra   String[] @default([])
   // Muestra "Envío gratis" sobre la foto de la tarjeta. Lo marca el panel a mano.
   envioGratis      Boolean  @default(false)
+  // Hasta que dia (inclusive) la etiqueta "Nuevo" se muestra; pasado ese dia la
+  // tienda la deja de mostrar sola. Sin fecha, la etiqueta no vence.
+  nuevoHasta       DateTime? @db.Date
+  // Reglas de la tienda para este producto. Todas encendidas por defecto: asi
+  // se comportaban los productos antes de poder cambiarlas.
+  // Sin stock: sigue en los listados como "Agotado"; apagado, se oculta de ellos.
+  mostrarAgotado   Boolean  @default(true)
+  // Apagado: la ficha no muestra reseñas ni deja escribir nuevas.
+  permiteResenas   Boolean  @default(true)
+  // Apagado: no se puede poner dentro de un pack.
+  enPacks          Boolean  @default(true)
+  // Apagado: no sale al buscar; sigue en su categoria y en su marca.
+  enBuscador       Boolean  @default(true)
   // Datos tecnicos que no justifican columna: material, composicion, cuidado.
   // Ejemplo: { "material": "Algodon pima", "composicion": "85% algodon, 15% elastano" }
   specs            Json?

@@ -4,6 +4,7 @@ import {
   MAX_LETRAS_COMENTARIO,
   tonoDeEstadoResena,
 } from "@appweb/core/resenas";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoEstrella, IconoEstrellaRellena } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useCallback, useEffect, useState } from "react";
@@ -183,6 +184,7 @@ const estilos = StyleSheet.create({
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   lista: {
@@ -218,7 +220,7 @@ const estilos = StyleSheet.create({
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   estrellas: {
     flexDirection: "row",
@@ -231,16 +233,18 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.fondoControl,
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlignVertical: "top",
   },
   texto: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   enlace: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.xs,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   error: {
     padding: t.espacio[3],
@@ -249,5 +253,6 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

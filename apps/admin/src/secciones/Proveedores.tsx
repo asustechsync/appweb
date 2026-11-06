@@ -30,10 +30,8 @@ import {
   LogoIcono,
   Paginador,
   RejillaBento,
-  RejillaMetricas,
   SelectorBuscable,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
   type AccionBento,
 } from "@appweb/ui";
@@ -116,10 +114,10 @@ export function Proveedores() {
   }
 
   const proveedores = lista.data;
-  const activos = proveedores.filter((p) => p.activo).length;
-  const comprado = proveedores.reduce((suma, p) => suma + p.comprado, 0);
-  const compras = proveedores.reduce((suma, p) => suma + p.compras, 0);
-  const ultima = proveedores
+  const _activos = proveedores.filter((p) => p.activo).length;
+  const _comprado = proveedores.reduce((suma, p) => suma + p.comprado, 0);
+  const _compras = proveedores.reduce((suma, p) => suma + p.compras, 0);
+  const _ultima = proveedores
     .map((p) => p.ultimaCompra)
     .filter((f): f is string => f !== null)
     .sort()
@@ -131,30 +129,7 @@ export function Proveedores() {
         titulo="Proveedores"
         sinMarco
         acciones={<Boton onClick={() => setEditando("nuevo")}>+ Nuevo proveedor</Boton>}
-      >
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Activos"
-            valor={String(activos)}
-            contexto={`De ${proveedores.length} registrados`}
-          />
-          <TarjetaMetrica
-            etiqueta="Comprado"
-            valor={MONEDA.format(comprado)}
-            contexto="En todas las compras"
-          />
-          <TarjetaMetrica
-            etiqueta="Compras"
-            valor={String(compras)}
-            contexto={compras === 0 ? "Aún sin registrar" : "Cada una subió el stock"}
-          />
-          <TarjetaMetrica
-            etiqueta="Última compra"
-            valor={ultima ? FECHA.format(new Date(ultima)) : "—"}
-            contexto={ultima ? cuandoFue(new Date(ultima)) : "Sin compras"}
-          />
-        </RejillaMetricas>
-      </Tarjeta>
+      />
 
       <ListaConLateral
         filasPorPagina={PAGINA}

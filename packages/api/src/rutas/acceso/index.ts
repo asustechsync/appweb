@@ -55,6 +55,15 @@ export const accesoApp = router({
     return { ok: true as const };
   }),
 
+  /** Clave nueva desde el enlace del correo, abierto en la app. */
+  restablecer: publico
+    .input(z.object({ token: z.string(), clave: z.string() }))
+    .mutation(async ({ input }) => {
+      const resultado = await acceso.restablecerClave(input);
+      if (!resultado.ok) rechazar(resultado.error);
+      return { ok: true as const };
+    }),
+
   /**
    * Comprueba que el token guardado sigue valido al abrir la app. El nombre se
    * lee de la base: el del token queda como estaba al ingresar y no refleja

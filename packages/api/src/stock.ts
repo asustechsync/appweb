@@ -56,13 +56,30 @@ export async function aplicarMovimientos(
     })),
   });
 
-  const tocados = new Map<string, ProductoTocado>();
+  // Un UPDATE por variante tarda segun la latencia de la base y revienta el
+  // tiempo de la transaccion con muchas variantes. Se suma el delta por
+  // variante y se agrupan las que reciben el mismo: una consulta por grupo.
+  const deltaPorVariante = new Map<string, number>();
   for (const m of movimientos) {
-    const variante = await tx.variante.update({
-      where: { id: m.varianteId },
-      data: { stock: { increment: m.delta } },
-      select: { producto: { select: { slug: true, categoria: { select: { slug: true } } } } },
+    deltaPorVariante.set(m.varianteId, (deltaPorVariante.get(m.varianteId) ?? 0) + m.delta);
+  }
+  const idsPorDelta = new Map<number, string[]>();
+  for (const [id, delta] of deltaPorVariante) {
+    idsPorDelta.set(delta, [...(idsPorDelta.get(delta) ?? []), id]);
+  }
+  for (const [delta, ids] of idsPorDelta) {
+    await tx.variante.updateMany({
+      where: { id: { in: ids } },
+      data: { stock: { increment: delta } },
     });
+  }
+
+  const variantes = await tx.variante.findMany({
+    where: { id: { in: [...deltaPorVariante.keys()] } },
+    select: { producto: { select: { slug: true, categoria: { select: { slug: true } } } } },
+  });
+  const tocados = new Map<string, ProductoTocado>();
+  for (const variante of variantes) {
     tocados.set(variante.producto.slug, {
       slug: variante.producto.slug,
       slugCategoria: variante.producto.categoria.slug,

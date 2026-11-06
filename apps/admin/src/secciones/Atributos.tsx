@@ -17,6 +17,7 @@ import {
   Formulario,
   GrupoChips,
   Pestanas,
+  SelectorColor,
   Tarjeta,
 } from "@appweb/ui";
 
@@ -40,6 +41,9 @@ const PESTANAS: { id: Pestana; etiqueta: string }[] = [
   { id: "COLOR", etiqueta: "Colores" },
   { id: "DISENO", etiqueta: "Diseños" },
   { id: "ETIQUETA", etiqueta: "Etiquetas" },
+  { id: "MATERIAL", etiqueta: "Materiales" },
+  { id: "AJUSTE", etiqueta: "Ajustes" },
+  { id: "CARACTERISTICA", etiqueta: "Características" },
 ];
 
 const AYUDA: Record<Pestana, string> = {
@@ -49,6 +53,9 @@ const AYUDA: Record<Pestana, string> = {
     "Cada color tiene un código fijo de dos dígitos que va en el SKU; la decena es la familia. Arrastra un chip para cambiar el orden.",
   DISENO: "Su número en el SKU (1 a 9) se asigna dentro de cada producto. Arrastra para ordenar.",
   ETIQUETA: "La insignia sobre la foto de la tarjeta. Arrastra para ordenar.",
+  MATERIAL: "Los materiales que se marcan en Detalles de la prenda. Arrastra para ordenar.",
+  AJUSTE: "Cómo calza la prenda; se elige uno por producto. Arrastra para ordenar.",
+  CARACTERISTICA: "Rasgos de la prenda (transpirable, costuras planas…). Arrastra para ordenar.",
 };
 
 /** Tras guardar: refresca la pagina y los selectores del editor de productos. */
@@ -316,6 +323,9 @@ const SINGULAR: Record<ClaseAtributo, string> = {
   COLOR: "color",
   DISENO: "diseño",
   ETIQUETA: "etiqueta",
+  MATERIAL: "material",
+  AJUSTE: "ajuste",
+  CARACTERISTICA: "característica",
 };
 
 /** Mueve `id` justo antes de `destino`: el orden que queda tras arrastrar. */
@@ -391,9 +401,10 @@ function PestanaValores({ clase, valores }: { clase: ClaseAtributo; valores: Val
               texto="+ Color"
               etiqueta={`Nuevo color en ${f.nombre.toLowerCase()}`}
               placeholder="Nombre"
+              conColor
               disabled={ocupado}
-              onAgregar={(nombre) =>
-                crear.mutate({ clase, nombre, familia: f.decena, activo: true })
+              onAgregar={(nombre, hex) =>
+                crear.mutate({ clase, nombre, familia: f.decena, hex: hex ?? null, activo: true })
               }
             />
           </GrupoChips>
@@ -440,7 +451,7 @@ function DetalleValor({
   const [activo, setActivo] = useState(valor.activo);
   const [error, setError] = useState<string | null>(null);
   const esColor = valor.clase === "COLOR";
-  const usosDe = valor.clase === "ETIQUETA" ? "productos" : "variantes";
+  const usosDe = valor.clase === "COLOR" || valor.clase === "DISENO" ? "variantes" : "productos";
 
   const guardar = useMutation(
     trpc.panel.atributos.guardar.mutationOptions({
@@ -473,13 +484,7 @@ function DetalleValor({
         cambia: las variantes ya creadas lo guardan.
       </p>
       {esColor ? (
-        <Campo
-          id="atributo-hex"
-          etiqueta="Muestra (hex)"
-          valor={hex}
-          onCambio={setHex}
-          placeholder="#1E2A4A"
-        />
+        <SelectorColor id="atributo-hex" etiqueta="Muestra" valor={hex} onCambio={setHex} />
       ) : null}
       <Casilla
         id="atributo-activo"

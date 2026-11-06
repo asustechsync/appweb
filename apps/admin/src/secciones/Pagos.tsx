@@ -4,14 +4,7 @@ import { useEffect, useState } from "react";
 
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  ETIQUETAS_MEDIO_PAGO,
-  ETIQUETAS_PAGO,
-  ETIQUETAS_PERIODO,
-  PERIODOS,
-  type EstadoPago,
-  type Periodo,
-} from "@appweb/core";
+import { ETIQUETAS_MEDIO_PAGO, ETIQUETAS_PAGO, type EstadoPago } from "@appweb/core";
 import {
   Alerta,
   Boton,
@@ -27,11 +20,8 @@ import {
   LogoBanco,
   Paginador,
   LogoMedioPago,
-  RejillaMetricas,
   SelectorCalendario,
-  SelectorSegmentado,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 import type { BancoTransferencia } from "@appweb/ui";
@@ -43,7 +33,7 @@ import { useTRPC } from "@/lib/trpc";
 
 import { CuadrosPago } from "./CuadrosPago";
 import { DetallePago } from "./DetallePago";
-import { MONEDA, conSigno, diaDeLima, diaYHora } from "@appweb/core/formato";
+import { MONEDA, diaDeLima, diaYHora } from "@appweb/core/formato";
 
 /** El filtro de la lista; sin filtro van todos, los pendientes arriba. */
 const FILTROS: { id: EstadoPago | "TODOS"; etiqueta: string }[] = [
@@ -54,13 +44,6 @@ const FILTROS: { id: EstadoPago | "TODOS"; etiqueta: string }[] = [
   { id: "REEMBOLSADO", etiqueta: "Reembolsados" },
   { id: "ANULADO", etiqueta: "Anulados" },
 ];
-
-/** Las tarjetas que se miden en el periodo elegido contra el anterior. */
-const TARJETAS_DEL_MES = [
-  { estado: "CONFIRMADO", etiqueta: "Cobrado", menosEsMejor: false },
-  { estado: "RECHAZADO", etiqueta: "Rechazado", menosEsMejor: true },
-  { estado: "REEMBOLSADO", etiqueta: "Reembolsado", menosEsMejor: true },
-] as const;
 
 /**
  * Cola de pagos: lo que entro, lo que falta confirmar y lo que se devolvio.
@@ -115,10 +98,6 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
   const [abierto, setAbierto] = useState<string | null>(pagoInicial);
   const [aviso, setAviso] = useState<string | null>(null);
 
-  const [periodo, setPeriodo] = useState<Periodo>("dia");
-  // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
-  const [fecha, setFecha] = useState("");
-
   // El pago abierto vive en la URL (`/pagos/<id>`): actualizar la pagina lo
   // conserva y "atras" vuelve a la lista.
   useEffect(() => {
@@ -135,16 +114,6 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
     window.history.pushState(null, "", id ? `/pagos/${id}` : "/pagos");
     window.scrollTo(0, 0);
   }
-
-  // Las tarjetas van aparte de la lista: cambiar el periodo no recarga la
-  // cola, y se conservan las cifras anteriores mientras llegan las nuevas.
-  const metricas = useQuery({
-    ...trpc.panel.pagos.metricas.queryOptions({
-      periodo,
-      ...(fecha ? { fecha } : {}),
-    }),
-    placeholderData: keepPreviousData,
-  });
 
   // La busqueda la hace el servidor sobre todos los pagos; el dia y las paginas,
   // aqui, sobre lo que trae.
@@ -197,8 +166,6 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
   }
 
   const resumen = lista.data?.porEstado;
-  const delPeriodo = metricas.data?.porEstado;
-  const etiquetaAnterior = metricas.data?.etiquetaAnterior ?? "";
   const opciones = FILTROS.map((f) => {
     const cantidad = resumen && f.id !== "TODOS" ? resumen[f.id].cantidad : 0;
     return {
@@ -210,69 +177,6 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
   return (
     <>
       {aviso ? <Alerta tono="exito">{aviso}</Alerta> : null}
-
-      {resumen && delPeriodo ? (
-        <Tarjeta
-          titulo={metricas.data?.titulo ?? ""}
-          sinMarco
-          acciones={
-            <>
-              <SelectorCalendario
-                id="fecha-metricas-pagos"
-                etiqueta="Elegir un día"
-                etiquetaOculta
-                placeholder="Elegir día"
-                valor={fecha}
-                onCambio={setFecha}
-                limpiable
-                alineacion="fin"
-              />
-              <SelectorSegmentado
-                etiqueta="Periodo de las métricas"
-                // Con un dia del calendario elegido, ningun periodo esta activo.
-                valor={fecha ? "" : periodo}
-                opciones={PERIODOS.map((id) => ({
-                  valor: id,
-                  etiqueta: ETIQUETAS_PERIODO[id],
-                }))}
-                onCambio={(valor) => {
-                  setFecha("");
-                  setPeriodo(valor as Periodo);
-                }}
-              />
-            </>
-          }
-        >
-          <RejillaMetricas>
-            {/* Lo pendiente es una cola, no un periodo: se muestra entero y sin comparar. */}
-            <TarjetaMetrica
-              etiqueta="Por confirmar"
-              valor={MONEDA.format(resumen.PENDIENTE.monto)}
-              serie={delPeriodo.PENDIENTE.serie}
-              contexto={`${resumen.PENDIENTE.cantidad} ${resumen.PENDIENTE.cantidad === 1 ? "pago" : "pagos"} esperando`}
-            />
-            {TARJETAS_DEL_MES.map(({ estado, etiqueta, menosEsMejor }) => {
-              const m = delPeriodo[estado];
-              return (
-                <TarjetaMetrica
-                  key={estado}
-                  etiqueta={etiqueta}
-                  valor={MONEDA.format(m.monto)}
-                  cambio={m.cambio}
-                  serie={m.serie}
-                  seriePrevia={m.seriePrevia}
-                  diferencia={conSigno(m.monto - m.montoPrevio, MONEDA)}
-                  anterior={{
-                    etiqueta: etiquetaAnterior,
-                    valor: MONEDA.format(m.montoPrevio),
-                  }}
-                  menosEsMejor={menosEsMejor}
-                />
-              );
-            })}
-          </RejillaMetricas>
-        </Tarjeta>
-      ) : null}
 
       <ListaConLateral
         filasPorPagina={PAGINA}

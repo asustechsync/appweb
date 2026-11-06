@@ -1,4 +1,5 @@
 import type { BannerDePortada } from "@appweb/core";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
@@ -59,12 +60,13 @@ const estilos = StyleSheet.create({
   titulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.titulos[700],
     lineHeight: t.tipo.tamano.lg * t.tipo.altura.apretada,
   },
   detalle: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   accion: {
     paddingVertical: t.espacio[2],
@@ -75,6 +77,6 @@ const estilos = StyleSheet.create({
   textoAccion: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.xs,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
 });

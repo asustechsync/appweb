@@ -1,0 +1,75 @@
+.ui-menu-acciones {
+  position: relative;
+}
+/* Cuadrado del alto del selector, igual que el boton de abrir en la tienda. */
+.ui-menu-acciones__boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoControl);
+  color: var(--color-textoSuave);
+  list-style: none;
+  cursor: pointer;
+}
+.ui-menu-acciones__boton::-webkit-details-marker {
+  display: none;
+}
+.ui-menu-acciones__boton:hover,
+.ui-menu-acciones[open] .ui-menu-acciones__boton {
+  color: var(--color-texto);
+}
+.ui-menu-acciones__boton:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}
+.ui-menu-acciones__punto {
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: var(--radio-completo);
+  background: currentColor;
+}
+.ui-menu-acciones__lista {
+  position: absolute;
+  z-index: 20;
+  inset-block-start: calc(100% + var(--espacio-1));
+  inset-inline-end: 0;
+  display: grid;
+  min-inline-size: 13rem;
+  padding: var(--espacio-1);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+}
+.ui-menu-acciones__accion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-block-size: var(--espacio-10);
+  padding-inline: var(--espacio-3);
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: none;
+  color: var(--color-texto);
+  font: inherit;
+  font-size: var(--tipo-tamano-sm);
+  text-align: start;
+  cursor: pointer;
+}
+.ui-menu-acciones__accion:hover:not(:disabled) {
+  background: var(--color-fondoSutil);
+}
+.ui-menu-acciones__accion:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ui-menu-acciones__accion--peligro {
+  color: var(--color-error);
+}
+.ui-menu-acciones__accion:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: -2px;
+}

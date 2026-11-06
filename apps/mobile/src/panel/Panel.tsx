@@ -5,6 +5,7 @@ import {
   IconoPedidos,
   type PropsIconoNativo,
 } from "@appweb/ui/iconos.nativos";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { type ComponentType, useEffect, useState } from "react";
 import {
@@ -219,7 +220,7 @@ const estilos = StyleSheet.create({
   textoPeriodo: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   textoActivo: {
     color: t.color.textoInverso,
@@ -227,11 +228,13 @@ const estilos = StyleSheet.create({
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   suaveIzq: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   fila: {
     flexDirection: "row",
@@ -241,7 +244,7 @@ const estilos = StyleSheet.create({
     marginTop: t.espacio[3],
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   atajo: {
     flexDirection: "row",
@@ -268,6 +271,6 @@ const estilos = StyleSheet.create({
   tituloAtajo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
 });

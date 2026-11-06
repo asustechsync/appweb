@@ -7,9 +7,17 @@
  * La usan la semilla y `npm run atributos -w @appweb/db`.
  */
 import type { PrismaClient } from "@prisma/client";
-import { COLORES, DISENOS, ETIQUETAS_PRODUCTO, TIPOS_PRENDA } from "@appweb/core";
+import {
+  AJUSTES,
+  CARACTERISTICAS,
+  COLORES,
+  DISENOS,
+  ETIQUETAS_PRODUCTO,
+  MATERIALES,
+  TIPOS_PRENDA,
+} from "@appweb/core";
 
-type Clase = "COLOR" | "DISENO" | "ETIQUETA";
+type Clase = "COLOR" | "DISENO" | "ETIQUETA" | "MATERIAL" | "AJUSTE" | "CARACTERISTICA";
 
 export async function sembrarAtributos(prisma: PrismaClient): Promise<void> {
   let tiposNuevos = 0;
@@ -52,6 +60,9 @@ export async function sembrarAtributos(prisma: PrismaClient): Promise<void> {
       ...ETIQUETAS_PRODUCTO,
       ...etiquetasUsadas.flatMap((p) => (p.etiqueta ? [p.etiqueta] : [])),
     ].map((nombre) => ({ clase: "ETIQUETA" as const, nombre })),
+    ...MATERIALES.map((nombre) => ({ clase: "MATERIAL" as const, nombre })),
+    ...AJUSTES.map((nombre) => ({ clase: "AJUSTE" as const, nombre })),
+    ...CARACTERISTICAS.map((nombre) => ({ clase: "CARACTERISTICA" as const, nombre })),
   ];
 
   const existentes = await prisma.atributo.findMany({ select: { clase: true, nombre: true } });

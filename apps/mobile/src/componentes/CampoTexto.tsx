@@ -1,7 +1,16 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoOjo, IconoOjoTachado } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
-import { type ReactNode, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, type TextInputProps, View } from "react-native";
+import { type ReactNode, type Ref, useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  type TextInputInstance,
+  type TextInputProps,
+  View,
+} from "react-native";
 
 interface PropsCampoTexto extends Omit<TextInputProps, "style"> {
   etiqueta: string;
@@ -14,6 +23,10 @@ interface PropsCampoTexto extends Omit<TextInputProps, "style"> {
    * borde, esquinas de 8, icono en su propia columna y, en claves, el ojo para verla).
    */
   variante?: "bloque" | "formulario";
+  /** Para enfocarlo desde fuera (el "Siguiente" del teclado en el campo anterior). */
+  ref?: Ref<TextInputInstance>;
+  /** Mensaje bajo el campo cuando lo escrito no vale. */
+  error?: string | null;
 }
 
 /** Texto guia: `textoSuave` al 30 % (0x4D de 255), algo mas suave que el de la web. */
@@ -25,25 +38,39 @@ export function CampoTexto({
   icono,
   etiquetaOculta = false,
   variante = "bloque",
+  error,
+  ref,
   secureTextEntry,
   ...props
 }: PropsCampoTexto) {
   const [visible, setVisible] = useState(false);
+  const [enfocado, setEnfocado] = useState(false);
   const formulario = variante === "formulario";
   const conOjo = formulario && secureTextEntry;
   return (
     <View style={estilos.bloque}>
       {etiquetaOculta ? null : <Text style={estilos.etiqueta}>{etiqueta}</Text>}
-      <View style={[estilos.caja, formulario && estilos.cajaFormulario]}>
+      <View
+        style={[estilos.caja, formulario && estilos.cajaFormulario, enfocado && estilos.enfocado]}
+      >
         {icono ? (
           <View style={[estilos.icono, formulario && estilos.iconoFormulario]}>{icono}</View>
         ) : null}
         <TextInput
+          ref={ref}
           accessibilityLabel={etiqueta}
           placeholderTextColor={COLOR_PLACEHOLDER}
           secureTextEntry={secureTextEntry && !visible}
           style={[estilos.campo, formulario && estilos.campoFormulario]}
           {...props}
+          onFocus={(e) => {
+            setEnfocado(true);
+            props.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setEnfocado(false);
+            props.onBlur?.(e);
+          }}
         />
         {conOjo ? (
           <Pressable
@@ -60,6 +87,7 @@ export function CampoTexto({
           </Pressable>
         ) : null}
       </View>
+      {error ? <Text style={estilos.error}>{error}</Text> : null}
     </View>
   );
 }
@@ -71,7 +99,7 @@ const estilos = StyleSheet.create({
   etiqueta: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   caja: {
     flexDirection: "row",
@@ -81,13 +109,27 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
+    boxShadow: t.sombra.difusa,
   },
   cajaFormulario: {
     height: t.espacio[12],
     paddingHorizontal: 0,
     gap: 0,
-    borderRadius: t.radio.md,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
+  },
+  /**
+   * Foco con halo, sin borde: el campo activo se distingue sin mover nada. `boxShadow`
+   * y no `elevation`: cambiar la elevacion en Android rehace la vista y el campo
+   * pierde el foco al tocarlo.
+   */
+  enfocado: {
+    boxShadow: `0 2px 10px ${t.color.acentoMovil}24`,
+  },
+  error: {
+    color: t.color.error,
+    fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   icono: {
     opacity: 0.6,
@@ -102,9 +144,11 @@ const estilos = StyleSheet.create({
     height: "100%",
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   campoFormulario: {
     fontSize: t.tipo.tamano.base,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   ojo: {
     width: t.espacio[12],

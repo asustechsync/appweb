@@ -16,6 +16,11 @@ export interface PropsFotoProducto {
   fetchPriority?: "high" | "low" | "auto";
   /** `false` en miniaturas: solo el icono, sin la leyenda. */
   leyenda?: boolean;
+  /**
+   * Un `<img>` normal en vez de `next/image`: para el panel, donde la foto puede
+   * vivir en un dominio que el optimizador no conoce.
+   */
+  sinOptimizar?: boolean;
 }
 
 /**
@@ -36,6 +41,7 @@ export function FotoProducto({
   priority,
   fetchPriority,
   leyenda = true,
+  sinOptimizar = false,
 }: PropsFotoProducto) {
   if (!src) {
     return (
@@ -44,6 +50,10 @@ export function FotoProducto({
         {leyenda ? <span>Sin imagen</span> : null}
       </span>
     );
+  }
+  if (sinOptimizar) {
+    // biome-ignore lint/performance/noImgElement: sin optimizador a proposito (ver `sinOptimizar`)
+    return <img src={src} alt={alt} width={width} height={height} />;
   }
   return (
     <Image

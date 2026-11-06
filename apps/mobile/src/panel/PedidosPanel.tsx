@@ -1,6 +1,7 @@
 import { ESTADOS_PEDIDO, ETIQUETAS, tonoDeEstado } from "@appweb/core/estados-pedido";
 import { FECHA_HORA, MONEDA } from "@appweb/core/formato";
 import { ETIQUETAS_MEDIO_PAGO } from "@appweb/core/gestion-pedidos";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
 import {
@@ -149,7 +150,7 @@ const estilos = StyleSheet.create({
   textoPestana: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   textoActivo: {
     color: t.color.textoInverso,
@@ -157,6 +158,7 @@ const estilos = StyleSheet.create({
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   lista: {
@@ -186,19 +188,21 @@ const estilos = StyleSheet.create({
   codigo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   total: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   suaveIzq: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   fecha: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

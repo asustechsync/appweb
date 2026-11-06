@@ -2,16 +2,9 @@
 
 import { useMemo, useState } from "react";
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  DIAS_DEMORA_ENVIO,
-  departamentosDesdeTexto,
-  ETIQUETAS_PERIODO,
-  PERIODOS,
-  type EstadoPedido,
-  type Periodo,
-} from "@appweb/core";
+import { departamentosDesdeTexto, type EstadoPedido } from "@appweb/core";
 import {
   Alerta,
   BarraLista,
@@ -32,11 +25,8 @@ import {
   ListaConLateral,
   Paginador,
   LogoIcono,
-  RejillaMetricas,
   SelectorCalendario,
-  SelectorSegmentado,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -47,7 +37,6 @@ import { useTRPC } from "@/lib/trpc";
 import { CuadrosEnvio, ETAPA_ENVIO, tonoDeEtapa, type EnvioDeCola } from "./CuadrosEnvio";
 import {
   MONEDA,
-  conSigno,
   cuandoFue,
   diaDeLima,
   mensajeDeFallo,
@@ -67,7 +56,7 @@ const SIGUIENTE: Partial<Record<EstadoPedido, { estado: EstadoPedido; boton: str
 };
 
 /** "2 pedidos esperan · el más antiguo hace 3 h", o el texto de cola vacia. */
-function contextoDeCola(cantidad: number, masAntiguo: string | null, vacia: string): string {
+function _contextoDeCola(cantidad: number, masAntiguo: string | null, vacia: string): string {
   if (cantidad === 0 || masAntiguo === null) return vacia;
   const esperan = cantidad === 1 ? "pedido espera" : "pedidos esperan";
   return `${cantidad} ${esperan} · el más antiguo ${cuandoFue(new Date(masAntiguo)).toLowerCase()}`;
@@ -99,16 +88,6 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
     enabled: filtro === "ENTREGADO",
   });
   const lista = filtro === "ENTREGADO" ? entregados : cola;
-
-  const [periodo, setPeriodo] = useState<Periodo>("dia");
-  // Un dia concreto del calendario; con fecha elegida manda sobre el periodo.
-  const [fecha, setFecha] = useState("");
-  // Aparte de la cola: cambiar el periodo no la recarga, y se conservan las
-  // cifras anteriores mientras llegan las nuevas.
-  const metricas = useQuery({
-    ...trpc.panel.envios.metricas.queryOptions({ periodo, ...(fecha ? { fecha } : {}) }),
-    placeholderData: keepPreviousData,
-  });
 
   const escritorio = useEscritorio();
   const [elegido, setElegido] = useState<string | null>(null);
@@ -332,91 +311,9 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
     );
   }
 
-  const cifras = metricas.data;
-  const tarjetas = cifras ? (
-    <Tarjeta
-      titulo={cifras.titulo}
-      sinMarco
-      acciones={
-        <>
-          <SelectorCalendario
-            id="fecha-metricas-envios"
-            etiqueta="Elegir un día"
-            etiquetaOculta
-            placeholder="Elegir día"
-            valor={fecha}
-            onCambio={setFecha}
-            limpiable
-            alineacion="fin"
-          />
-          <SelectorSegmentado
-            etiqueta="Periodo de las métricas"
-            // Con un dia del calendario elegido, ningun periodo esta activo.
-            valor={fecha ? "" : periodo}
-            opciones={PERIODOS.map((id) => ({ valor: id, etiqueta: ETIQUETAS_PERIODO[id] }))}
-            onCambio={(valor) => {
-              setFecha("");
-              setPeriodo(valor as Periodo);
-            }}
-          />
-        </>
-      }
-    >
-      <RejillaMetricas>
-        {/* Las tres primeras son colas de ahora mismo: se muestran enteras y sin comparar. */}
-        <TarjetaMetrica
-          etiqueta="Por despachar"
-          valor={String(cifras.porDespachar.cantidad)}
-          serie={cifras.porDespachar.serie}
-          contexto={contextoDeCola(
-            cifras.porDespachar.cantidad,
-            cifras.porDespachar.masAntiguo,
-            "Nada esperando salir",
-          )}
-        />
-        <TarjetaMetrica
-          etiqueta="En camino"
-          valor={String(cifras.enCamino.cantidad)}
-          serie={cifras.enCamino.serie}
-          contexto={contextoDeCola(
-            cifras.enCamino.cantidad,
-            cifras.enCamino.masAntiguo,
-            "Nada en camino",
-          )}
-        />
-        <TarjetaMetrica
-          etiqueta="Demorados"
-          valor={String(cifras.demorados.cantidad)}
-          contexto={
-            cifras.demorados.cantidad > 0
-              ? `Más de ${DIAS_DEMORA_ENVIO} días en camino`
-              : `Ninguno pasa de ${DIAS_DEMORA_ENVIO} días`
-          }
-        />
-        <TarjetaMetrica
-          etiqueta="Despachados"
-          valor={String(cifras.despachados.cantidad)}
-          cambio={cifras.despachados.cambio}
-          serie={cifras.despachados.serie}
-          seriePrevia={cifras.despachados.seriePrevia}
-          diferencia={`${conSigno(cifras.despachados.cantidad - cifras.despachados.cantidadPrevia)} ${
-            Math.abs(cifras.despachados.cantidad - cifras.despachados.cantidadPrevia) === 1
-              ? "envío"
-              : "envíos"
-          }`}
-          anterior={{
-            etiqueta: cifras.etiquetaAnterior,
-            valor: String(cifras.despachados.cantidadPrevia),
-          }}
-        />
-      </RejillaMetricas>
-    </Tarjeta>
-  ) : null;
-
   return (
     <>
       {avisos}
-      {tarjetas}
       <ListaConLateral
         filasPorPagina={PAGINA}
         barra={barra}

@@ -2,7 +2,7 @@
 
 import { type CSSProperties, type ReactNode, useState } from "react";
 
-import { IconoCerrar } from "../../iconos";
+import { IconoCerrar, IconoMarcar } from "../../iconos";
 
 import "./chips-atributo.css";
 
@@ -141,9 +141,19 @@ export interface PropsChipAgregar {
   /** Nombre accesible del campo: "Nuevo color azul". */
   etiqueta: string;
   placeholder?: string;
-  onAgregar: (valor: string) => void;
+  /** Con la muestra en hex cuando `conColor`. */
+  onAgregar: (valor: string, muestra?: string) => void;
+  /**
+   * Antes del nombre, un circulo que abre la paleta del sistema para elegir el
+   * tono. Entonces se agrega con Enter o con el visto, no al salir del campo:
+   * abrir la paleta le quita el foco al nombre.
+   */
+  conColor?: boolean;
   disabled?: boolean;
 }
+
+/** Tono con el que abre la paleta: un gris medio, ni blanco ni negro. */
+const MUESTRA_INICIAL = "#808080";
 
 /**
  * Chip punteado que se abre en un campo para escribir un valor nuevo. Enter
@@ -154,19 +164,22 @@ export function ChipAgregar({
   etiqueta,
   placeholder,
   onAgregar,
+  conColor = false,
   disabled,
 }: PropsChipAgregar) {
   const [abierto, setAbierto] = useState(false);
   const [valor, setValor] = useState("");
+  const [muestra, setMuestra] = useState(MUESTRA_INICIAL);
 
   function cerrar() {
     setAbierto(false);
     setValor("");
+    setMuestra(MUESTRA_INICIAL);
   }
 
   function agregar() {
     const limpio = valor.trim();
-    if (limpio !== "") onAgregar(limpio);
+    if (limpio !== "") onAgregar(limpio, conColor ? muestra : undefined);
     cerrar();
   }
 
@@ -185,6 +198,15 @@ export function ChipAgregar({
 
   return (
     <span className="ui-chip-agregar ui-chip-agregar--abierto">
+      {conColor ? (
+        <input
+          type="color"
+          className="ui-chip-agregar__muestra"
+          aria-label="Tono del color"
+          value={muestra}
+          onChange={(evento) => setMuestra(evento.target.value)}
+        />
+      ) : null}
       <input
         className="ui-chip-agregar__campo"
         aria-label={etiqueta}
@@ -193,7 +215,7 @@ export function ChipAgregar({
         // biome-ignore lint/a11y/noAutofocus: se abre a pedido, el foco va donde se escribe.
         autoFocus
         onChange={(evento) => setValor(evento.target.value)}
-        onBlur={agregar}
+        onBlur={conColor ? undefined : agregar}
         onKeyDown={(evento) => {
           if (evento.key === "Enter") {
             evento.preventDefault();
@@ -202,6 +224,27 @@ export function ChipAgregar({
           if (evento.key === "Escape") cerrar();
         }}
       />
+      {conColor ? (
+        <>
+          <button
+            type="button"
+            className="ui-chip-agregar__accion"
+            aria-label="Agregar"
+            onClick={agregar}
+            disabled={valor.trim() === ""}
+          >
+            <IconoMarcar tamano={14} />
+          </button>
+          <button
+            type="button"
+            className="ui-chip-agregar__accion"
+            aria-label="Cancelar"
+            onClick={cerrar}
+          >
+            <IconoCerrar tamano={12} />
+          </button>
+        </>
+      ) : null}
     </span>
   );
 }

@@ -10,7 +10,7 @@
 
 import { TRPCError } from "@trpc/server";
 
-import { mismoNombre, siguienteCodigoColor } from "@appweb/core";
+import { detallesDeSpecs, mismoNombre, siguienteCodigoColor } from "@appweb/core";
 import { esquemaAtributo, esquemaOrdenAtributos, esquemaTipoPrenda } from "@appweb/core/tipos";
 import { Prisma } from "@appweb/db";
 
@@ -40,18 +40,35 @@ function contarUsos(valores: { valor: string | null; cantidad: number }[]) {
 export const atributos = router({
   /** Todo junto: son listas cortas y las cuatro secciones las comparten. */
   listar: gestionar.query(async ({ ctx }) => {
-    const [tipos, valores, productos, colores, disenos, etiquetas] = await Promise.all([
-      ctx.prisma.tipoPrenda.findMany({ orderBy: [{ orden: "asc" }, { nombre: "asc" }] }),
-      ctx.prisma.atributo.findMany({
-        orderBy: [{ orden: "asc" }, { codigo: "asc" }, { nombre: "asc" }],
-      }),
-      ctx.prisma.producto.findMany({ where: { codigo: { not: null } }, select: { codigo: true } }),
-      ctx.prisma.variante.groupBy({ by: ["color"], _count: { _all: true } }),
-      ctx.prisma.variante.groupBy({ by: ["diseno"], _count: { _all: true } }),
-      ctx.prisma.producto.groupBy({ by: ["etiqueta"], _count: { _all: true } }),
-    ]);
+    const [tipos, valores, productos, colores, disenos, etiquetas, conDetalles] = await Promise.all(
+      [
+        ctx.prisma.tipoPrenda.findMany({ orderBy: [{ orden: "asc" }, { nombre: "asc" }] }),
+        ctx.prisma.atributo.findMany({
+          orderBy: [{ orden: "asc" }, { codigo: "asc" }, { nombre: "asc" }],
+        }),
+        ctx.prisma.producto.findMany({
+          where: { codigo: { not: null } },
+          select: { codigo: true },
+        }),
+        ctx.prisma.variante.groupBy({ by: ["color"], _count: { _all: true } }),
+        ctx.prisma.variante.groupBy({ by: ["diseno"], _count: { _all: true } }),
+        ctx.prisma.producto.groupBy({ by: ["etiqueta"], _count: { _all: true } }),
+        ctx.prisma.producto.findMany({
+          where: { specs: { not: Prisma.DbNull } },
+          select: { specs: true },
+        }),
+      ],
+    );
+
+    // Los detalles viven en `specs`: cada producto cuenta una vez por valor.
+    const detalles = conDetalles.map((p) => detallesDeSpecs(p.specs));
+    const usosEn = (textos: (d: (typeof detalles)[number]) => string[]) => (nombre: string) =>
+      detalles.filter((d) => textos(d).some((t) => mismoNombre(t, nombre))).length;
 
     const usosPorClase = {
+      MATERIAL: usosEn((d) => d.materiales),
+      AJUSTE: usosEn((d) => (d.ajuste ? [d.ajuste] : [])),
+      CARACTERISTICA: usosEn((d) => d.caracteristicas),
       COLOR: contarUsos(colores.map((c) => ({ valor: c.color, cantidad: c._count._all }))),
       DISENO: contarUsos(disenos.map((d) => ({ valor: d.diseno, cantidad: d._count._all }))),
       ETIQUETA: contarUsos(etiquetas.map((e) => ({ valor: e.etiqueta, cantidad: e._count._all }))),
@@ -106,7 +123,14 @@ export const atributos = router({
    * toma el siguiente codigo libre de su familia.
    */
   guardar: gestionar.input(esquemaAtributo).mutation(async ({ ctx, input }) => {
-    const que = { COLOR: "un color", DISENO: "un diseño", ETIQUETA: "una etiqueta" }[input.clase];
+    const que = {
+      COLOR: "un color",
+      DISENO: "un diseño",
+      ETIQUETA: "una etiqueta",
+      MATERIAL: "un material",
+      AJUSTE: "un ajuste",
+      CARACTERISTICA: "una característica",
+    }[input.clase];
     const hex = input.clase === "COLOR" ? input.hex : undefined;
     try {
       if (input.atributoId) {

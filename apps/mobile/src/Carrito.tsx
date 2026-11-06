@@ -1,5 +1,6 @@
 import { calcularTotales, MAX_POR_LINEA } from "@appweb/core/carrito";
 import { MONEDA } from "@appweb/core/formato";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoCarrito, IconoFlechaIzquierda, IconoPapelera } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useMemo, useState } from "react";
@@ -266,7 +267,7 @@ const estilos = StyleSheet.create({
   tituloCabecera: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   hueco: {
     width: t.espacio[12],
@@ -284,13 +285,13 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: t.espacio[2],
-    borderRadius: t.radio.completo,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
   },
   tituloVacio: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   contenido: {
     gap: t.espacio[3],
@@ -300,6 +301,7 @@ const estilos = StyleSheet.create({
   contador: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   linea: {
     flexDirection: "row",
@@ -334,11 +336,12 @@ const estilos = StyleSheet.create({
     flex: 1,
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   variante: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   aviso: {
     alignSelf: "flex-start",
@@ -349,7 +352,7 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   filaPrecio: {
     flexDirection: "row",
@@ -360,11 +363,12 @@ const estilos = StyleSheet.create({
   precio: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   unitario: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.etiqueta,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   resumen: {
     gap: t.espacio[2],
@@ -380,16 +384,17 @@ const estilos = StyleSheet.create({
   descuento: {
     color: t.color.acentoTexto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   cifra: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   barra: {
@@ -409,11 +414,12 @@ const estilos = StyleSheet.create({
   etiquetaTotal: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   total: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   botonOscuro: {
     alignItems: "center",
@@ -427,7 +433,7 @@ const estilos = StyleSheet.create({
   textoBotonOscuro: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   presionado: {
     transform: [{ scale: 0.97 }],

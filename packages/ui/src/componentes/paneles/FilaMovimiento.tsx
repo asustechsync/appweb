@@ -120,3 +120,8 @@ export function FilaMovimiento({
     </article>
   );
 }
+
+/** Varias acciones de una fila en una sola linea, juntas y del mismo alto. */
+export function AccionesFila({ children }: { children: ReactNode }) {
+  return <span className="ui-fila-movimiento__acciones">{children}</span>;
+}

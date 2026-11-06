@@ -17,7 +17,7 @@ export interface LineaGuardada {
 }
 
 /** Tope por linea. Coincide con `esquemaLineaCarrito` de tipos/. */
-export const MAX_POR_LINEA = 20;
+export const MAX_POR_LINEA = 50;
 
 function acotar(cantidad: number): number {
   return Math.min(Math.max(Math.trunc(cantidad), 1), MAX_POR_LINEA);

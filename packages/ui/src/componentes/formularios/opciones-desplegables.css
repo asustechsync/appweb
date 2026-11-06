@@ -23,6 +23,11 @@
 :is(.ui-selector-lista__lista--con-scroll, .ui-selector-buscable__lista--con-scroll) {
   max-block-size: calc(6 * 2.5rem + 7 * var(--espacio-1));
   overflow-y: auto;
+  /* Sin barra visible: las opciones miden lo mismo con o sin scroll. */
+  scrollbar-width: none;
+}
+:is(.ui-selector-lista__lista--con-scroll, .ui-selector-buscable__lista--con-scroll)::-webkit-scrollbar {
+  display: none;
 }
 
 :is(.ui-selector-lista__opcion, .ui-selector-buscable__opcion, .ui-selector-pais__opcion) {
@@ -30,6 +35,8 @@
   align-items: center;
   inline-size: 100%;
   block-size: 2.5rem;
+  /* En una lista con scroll no se encogen para caber: se desplazan. */
+  flex-shrink: 0;
   padding-inline: var(--espacio-3);
   border: 0;
   border-radius: var(--radio-sm);

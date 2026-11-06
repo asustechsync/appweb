@@ -1,3 +1,6 @@
+.ui-fila-tarjetas[hidden] {
+  display: none;
+}
 .ui-fila-tarjetas {
   display: flex;
   flex-direction: column;
@@ -16,5 +19,74 @@
   .ui-fila-tarjetas {
     flex-direction: row;
     align-items: flex-start;
+  }
+}
+
+/* Un solo bloque: la caja es de la fila y las tarjetas hijas van sin marco. */
+.ui-fila-tarjetas--unida {
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+}
+.ui-fila-tarjetas--unida .ui-tarjeta {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.ui-fila-tarjetas--unida > .ui-tarjeta:last-child {
+  padding-block-start: var(--espacio-4);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-fila-tarjetas--unida > .ui-tarjeta--sin-marco {
+  gap: var(--espacio-4);
+}
+.ui-fila-tarjetas--unida > .ui-tarjeta--sin-marco > .ui-tarjeta + .ui-tarjeta {
+  padding-block-start: var(--espacio-4);
+  border-block-start: 1px solid var(--color-borde);
+}
+@media (min-width: 48rem) {
+  .ui-fila-tarjetas--unida {
+    padding: var(--espacio-5);
+  }
+}
+@media (min-width: 64rem) {
+  .ui-fila-tarjetas--unida {
+    gap: var(--espacio-5);
+  }
+  .ui-fila-tarjetas--unida > .ui-tarjeta:last-child {
+    padding-block-start: 0;
+    padding-inline-start: var(--espacio-5);
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--color-borde);
+  }
+}
+
+/* Columnas simetricas: el campo de varias lineas crece hasta igualar la otra columna. */
+@media (min-width: 64rem) {
+  .ui-fila-tarjetas--mismo-alto {
+    align-items: stretch;
+  }
+  /* La segunda columna es angosta y de ancho fijo: lo que sobra es para la primera. */
+  .ui-fila-tarjetas--mismo-alto > :last-child {
+    flex: 0 0 18rem;
+  }
+  .ui-fila-tarjetas--mismo-alto > .ui-tarjeta .ui-campo:has(.ui-campo__input--multilinea) {
+    flex: 1;
+  }
+  .ui-fila-tarjetas--mismo-alto .ui-campo__input--multilinea {
+    flex: 1;
+  }
+  /* Las tarjetas envuelven sus hijos en `__cuerpo`: ese cuerpo y la ultima tarjeta toman el sobrante. */
+  .ui-fila-tarjetas--mismo-alto > .ui-tarjeta--sin-marco > .ui-tarjeta__cuerpo {
+    flex: 1;
+    gap: var(--espacio-4);
+  }
+  .ui-fila-tarjetas--mismo-alto
+    > .ui-tarjeta--sin-marco
+    > .ui-tarjeta__cuerpo
+    > .ui-tarjeta:last-child {
+    flex: 1;
   }
 }

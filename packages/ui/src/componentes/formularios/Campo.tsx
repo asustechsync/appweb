@@ -7,6 +7,7 @@ import "flag-icons/css/flag-icons.min.css";
 import "../estilos.css";
 
 import { IconoOjo, IconoOjoTachado } from "../../iconos";
+import { AyudaCampo } from "./AyudaCampo";
 import { SelectorPais } from "./SelectorPais";
 
 export interface PropsCampo {
@@ -32,6 +33,8 @@ export interface PropsCampo {
   disabled?: boolean;
   /** Enlace a la derecha de la etiqueta: "¿Olvidaste tu contraseña?". */
   enlaceEtiqueta?: ReactNode;
+  /** Interrogante junto a la etiqueta con una nota flotante que explica el campo. */
+  ayuda?: string;
   /** Icono dentro del campo, a la izquierda del texto. */
   icono?: ReactNode;
   /** Oculta la etiqueta a la vista; sigue leyendola el lector de pantalla.
@@ -65,6 +68,7 @@ export function Campo({
   onCambioPais,
   disabled,
   enlaceEtiqueta,
+  ayuda,
   icono,
   etiquetaOculta,
   onSalir,
@@ -113,11 +117,14 @@ export function Campo({
 
   return (
     <div className="ui-campo">
-      {enlaceEtiqueta ? (
+      {enlaceEtiqueta || ayuda ? (
         <div className="ui-campo__etiqueta-fila">
-          <label htmlFor={id} className={claseEtiqueta}>
-            {etiqueta}
-          </label>
+          <span className="ui-campo__etiqueta-con-ayuda">
+            <label htmlFor={id} className={claseEtiqueta}>
+              {etiqueta}
+            </label>
+            {ayuda ? <AyudaCampo texto={ayuda} /> : null}
+          </span>
           {enlaceEtiqueta}
         </div>
       ) : (

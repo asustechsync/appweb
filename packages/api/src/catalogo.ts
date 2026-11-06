@@ -11,6 +11,7 @@
 import {
   autorDeResena,
   compararTallas,
+  etiquetaVigente,
   type FiltrosListado,
   type BannerDePortada,
   type OpcionDeTalla,
@@ -22,7 +23,32 @@ import {
   type ResumenCalificacion,
   urlDeFoto,
 } from "@appweb/core";
+import { diaDeLima } from "@appweb/core/formato";
 import { type Prisma, prisma } from "@appweb/db";
+
+/** Sin stock y con "mostrar agotado" apagado, el producto no sale en los listados. */
+function sinAgotadosOcultos<
+  T extends {
+    mostrarAgotado: boolean;
+    variantes: Parameters<typeof resolverDisponibilidad>[0];
+  },
+>(productos: T[]): T[] {
+  return productos.filter((p) => p.mostrarAgotado || resolverDisponibilidad(p.variantes).hayStock);
+}
+
+/** Las etiquetas del producto hoy, la principal primero: "Nuevo" deja de salir pasada su fecha. */
+function etiquetasDeHoy(producto: {
+  etiqueta: string | null;
+  etiquetasExtra: string[];
+  nuevoHasta: Date | null;
+}): string[] {
+  const hasta = producto.nuevoHasta?.toISOString().slice(0, 10) ?? null;
+  const hoy = diaDeLima(new Date());
+  return [producto.etiqueta, ...producto.etiquetasExtra].flatMap((e) => {
+    const vigente = e === null ? null : etiquetaVigente(e, hasta, hoy);
+    return vigente === null ? [] : [vigente];
+  });
+}
 
 export interface ProductoDeRejilla {
   slug: string;
@@ -39,6 +65,8 @@ export interface ProductoDeRejilla {
   precioLista: number | null;
   descuentoPct: number | null;
   etiqueta: string | null;
+  /** Todas las etiquetas vigentes del producto; la primera es `etiqueta`. */
+  etiquetas: string[];
   envioGratis: boolean;
   disponible: boolean;
   /** Unidades que quedan y % de lo ingresado que sigue en almacen (tarjeta de oferta). */
@@ -134,7 +162,8 @@ export async function aRejilla(productos: ProductoConRejilla[]): Promise<Product
       precio: precio.precio,
       precioLista: precio.precioLista,
       descuentoPct: precio.descuentoPct,
-      etiqueta: producto.etiqueta,
+      etiqueta: etiquetasDeHoy(producto)[0] ?? null,
+      etiquetas: etiquetasDeHoy(producto),
       envioGratis: producto.envioGratis,
       disponible: disponibilidad.hayStock,
       stockRestante: nivel.restante,
@@ -153,7 +182,7 @@ export async function leerNovedades(limite = 5): Promise<ProductoDeRejilla[]> {
     include: INCLUIR_EN_REJILLA,
   });
 
-  return aRejilla(productos);
+  return aRejilla(sinAgotadosOcultos(productos));
 }
 
 /** Productos con precio de lista mayor al de venta: la seccion "Ofertas". */
@@ -167,7 +196,7 @@ export async function leerOfertas(limite = 10): Promise<ProductoDeRejilla[]> {
 
   // `resolverPrecio` decide si es oferta de verdad: un precio de lista menor
   // o igual al de venta no lo es, y ahi deja `descuentoPct` en null.
-  return (await aRejilla(productos)).filter((p) => p.descuentoPct !== null);
+  return (await aRejilla(sinAgotadosOcultos(productos))).filter((p) => p.descuentoPct !== null);
 }
 
 /** Categorias de primer nivel y activas, en el orden del panel. */
@@ -205,6 +234,8 @@ export interface ProductoDeFicha {
   descripcion: string | null;
   descripcionCorta: string | null;
   etiqueta: string | null;
+  /** Todas las etiquetas vigentes del producto; la primera es `etiqueta`. */
+  etiquetas: string[];
   tituloSeo: string | null;
   descripcionSeo: string | null;
   categoria: {
@@ -220,8 +251,15 @@ export interface ProductoDeFicha {
   stockBajo: boolean;
   stockTotal: number;
   opciones: OpcionDeTalla[];
+  /**
+   * Muestra de cada color del producto, por nombre: `{ "Negro": "#1A1A1A" }`.
+   * Sale de los atributos del panel; un color sin muestra no aparece.
+   */
+  muestras: Record<string, string>;
   calificacion: ResumenCalificacion | null;
   /** Las reseñas publicadas mas recientes. */
+  /** `false`: la ficha no muestra reseñas ni deja escribir nuevas. */
+  permiteResenas: boolean;
   resenas: ResenaDeFicha[];
 }
 
@@ -280,7 +318,10 @@ export async function leerFicha(slug: string): Promise<ProductoDeFicha | null> {
 
   // Etiqueta `producto:{slug}`: publicar o retirar una reseña en el panel
   // regenera esta ficha (ver `etiquetasDeProducto`).
-  const [calificaciones, resenas] = await Promise.all([
+  // La variante guarda el color como texto (congelado); su muestra vive en el
+  // atributo del mismo nombre.
+  const nombresColor = [...new Set(producto.variantes.map((v) => v.color))];
+  const [calificaciones, resenas, colores] = await Promise.all([
     calificacionPorProducto([producto.id]),
     prisma.resena.findMany({
       where: { productoId: producto.id, estado: "APROBADA" },
@@ -294,6 +335,10 @@ export async function leerFicha(slug: string): Promise<ProductoDeFicha | null> {
         usuario: { select: { nombre: true, apellidoPaterno: true, email: true } },
       },
     }),
+    prisma.atributo.findMany({
+      where: { clase: "COLOR", nombre: { in: nombresColor }, hex: { not: null } },
+      select: { nombre: true, hex: true },
+    }),
   ]);
 
   return {
@@ -303,7 +348,8 @@ export async function leerFicha(slug: string): Promise<ProductoDeFicha | null> {
     marcaSlug: producto.marca?.slug ?? null,
     descripcion: producto.descripcion,
     descripcionCorta: producto.descripcionCorta,
-    etiqueta: producto.etiqueta,
+    etiqueta: etiquetasDeHoy(producto)[0] ?? null,
+    etiquetas: etiquetasDeHoy(producto),
     tituloSeo: producto.tituloSeo,
     descripcionSeo: producto.descripcionSeo,
     categoria: producto.categoria,
@@ -328,8 +374,12 @@ export async function leerFicha(slug: string): Promise<ProductoDeFicha | null> {
         sku: variante.sku,
       })),
     ),
-    calificacion: calificaciones.get(producto.id) ?? null,
-    resenas: resenas.map((r) => ({
+    muestras: Object.fromEntries(
+      colores.flatMap((c) => (c.hex ? [[c.nombre, c.hex] as const] : [])),
+    ),
+    calificacion: producto.permiteResenas ? (calificaciones.get(producto.id) ?? null) : null,
+    permiteResenas: producto.permiteResenas,
+    resenas: (producto.permiteResenas ? resenas : []).map((r) => ({
       id: r.id,
       autor: autorDeResena(r.usuario),
       estrellas: r.estrellas,
@@ -428,7 +478,7 @@ export async function leerMarca(slug: string): Promise<MarcaConProductos | null>
   return {
     nombre: marca.nombre,
     logo: marca.logoUrl,
-    productos: await aRejilla(productos),
+    productos: await aRejilla(sinAgotadosOcultos(productos)),
   };
 }
 
@@ -588,7 +638,7 @@ export async function leerListado(
     take: TOPE_LISTADO,
     include: INCLUIR_EN_REJILLA,
   });
-  return aRejilla(productos);
+  return aRejilla(sinAgotadosOcultos(productos));
 }
 
 /**
@@ -602,6 +652,7 @@ export async function leerBusqueda(terminos: string[]): Promise<ProductoDeRejill
   const productos = await prisma.producto.findMany({
     where: {
       activo: true,
+      enBuscador: true,
       categoria: { activo: true },
       AND: terminos.map((t) => ({
         OR: [
@@ -616,7 +667,7 @@ export async function leerBusqueda(terminos: string[]): Promise<ProductoDeRejill
     take: TOPE_LISTADO,
     include: INCLUIR_EN_REJILLA,
   });
-  return aRejilla(productos);
+  return aRejilla(sinAgotadosOcultos(productos));
 }
 
 /** Tarjetas de varios productos a la vez, en el orden pedido: los favoritos de la app. */

@@ -35,6 +35,17 @@
   background: var(--color-fondo);
 }
 
+/* Lo que va entre el titulo y las acciones: en movil ocupa su propia fila. */
+/* Un bloque como los del resto del panel: fondo blanco, esquinas y sombra
+   difusa, con la capsula de pestañas dentro. */
+.ui-cabecera-detalle__centro {
+  min-inline-size: 0;
+  padding: var(--espacio-2);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-difusa);
+}
+
 /* Desde tablet: titulo a la izquierda y acciones a la derecha. */
 @media (min-width: 48rem) {
   .ui-cabecera-detalle {
@@ -42,4 +53,19 @@
     align-items: center;
     justify-content: space-between;
   }
+  .ui-cabecera-detalle__centro {
+    flex: 0 1 30rem;
+  }
+}
+
+/* Las pestañas del centro van en una capsula dentro del bloque: extremos
+   redondos en la caja y en la pildora que se desliza; el bloque ya da la
+   sombra, asi que la capsula no lleva la suya. */
+.ui-cabecera-detalle__centro .ui-selector-segmentado {
+  border-radius: var(--radio-completo);
+  box-shadow: none;
+}
+.ui-cabecera-detalle__centro .ui-selector-segmentado__pildora,
+.ui-cabecera-detalle__centro .ui-selector-segmentado__opcion {
+  border-radius: var(--radio-completo);
 }

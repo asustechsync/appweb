@@ -166,10 +166,17 @@ describe("requisitos de publicacion", () => {
     expect(listoParaPublicar(requisitosDePublicacion(oculta))).toBe(false);
   });
 
-  it("la foto y el resumen se recomiendan pero no bloquean", () => {
+  it("lo recomendado pero no bloquean", () => {
     const lista = requisitosDePublicacion({ ...base, variantes: [{ activo: true, stock: 3 }] });
     expect(listoParaPublicar(lista)).toBe(true);
-    expect(lista.filter((r) => !r.cumplido).map((r) => r.id)).toEqual(["foto", "resumen"]);
+    expect(lista.filter((r) => !r.cumplido).map((r) => r.id)).toEqual([
+      "foto",
+      "resumen",
+      "descripcion",
+      "detalles",
+      "costo",
+      "tresFotos",
+    ]);
   });
 });
 

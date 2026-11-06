@@ -72,3 +72,15 @@
     transition: none;
   }
 }
+
+/* Nombres completos tambien en movil: sin la inicial, con la etiqueta a la vista. */
+.ui-selector-segmentado--completo .ui-selector-segmentado__inicial {
+  display: none;
+}
+.ui-selector-segmentado--completo .ui-selector-segmentado__nombre {
+  position: static;
+  inline-size: auto;
+  block-size: auto;
+  overflow: visible;
+  clip-path: none;
+}

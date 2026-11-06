@@ -27,26 +27,23 @@
 .ui-chip-atributo {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--color-bordeFuerte);
-  border-radius: var(--radio-completo);
-  background: var(--color-superficie);
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-difusa);
   transition:
-    border-color var(--transicion-rapida),
+    box-shadow var(--transicion-rapida),
     opacity var(--transicion-rapida);
 }
 .ui-chip-atributo[draggable="true"] {
   cursor: grab;
 }
 .ui-chip-atributo--oculto {
-  border-style: dashed;
   opacity: 0.55;
 }
 .ui-chip-atributo--seleccionado,
 .ui-chip-atributo--destino {
-  border-color: var(--color-texto);
-}
-.ui-chip-atributo--seleccionado {
-  outline: 1px solid var(--color-texto);
+  box-shadow: 0 0 0 1px var(--color-texto);
 }
 .ui-chip-atributo__boton {
   display: inline-flex;
@@ -55,7 +52,7 @@
   min-block-size: var(--espacio-8);
   padding-inline: var(--espacio-3);
   border: 0;
-  border-radius: var(--radio-completo);
+  border-radius: var(--radio-sm);
   background: transparent;
   color: var(--color-texto);
   font: inherit;
@@ -112,21 +109,20 @@
   align-items: center;
   min-block-size: var(--espacio-8);
   padding-inline: var(--espacio-3);
-  border: 1px dashed var(--color-bordeFuerte);
-  border-radius: var(--radio-completo);
-  background: transparent;
+  border: 0;
+  border-radius: var(--radio-sm);
+  background: var(--color-fondoControl);
   color: var(--color-textoSuave);
   font: inherit;
   font-size: var(--tipo-tamano-sm);
   cursor: pointer;
 }
 .ui-chip-agregar:hover {
-  border-color: var(--color-texto);
   color: var(--color-texto);
 }
 .ui-chip-agregar--abierto {
-  border-style: solid;
-  border-color: var(--color-texto);
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-difusa);
   cursor: text;
 }
 .ui-chip-agregar__campo {
@@ -136,4 +132,55 @@
   color: var(--color-texto);
   font: inherit;
   outline: none;
+}
+.ui-chip-agregar--abierto:has(.ui-chip-agregar__muestra) {
+  gap: var(--espacio-2);
+  padding-inline: var(--espacio-2) var(--espacio-1);
+}
+/* La paleta nativa del navegador, recortada en circulo como la muestra del chip. */
+.ui-chip-agregar__muestra {
+  flex-shrink: 0;
+  inline-size: var(--espacio-5);
+  block-size: var(--espacio-5);
+  padding: 0;
+  border: 1px solid var(--color-bordeFuerte);
+  border-radius: var(--radio-completo);
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+}
+.ui-chip-agregar__muestra::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.ui-chip-agregar__muestra::-webkit-color-swatch {
+  border: 0;
+  border-radius: var(--radio-completo);
+}
+.ui-chip-agregar__muestra::-moz-color-swatch {
+  border: 0;
+  border-radius: var(--radio-completo);
+}
+.ui-chip-agregar__accion {
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-6);
+  block-size: var(--espacio-6);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-completo);
+  background: transparent;
+  color: var(--color-textoSuave);
+  cursor: pointer;
+}
+.ui-chip-agregar__accion:hover:not(:disabled) {
+  color: var(--color-texto);
+}
+.ui-chip-agregar__accion:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.ui-chip-agregar__accion:focus-visible,
+.ui-chip-agregar__muestra:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
 }

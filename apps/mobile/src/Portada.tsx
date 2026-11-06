@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { IconoNotificacion } from "@appweb/ui/iconos.nativos";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -97,7 +98,7 @@ export function Portada({ onAbrir, onCuenta }: PropsPortada) {
     >
       <View style={estilos.cabecera}>
         <Avatar nombre={sesion?.nombre} onPress={onCuenta} />
-        <BotonRedondo etiqueta="Notificaciones" cuadrado>
+        <BotonRedondo etiqueta="Notificaciones">
           <IconoNotificacion tamano={22} color={t.color.texto} />
         </BotonRedondo>
       </View>
@@ -191,11 +192,12 @@ const estilos = StyleSheet.create({
   tituloAviso: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
 });

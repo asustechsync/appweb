@@ -26,10 +26,8 @@ import {
   ListaConLateral,
   LogoIcono,
   RejillaBento,
-  RejillaMetricas,
   SelectorCalendario,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -63,7 +61,6 @@ interface PropsListaEditable<T extends { id: string }> {
   /** "← Volver a cupones". */
   volver: string;
   elementos: T[];
-  metricas: ReactNode;
   vacio: { titulo: string; texto: string };
   /** Sin nada elegido, en la vista previa. */
   elegirAviso: string;
@@ -88,7 +85,6 @@ function ListaEditable<T extends { id: string }>({
   editar,
   volver,
   elementos,
-  metricas,
   vacio,
   elegirAviso,
   fila,
@@ -124,9 +120,7 @@ function ListaEditable<T extends { id: string }>({
         titulo={titulo}
         sinMarco
         acciones={<Boton onClick={() => setEditando("nuevo")}>{nuevo}</Boton>}
-      >
-        <RejillaMetricas>{metricas}</RejillaMetricas>
-      </Tarjeta>
+      />
 
       <ListaConLateral
         lateral={
@@ -191,7 +185,7 @@ function Banners() {
 
   const banners = lista.data;
   const activos = banners.filter((b) => b.activo);
-  const destinos = new Set(activos.map((b) => b.href)).size;
+  const _destinos = new Set(activos.map((b) => b.href)).size;
 
   return (
     <ListaEditable
@@ -201,27 +195,6 @@ function Banners() {
       volver="← Volver a la portada"
       elementos={banners}
       ayuda="Las promociones que se turnan arriba en la portada, en este orden. Las ocultas no se muestran."
-      metricas={
-        <>
-          <TarjetaMetrica
-            etiqueta="En la portada"
-            valor={String(activos.length)}
-            contexto={
-              activos.length === 0 ? "La portada no muestra el carrusel" : "Se turnan arriba"
-            }
-          />
-          <TarjetaMetrica
-            etiqueta="Ocultos"
-            valor={String(banners.length - activos.length)}
-            contexto="Guardados sin mostrar"
-          />
-          <TarjetaMetrica
-            etiqueta="Destinos"
-            valor={String(destinos)}
-            contexto="Páginas a las que llevan"
-          />
-        </>
-      }
       vacio={{ titulo: "Sin banners", texto: "La portada no muestra el carrusel." }}
       elegirAviso="Elige un banner para ver cómo se lee."
       fila={(b, abrir) => (
@@ -402,8 +375,8 @@ function Cupones() {
   const cupones = lista.data;
   const hoy = diaDeLima(new Date());
   const vigentes = cupones.filter((c) => estadoDeCupon(c, hoy).texto === "Activo");
-  const usos = cupones.reduce((suma, c) => suma + c.usos, 0);
-  const mayor = vigentes.reduce((max, c) => Math.max(max, c.porcentaje), 0);
+  const _usos = cupones.reduce((suma, c) => suma + c.usos, 0);
+  const _mayor = vigentes.reduce((max, c) => Math.max(max, c.porcentaje), 0);
 
   return (
     <ListaEditable
@@ -413,25 +386,6 @@ function Cupones() {
       volver="← Volver a cupones"
       elementos={cupones}
       ayuda="Códigos de descuento sobre el subtotal. No se suman al descuento de nivel: el cliente recibe el mayor."
-      metricas={
-        <>
-          <TarjetaMetrica
-            etiqueta="Vigentes"
-            valor={String(vigentes.length)}
-            contexto={`De ${cupones.length} creados`}
-          />
-          <TarjetaMetrica
-            etiqueta="Usos"
-            valor={String(usos)}
-            contexto="Pedidos que usaron un código"
-          />
-          <TarjetaMetrica
-            etiqueta="Mayor descuento"
-            valor={mayor === 0 ? "—" : `${mayor} %`}
-            contexto="Entre los vigentes"
-          />
-        </>
-      }
       vacio={{ titulo: "Sin cupones", texto: "Todavía no hay códigos de descuento." }}
       elegirAviso="Elige un cupón para ver sus condiciones."
       fila={(c, abrir) => (

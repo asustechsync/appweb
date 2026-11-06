@@ -192,8 +192,56 @@ export const DISENO_POR_DEFECTO = "Liso";
 export const DISENOS = [DISENO_POR_DEFECTO, "Rayas", "Estampado", "Cuadros", "Lunares"] as const;
 
 /** Clases de atributo que el panel gestiona en la tabla `atributos`. */
-export const CLASES_ATRIBUTO = ["COLOR", "DISENO", "ETIQUETA"] as const;
+export const CLASES_ATRIBUTO = [
+  "COLOR",
+  "DISENO",
+  "ETIQUETA",
+  "MATERIAL",
+  "AJUSTE",
+  "CARACTERISTICA",
+] as const;
 export type ClaseAtributo = (typeof CLASES_ATRIBUTO)[number];
+
+/** Materiales, ajustes y caracteristicas iniciales de los detalles de la prenda. */
+export const MATERIALES = ["Algodón", "Microfibra", "Poliéster", "Elastano", "Bambú"] as const;
+export const AJUSTES = ["Holgado", "Ceñido", "Slim"] as const;
+export const CARACTERISTICAS = [
+  "Transpirable",
+  "Costuras planas",
+  "Sin etiqueta",
+  "Antibacterial",
+  "Secado rápido",
+] as const;
+
+/** Lo que se elige en "Detalles de la prenda"; se guarda en `Producto.specs.detalles`. */
+export interface DetallesPrenda {
+  materiales: string[];
+  ajuste: string | null;
+  caracteristicas: string[];
+}
+
+export const DETALLES_VACIOS: DetallesPrenda = {
+  materiales: [],
+  ajuste: null,
+  caracteristicas: [],
+};
+
+/** Los detalles guardados en `specs`, con lo que falte o venga mal ya limpio. */
+export function detallesDeSpecs(specs: unknown): DetallesPrenda {
+  const crudo =
+    typeof specs === "object" && specs !== null && "detalles" in specs
+      ? (specs as { detalles: unknown }).detalles
+      : null;
+  if (typeof crudo !== "object" || crudo === null) return { ...DETALLES_VACIOS };
+  const { materiales, ajuste, caracteristicas } = crudo as Record<string, unknown>;
+  const textos = (v: unknown) =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x !== "") : [];
+  return {
+    materiales: textos(materiales),
+    ajuste: typeof ajuste === "string" && ajuste !== "" ? ajuste : null,
+    caracteristicas: textos(caracteristicas),
+  };
+}
 
 /** Etiquetas iniciales: la insignia sobre la foto de la tarjeta. */
 export const ETIQUETAS_PRODUCTO = ["Nuevo", "Oferta", "Más vendido"] as const;
@@ -265,7 +313,7 @@ export function combinacionesDeVariantes(
 }
 
 export interface RequisitoPublicacion {
-  id: "precio" | "variante" | "foto" | "resumen";
+  id: "precio" | "variante" | "foto" | "resumen" | "descripcion" | "detalles" | "costo" | "tresFotos";
   texto: string;
   cumplido: boolean;
   /** Sin los obligatorios el producto no se puede mostrar en la tienda. */
@@ -274,38 +322,66 @@ export interface RequisitoPublicacion {
 
 /**
  * Lo que un producto necesita antes de mostrarse. Precio y una variante a la
- * venta son obligatorios: sin ellos la ficha no deja comprar. La foto propia
- * y el resumen solo se recomiendan, porque la imagen de relleno ya existe.
+ * venta son obligatorios: sin ellos la ficha no deja comprar. Lo demas solo se
+ * recomienda: la imagen de relleno ya existe y la ficha se ve sin descripcion.
+ * Los textos son cortos porque salen en una columna angosta.
  */
 export function requisitosDePublicacion(producto: {
   precio: number | null;
-  variantes: ReadonlyArray<{ activo: boolean; stock: number }>;
+  variantes: ReadonlyArray<{ activo: boolean; stock: number; costo?: number | null }>;
   fotosPropias: number;
   descripcionCorta: string;
+  descripcion?: string;
+  /** Cuantos detalles de la prenda (material, ajuste, caracteristicas) tiene marcados. */
+  detallesMarcados?: number;
 }): RequisitoPublicacion[] {
   return [
     {
       id: "precio",
-      texto: "Tiene precio",
+      texto: "Precio",
       cumplido: producto.precio !== null && producto.precio > 0,
       obligatorio: true,
     },
     {
       id: "variante",
-      texto: "Al menos una variante visible con stock",
+      texto: "Stock",
       cumplido: producto.variantes.some((v) => v.activo && v.stock > 0),
       obligatorio: true,
     },
     {
       id: "foto",
-      texto: "Foto propia (no la de relleno)",
+      texto: "Foto propia",
       cumplido: producto.fotosPropias > 0,
       obligatorio: false,
     },
     {
       id: "resumen",
-      texto: "Resumen para la tarjeta del listado",
+      texto: "Resumen",
       cumplido: producto.descripcionCorta.trim() !== "",
+      obligatorio: false,
+    },
+    {
+      id: "descripcion",
+      texto: "Descripción",
+      cumplido: (producto.descripcion ?? "").trim() !== "",
+      obligatorio: false,
+    },
+    {
+      id: "detalles",
+      texto: "Detalles de la prenda",
+      cumplido: (producto.detallesMarcados ?? 0) > 0,
+      obligatorio: false,
+    },
+    {
+      id: "costo",
+      texto: "Costo en variantes",
+      cumplido: producto.variantes.some((v) => v.activo && v.costo != null),
+      obligatorio: false,
+    },
+    {
+      id: "tresFotos",
+      texto: "3 fotos o más",
+      cumplido: producto.fotosPropias >= 3,
       obligatorio: false,
     },
   ];

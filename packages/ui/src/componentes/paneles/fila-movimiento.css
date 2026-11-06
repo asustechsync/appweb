@@ -220,3 +220,26 @@
     justify-self: end;
   }
 }
+
+/* Costo y botones de una fila en una sola linea, compactos y del mismo alto. */
+.ui-fila-movimiento__acciones {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+.ui-fila-movimiento__acciones .ui-campo {
+  inline-size: var(--espacio-20);
+}
+.ui-fila-movimiento__acciones .ui-campo__input {
+  block-size: var(--espacio-8);
+  padding-inline: var(--espacio-2);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-fila-movimiento__accion .ui-fila-movimiento__acciones .ui-boton {
+  padding-inline: var(--espacio-3);
+}
+@media (min-width: 48rem) {
+  .ui-fila-movimiento__cierre:has(.ui-fila-movimiento__acciones) {
+    grid-template-columns: 11rem 6.5rem auto;
+  }
+}

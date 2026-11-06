@@ -30,9 +30,7 @@ import {
   LogoFoto,
   Paginador,
   RejillaBento,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -169,8 +167,8 @@ function SeccionFichas<T extends Ficha>({
     const cantidad = f.id === "TODAS" ? 0 : contar(f.id);
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
-  const productos = fichas.reduce((suma, f) => suma + f.productos, 0);
-  const vacias = fichas.filter((f) => f.activo && f.productos === 0).length;
+  const _productos = fichas.reduce((suma, f) => suma + f.productos, 0);
+  const _vacias = fichas.filter((f) => f.activo && f.productos === 0).length;
 
   return (
     <>
@@ -180,32 +178,7 @@ function SeccionFichas<T extends Ficha>({
         titulo={titulo}
         sinMarco
         acciones={<Boton onClick={() => setEditando("nueva")}>+ Nueva {sustantivo}</Boton>}
-      >
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Visibles"
-            valor={String(contar("VISIBLES"))}
-            contexto={`De ${fichas.length} en total`}
-          />
-          <TarjetaMetrica
-            etiqueta="Ocultas"
-            valor={String(contar("OCULTAS"))}
-            contexto="No salen en la tienda"
-          />
-          <TarjetaMetrica
-            etiqueta="Destacadas"
-            valor={String(contar("DESTACADAS"))}
-            contexto="Salen en la portada"
-          />
-          <TarjetaMetrica
-            etiqueta="Productos"
-            valor={String(productos)}
-            contexto={
-              vacias === 0 ? "Ninguna visible está vacía" : `${vacias} visibles sin productos`
-            }
-          />
-        </RejillaMetricas>
-      </Tarjeta>
+      />
 
       <ListaConLateral
         filasPorPagina={PAGINA}

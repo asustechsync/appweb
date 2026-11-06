@@ -26,9 +26,7 @@ import {
   LogoIcono,
   Paginador,
   Pestanas,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -111,136 +109,107 @@ export function Inventario() {
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
   const aLaVenta = variantes.filter((v) => v.activa);
-  const unidades = aLaVenta.reduce((suma, v) => suma + v.stock, 0);
-  const porReponer = conteo("BAJO");
-  const agotadas = conteo("AGOTADAS");
+  const _unidades = aLaVenta.reduce((suma, v) => suma + v.stock, 0);
+  const _porReponer = conteo("BAJO");
+  const _agotadas = conteo("AGOTADAS");
 
   return (
-    <>
-      <Tarjeta titulo="Inventario" sinMarco>
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="Unidades a la venta"
-            valor={String(unidades)}
-            contexto={`En ${aLaVenta.length} ${aLaVenta.length === 1 ? "variante" : "variantes"}`}
-          />
-          <TarjetaMetrica
-            etiqueta="Por reponer"
-            valor={String(porReponer)}
-            contexto={`Con ${umbral} unidades o menos`}
-          />
-          <TarjetaMetrica
-            etiqueta="Agotadas"
-            valor={String(agotadas)}
-            contexto={agotadas === 0 ? "Nada agotado" : "Visibles sin stock"}
-          />
-          <TarjetaMetrica
-            etiqueta="Fuera de venta"
-            valor={String(variantes.length - aLaVenta.length)}
-            contexto="Variantes o productos ocultos"
-          />
-        </RejillaMetricas>
-      </Tarjeta>
-
-      <ListaConLateral
-        filasPorPagina={PAGINA}
-        barra={
-          <BarraLista
-            juntos
-            buscador={
-              <Campo
-                id="busqueda-stock"
-                etiqueta="Buscar por producto, color o SKU"
-                etiquetaOculta
-                icono={<IconoBuscar tamano={16} />}
-                valor={busqueda}
-                onCambio={(valor) => {
-                  setBusqueda(valor);
-                  setPagina(1);
-                }}
-                placeholder="Producto, color o SKU"
-              />
-            }
-          >
-            <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
-            <CampoSelectorLista
-              id="filtro-stock"
-              ancho="amplio"
-              etiqueta="Qué variantes mostrar"
+    <ListaConLateral
+      filasPorPagina={PAGINA}
+      barra={
+        <BarraLista
+          juntos
+          buscador={
+            <Campo
+              id="busqueda-stock"
+              etiqueta="Buscar por producto, color o SKU"
               etiquetaOculta
-              valor={filtro}
-              opciones={opciones}
+              icono={<IconoBuscar tamano={16} />}
+              valor={busqueda}
               onCambio={(valor) => {
-                setFiltro(valor as Filtro);
+                setBusqueda(valor);
+                setPagina(1);
+              }}
+              placeholder="Producto, color o SKU"
+            />
+          }
+        >
+          <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
+          <CampoSelectorLista
+            id="filtro-stock"
+            ancho="amplio"
+            etiqueta="Qué variantes mostrar"
+            etiquetaOculta
+            valor={filtro}
+            opciones={opciones}
+            onCambio={(valor) => {
+              setFiltro(valor as Filtro);
+              setPagina(1);
+            }}
+          />
+          {filtro !== "BAJO" || busqueda !== "" ? (
+            <LimpiarFiltros
+              onClick={() => {
+                setFiltro("BAJO");
+                setBusqueda("");
                 setPagina(1);
               }}
             />
-            {filtro !== "BAJO" || busqueda !== "" ? (
-              <LimpiarFiltros
-                onClick={() => {
-                  setFiltro("BAJO");
-                  setBusqueda("");
-                  setPagina(1);
-                }}
-              />
-            ) : null}
-          </BarraLista>
-        }
-        lateral={
-          <VistaPrevia
-            logo={null}
-            estado={{ texto: "", tono: "neutro" }}
-            etiqueta=""
-            monto=""
-            {...(seleccionada
-              ? {}
-              : { vacio: "Elige una variante de la lista para ver su stock." })}
-          >
-            {seleccionada ? (
-              <CuadrosStock
-                variante={seleccionada}
-                umbral={umbral}
-                onMover={() => setAbierta(seleccionada)}
-              />
-            ) : null}
-          </VistaPrevia>
-        }
-      >
-        <Tarjeta>
-          {lista.isPending ? (
-            <Cargando texto="Cargando stock…" />
-          ) : lista.isError ? (
-            <Alerta tono="error">{lista.error.message}</Alerta>
-          ) : visibles.length === 0 ? (
-            <EstadoVacio
-              titulo={filtro === "BAJO" && !busqueda ? "Nada por reponer" : "Sin resultados"}
-              texto={
-                filtro === "BAJO" && !busqueda
-                  ? `Todas las variantes en venta tienen más de ${umbral} unidades.`
-                  : "Ninguna variante coincide con esa búsqueda."
-              }
+          ) : null}
+        </BarraLista>
+      }
+      lateral={
+        <VistaPrevia
+          logo={null}
+          estado={{ texto: "", tono: "neutro" }}
+          etiqueta=""
+          monto=""
+          {...(seleccionada ? {} : { vacio: "Elige una variante de la lista para ver su stock." })}
+        >
+          {seleccionada ? (
+            <CuadrosStock
+              variante={seleccionada}
+              umbral={umbral}
+              onMover={() => setAbierta(seleccionada)}
             />
-          ) : (
-            <div>
-              {visibles.map((v) => (
-                <FilaPedido
-                  key={v.id}
-                  logo={<LogoFoto src={urlVisible(v.imagen)} nombre={v.producto} />}
-                  titulo={v.producto}
-                  detalle={`${v.talla} · ${v.color}`}
-                  contenido={`SKU ${v.sku}`}
-                  centro={[`${v.stock} u.`, "En stock"]}
-                  estado={estadoDeStock(v, umbral)}
-                  seleccionada={escritorio && seleccionada?.id === v.id}
-                  onAbrir={() => (escritorio ? setElegida(v.id) : setAbierta(v))}
-                  etiquetaAbrir={`${escritorio ? "Elegir" : "Mover stock de"} ${v.producto} ${v.talla} ${v.color}`}
-                />
-              ))}
-            </div>
-          )}
-        </Tarjeta>
-      </ListaConLateral>
-    </>
+          ) : null}
+        </VistaPrevia>
+      }
+    >
+      <Tarjeta>
+        {lista.isPending ? (
+          <Cargando texto="Cargando stock…" />
+        ) : lista.isError ? (
+          <Alerta tono="error">{lista.error.message}</Alerta>
+        ) : visibles.length === 0 ? (
+          <EstadoVacio
+            titulo={filtro === "BAJO" && !busqueda ? "Nada por reponer" : "Sin resultados"}
+            texto={
+              filtro === "BAJO" && !busqueda
+                ? `Todas las variantes en venta tienen más de ${umbral} unidades.`
+                : "Ninguna variante coincide con esa búsqueda."
+            }
+          />
+        ) : (
+          <div>
+            {visibles.map((v) => (
+              <FilaPedido
+                key={v.id}
+                logo={<LogoFoto src={urlVisible(v.imagen)} nombre={v.producto} />}
+                titulo={v.producto}
+                detalle={`${v.talla} · ${v.color}`}
+                contenido={`SKU ${v.sku}`}
+                centro={[`${v.stock} u.`, "En stock"]}
+                estado={estadoDeStock(v, umbral)}
+                seleccionada={escritorio && seleccionada?.id === v.id}
+                onAbrir={() => (escritorio ? setElegida(v.id) : setAbierta(v))}
+                etiquetaAbrir={`${escritorio ? "Elegir" : "Mover stock de"} ${v.producto} ${v.talla} ${v.color}`}
+              />
+            ))}
+          </div>
+        )}
+      </Tarjeta>
+    </ListaConLateral>
   );
 }
 

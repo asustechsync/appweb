@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -116,6 +117,7 @@ const estilos = StyleSheet.create({
   correo: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   error: {
     padding: t.espacio[3],
@@ -124,5 +126,6 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

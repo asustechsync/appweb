@@ -1,0 +1,15 @@
+.ui-par-de-tarjetas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-4);
+  align-items: start;
+}
+.ui-par-de-tarjetas__celda {
+  min-inline-size: 0;
+}
+
+@media (min-width: 48rem) {
+  .ui-par-de-tarjetas {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+}

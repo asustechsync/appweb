@@ -11,6 +11,7 @@ import {
   IconoUbicacion,
   type PropsIconoNativo,
 } from "@appweb/ui/iconos.nativos";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { type ComponentType, useEffect, useState } from "react";
 import {
@@ -223,7 +224,7 @@ const estilos = StyleSheet.create({
   inicial: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano["2xl"],
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   datos: {
     flex: 1,
@@ -232,11 +233,12 @@ const estilos = StyleSheet.create({
     color: t.color.textoInverso,
     opacity: 0.7,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   nombre: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.xl,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   nivel: {
     paddingHorizontal: t.espacio[2],
@@ -245,7 +247,7 @@ const estilos = StyleSheet.create({
     overflow: "hidden",
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
     letterSpacing: 0.4,
   },
   avance: {
@@ -266,6 +268,7 @@ const estilos = StyleSheet.create({
     color: t.color.textoInverso,
     opacity: 0.8,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   panel: {
     flexDirection: "row",
@@ -289,12 +292,13 @@ const estilos = StyleSheet.create({
   tituloPanel: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   detallePanel: {
     color: t.color.textoInverso,
     opacity: 0.7,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   menu: {
     overflow: "hidden",
@@ -326,7 +330,7 @@ const estilos = StyleSheet.create({
     flex: 1,
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   salir: {
     flexDirection: "row",
@@ -339,6 +343,6 @@ const estilos = StyleSheet.create({
   textoSalir: {
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
 });

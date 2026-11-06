@@ -1,0 +1,113 @@
+.ui-rejilla-variantes {
+  display: grid;
+}
+/* Las mismas columnas en el encabezado y en cada fila: todo queda alineado. */
+.ui-fila-variante {
+  display: grid;
+  /* La ultima columna mide lo que dos iconos y su hueco: asi el encabezado, que no los tiene,
+     queda con las mismas columnas que las filas. */
+  grid-template-columns:
+    var(--espacio-8) minmax(0, 1fr) var(--espacio-10) var(--espacio-20)
+    calc(var(--espacio-8) * 2 + var(--espacio-1));
+  align-items: center;
+  gap: var(--espacio-2);
+  padding-block: var(--espacio-2);
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-fila-variante--encabezado {
+  padding-block: 0 var(--espacio-1);
+  border-block-start: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-fila-variante--encabezado + .ui-fila-variante {
+  border-block-start: 0;
+}
+.ui-fila-variante__talla {
+  display: grid;
+  place-items: center;
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-fila-variante__sku {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-inline-size: 0;
+}
+.ui-fila-variante__codigo {
+  overflow: hidden;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-fila-variante__estado {
+  flex: none;
+  padding: 1px var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondo);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-etiqueta, var(--tipo-tamano-xs));
+  white-space: nowrap;
+}
+.ui-fila-variante__estado--alerta {
+  background: color-mix(in srgb, var(--color-alerta) 18%, var(--color-fondo));
+  color: var(--color-alerta);
+}
+.ui-fila-variante__estado--error {
+  background: color-mix(in srgb, var(--color-error) 18%, var(--color-fondo));
+  color: var(--color-error);
+}
+.ui-fila-variante__stock {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.ui-fila-variante--encabezado .ui-fila-variante__stock {
+  color: inherit;
+  font-size: inherit;
+  font-weight: var(--tipo-peso-normal);
+}
+.ui-fila-variante__costo .ui-campo {
+  inline-size: 100%;
+}
+.ui-fila-variante__costo .ui-campo__input {
+  block-size: var(--espacio-8);
+  padding-inline: var(--espacio-2);
+  font-size: var(--tipo-tamano-sm);
+}
+.ui-fila-variante__iconos {
+  display: inline-flex;
+  gap: var(--espacio-1);
+}
+.ui-fila-variante__icono {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--espacio-8);
+  block-size: var(--espacio-8);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  cursor: pointer;
+}
+.ui-fila-variante__icono:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-fondo) 90%, var(--color-texto));
+}
+.ui-fila-variante__icono:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ui-fila-variante__icono:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: 2px;
+}

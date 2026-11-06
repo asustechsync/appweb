@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -30,11 +31,11 @@ const estilos = StyleSheet.create({
   titulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   enlace: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
 });

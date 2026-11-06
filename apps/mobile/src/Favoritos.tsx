@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoFavorito } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
@@ -86,17 +87,18 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: t.espacio[2],
-    borderRadius: t.radio.completo,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.ofertaFondo,
   },
   titulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   contenido: {
@@ -108,5 +110,6 @@ const estilos = StyleSheet.create({
     paddingHorizontal: t.espacio[4],
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

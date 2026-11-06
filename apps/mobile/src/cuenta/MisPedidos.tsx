@@ -1,5 +1,6 @@
 import { ETIQUETAS, tonoDeEstado } from "@appweb/core/estados-pedido";
 import { FECHA, MONEDA } from "@appweb/core/formato";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoPedidos } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
@@ -99,11 +100,12 @@ const estilos = StyleSheet.create({
   titulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   lista: {
@@ -147,19 +149,21 @@ const estilos = StyleSheet.create({
   codigo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   total: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   suaveIzq: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   fecha: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

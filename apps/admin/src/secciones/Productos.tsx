@@ -18,9 +18,7 @@ import {
   ListaConLateral,
   LogoFoto,
   Paginador,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -127,141 +125,109 @@ export function Productos() {
     const cantidad = f.id === "TODOS" ? 0 : conteo(f.id);
     return { valor: f.id, etiqueta: cantidad > 0 ? `${f.etiqueta} (${cantidad})` : f.etiqueta };
   });
-  const enTienda = conteo("VISIBLES");
-  const sinStock = productos.filter((p) => p.activo && p.stockTotal === 0).length;
-  const unidades = productos.reduce((suma, p) => suma + p.stockTotal, 0);
-  const enOferta = productos.filter((p) => p.precioLista !== null).length;
+  const _enTienda = conteo("VISIBLES");
+  const _sinStock = productos.filter((p) => p.activo && p.stockTotal === 0).length;
+  const _unidades = productos.reduce((suma, p) => suma + p.stockTotal, 0);
+  const _enOferta = productos.filter((p) => p.precioLista !== null).length;
+
+  const barra = (
+    <BarraLista
+      juntos
+      fondoBuscador="control"
+      buscador={
+        <Campo
+          id="busqueda-productos"
+          etiqueta="Buscar por nombre, marca o dirección web"
+          etiquetaOculta
+          icono={<IconoBuscar tamano={16} />}
+          valor={busqueda}
+          onCambio={(valor) => {
+            setBusqueda(valor);
+            setPagina(1);
+          }}
+          placeholder="Nombre, marca o dirección"
+        />
+      }
+    >
+      <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
+      <CampoSelectorLista
+        id="filtro-productos"
+        ancho="amplio"
+        etiqueta="Visibilidad"
+        etiquetaOculta
+        valor={filtro}
+        opciones={opciones}
+        onCambio={(valor) => {
+          setFiltro(valor as Filtro);
+          setPagina(1);
+        }}
+      />
+      {filtro !== "TODOS" || busqueda !== "" ? (
+        <LimpiarFiltros
+          onClick={() => {
+            setFiltro("TODOS");
+            setBusqueda("");
+            setPagina(1);
+          }}
+        />
+      ) : null}
+      <Boton onClick={() => setAbierto("nuevo")}>+ Nuevo producto</Boton>
+    </BarraLista>
+  );
 
   return (
-    <>
-      <Tarjeta
-        titulo="Productos"
-        sinMarco
-        acciones={<Boton onClick={() => setAbierto("nuevo")}>+ Nuevo producto</Boton>}
-      >
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta="En la tienda"
-            valor={String(enTienda)}
-            contexto={`De ${productos.length} en el catálogo`}
-          />
-          <TarjetaMetrica
-            etiqueta="Ocultos"
-            valor={String(productos.length - enTienda)}
-            contexto="No se ven en la tienda"
-          />
-          <TarjetaMetrica
-            etiqueta="Sin stock"
-            valor={String(sinStock)}
-            contexto={sinStock === 0 ? "Todo lo visible tiene stock" : "Visibles pero agotados"}
-          />
-          <TarjetaMetrica
-            etiqueta="Unidades"
-            valor={String(unidades)}
-            contexto={`${enOferta} ${enOferta === 1 ? "producto rebajado" : "productos rebajados"}`}
-          />
-        </RejillaMetricas>
-      </Tarjeta>
-
-      <ListaConLateral
-        filasPorPagina={PAGINA}
-        barra={
-          <BarraLista
-            juntos
-            buscador={
-              <Campo
-                id="busqueda-productos"
-                etiqueta="Buscar por nombre, marca o dirección web"
-                etiquetaOculta
-                icono={<IconoBuscar tamano={16} />}
-                valor={busqueda}
-                onCambio={(valor) => {
-                  setBusqueda(valor);
-                  setPagina(1);
-                }}
-                placeholder="Nombre, marca o dirección"
-              />
+    <ListaConLateral
+      filasPorPagina={PAGINA}
+      lateral={
+        <VistaPrevia
+          logo={null}
+          estado={{ texto: "", tono: "neutro" }}
+          etiqueta=""
+          monto=""
+          {...(seleccionado ? {} : { vacio: "Elige un producto de la lista para ver su resumen." })}
+        >
+          {seleccionado ? (
+            <CuadrosProducto producto={seleccionado} onEditar={() => setAbierto(seleccionado.id)} />
+          ) : null}
+        </VistaPrevia>
+      }
+    >
+      <Tarjeta>
+        {barra}
+        {lista.isPending ? (
+          <Cargando texto="Cargando productos…" />
+        ) : lista.isError ? (
+          <Alerta tono="error">{lista.error.message}</Alerta>
+        ) : visibles.length === 0 ? (
+          <EstadoVacio
+            titulo="Sin productos"
+            texto={
+              busqueda ? "Ningún producto coincide con esa búsqueda." : "No hay productos aquí."
             }
-          >
-            <Paginador pagina={paginaActual} paginas={paginas} onCambio={setPagina} />
-            <CampoSelectorLista
-              id="filtro-productos"
-              ancho="amplio"
-              etiqueta="Visibilidad"
-              etiquetaOculta
-              valor={filtro}
-              opciones={opciones}
-              onCambio={(valor) => {
-                setFiltro(valor as Filtro);
-                setPagina(1);
-              }}
-            />
-            {filtro !== "TODOS" || busqueda !== "" ? (
-              <LimpiarFiltros
-                onClick={() => {
-                  setFiltro("TODOS");
-                  setBusqueda("");
-                  setPagina(1);
-                }}
+          />
+        ) : (
+          <div>
+            {visibles.map((p) => (
+              <FilaPedido
+                key={p.id}
+                logo={<LogoFoto src={urlVisible(p.imagen)} nombre={p.nombre} />}
+                titulo={p.nombre}
+                {...(p.destacado ? { detalle: "Destacado" } : {})}
+                contenido={`${p.categoria}${p.marca ? ` · ${p.marca}` : ""}`}
+                centro={[
+                  MONEDA.format(p.precio),
+                  p.precioLista !== null ? `Antes ${MONEDA.format(p.precioLista)}` : "Precio",
+                ]}
+                estado={estadoDeProducto(p)}
+                nota={`${p.stockTotal} u. · ${p.variantes} ${p.variantes === 1 ? "variante" : "variantes"}`}
+                seleccionada={escritorio && seleccionado?.id === p.id}
+                onAbrir={() => (escritorio ? setElegido(p.id) : setAbierto(p.id))}
+                etiquetaAbrir={`${escritorio ? "Elegir" : "Editar"} ${p.nombre}`}
               />
-            ) : null}
-          </BarraLista>
-        }
-        lateral={
-          <VistaPrevia
-            logo={null}
-            estado={{ texto: "", tono: "neutro" }}
-            etiqueta=""
-            monto=""
-            {...(seleccionado
-              ? {}
-              : { vacio: "Elige un producto de la lista para ver su resumen." })}
-          >
-            {seleccionado ? (
-              <CuadrosProducto
-                producto={seleccionado}
-                onEditar={() => setAbierto(seleccionado.id)}
-              />
-            ) : null}
-          </VistaPrevia>
-        }
-      >
-        <Tarjeta>
-          {lista.isPending ? (
-            <Cargando texto="Cargando productos…" />
-          ) : lista.isError ? (
-            <Alerta tono="error">{lista.error.message}</Alerta>
-          ) : visibles.length === 0 ? (
-            <EstadoVacio
-              titulo="Sin productos"
-              texto={
-                busqueda ? "Ningún producto coincide con esa búsqueda." : "No hay productos aquí."
-              }
-            />
-          ) : (
-            <div>
-              {visibles.map((p) => (
-                <FilaPedido
-                  key={p.id}
-                  logo={<LogoFoto src={urlVisible(p.imagen)} nombre={p.nombre} />}
-                  titulo={p.nombre}
-                  {...(p.destacado ? { detalle: "Destacado" } : {})}
-                  contenido={`${p.categoria}${p.marca ? ` · ${p.marca}` : ""}`}
-                  centro={[
-                    MONEDA.format(p.precio),
-                    p.precioLista !== null ? `Antes ${MONEDA.format(p.precioLista)}` : "Precio",
-                  ]}
-                  estado={estadoDeProducto(p)}
-                  nota={`${p.stockTotal} u. · ${p.variantes} ${p.variantes === 1 ? "variante" : "variantes"}`}
-                  seleccionada={escritorio && seleccionado?.id === p.id}
-                  onAbrir={() => (escritorio ? setElegido(p.id) : setAbierto(p.id))}
-                  etiquetaAbrir={`${escritorio ? "Elegir" : "Editar"} ${p.nombre}`}
-                />
-              ))}
-            </div>
-          )}
-        </Tarjeta>
-      </ListaConLateral>
-    </>
+            ))}
+          </div>
+        )}
+      </Tarjeta>
+    </ListaConLateral>
   );
 }

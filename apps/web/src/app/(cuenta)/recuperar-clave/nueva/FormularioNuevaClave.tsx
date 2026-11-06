@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { enlaceApp } from "@appweb/api/urls";
 import { evaluarClave } from "@appweb/core";
 import {
   Alerta,
@@ -23,6 +24,17 @@ export function FormularioNuevaClave({ token }: { token: string }) {
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [lista, setLista] = useState(false);
+  // Solo en el celular: alli puede estar instalada la app. Se decide tras montar
+  // para que el HTML del servidor y el del navegador coincidan.
+  const [enCelular, setEnCelular] = useState(false);
+
+  useEffect(() => {
+    setEnCelular(/Android|iPhone|iPad/i.test(navigator.userAgent));
+  }, []);
+
+  function abrirEnApp() {
+    window.location.href = enlaceApp(`/recuperar-clave/nueva?token=${encodeURIComponent(token)}`);
+  }
 
   async function guardar(evento: React.FormEvent) {
     evento.preventDefault();
@@ -57,6 +69,11 @@ export function FormularioNuevaClave({ token }: { token: string }) {
         </>
       ) : (
         <Formulario onSubmit={guardar}>
+          {enCelular ? (
+            <Boton variante="secundario" anchoCompleto onClick={abrirEnApp}>
+              Abrir en la app
+            </Boton>
+          ) : null}
           {error ? <Alerta tono="error">{error}</Alerta> : null}
           <Campo
             id="clave"

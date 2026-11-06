@@ -1,0 +1,4 @@
+.ui-solo-lectura {
+  pointer-events: none;
+  user-select: none;
+}

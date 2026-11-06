@@ -6,6 +6,7 @@ import {
   IconoUsuario,
   type PropsIconoNativo,
 } from "@appweb/ui/iconos.nativos";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import type { ComponentType } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -133,6 +134,6 @@ const estilos = StyleSheet.create({
   numero: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
 });

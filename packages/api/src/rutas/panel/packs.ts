@@ -31,7 +31,7 @@ const SELECCION_VARIANTE = {
   stock: true,
   costo: true,
   activo: true,
-  producto: { select: { nombre: true, precio: true, activo: true } },
+  producto: { select: { nombre: true, precio: true, activo: true, enPacks: true } },
 } as const;
 
 type VarianteLeida = Prisma.VarianteGetPayload<{ select: typeof SELECCION_VARIANTE }>;
@@ -87,6 +87,9 @@ export const packs = router({
     const componentes = input.componentes.map((c) => {
       const v = porId.get(c.varianteId);
       if (v === undefined) rechazar("Alguna prenda del pack ya no existe.");
+      if (!v.producto.enPacks) {
+        rechazar(`«${v.producto.nombre}» no se puede incluir en un pack.`);
+      }
       return aComponente(c.cantidad, v);
     });
 

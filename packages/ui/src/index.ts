@@ -34,6 +34,7 @@ export {
   IconoOpiniones,
   IconoPromociones,
   IconoCarrito,
+  IconoCopiar,
   IconoPapelera,
   IconoOpciones,
   IconoCorreo,
@@ -247,12 +248,25 @@ export {
   type PropsDisposicionAcceso,
 } from "./componentes/disposiciones/DisposicionAcceso";
 export { Campo, type PropsCampo } from "./componentes/formularios/Campo";
+export { SelectorColor, type PropsSelectorColor } from "./componentes/formularios/SelectorColor";
 export { CampoTexto, type PropsCampoTexto } from "./componentes/formularios/CampoTexto";
 export {
   SelectorEstrellas,
   type PropsSelectorEstrellas,
 } from "./componentes/formularios/SelectorEstrellas";
 export { Casilla, type PropsCasilla } from "./componentes/formularios/Casilla";
+export {
+  SelectorEtiquetas,
+  type PropsSelectorEtiquetas,
+} from "./componentes/formularios/SelectorEtiquetas";
+export {
+  CampoSelectorBuscable,
+  type PropsCampoSelectorBuscable,
+} from "./componentes/formularios/CampoSelectorBuscable";
+export {
+  InterruptorCampo,
+  type PropsInterruptorCampo,
+} from "./componentes/formularios/InterruptorCampo";
 export {
   SelectorMultiple,
   type OpcionMultiple,
@@ -329,12 +343,14 @@ export { TarjetaMetrica, type PropsTarjetaMetrica } from "./componentes/paneles/
 export { Minigrafico, type PropsMinigrafico } from "./componentes/paneles/Minigrafico";
 export {
   ListaActividad,
+  LogoColor,
   LogoFoto,
   LogoIcono,
   LogoMedioPago,
   TarjetaActividad,
   type MedioLogo,
   type PropsListaActividad,
+  type PropsLogoColor,
   type PropsLogoFoto,
   type PropsLogoIcono,
   type PropsLogoMedioPago,
@@ -383,6 +399,7 @@ export {
 export { FilaLista, type PropsFilaLista } from "./componentes/paneles/FilaLista";
 export { BarraLista, type PropsBarraLista } from "./componentes/paneles/BarraLista";
 export {
+  AccionesFila,
   FilaMovimiento,
   type PropsFilaMovimiento,
   type TonoMovimiento,
@@ -442,3 +459,32 @@ export {
   type PestanaLista,
   type PropsListaConPestanas,
 } from "./componentes/paneles/ListaConPestanas";
+export { ParDeTarjetas, type PropsParDeTarjetas } from "./componentes/paneles/ParDeTarjetas";
+export {
+  FilaVariante,
+  RejillaVariantes,
+  type PropsFilaVariante,
+} from "./componentes/paneles/FilaVariante";
+export {
+  GrupoColor,
+  RejillaGrupos,
+  type PropsGrupoColor,
+} from "./componentes/paneles/GrupoColor";
+export {
+  SelectorMultipleDesplegable,
+  type PropsSelectorMultipleDesplegable,
+} from "./componentes/formularios/SelectorMultipleDesplegable";
+export { SoloLectura } from "./componentes/paneles/SoloLectura";
+export {
+  PanelConPestanas,
+  type PropsPanelConPestanas,
+} from "./componentes/paneles/PanelConPestanas";
+export {
+  InterruptorPanel,
+  type PropsInterruptorPanel,
+} from "./componentes/paneles/InterruptorPanel";
+export {
+  MenuAcciones,
+  type AccionDeMenu,
+  type PropsMenuAcciones,
+} from "./componentes/paneles/MenuAcciones";

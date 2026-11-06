@@ -11,14 +11,18 @@ import { LimiteDeIntentos } from "@appweb/core";
 
 const MINUTO = 60_000;
 
+// Los limites por correo son la defensa real: frenan a quien ataca una cuenta sin
+// tocar a nadie mas. Los de IP son holgados a proposito: en Peru los operadores
+// moviles (CGNAT) y los wifi compartidos ponen a cientos de clientes detras de
+// una misma IP, y un tope bajo bloquearia a gente que no hizo nada.
 export const limites = {
   /** Contraseñas fallidas por correo: frena probar claves contra una cuenta. */
   ingresoPorCorreo: new LimiteDeIntentos(5, 15 * MINUTO),
-  /** Intentos de ingreso por IP: frena probar muchas cuentas desde un sitio. */
-  ingresoPorIp: new LimiteDeIntentos(20, 15 * MINUTO),
-  registroPorIp: new LimiteDeIntentos(5, 60 * MINUTO),
-  recuperacionPorIp: new LimiteDeIntentos(5, 60 * MINUTO),
-  recuperacionPorCorreo: new LimiteDeIntentos(3, 60 * MINUTO),
+  /** Intentos de ingreso por IP: solo frena un ataque masivo desde un sitio. */
+  ingresoPorIp: new LimiteDeIntentos(100, 15 * MINUTO),
+  registroPorIp: new LimiteDeIntentos(20, 15 * MINUTO),
+  recuperacionPorIp: new LimiteDeIntentos(20, 15 * MINUTO),
+  recuperacionPorCorreo: new LimiteDeIntentos(3, 15 * MINUTO),
   reclamoPorIp: new LimiteDeIntentos(5, 60 * MINUTO),
 };
 

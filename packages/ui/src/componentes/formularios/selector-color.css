@@ -1,0 +1,30 @@
+.ui-selector-color {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+/* La paleta nativa del navegador, como un cuadro del alto del campo. */
+.ui-selector-color__paleta {
+  flex-shrink: 0;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  padding: 0;
+  border: 1px solid var(--color-bordeFuerte);
+  border-radius: var(--radio-lg);
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+}
+.ui-selector-color__paleta::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.ui-selector-color__paleta::-webkit-color-swatch {
+  border: 0;
+}
+.ui-selector-color__paleta::-moz-color-swatch {
+  border: 0;
+}
+.ui-selector-color__paleta:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}

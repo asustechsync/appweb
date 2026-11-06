@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { StyleSheet, Text } from "react-native";
 
@@ -28,7 +29,7 @@ const estilos = StyleSheet.create({
     borderRadius: t.radio.sm,
     overflow: "hidden",
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
     letterSpacing: 0.3,
   },
 });

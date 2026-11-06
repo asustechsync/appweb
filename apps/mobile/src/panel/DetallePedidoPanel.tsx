@@ -1,6 +1,7 @@
 import { ETIQUETAS, siguientesEstados, tonoDeEstado } from "@appweb/core/estados-pedido";
 import { FECHA_HORA, MONEDA } from "@appweb/core/formato";
 import { ETIQUETAS_MEDIO_PAGO } from "@appweb/core/gestion-pedidos";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -294,17 +295,17 @@ const estilos = StyleSheet.create({
   subtitulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   cifra: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   separador: {
     height: 1,
@@ -313,10 +314,12 @@ const estilos = StyleSheet.create({
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   suaveIzq: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

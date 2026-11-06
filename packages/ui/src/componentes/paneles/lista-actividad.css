@@ -210,6 +210,12 @@
 .ui-logo-medio-pago--mastercard {
   --ui-logo-base: var(--color-mastercard);
 }
+/* Muestra de color: el cuadro entero del tono, con un filo para que el blanco no se pierda. */
+.ui-logo-medio-pago--color {
+  --muestra: var(--color-graficoGrafito);
+  background: var(--muestra);
+  border: 1px solid color-mix(in srgb, var(--color-graficoGrafito) 22%, transparent);
+}
 /* Foto de producto: llena el cuadro, recortada a las esquinas. */
 .ui-logo-medio-pago--foto {
   --ui-logo-base: var(--color-fondo);

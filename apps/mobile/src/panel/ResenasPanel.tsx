@@ -1,5 +1,6 @@
 import { ETIQUETAS_ESTADO_RESENA, tonoDeEstadoResena } from "@appweb/core/resenas";
 import { FECHA } from "@appweb/core/formato";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -137,6 +138,7 @@ const estilos = StyleSheet.create({
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   lista: {
@@ -172,15 +174,17 @@ const estilos = StyleSheet.create({
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   suaveIzq: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   texto: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   acciones: {
     flexDirection: "row",
@@ -202,11 +206,11 @@ const estilos = StyleSheet.create({
   textoRechazar: {
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   textoAprobar: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
 });

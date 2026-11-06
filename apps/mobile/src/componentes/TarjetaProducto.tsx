@@ -1,4 +1,5 @@
 import { MONEDA } from "@appweb/core/formato";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoFavorito } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -108,7 +109,7 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   favorito: {
     position: "absolute",
@@ -135,7 +136,7 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.fondoSutil,
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   datos: {
     gap: 2,
@@ -145,12 +146,12 @@ const estilos = StyleSheet.create({
   marca: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.etiqueta,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
     lineHeight: t.tipo.tamano.sm * 1.3,
   },
   precios: {
@@ -162,11 +163,12 @@ const estilos = StyleSheet.create({
   precio: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   precioLista: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textDecorationLine: "line-through",
   },
 });

@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -8,7 +9,7 @@ interface PropsCantidad {
   onCambiar: (valor: number) => void;
 }
 
-/** Contador "− 1 +" en una pildora blanca. Los extremos se apagan al llegar al limite. */
+/** Contador "− 1 +" en una caja blanca de esquinas suaves. Los extremos se apagan al llegar al limite. */
 export function Cantidad({ valor, minimo = 1, maximo, onCambiar }: PropsCantidad) {
   return (
     <View style={estilos.caja}>
@@ -54,17 +55,17 @@ const estilos = StyleSheet.create({
   caja: {
     flexDirection: "row",
     alignItems: "center",
-    gap: t.espacio[1],
+    gap: t.espacio[2],
     padding: t.espacio[1],
-    borderRadius: t.radio.completo,
+    borderRadius: t.radio.md,
     backgroundColor: t.color.fondoBloque,
   },
   boton: {
-    width: t.espacio[8],
-    height: t.espacio[8],
+    width: t.espacio[10],
+    height: t.espacio[10],
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: t.radio.completo,
+    borderRadius: t.radio.etiqueta,
     backgroundColor: t.color.fondoControl,
   },
   apagado: {
@@ -73,13 +74,13 @@ const estilos = StyleSheet.create({
   signo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   valor: {
-    minWidth: t.espacio[6],
+    minWidth: t.espacio[8],
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
     textAlign: "center",
   },
 });

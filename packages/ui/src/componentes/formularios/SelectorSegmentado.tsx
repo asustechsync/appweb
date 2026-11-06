@@ -16,6 +16,8 @@ export interface PropsSelectorSegmentado {
   /** Un valor que no esta en `opciones` deja el selector sin ninguna activa. */
   valor: string;
   onCambio: (valor: string) => void;
+  /** Con nombres largos o repetidos en la inicial (Ficha, Fotos) no se abrevian en movil. */
+  nombresCompletos?: boolean;
 }
 
 /**
@@ -28,6 +30,7 @@ export function SelectorSegmentado({
   opciones,
   valor,
   onCambio,
+  nombresCompletos,
 }: PropsSelectorSegmentado) {
   const botones = useRef<(HTMLButtonElement | null)[]>([]);
   const indice = opciones.findIndex((opcion) => opcion.valor === valor);
@@ -47,7 +50,11 @@ export function SelectorSegmentado({
     <div
       role="radiogroup"
       aria-label={etiqueta}
-      className="ui-selector-segmentado"
+      className={
+        nombresCompletos
+          ? "ui-selector-segmentado ui-selector-segmentado--completo"
+          : "ui-selector-segmentado"
+      }
       style={{ "--segmentos": opciones.length, "--indice": indice } as CSSProperties}
     >
       {indice >= 0 ? <span className="ui-selector-segmentado__pildora" aria-hidden="true" /> : null}

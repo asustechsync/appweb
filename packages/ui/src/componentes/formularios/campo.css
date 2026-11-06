@@ -149,6 +149,11 @@
   justify-content: space-between;
   gap: var(--espacio-2);
 }
+.ui-campo__etiqueta-con-ayuda {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+}
 .ui-campo__etiqueta-fila a {
   color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-xs);

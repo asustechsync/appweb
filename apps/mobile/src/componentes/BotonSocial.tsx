@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
@@ -34,8 +35,9 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: t.espacio[2],
-    borderRadius: t.radio.md,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
+    boxShadow: t.sombra.difusa,
   },
   presionado: {
     transform: [{ scale: 0.98 }],
@@ -43,6 +45,6 @@ const estilos = StyleSheet.create({
   texto: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
 });

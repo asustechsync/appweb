@@ -413,10 +413,36 @@ export const esquemaProducto = z
     precioLista: z.number().positive().max(99999).nullable().optional(),
     descripcionCorta: textoOpcional(160, "El resumen admite hasta 160 caracteres"),
     descripcion: textoOpcional(4000, "La descripción es demasiado larga"),
-    etiqueta: textoOpcional(20, "La insignia admite hasta 20 caracteres"),
+    // La primera es la principal: la que la tarjeta destaca.
+    etiquetas: z
+      .array(z.string().trim().min(1).max(20, "La etiqueta admite hasta 20 caracteres"))
+      .max(4, "Hasta 4 etiquetas")
+      .default([]),
     envioGratis: z.boolean().default(false),
+    tituloSeo: textoOpcional(70, "El título admite hasta 70 caracteres"),
+    descripcionSeo: textoOpcional(170, "La descripción admite hasta 170 caracteres"),
+    // "aaaa-mm-dd"; vacio = la etiqueta "Nuevo" no vence.
+    nuevoHasta: z
+      .string()
+      .regex(/^(\d{4}-\d{2}-\d{2})?$/, "Elige una fecha válida")
+      .optional(),
     destacado: z.boolean().default(false),
+    // Reglas de la tienda; encendidas salvo que se apaguen a mano.
+    mostrarAgotado: z.boolean().default(true),
+    permiteResenas: z.boolean().default(true),
+    enPacks: z.boolean().default(true),
+    enBuscador: z.boolean().default(true),
     activo: z.boolean().default(true),
+    // Detalles de la prenda: nombres de atributos MATERIAL, AJUSTE y CARACTERISTICA.
+    detalles: z
+      .object({
+        materiales: z.array(z.string().trim().min(1).max(40)).max(6, "Hasta 6 materiales"),
+        ajuste: z.string().trim().min(1).max(40).nullable(),
+        caracteristicas: z
+          .array(z.string().trim().min(1).max(40))
+          .max(12, "Hasta 12 características"),
+      })
+      .optional(),
   })
   .refine((p) => p.precioLista == null || p.precioLista > p.precio, {
     message: "El precio anterior tiene que ser mayor que el precio actual",
@@ -668,7 +694,7 @@ export const esquemaIdVariante = z.object({
 
 export const esquemaLineaCarrito = z.object({
   varianteId: z.string().min(1),
-  cantidad: z.number().int().min(1).max(20),
+  cantidad: z.number().int().min(1).max(50),
 });
 
 export const esquemaCheckout = z.object({

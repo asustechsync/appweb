@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -40,7 +41,7 @@ const estilos = StyleSheet.create({
     height: t.espacio[5],
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: t.radio.sm,
+    borderRadius: t.radio.etiqueta,
     backgroundColor: t.color.fondoBloque,
   },
   cajaMarcada: {
@@ -49,11 +50,12 @@ const estilos = StyleSheet.create({
   check: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.xs,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   texto: {
     flex: 1,
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

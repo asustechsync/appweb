@@ -4,6 +4,7 @@
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "appweb",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
@@ -21,6 +22,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-status-bar", "expo-secure-store"]
+    "plugins": [
+      "expo-status-bar",
+      "expo-secure-store",
+      "expo-font"
+    ]
   }
 }

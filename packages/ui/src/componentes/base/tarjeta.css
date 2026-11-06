@@ -48,6 +48,11 @@
   }
 }
 
+/* Sin titulo, las acciones quedan a la derecha. */
+.ui-tarjeta__acciones:first-child {
+  margin-inline-start: auto;
+}
+
 /* Mismo bloque, sin la caja: borde, fondo y relleno se quitan en todos los anchos. */
 .ui-tarjeta.ui-tarjeta--sin-marco {
   padding: 0;

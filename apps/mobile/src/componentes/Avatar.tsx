@@ -1,4 +1,5 @@
 import { FECHA } from "@appweb/core/formato";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoUsuario } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -62,7 +63,7 @@ const estilos = StyleSheet.create({
   inicial: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   textos: {
     flex: 1,
@@ -70,10 +71,11 @@ const estilos = StyleSheet.create({
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   fecha: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

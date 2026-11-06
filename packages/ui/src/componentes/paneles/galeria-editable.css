@@ -1,7 +1,7 @@
-/* Galeria de fotos del panel. Base movil: dos columnas; desde md, cuatro. */
+/* Galeria de fotos del panel: miniaturas chicas de ancho fijo, una junto a otra. */
 .ui-galeria-editable {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, var(--espacio-32));
   gap: var(--espacio-3);
 }
 .ui-galeria-editable__foto {
@@ -25,7 +25,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--espacio-2);
+  gap: var(--espacio-1);
+}
+/* Botones de la miniatura: compactos, para no ensanchar la fila. */
+.ui-galeria-editable__acciones .ui-boton {
+  block-size: var(--espacio-6);
+  padding-inline: var(--espacio-2);
+  font-size: var(--tipo-tamano-xs);
 }
 .ui-galeria-editable__agregar {
   position: relative;
@@ -33,7 +39,7 @@
   place-items: center;
   border-style: dashed;
   color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-sm);
+  font-size: var(--tipo-tamano-xs);
   font-weight: var(--tipo-peso-fuerte);
   cursor: pointer;
 }
@@ -50,10 +56,4 @@
   inline-size: 1px;
   block-size: 1px;
   opacity: 0;
-}
-
-@media (min-width: 48rem) {
-  .ui-galeria-editable {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 }

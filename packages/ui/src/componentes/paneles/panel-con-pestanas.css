@@ -1,0 +1,140 @@
+/* La tarjeta blanca que envuelve las pestañas y su contenido. */
+.ui-panel-pestanas {
+  display: grid;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+  box-shadow: var(--sombra-difusa);
+}
+.ui-panel-pestanas__barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+.ui-panel-pestanas__selector {
+  flex: 1 1 18rem;
+  min-inline-size: 0;
+}
+/* Sin la sombra propia: la tarjeta ya da el relieve. */
+.ui-panel-pestanas__selector .ui-selector-segmentado {
+  box-shadow: none;
+}
+/* Volver y guardar: del alto del selector, en el mismo gris suave que su caja. */
+.ui-panel-pestanas__acciones {
+  display: flex;
+  flex: none;
+  gap: var(--espacio-2);
+}
+.ui-panel-pestanas__acciones .ui-boton {
+  block-size: var(--espacio-12);
+  padding-inline: var(--espacio-5);
+  gap: var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoControl);
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-panel-pestanas__acciones .ui-boton:hover:not(:disabled) {
+  background: var(--color-fondoControl);
+  color: var(--color-texto);
+}
+/* Boton cuadrado, del alto del selector: el mismo gris suave que su caja. */
+.ui-panel-pestanas__accion {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--espacio-12);
+  block-size: var(--espacio-12);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondoControl);
+  color: var(--color-textoSuave);
+}
+.ui-panel-pestanas__accion:hover {
+  color: var(--color-texto);
+}
+.ui-panel-pestanas__accion:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}
+.ui-panel-pestanas__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-4);
+}
+.ui-panel-pestanas__lateral {
+  display: grid;
+  gap: var(--espacio-4);
+  align-content: start;
+  min-inline-size: 0;
+  /* Un enlace largo (la vista de Google) baja de linea en vez de ensanchar la columna. */
+  overflow-wrap: anywhere;
+}
+
+/* Las tarjetas de dentro pasan a bloques grises, como las filas de una lista de actividad. */
+.ui-panel-pestanas .ui-tarjeta {
+  border: 0;
+  background: var(--color-fondoActividad);
+  box-shadow: none;
+}
+.ui-panel-pestanas .ui-tarjeta.ui-tarjeta--sin-marco {
+  background: transparent;
+}
+/* La vista previa del lateral va sin recuadro: la propia tarjeta toma el gris. */
+.ui-panel-pestanas .ui-tarjeta-producto--vertical {
+  background: var(--color-fondoActividad);
+  box-shadow: none;
+}
+
+/* La fila unida es el bloque gris; las tarjetas de dentro no pintan nada y
+   solo conservan las lineas divisorias. */
+.ui-panel-pestanas .ui-fila-tarjetas--unida {
+  border: 0;
+  background: var(--color-fondoActividad);
+  box-shadow: none;
+}
+.ui-panel-pestanas .ui-fila-tarjetas--unida .ui-tarjeta {
+  background: transparent;
+}
+.ui-panel-pestanas .ui-fila-tarjetas--unida > .ui-tarjeta:last-child {
+  border-block-start: 1px solid var(--color-borde);
+}
+.ui-panel-pestanas .ui-fila-tarjetas--unida > .ui-tarjeta--sin-marco > .ui-tarjeta + .ui-tarjeta {
+  border-block-start: 1px solid var(--color-borde);
+}
+@media (min-width: 64rem) {
+  .ui-panel-pestanas .ui-fila-tarjetas--unida > .ui-tarjeta:last-child {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--color-borde);
+  }
+}
+
+@media (min-width: 64rem) {
+  .ui-panel-pestanas__cuerpo--lateral {
+    grid-template-columns: minmax(0, 1fr) 17rem;
+    align-items: stretch;
+  }
+  .ui-panel-pestanas__cuerpo--lateral > * {
+    grid-column: 1;
+  }
+  /* Una sola fila: el lateral termina a la misma altura que el contenido y no
+     crea filas vacias (con su hueco) que alarguen la pagina. */
+  .ui-panel-pestanas__cuerpo--lateral > .ui-panel-pestanas__lateral {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-rows: auto 1fr;
+  }
+  /* El formulario y su fila de tarjetas llenan la altura de la fila. */
+  .ui-panel-pestanas__cuerpo--lateral > div:not([hidden]):has(> .ui-formulario) {
+    display: flex;
+    flex-direction: column;
+  }
+  .ui-panel-pestanas__cuerpo--lateral > div > .ui-formulario {
+    flex: 1;
+  }
+  .ui-panel-pestanas__cuerpo--lateral > div > .ui-formulario > .ui-fila-tarjetas--mismo-alto {
+    flex: 1;
+  }
+}

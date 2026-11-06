@@ -215,6 +215,25 @@ export function LogoIcono({ icono, nombre }: PropsLogoIcono) {
   );
 }
 
+export interface PropsLogoColor {
+  /** Hex de la muestra ("#1E2A4A"); sin el se pinta un cuadro neutro. */
+  muestra: string | null;
+  /** Nombre del color, para lectores de pantalla. */
+  nombre: string;
+}
+
+/** Mismo cuadro que `LogoIcono`, relleno con el tono de un color: distingue una variante de un vistazo. */
+export function LogoColor({ muestra, nombre }: PropsLogoColor) {
+  return (
+    <span
+      className="ui-logo-medio-pago ui-logo-medio-pago--color"
+      role="img"
+      aria-label={nombre}
+      style={muestra ? ({ "--muestra": muestra } as CSSProperties) : undefined}
+    />
+  );
+}
+
 export interface PropsLogoFoto {
   /** Foto del producto; sin ella se pinta el aviso de "Sin imagen". */
   src: string | null;

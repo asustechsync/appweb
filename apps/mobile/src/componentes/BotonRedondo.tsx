@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -8,28 +9,16 @@ interface PropsBotonRedondo {
   /** Numero sobre el boton (articulos del carrito). Sin el, no hay globo. */
   contador?: number;
   onPress?: () => void;
-  /** Cuadrado de esquinas redondeadas en vez de circulo. */
-  cuadrado?: boolean;
 }
 
-/** Boton circular blanco con sombra difusa, para la cabecera. */
-export function BotonRedondo({
-  etiqueta,
-  children,
-  contador,
-  onPress,
-  cuadrado = false,
-}: PropsBotonRedondo) {
+/** Boton cuadrado de esquinas redondeadas, blanco con sombra difusa, para la cabecera. */
+export function BotonRedondo({ etiqueta, children, contador, onPress }: PropsBotonRedondo) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={etiqueta}
       onPress={onPress}
-      style={({ pressed }) => [
-        estilos.boton,
-        cuadrado && estilos.cuadrado,
-        pressed && estilos.presionado,
-      ]}
+      style={({ pressed }) => [estilos.boton, pressed && estilos.presionado]}
     >
       {children}
       {contador ? (
@@ -47,11 +36,9 @@ const estilos = StyleSheet.create({
     height: t.espacio[12],
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: t.radio.completo,
-    backgroundColor: t.color.fondoBloque,
-  },
-  cuadrado: {
     borderRadius: t.radio.lg,
+    backgroundColor: t.color.fondoBloque,
+    boxShadow: t.sombra.difusa,
   },
   presionado: {
     transform: [{ scale: 0.94 }],
@@ -71,6 +58,6 @@ const estilos = StyleSheet.create({
   numero: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.mini,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
 });

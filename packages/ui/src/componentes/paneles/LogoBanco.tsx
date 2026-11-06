@@ -15,10 +15,7 @@ export type BancoTransferencia =
   | "BANCO_NACION"
   | "OTRO";
 
-const MARCAS: Record<
-  BancoTransferencia,
-  { nombre: string; icono: typeof IconoBcp | null }
-> = {
+const MARCAS: Record<BancoTransferencia, { nombre: string; icono: typeof IconoBcp | null }> = {
   BCP: { nombre: "BCP", icono: IconoBcp },
   INTERBANK: { nombre: "Interbank", icono: IconoInterbank },
   BBVA: { nombre: "BBVA", icono: IconoBbva },

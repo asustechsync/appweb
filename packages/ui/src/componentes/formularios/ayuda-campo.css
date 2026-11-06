@@ -1,0 +1,58 @@
+.ui-ayuda-campo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.ui-ayuda-campo__boton {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-textoSuave);
+  cursor: help;
+}
+.ui-ayuda-campo__boton:hover,
+.ui-ayuda-campo__boton:focus-visible {
+  color: var(--color-texto);
+}
+.ui-ayuda-campo__boton:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}
+.ui-ayuda-campo__oculto {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.ui-ayuda-campo__nota {
+  position: absolute;
+  inset-block-end: calc(100% + var(--espacio-2));
+  inset-inline-start: 50%;
+  z-index: 10;
+  inline-size: max-content;
+  max-inline-size: 15rem;
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondoCapsula);
+  box-shadow: var(--sombra-lg);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-normal);
+  line-height: 1.4;
+  text-align: start;
+  transform: translateX(-20%);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+/* Aparece con un fundido corto y se va al instante. Con el foco solo se queda
+   si es de teclado: tras un clic el boton conserva el foco y la nota no se iria. */
+.ui-ayuda-campo:hover .ui-ayuda-campo__nota,
+.ui-ayuda-campo:has(.ui-ayuda-campo__boton:focus-visible) .ui-ayuda-campo__nota {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity var(--transicion-rapida);
+}

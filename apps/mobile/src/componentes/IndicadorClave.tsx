@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoMarcarCirculo, IconoMarcarCirculoRelleno } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { StyleSheet, Text, View } from "react-native";
@@ -68,6 +69,7 @@ const estilos = StyleSheet.create({
   texto: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   textoCumplido: {
     color: t.color.texto,

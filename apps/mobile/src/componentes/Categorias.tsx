@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
@@ -62,7 +63,7 @@ const estilos = StyleSheet.create({
   texto: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   textoActivo: {
     color: t.color.textoInverso,

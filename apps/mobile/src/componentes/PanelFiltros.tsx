@@ -1,4 +1,5 @@
 import { ETIQUETAS_ORDEN, ORDENES } from "@appweb/core/filtros";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -206,12 +207,12 @@ const estilos = StyleSheet.create({
   titulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.xl,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.titulos[600],
   },
   limpiar: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   secciones: {
     gap: t.espacio[5],
@@ -223,7 +224,7 @@ const estilos = StyleSheet.create({
   subtitulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   opciones: {
     flexDirection: "row",
@@ -242,6 +243,7 @@ const estilos = StyleSheet.create({
   textoOpcion: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   textoActivo: {
     color: t.color.textoInverso,

@@ -1,5 +1,6 @@
 import { ETIQUETAS, pasosDelPedido, tonoDeEstado } from "@appweb/core/estados-pedido";
 import { FECHA_HORA, MONEDA } from "@appweb/core/formato";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -167,15 +168,16 @@ const estilos = StyleSheet.create({
   textoPaso: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   pasoVivo: {
     color: t.color.texto,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   subtitulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   item: {
     flex: 1,
@@ -184,17 +186,17 @@ const estilos = StyleSheet.create({
   nombre: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   cifra: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   total: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.lg,
-    fontWeight: "700",
+    fontFamily: FUENTE_NATIVA.texto[700],
   },
   separador: {
     height: 1,
@@ -203,10 +205,12 @@ const estilos = StyleSheet.create({
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
   suaveIzq: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

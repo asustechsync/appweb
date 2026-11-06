@@ -305,7 +305,7 @@
   box-shadow: var(--sombra-sm);
 }
 .ui-tarjeta-producto__etiqueta--nuevo {
-  padding: 0.125rem var(--espacio-2);
+  padding: var(--espacio-1) var(--espacio-2);
   border-radius: var(--radio-sm);
   background: var(--color-nuevoFondo);
   color: var(--color-nuevoTexto);
@@ -338,13 +338,14 @@
 }
 .ui-tarjeta-producto__apilado .ui-tarjeta-producto__etiqueta {
   position: static;
+  padding: var(--espacio-1) var(--espacio-2);
 }
 /* Envio gratis: pastilla con el icono de envio. */
 .ui-tarjeta-producto__envio {
   display: inline-flex;
   align-items: center;
   gap: var(--espacio-1);
-  padding: 0.125rem var(--espacio-2);
+  padding: var(--espacio-1) var(--espacio-2);
   border-radius: var(--radio-sm);
   background: var(--color-envioFondo);
   color: var(--color-envioTexto);

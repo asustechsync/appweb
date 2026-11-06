@@ -8,7 +8,7 @@ export interface PropsTarjeta {
   acciones?: ReactNode;
   /** Sin borde, fondo ni relleno: el contenido queda directo sobre la pagina. */
   sinMarco?: boolean;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 /** Bloque de contenido del panel: un titulo, sus acciones y lo que lleve dentro. */
@@ -21,7 +21,7 @@ export function Tarjeta({ titulo, acciones, sinMarco, children }: PropsTarjeta) 
           {acciones ? <div className="ui-tarjeta__acciones">{acciones}</div> : null}
         </header>
       ) : null}
-      <div className="ui-tarjeta__cuerpo">{children}</div>
+      {children ? <div className="ui-tarjeta__cuerpo">{children}</div> : null}
     </section>
   );
 }

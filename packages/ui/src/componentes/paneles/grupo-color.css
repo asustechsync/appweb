@@ -1,0 +1,88 @@
+.ui-rejilla-grupos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-2);
+}
+/* Cada columna lleva su propia pila: abrir un grupo solo empuja a los de su columna. */
+.ui-rejilla-grupos__columna {
+  display: grid;
+  gap: var(--espacio-2);
+  align-content: start;
+  min-inline-size: 0;
+}
+@media (min-width: 48rem) {
+  .ui-rejilla-grupos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+.ui-grupo-color {
+  min-inline-size: 0;
+  border-radius: var(--radio-md);
+  background: var(--color-fondoActividad);
+}
+.ui-grupo-color__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-2) var(--espacio-3);
+  list-style: none;
+  cursor: pointer;
+}
+.ui-grupo-color__cabecera::-webkit-details-marker {
+  display: none;
+}
+.ui-grupo-color__cabecera:focus-visible {
+  outline: 2px solid var(--color-marca-500);
+  outline-offset: -2px;
+  border-radius: var(--radio-md);
+}
+.ui-grupo-color__cabecera .ui-logo-medio-pago {
+  inline-size: var(--espacio-6);
+  block-size: var(--espacio-6);
+  border-radius: var(--radio-sm);
+}
+.ui-grupo-color__nombre {
+  display: grid;
+  min-inline-size: var(--espacio-20);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-grupo-color__total {
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-normal);
+}
+.ui-grupo-color__tallas {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: var(--espacio-1);
+  min-inline-size: 0;
+}
+.ui-grupo-color__talla {
+  padding: 1px var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ui-grupo-color__talla--bajo {
+  background: color-mix(in srgb, var(--color-alerta) 18%, var(--color-fondo));
+  color: var(--color-alerta);
+}
+.ui-grupo-color__flecha {
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-textoSuave);
+  transition: transform 0.15s ease;
+}
+.ui-grupo-color[open] .ui-grupo-color__flecha {
+  transform: rotate(180deg);
+}
+.ui-grupo-color__cuerpo {
+  padding: 0 var(--espacio-3) var(--espacio-3);
+}

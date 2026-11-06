@@ -5,6 +5,8 @@ import type { FormEvent, ReactNode } from "react";
 import "../estilos.css";
 
 export interface PropsFormulario {
+  /** Para que un boton de fuera lo envie (`Boton formulario="..."`). */
+  id?: string;
   onSubmit: (evento: FormEvent) => void;
   children: ReactNode;
   /** Linea al pie, fuera del flujo de campos: "¿No tienes cuenta? Crea una". */
@@ -16,9 +18,10 @@ export interface PropsFormulario {
 }
 
 /** Columna de campos con el espaciado fijo de todos los formularios del sitio. */
-export function Formulario({ onSubmit, children, pie, ancho = "angosto" }: PropsFormulario) {
+export function Formulario({ id, onSubmit, children, pie, ancho = "angosto" }: PropsFormulario) {
   return (
     <form
+      id={id}
       className={ancho === "completo" ? "ui-formulario ui-formulario--completo" : "ui-formulario"}
       onSubmit={onSubmit}
       noValidate

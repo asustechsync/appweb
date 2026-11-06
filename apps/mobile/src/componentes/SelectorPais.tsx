@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoFlechaAbajo } from "@appweb/ui/iconos.nativos";
 import { BANDERAS } from "@appweb/ui/banderas";
 import { PAISES, type Pais } from "@appweb/ui/paises";
@@ -11,6 +12,9 @@ interface PropsSelectorPais {
   valor: string;
   onCambio: (iso2: string) => void;
 }
+
+/** Los que se listan sin buscar: Peru y sus fronteras. Los demas salen al escribir. */
+const INICIALES = PAISES.slice(0, 3);
 
 const SIN_TILDES = (texto: string) => texto.normalize("NFD").replace(/[̀-ͯ]/g, "");
 
@@ -26,7 +30,7 @@ function Bandera({ iso2 }: { iso2: string }) {
 
 /**
  * Prefijo telefonico con bandera, como el de la web: un boton con la bandera y
- * el +prefijo que abre una hoja con buscador por nombre o prefijo.
+ * el +prefijo que abre una hoja con los tres paises principales y buscador para el resto.
  */
 export function SelectorPais({ valor, onCambio }: PropsSelectorPais) {
   const [abierto, setAbierto] = useState(false);
@@ -35,7 +39,7 @@ export function SelectorPais({ valor, onCambio }: PropsSelectorPais) {
 
   const visibles = useMemo(() => {
     const termino = SIN_TILDES(busqueda.trim().toLowerCase());
-    if (termino === "") return PAISES;
+    if (termino === "") return INICIALES;
     return PAISES.filter(
       (p) => SIN_TILDES(p.nombre.toLowerCase()).includes(termino) || p.prefijo.includes(termino),
     );
@@ -63,7 +67,6 @@ export function SelectorPais({ valor, onCambio }: PropsSelectorPais) {
         <Pressable style={estilos.velo} onPress={cerrar} accessibilityLabel="Cerrar" />
         <View style={estilos.hoja}>
           <TextInput
-            autoFocus
             value={busqueda}
             onChangeText={setBusqueda}
             placeholder="Buscar país o prefijo"
@@ -72,9 +75,10 @@ export function SelectorPais({ valor, onCambio }: PropsSelectorPais) {
           />
           <FlatList
             data={visibles}
-            keyExtractor={(p) => p.iso2}
+            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             ListEmptyComponent={<Text style={estilos.vacio}>Sin resultados</Text>}
+            keyExtractor={(p) => p.iso2}
             renderItem={({ item }) => (
               <Pressable
                 accessibilityRole="button"
@@ -103,8 +107,9 @@ const estilos = StyleSheet.create({
     alignItems: "center",
     gap: t.espacio[2],
     paddingHorizontal: t.espacio[3],
-    borderRadius: t.radio.md,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
+    boxShadow: t.sombra.difusa,
   },
   bandera: {
     width: 24,
@@ -115,6 +120,7 @@ const estilos = StyleSheet.create({
   prefijo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   velo: {
     flex: 1,
@@ -131,10 +137,11 @@ const estilos = StyleSheet.create({
   buscador: {
     height: t.espacio[12],
     paddingHorizontal: t.espacio[4],
-    borderRadius: t.radio.md,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   opcion: {
     flexDirection: "row",
@@ -142,7 +149,7 @@ const estilos = StyleSheet.create({
     gap: t.espacio[3],
     paddingVertical: t.espacio[3],
     paddingHorizontal: t.espacio[2],
-    borderRadius: t.radio.md,
+    borderRadius: t.radio.lg,
   },
   opcionActiva: {
     backgroundColor: t.color.fondoBloque,
@@ -151,10 +158,12 @@ const estilos = StyleSheet.create({
     flex: 1,
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   prefijoOpcion: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   vacio: {
     padding: t.espacio[4],

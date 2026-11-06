@@ -6,7 +6,10 @@ import { urlDeImagen } from "../api";
 
 const MARGEN = t.espacio[4];
 
-/** Fotos del producto que se deslizan de una en una, con sus puntos debajo. */
+/**
+ * Fotos del producto que se deslizan de una en una. Apaisadas (4:3) y con los
+ * puntos encima de la foto: asi talla, precio y boton quedan a la vista sin bajar.
+ */
 export function GaleriaFotos({ imagenes }: { imagenes: { url: string; alt: string }[] }) {
   const { width } = useWindowDimensions();
   const ancho = width - MARGEN * 2;
@@ -31,6 +34,7 @@ export function GaleriaFotos({ imagenes }: { imagenes: { url: string; alt: strin
               <Image
                 source={{ uri: urlDeImagen(item.url) }}
                 accessibilityLabel={item.alt}
+                resizeMode="contain"
                 style={estilos.imagen}
               />
             </View>
@@ -53,12 +57,12 @@ export function GaleriaFotos({ imagenes }: { imagenes: { url: string; alt: strin
 
 const estilos = StyleSheet.create({
   contenedor: {
-    gap: t.espacio[3],
+    position: "relative",
   },
   foto: {
-    aspectRatio: 1,
+    aspectRatio: 4 / 3,
     overflow: "hidden",
-    borderRadius: t.radio.xl,
+    borderRadius: t.radio.lg,
     backgroundColor: t.color.fondoBloque,
   },
   imagen: {
@@ -66,6 +70,10 @@ const estilos = StyleSheet.create({
     height: "100%",
   },
   puntos: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: t.espacio[3],
     flexDirection: "row",
     justifyContent: "center",
     gap: t.espacio[1],

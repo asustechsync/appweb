@@ -1,4 +1,5 @@
 import { evaluarClave } from "@appweb/core/clave";
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -31,7 +32,11 @@ export function CambiarClave({ onVolver }: { onVolver: () => void }) {
   return (
     <View style={estilos.pantalla}>
       <CabeceraPantalla titulo="Contraseña" onVolver={onVolver} />
-      <ScrollView contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={estilos.contenido}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <CampoTexto
           etiqueta="Contraseña actual"
           value={actual}
@@ -81,6 +86,7 @@ const estilos = StyleSheet.create({
   requisito: {
     color: t.color.textoTenue,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   cumplido: {
     color: t.color.exito,
@@ -92,5 +98,6 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
 });

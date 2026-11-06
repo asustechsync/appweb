@@ -4,6 +4,7 @@
    Las filas de las listas (`FilaLista`) mantienen el suyo: separan registros.
    En lugar del borde, una sombra difusa (ancha y tenue, sin contorno) los separa del fondo. */
 .ui-panel-admin .ui-tarjeta:not(.ui-tarjeta--sin-marco),
+.ui-panel-admin .ui-fila-tarjetas--unida,
 .ui-panel-admin .ui-tarjeta-metrica,
 .ui-panel-admin .ui-tarjeta-info,
 .ui-panel-admin .ui-grafico-tendencia,
@@ -22,7 +23,44 @@
 
 /* Desde lg el menu lateral llega hasta abajo, a la altura del contenido: el
    bloque del menu absorbe lo que sobra y el pie (tienda y salir) queda abajo. */
+/* Todas las paginas del panel miden como Inicio (964 px), menu incluido: lo que
+   no cabe se desplaza dentro del contenido. El relleno con margen negativo deja
+   sitio a la sombra difusa, que el scroll recortaria. */
 @media (min-width: 64rem) {
+  .ui-panel-admin .ui-disposicion-cuenta__cuerpo {
+    block-size: 60.25rem;
+    align-items: stretch;
+  }
+  .ui-panel-admin .ui-disposicion-cuenta__contenido {
+    flex: 1;
+    min-block-size: 0;
+    margin: -0.75rem;
+    padding: 0.75rem;
+    overflow-y: auto;
+  }
+  /* El ultimo bloque de la pagina llega hasta abajo, a la misma altura que el
+     menu: todas las paginas del panel miden lo mismo. */
+  .ui-panel-admin
+    .ui-disposicion-cuenta__contenido
+    > :is(
+      .ui-panel-pestanas,
+      .ui-tarjeta,
+      .ui-fila-tarjetas--unida,
+      .ui-lista-actividad,
+      .ui-lista-con-lateral-conjunto
+    ):last-child {
+    flex: 1 0 auto;
+  }
+  /* Las metricas quedan fuera, sobre el fondo; la lista y su lateral llenan el resto. */
+  .ui-panel-admin .ui-lista-con-lateral-conjunto > .ui-lista-con-lateral {
+    flex: 1;
+  }
+  .ui-panel-admin .ui-lista-con-lateral__lista > .ui-tarjeta {
+    flex: 1;
+  }
+  .ui-panel-admin .ui-disposicion-cuenta__contenido > .ui-panel-pestanas {
+    grid-template-rows: auto 1fr;
+  }
   .ui-panel-admin .ui-disposicion-cuenta__lateral {
     position: static;
     align-self: stretch;

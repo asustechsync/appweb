@@ -1,7 +1,9 @@
+import { ARCHIVOS_FUENTES_NATIVAS } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
+import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { type ComponentProps, useEffect, useState } from "react";
-import { BackHandler, StyleSheet } from "react-native";
+import { BackHandler, Linking, StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { Carrito } from "./src/Carrito";
@@ -15,11 +17,13 @@ import { MisDatos } from "./src/cuenta/MisDatos";
 import { MisPedidos } from "./src/cuenta/MisPedidos";
 import { MisResenas } from "./src/cuenta/MisResenas";
 import { DetalleProducto } from "./src/DetalleProducto";
+import { tokenDeRecuperacion } from "./src/enlaces";
 import { ProveedorCarrito } from "./src/estado-carrito";
 import { ProveedorFavoritos } from "./src/estado-favoritos";
 import { ProveedorSesion, useSesion } from "./src/estado-sesion";
 import { Favoritos } from "./src/Favoritos";
 import { Marca } from "./src/Marca";
+import { NuevaClave } from "./src/NuevaClave";
 import { DetallePedidoPanel } from "./src/panel/DetallePedidoPanel";
 import { Panel, type PantallaPanel } from "./src/panel/Panel";
 import { PedidosPanel } from "./src/panel/PedidosPanel";
@@ -34,6 +38,7 @@ type Pantalla =
   | { tipo: "carrito" }
   | { tipo: "pedido"; codigo: string }
   | { tipo: "panel-pedido"; pedidoId: string }
+  | { tipo: "nueva-clave"; token: string }
   | { tipo: PantallaCuenta | PantallaPanel };
 
 /** La barra inferior, salvo en el ingreso: como en la web, esa pantalla va sola. */
@@ -43,7 +48,17 @@ function BarraDeNavegacion(props: ComponentProps<typeof BarraInferior>) {
   return <BarraInferior {...props} />;
 }
 
+/**
+ * Espera a las fuentes del proyecto antes de pintar: sin esto el primer cuadro
+ * sale con la del sistema y salta. Si fallan, sigue con la del sistema.
+ */
 export default function App() {
+  const [cargadas, fallo] = useFonts(ARCHIVOS_FUENTES_NATIVAS);
+  if (!cargadas && !fallo) return null;
+  return <Aplicacion />;
+}
+
+function Aplicacion() {
   const [pestana, setPestana] = useState<Pestana>("inicio");
   // Navegacion minima hasta que entre un navegador de verdad: una pila de
   // pantallas sobre la pestaña elegida.
@@ -54,6 +69,18 @@ export default function App() {
   const volver = () => setPila((actual) => actual.slice(0, -1));
   const abrirProducto = (slug: string) => abrir({ tipo: "producto", slug });
   const abrirCarrito = () => abrir({ tipo: "carrito" });
+
+  // El enlace de recuperacion del correo abre la app (si esta instalada) en vez de
+  // la web: al arrancar con el enlace o si ya estaba abierta.
+  useEffect(() => {
+    function alAbrir(url: string | null | undefined) {
+      const token = url ? tokenDeRecuperacion(url) : null;
+      if (token) setPila((actual) => [...actual, { tipo: "nueva-clave", token }]);
+    }
+    Linking.getInitialURL().then(alAbrir);
+    const suscripcion = Linking.addEventListener("url", ({ url }) => alAbrir(url));
+    return () => suscripcion.remove();
+  }, []);
 
   // El boton "atras" de Android cierra la pantalla de encima en vez de salir.
   useEffect(() => {
@@ -117,6 +144,18 @@ export default function App() {
         return <StockPanel onVolver={volver} />;
       case "panel-resenas":
         return <ResenasPanel onVolver={volver} />;
+      case "nueva-clave":
+        return (
+          <NuevaClave
+            key={pantalla.token}
+            token={pantalla.token}
+            onVolver={volver}
+            onIngresar={() => {
+              setPila([]);
+              setPestana("cuenta");
+            }}
+          />
+        );
     }
   }
 

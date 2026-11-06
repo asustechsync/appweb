@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoPapelera, IconoUbicacion } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useCallback, useEffect, useState } from "react";
@@ -197,17 +198,18 @@ const estilos = StyleSheet.create({
   calle: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
-    fontWeight: "500",
+    fontFamily: FUENTE_NATIVA.texto[500],
   },
   zona: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   enlace: {
     marginTop: t.espacio[1],
     color: t.color.texto,
     fontSize: t.tipo.tamano.xs,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   centrado: {
     textAlign: "center",
@@ -219,7 +221,7 @@ const estilos = StyleSheet.create({
   subtitulo: {
     color: t.color.texto,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
   interruptor: {
     flexDirection: "row",
@@ -233,10 +235,12 @@ const estilos = StyleSheet.create({
     backgroundColor: t.color.ofertaFondo,
     color: t.color.ofertaTexto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   suave: {
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
     textAlign: "center",
   },
 });

@@ -152,13 +152,13 @@ export function GraficoTendencia({
   const pct = (v: number) => `${(v / ALTO) * 100}%`;
 
   return (
-      <figure
-        className={
-          explorando
-            ? "ui-grafico-tendencia ui-grafico-tendencia--explorando"
-            : "ui-grafico-tendencia"
-        }
-      >
+    <figure
+      className={
+        explorando
+          ? "ui-grafico-tendencia ui-grafico-tendencia--explorando"
+          : "ui-grafico-tendencia"
+      }
+    >
       <figcaption className="ui-grafico-tendencia__cabecera">
         <span className="ui-grafico-tendencia__titulos">
           <span className="ui-grafico-tendencia__titulo">{titulo}</span>
@@ -363,7 +363,7 @@ export function GraficoTendencia({
           </div>
         </div>
       </div>
-      </figure>
+    </figure>
   );
 }
 

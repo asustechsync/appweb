@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 
@@ -43,7 +44,15 @@ export function BotonPrincipal({
       {cargando ? (
         <ActivityIndicator color={colores?.texto ?? t.color.textoInverso} />
       ) : (
-        <Text style={[estilos.texto, colores && { color: colores.texto }]}>{texto}</Text>
+        <Text
+          style={[
+            estilos.texto,
+            colores && { color: colores.texto },
+            deshabilitado && estilos.textoApagado,
+          ]}
+        >
+          {texto}
+        </Text>
       )}
     </Pressable>
   );
@@ -56,8 +65,12 @@ const estilos = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: t.color.acentoMovil,
   },
+  /** Gris solido: a media opacidad el color de fondo se ve lavado. */
   apagado: {
-    opacity: 0.5,
+    backgroundColor: t.color.fondoBoton,
+  },
+  textoApagado: {
+    color: t.color.textoTenue,
   },
   presionado: {
     transform: [{ scale: 0.98 }],
@@ -65,6 +78,6 @@ const estilos = StyleSheet.create({
   texto: {
     color: t.color.textoInverso,
     fontSize: t.tipo.tamano.base,
-    fontWeight: "600",
+    fontFamily: FUENTE_NATIVA.texto[600],
   },
 });

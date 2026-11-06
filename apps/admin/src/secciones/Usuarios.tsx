@@ -23,9 +23,7 @@ import {
   ListaConLateral,
   LogoIcono,
   Paginador,
-  RejillaMetricas,
   Tarjeta,
-  TarjetaMetrica,
   VistaPrevia,
 } from "@appweb/ui";
 
@@ -141,7 +139,7 @@ export function Usuarios({
     [coinciden, paginaActual],
   );
 
-  const cifras = useMemo(() => cifrasDeCuentas(delAlcance), [delAlcance]);
+  const _cifras = useMemo(() => cifrasDeCuentas(delAlcance), [delAlcance]);
 
   const escritorio = useEscritorio();
   const [elegido, setElegido] = useState<string | null>(null);
@@ -242,39 +240,7 @@ export function Usuarios({
               ),
             }
           : {})}
-      >
-        <RejillaMetricas>
-          <TarjetaMetrica
-            etiqueta={alcance === "clientes" ? "Clientes" : "Cuentas"}
-            valor={String(cifras.total)}
-            contexto={`${cifras.activas} activas`}
-          />
-          <TarjetaMetrica
-            etiqueta={`Nuevas en ${DIAS_ALTAS} días`}
-            valor={String(cifras.nuevas)}
-            serie={cifras.serieAltas}
-            contexto={cifras.nuevas === 1 ? "1 cuenta creada" : `${cifras.nuevas} cuentas creadas`}
-          />
-          {alcance === "equipo" ? (
-            <TarjetaMetrica
-              etiqueta="Administradores"
-              valor={String(cifras.administradores)}
-              contexto="Con acceso a todo el panel"
-            />
-          ) : (
-            <TarjetaMetrica
-              etiqueta="Activas"
-              valor={String(cifras.activas)}
-              contexto="Pueden comprar en la tienda"
-            />
-          )}
-          <TarjetaMetrica
-            etiqueta="Desactivadas"
-            valor={String(cifras.desactivadas)}
-            contexto={cifras.desactivadas === 0 ? "Ninguna bloqueada" : "No pueden entrar"}
-          />
-        </RejillaMetricas>
-      </Tarjeta>
+      />
 
       {alcance === "equipo" && creando ? (
         <Tarjeta titulo="Crear cuenta">

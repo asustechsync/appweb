@@ -52,6 +52,7 @@ export { IconoUbicacion } from "./generados/IconoUbicacion";
 export { IconoUsuario } from "./generados/IconoUsuario";
 
 // interfaz
+export { IconoAyuda } from "./generados/IconoAyuda";
 export { IconoCalendario } from "./generados/IconoCalendario";
 export { IconoCamara } from "./generados/IconoCamara";
 export { IconoCerrarCirculo } from "./generados/IconoCerrarCirculo";
@@ -78,6 +79,7 @@ export { IconoNotificacion } from "./generados/IconoNotificacion";
 export { IconoOjoTachado } from "./generados/IconoOjoTachado";
 export { IconoOjo } from "./generados/IconoOjo";
 export { IconoPapelera } from "./generados/IconoPapelera";
+export { IconoRefrescar } from "./generados/IconoRefrescar";
 export { IconoReloj } from "./generados/IconoReloj";
 export { IconoSol } from "./generados/IconoSol";
 export { IconoVerificado } from "./generados/IconoVerificado";

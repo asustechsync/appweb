@@ -1,3 +1,4 @@
+import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
 import { IconoBuscar, IconoOpciones } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
@@ -59,6 +60,7 @@ const estilos = StyleSheet.create({
     flex: 1,
     color: t.color.texto,
     fontSize: t.tipo.tamano.sm,
+    fontFamily: FUENTE_NATIVA.texto[400],
   },
   filtros: {
     width: ALTO,
