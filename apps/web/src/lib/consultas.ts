@@ -1,6 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
 
-import type { FiltrosListado } from "@appweb/core";
+import { nivelesVigentes } from "@appweb/api/clientes";
+import type { FiltrosListado, Nivel } from "@appweb/core";
 import { prisma } from "@appweb/db";
 import type { BannerDePortada } from "@appweb/ui";
 
@@ -15,11 +16,14 @@ import {
   leerFicha,
   leerListado,
   leerMarca,
+  leerMasVendidos,
   leerNovedades,
   leerOfertas,
+  leerPacks,
   leerPorSlugs,
   leerVarianteDeCarrito,
   type MarcaConProductos,
+  type PackDePortada,
   type ProductoDeFicha,
   type ProductoDeRejilla,
   type ResenaDeFicha,
@@ -94,6 +98,47 @@ export async function productosPorSlugs(slugs: string[]): Promise<ProductoDeReji
   cacheTag(etiquetas.catalogo());
 
   return leerPorSlugs(slugs);
+}
+
+/**
+ * Los mas vendidos de la portada. Etiqueta `portada`; ademas caduca sola cada
+ * pocas horas, que es lo que tarda en importar una venta nueva en el orden.
+ */
+export async function productosMasVendidos(limite = 8): Promise<ProductoDeRejilla[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.portada());
+
+  return leerMasVendidos(limite);
+}
+
+/** Packs de la portada. Etiqueta `portada`: el panel la invalida al guardar un pack. */
+export async function packsDePortada(limite = 3): Promise<PackDePortada[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(etiquetas.portada());
+
+  return leerPacks(limite);
+}
+
+/** La escalera de niveles de la portada. Etiqueta `portada`: el panel la invalida al guardarlos. */
+export async function nivelesDePortada(): Promise<Nivel[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(etiquetas.portada());
+
+  return nivelesVigentes(prisma);
+}
+
+/**
+ * Desde que subtotal sale gratis el envio mas facil de alcanzar. `null` si
+ * ningun metodo lo ofrece: la portada no promete nada.
+ */
+export async function envioGratisDesde(): Promise<number | null> {
+  const umbrales = (await metodosDeEnvio()).flatMap((m) =>
+    m.gratisDesde !== null ? [m.gratisDesde] : [],
+  );
+  return umbrales.length > 0 ? Math.min(...umbrales) : null;
 }
 
 export async function productosNuevos(limite = 5): Promise<ProductoDeRejilla[]> {

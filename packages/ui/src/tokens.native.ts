@@ -45,6 +45,8 @@ export const tokensNativos = {
     "alerta": "#B54708",
     "error": "#D92D20",
     "info": "#2F7DB8",
+    "serieActual": "#2F7DB8",
+    "seriePrevia": "#7C5CD6",
     "muestra": {
       "negro": "#1C1C1F",
       "blanco": "#FFFFFF",
@@ -327,7 +329,9 @@ export const tokensNativosOscuro = {
     "exitoClaro": "#8FE388",
     "alerta": "#EAB143",
     "error": "#F07C81",
-    "info": "#4FA6E0"
+    "info": "#4FA6E0",
+    "serieActual": "#4FA6E0",
+    "seriePrevia": "#9B82E8"
   },
   "sombra": {
     "ninguna": "none",

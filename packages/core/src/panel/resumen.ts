@@ -140,6 +140,31 @@ export function seriesDelResumen(
   };
 }
 
+/** Lo que entro en cada tramo: la diferencia con el punto anterior (el primero queda en 0). */
+function porTramo(acumulada: number[]): number[] {
+  return acumulada.map((valor, i) => (i === 0 ? 0 : Math.max(0, valor - (acumulada[i - 1] ?? 0))));
+}
+
+/**
+ * Las mismas series pero de lo que entro en cada tramo, no acumuladas: la linea
+ * sube y baja segun cuanto se vendio en ese tramo. El ticket es el de cada
+ * tramo (ventas entre pedidos del tramo) y queda en 0 si no entro nada.
+ * Sirve para Semana y Mes; en un dia el acumulado se lee mejor.
+ */
+export function seriesPorTramo(series: SeriesResumen): SeriesResumen {
+  const ventas = porTramo(series.ventas);
+  const pedidos = porTramo(series.pedidos);
+  return {
+    ventas,
+    pedidos,
+    ticket: ventas.map((monto, i) => {
+      const n = pedidos[i] ?? 0;
+      return n > 0 ? monto / n : 0;
+    }),
+    clientesNuevos: porTramo(series.clientesNuevos),
+  };
+}
+
 /** Cuanto entro por un medio de pago y que parte del total es. */
 export interface RepartoMedio<M extends string = string> {
   medio: M;

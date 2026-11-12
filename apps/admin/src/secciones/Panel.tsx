@@ -42,6 +42,7 @@ import { Categorias, Marcas } from "./Categorias";
 import { Devoluciones } from "./Devoluciones";
 import { Envios } from "./Envios";
 import { Inventario } from "./Inventario";
+import { Negocio } from "./Negocio";
 import { Niveles } from "./Niveles";
 import { Portada, Promociones } from "./Promociones";
 import { Packs } from "./Packs";
@@ -102,6 +103,7 @@ const ICONOS: Record<string, ReactNode> = {
   portada: <IconoGaleria tamano={20} />,
   equipo: <IconoEscudo />,
   niveles: <IconoPremio />,
+  tienda: <IconoConfiguracion />,
 };
 
 /** En el lateral el icono va en el titulo del grupo, no en cada seccion. */
@@ -287,6 +289,8 @@ export function Panel({
         <Promociones />
       ) : visible === "portada" ? (
         <Portada />
+      ) : visible === "tienda" ? (
+        <Negocio />
       ) : (
         <EstadoVacio
           titulo={ETIQUETAS[visible] ?? visible}

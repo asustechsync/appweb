@@ -3,14 +3,14 @@
 .ui-grafico-tendencia {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
+  gap: var(--espacio-4);
   margin: 0;
-  padding: var(--espacio-4);
+  padding: var(--espacio-5);
   overflow: visible; /* el calendario de la cabecera se despliega fuera de la tarjeta */
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-bloque);
   background: var(--color-fondo);
-  color: var(--color-info);
+  color: var(--color-serieActual);
 }
 /* En la fila de graficos la tarjeta absorbe lo que sobra de la columna: las
    tarjetas de debajo tienen tamano fijo, asi la base queda a la altura de la
@@ -99,11 +99,10 @@
   inline-size: var(--espacio-2);
   block-size: var(--espacio-2);
   border-radius: 50%;
-  background: var(--color-info);
+  background: var(--color-serieActual);
 }
 .ui-grafico-tendencia__marca-serie--previa {
-  background: var(--color-textoTenue);
-  opacity: 0.6;
+  background: var(--color-seriePrevia);
 }
 .ui-grafico-tendencia__valor {
   display: inline-flex;
@@ -256,7 +255,7 @@
 .ui-grafico-tendencia__escala {
   position: relative;
   min-inline-size: var(--espacio-6);
-  block-size: var(--espacio-32);
+  block-size: calc(var(--espacio-32) + var(--espacio-12));
 }
 .ui-grafico-tendencia__valor-eje {
   position: absolute;
@@ -274,7 +273,7 @@
 }
 .ui-grafico-tendencia__area {
   position: relative;
-  block-size: var(--espacio-32);
+  block-size: calc(var(--espacio-32) + var(--espacio-12));
   cursor: crosshair;
   touch-action: pan-y;
 }
@@ -291,12 +290,13 @@
   block-size: 100%;
   overflow: visible;
 }
+.ui-grafico-tendencia__degradado-previo {
+  color: var(--color-seriePrevia);
+}
 .ui-grafico-tendencia__previa {
   fill: none;
-  stroke: var(--color-textoTenue);
-  stroke-opacity: 0.6;
+  stroke: var(--color-seriePrevia);
   stroke-width: 1.5;
-  stroke-dasharray: 4 4;
   vector-effect: non-scaling-stroke;
 }
 .ui-grafico-tendencia__linea {
@@ -312,7 +312,7 @@
 .ui-grafico-tendencia__guia {
   position: absolute;
   inset-block: 0;
-  border-inline-start: 1px dashed var(--color-textoTenue);
+  border-inline-start: 1px dashed currentColor;
   pointer-events: none;
 }
 .ui-grafico-tendencia__punto {
@@ -325,38 +325,56 @@
   box-shadow: 0 0 0 2px var(--color-fondo);
   pointer-events: none;
 }
-.ui-grafico-tendencia__punto--previo {
-  background: var(--color-fondo);
-  border: 2px solid var(--color-textoTenue);
-  box-sizing: border-box;
-}
 
-/* Tooltip pegado a la guia, hacia el lado donde hay sitio. */
+/* Globo claro con borde: una fila por serie, con su punto de color. Va en
+   el aire de arriba del area, centrado sobre la guia, con una flecha hacia el punto. */
 .ui-grafico-tendencia__tooltip {
   position: absolute;
-  inset-block-start: 0;
   display: flex;
   flex-direction: column;
   gap: var(--espacio-1);
-  min-inline-size: 9rem;
+  min-inline-size: 6.5rem;
   padding: var(--espacio-2) var(--espacio-3);
-  border: 1px solid var(--color-borde);
+  border: 1px solid var(--color-bordeFuerte);
   border-radius: var(--radio-md);
   background: var(--color-fondo);
   box-shadow: var(--sombra-md);
-  color: var(--color-info);
+  color: var(--color-texto);
   font-size: var(--tipo-tamano-xs);
   pointer-events: none;
   white-space: nowrap;
 }
-.ui-grafico-tendencia__tooltip--derecha {
-  transform: translateX(var(--espacio-3));
+/* La flecha: un cuadrado girado que repite el borde y el fondo del globo. */
+.ui-grafico-tendencia__tooltip--centro::after,
+.ui-grafico-tendencia__tooltip--inicio::after,
+.ui-grafico-tendencia__tooltip--fin::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -5px;
+  inline-size: 8px;
+  block-size: 8px;
+  border-inline-end: 1px solid var(--color-bordeFuerte);
+  border-block-end: 1px solid var(--color-bordeFuerte);
+  background: var(--color-fondo);
+  transform: rotate(45deg);
 }
-.ui-grafico-tendencia__tooltip--izquierda {
-  transform: translateX(calc(-100% - var(--espacio-3)));
+.ui-grafico-tendencia__tooltip--centro::after {
+  inset-inline-start: calc(50% - 4px);
 }
-.ui-grafico-tendencia__tooltip-titulo {
-  color: var(--color-textoTenue);
+.ui-grafico-tendencia__tooltip--inicio::after {
+  inset-inline-start: calc(var(--espacio-3) - 4px);
+}
+.ui-grafico-tendencia__tooltip--fin::after {
+  inset-inline-end: calc(var(--espacio-3) - 4px);
+}
+.ui-grafico-tendencia__tooltip--centro {
+  transform: translate(-50%, 0);
+}
+.ui-grafico-tendencia__tooltip--inicio {
+  transform: translate(calc(-1 * var(--espacio-3)), 0);
+}
+.ui-grafico-tendencia__tooltip--fin {
+  transform: translate(calc(-100% + var(--espacio-3)), 0);
 }
 .ui-grafico-tendencia__tooltip-fila {
   display: flex;
@@ -410,7 +428,6 @@
 /* Lo que solo existe mientras se explora: aparece y se va con un fundido, y
    sigue al cursor deslizandose en lugar de saltar de punto en punto. */
 .ui-grafico-tendencia__guia,
-.ui-grafico-tendencia__punto--previo,
 .ui-grafico-tendencia__tooltip,
 .ui-grafico-tendencia__activa {
   opacity: 0;
@@ -428,7 +445,6 @@
 .ui-grafico-tendencia--explorando .ui-grafico-tendencia__guia {
   opacity: 0.5;
 }
-.ui-grafico-tendencia--explorando .ui-grafico-tendencia__punto--previo,
 .ui-grafico-tendencia--explorando .ui-grafico-tendencia__tooltip,
 .ui-grafico-tendencia--explorando .ui-grafico-tendencia__activa {
   opacity: 1;
@@ -443,7 +459,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ui-grafico-tendencia__guia,
   .ui-grafico-tendencia__punto,
-  .ui-grafico-tendencia__punto--previo,
   .ui-grafico-tendencia__tooltip,
   .ui-grafico-tendencia__activa {
     transition: opacity 120ms ease;

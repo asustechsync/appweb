@@ -113,6 +113,7 @@ export {
 export { CarruselPortada, type PropsCarruselPortada } from "./componentes/portada/CarruselPortada";
 export { CarruselMarcas, type PropsCarruselMarcas } from "./componentes/portada/CarruselMarcas";
 export { Beneficio, type PropsBeneficio } from "./componentes/portada/Beneficio";
+export { TarjetaPack, type PropsTarjetaPack } from "./componentes/portada/TarjetaPack";
 export {
   NavegacionSecciones,
   type PropsNavegacionSecciones,

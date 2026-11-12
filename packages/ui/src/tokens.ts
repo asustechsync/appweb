@@ -73,6 +73,10 @@ export const tokens = {
     error: "#D92D20",
     info: "#2F7DB8",
 
+    // Series de los graficos de tendencia: la actual y la del periodo anterior.
+    serieActual: "#2F7DB8",
+    seriePrevia: "#7C5CD6",
+
     // Muestras de color de producto: el color real de la prenda, igual en tema
     // claro y oscuro. Se eligen por el nombre del color de la variante.
     muestra: {
@@ -423,6 +427,8 @@ export const tokensOscuro = {
     alerta: "#EAB143",
     error: "#F07C81",
     info: "#4FA6E0",
+    serieActual: "#4FA6E0",
+    seriePrevia: "#9B82E8",
   },
   sombra: {
     ninguna: "none",

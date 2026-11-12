@@ -51,6 +51,11 @@ export function mensajeProductoWhatsApp(datos: {
   return `Hola, tengo una consulta sobre ${datos.nombre}${detalle ? ` (${detalle})` : ""}.`;
 }
 
+/** Pedido de un pack desde la portada: la tienda sabe cual y a que precio lo vio. */
+export function mensajePackWhatsApp(datos: { nombre: string; precio: number }): string {
+  return `Hola, quiero pedir el ${datos.nombre} (${MONEDA.format(datos.precio)}).`;
+}
+
 /** Del cliente a la tienda: manda su comprobante de pago. */
 export function mensajeComprobanteWhatsApp(datos: { codigo: string; total: number }): string {
   return `Hola, les envío el comprobante de pago de mi pedido ${datos.codigo} por ${MONEDA.format(datos.total)}.`;

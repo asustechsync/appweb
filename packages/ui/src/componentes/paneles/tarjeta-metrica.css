@@ -1,8 +1,8 @@
 .ui-tarjeta-metrica {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
-  padding: var(--espacio-6) var(--espacio-4);
+  gap: var(--espacio-6);
+  padding: var(--espacio-4);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-bloque);
   background: var(--color-fondo);
@@ -51,9 +51,9 @@
   outline-offset: 2px;
 }
 .ui-tarjeta-metrica__etiqueta {
-  color: var(--color-texto);
-  font-size: var(--tipo-tamano-base);
-  font-weight: var(--tipo-peso-medio);
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-normal);
 }
 .ui-tarjeta-metrica__cambio {
   padding: 0 var(--espacio-1);
@@ -76,7 +76,7 @@
 .ui-tarjeta-metrica__cifra {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-3);
+  gap: var(--espacio-1);
   min-inline-size: 0;
 }
 /* Flecha y diferencia en color, y el periodo anterior en gris, bajo la cifra. */

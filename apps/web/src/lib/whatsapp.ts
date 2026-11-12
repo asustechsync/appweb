@@ -1,5 +1,5 @@
 import { entorno } from "@appweb/api/entorno";
-import { enlaceWhatsApp, mensajeConsultaWhatsApp } from "@appweb/core";
+import { enlaceWhatsApp, mensajeConsultaWhatsApp, mensajePackWhatsApp } from "@appweb/core";
 
 /**
  * Numero de WhatsApp de la tienda (WHATSAPP_TIENDA en .env.local). Sin numero,
@@ -10,6 +10,11 @@ const NUMERO_TIENDA = entorno().WHATSAPP_TIENDA ?? null;
 /** Enlace para escribir a la tienda, con el mensaje ya puesto. `null` sin numero. */
 export function whatsappTienda(mensaje: string = mensajeConsultaWhatsApp()): string | null {
   return enlaceWhatsApp(NUMERO_TIENDA, mensaje);
+}
+
+/** Enlace para pedir un pack por WhatsApp. `null` sin numero: la tarjeta no pinta boton. */
+export function whatsappPack(pack: { nombre: string; precio: number }): string | null {
+  return enlaceWhatsApp(NUMERO_TIENDA, mensajePackWhatsApp(pack));
 }
 
 /**

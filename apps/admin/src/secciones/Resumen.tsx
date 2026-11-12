@@ -14,6 +14,8 @@ import {
   TRAMOS_SERIE,
   type Periodo,
   variacion,
+  seriesPorTramo,
+  type SeriesResumen,
 } from "@appweb/core";
 import {
   Alerta,
@@ -103,6 +105,40 @@ type MetricaGrafica = "ventas" | "pedidos" | "ticket" | "clientes";
 
 const ENTERO = (valor: number) => String(Math.round(valor));
 
+interface SeriesDelServidor {
+  serieVentas: number[];
+  seriePedidos: number[];
+  serieTicket: number[];
+  serieClientesNuevos: number[];
+  serieVentasPrevia: number[];
+  seriePedidosPrevia: number[];
+  serieTicketPrevia: number[];
+  serieClientesNuevosPrevia: number[];
+}
+
+/**
+ * Las series de la grafica grande. En un dia van acumuladas (cuanto llevas);
+ * en Semana y Mes, por tramo (cuanto entro en cada uno), asi la linea sube y
+ * baja y se nota cuando se vende mas.
+ */
+function seriesDeLaGrafica(m: SeriesDelServidor, porTramo: boolean) {
+  const actual: SeriesResumen = {
+    ventas: m.serieVentas,
+    pedidos: m.seriePedidos,
+    ticket: m.serieTicket,
+    clientesNuevos: m.serieClientesNuevos,
+  };
+  const previa: SeriesResumen = {
+    ventas: m.serieVentasPrevia,
+    pedidos: m.seriePedidosPrevia,
+    ticket: m.serieTicketPrevia,
+    clientesNuevos: m.serieClientesNuevosPrevia,
+  };
+  return porTramo
+    ? { actual: seriesPorTramo(actual), previa: seriesPorTramo(previa) }
+    : { actual, previa };
+}
+
 /** Cuantas filas se ven por lista: es un resumen, no la seccion. */
 const FILAS_RESUMEN = 5;
 const FILAS_PAGOS_RESUMEN = 5;
@@ -179,47 +215,53 @@ export function Resumen({
     : 0;
   const parteRentabilidad = (valor: number) =>
     baseRentabilidad > 0 ? Math.round((Math.max(0, valor) / baseRentabilidad) * 100) : 0;
+  // Un dia concreto o el filtro Dia: acumulado. Semana y Mes: lo de cada tramo.
+  const porTramo = !fecha && periodo !== "dia";
+  const series = metricas ? seriesDeLaGrafica(metricas, porTramo) : null;
   // Lo que pinta la grafica segun el check: cada cifra con su serie y su formato.
-  const grafica = metricas
-    ? {
-        ventas: {
-          titulo: "Ventas",
-          etiqueta: "Ventas acumuladas del periodo contra el anterior",
-          serie: metricas.serieVentas,
-          previa: metricas.serieVentasPrevia,
-          valor: MONEDA.format(metricas.ventas),
-          previo: MONEDA.format(metricas.anteriores.ventas),
-          formatear: (valor: number) => MONEDA.format(valor),
-        },
-        pedidos: {
-          titulo: "Pedidos",
-          etiqueta: "Pedidos del periodo contra el anterior",
-          serie: metricas.seriePedidos,
-          previa: metricas.seriePedidosPrevia,
-          valor: String(metricas.pedidos),
-          previo: String(metricas.anteriores.pedidos),
-          formatear: ENTERO,
-        },
-        ticket: {
-          titulo: "Ticket promedio",
-          etiqueta: "Ticket promedio del periodo contra el anterior",
-          serie: metricas.serieTicket,
-          previa: metricas.serieTicketPrevia,
-          valor: MONEDA.format(metricas.ticket),
-          previo: MONEDA.format(metricas.anteriores.ticket),
-          formatear: (valor: number) => MONEDA.format(valor),
-        },
-        clientes: {
-          titulo: "Clientes nuevos",
-          etiqueta: "Clientes nuevos del periodo contra el anterior",
-          serie: metricas.serieClientesNuevos,
-          previa: metricas.serieClientesNuevosPrevia,
-          valor: String(metricas.clientesNuevos),
-          previo: String(metricas.anteriores.clientesNuevos),
-          formatear: ENTERO,
-        },
-      }[metrica]
-    : null;
+  const grafica =
+    metricas && series
+      ? {
+          ventas: {
+            titulo: "Ventas",
+            etiqueta: porTramo
+              ? "Ventas por tramo del periodo contra el anterior"
+              : "Ventas acumuladas del periodo contra el anterior",
+            serie: series.actual.ventas,
+            previa: series.previa.ventas,
+            valor: MONEDA.format(metricas.ventas),
+            previo: MONEDA.format(metricas.anteriores.ventas),
+            formatear: (valor: number) => MONEDA.format(valor),
+          },
+          pedidos: {
+            titulo: "Pedidos",
+            etiqueta: "Pedidos del periodo contra el anterior",
+            serie: series.actual.pedidos,
+            previa: series.previa.pedidos,
+            valor: String(metricas.pedidos),
+            previo: String(metricas.anteriores.pedidos),
+            formatear: ENTERO,
+          },
+          ticket: {
+            titulo: "Ticket promedio",
+            etiqueta: "Ticket promedio del periodo contra el anterior",
+            serie: series.actual.ticket,
+            previa: series.previa.ticket,
+            valor: MONEDA.format(metricas.ticket),
+            previo: MONEDA.format(metricas.anteriores.ticket),
+            formatear: (valor: number) => MONEDA.format(valor),
+          },
+          clientes: {
+            titulo: "Clientes nuevos",
+            etiqueta: "Clientes nuevos del periodo contra el anterior",
+            serie: series.actual.clientesNuevos,
+            previa: series.previa.clientesNuevos,
+            valor: String(metricas.clientesNuevos),
+            previo: String(metricas.anteriores.clientesNuevos),
+            formatear: ENTERO,
+          },
+        }[metrica]
+      : null;
   const parteComparativa = (actual: number, previo: number) => {
     const escala = Math.max(actual, previo);
     return escala > 0 ? Math.round((Math.max(0, actual) / escala) * 100) : 0;
@@ -475,9 +517,6 @@ export function Resumen({
               onSeleccionar={() => setMetrica("ventas")}
               valor={MONEDA.format(metricas.ventas)}
               cambio={metricas.cambioVentas}
-              serie={metricas.serieVentas}
-              seriePrevia={metricas.serieVentasPrevia}
-              diferencia={conSigno(metricas.diferenciaVentas, MONEDA)}
               anterior={anterior(MONEDA.format(metricas.anteriores.ventas))}
             />
             <TarjetaMetrica
@@ -486,9 +525,6 @@ export function Resumen({
               onSeleccionar={() => setMetrica("pedidos")}
               valor={String(metricas.pedidos)}
               cambio={metricas.cambioPedidos}
-              serie={metricas.seriePedidos}
-              seriePrevia={metricas.seriePedidosPrevia}
-              diferencia={conSigno(metricas.diferenciaPedidos)}
               anterior={anterior(String(metricas.anteriores.pedidos))}
             />
             <TarjetaMetrica
@@ -497,9 +533,6 @@ export function Resumen({
               onSeleccionar={() => setMetrica("ticket")}
               valor={MONEDA.format(metricas.ticket)}
               cambio={metricas.cambioTicket}
-              serie={metricas.serieTicket}
-              seriePrevia={metricas.serieTicketPrevia}
-              diferencia={conSigno(metricas.diferenciaTicket, MONEDA)}
               anterior={anterior(MONEDA.format(metricas.anteriores.ticket))}
             />
             <TarjetaMetrica
@@ -508,9 +541,6 @@ export function Resumen({
               onSeleccionar={() => setMetrica("clientes")}
               valor={String(metricas.clientesNuevos)}
               cambio={metricas.cambioClientesNuevos}
-              serie={metricas.serieClientesNuevos}
-              seriePrevia={metricas.serieClientesNuevosPrevia}
-              diferencia={conSigno(metricas.diferenciaClientesNuevos)}
               anterior={anterior(String(metricas.anteriores.clientesNuevos))}
             />
           </RejillaMetricas>
@@ -520,6 +550,7 @@ export function Resumen({
                 serie={grafica.serie}
                 seriePrevia={grafica.previa}
                 titulo={grafica.titulo}
+                suavizado={!porTramo}
                 controles={
                   <>
                     <SelectorCalendario

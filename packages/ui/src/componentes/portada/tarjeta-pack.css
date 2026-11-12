@@ -1,0 +1,128 @@
+/* Tarjeta de pack. Base movil: foto arriba, cuerpo debajo. `destacado` es la
+   version oscura de la cabecera de la portada: desde 30rem, foto al lado. */
+
+.ui-tarjeta-pack {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-inline-size: 0;
+  block-size: 100%;
+  overflow: hidden;
+  border-radius: var(--radio-xl);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-difusa);
+}
+
+.ui-tarjeta-pack__foto {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--color-fondoImagen), var(--color-fondoImagenFin));
+}
+
+.ui-tarjeta-pack__foto img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.ui-tarjeta-pack__unidades {
+  position: absolute;
+  inset-block-start: var(--espacio-3);
+  inset-inline-start: var(--espacio-3);
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondoDestacado);
+  color: var(--color-textoVidrio);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+}
+
+.ui-tarjeta-pack__cuerpo {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-3);
+  padding: var(--espacio-5);
+}
+
+.ui-tarjeta-pack__nombre {
+  margin: 0;
+  font-family: var(--tipo-familia-titulos);
+  font-size: var(--tipo-tamano-lg);
+  font-weight: var(--tipo-peso-medio);
+  line-height: var(--tipo-altura-apretada);
+}
+
+.ui-tarjeta-pack__descripcion {
+  margin: 0;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-sm);
+}
+
+.ui-tarjeta-pack__prendas {
+  display: grid;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+  list-style: none;
+}
+
+.ui-tarjeta-pack__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.ui-tarjeta-pack__ahorro {
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radio-completo);
+  background: var(--color-disponibleFondo);
+  color: var(--color-disponibleTexto);
+  font-size: var(--tipo-tamano-xs);
+  font-weight: var(--tipo-peso-medio);
+  white-space: nowrap;
+}
+
+/* Destacado: oscura, como la tarjeta fuerte de la cabecera. */
+
+.ui-tarjeta-pack--destacado {
+  background: var(--color-fondoDestacado);
+  color: var(--color-textoVidrio);
+}
+
+.ui-tarjeta-pack--destacado .ui-tarjeta-pack__descripcion,
+.ui-tarjeta-pack--destacado .ui-tarjeta-pack__prendas,
+.ui-tarjeta-pack--destacado .ui-precio__antes {
+  color: var(--color-neutro-400);
+}
+
+.ui-tarjeta-pack--destacado .ui-precio__actual {
+  color: var(--color-textoVidrio);
+}
+
+.ui-tarjeta-pack--destacado .ui-tarjeta-pack__unidades {
+  background: var(--color-acento);
+  color: var(--color-acentoTexto);
+}
+
+@media (min-width: 30rem) {
+  .ui-tarjeta-pack--destacado {
+    grid-template-rows: none;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+
+  .ui-tarjeta-pack--destacado .ui-tarjeta-pack__foto {
+    aspect-ratio: auto;
+    min-block-size: 100%;
+  }
+
+  .ui-tarjeta-pack--destacado .ui-tarjeta-pack__cuerpo {
+    align-content: center;
+  }
+}

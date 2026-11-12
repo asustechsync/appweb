@@ -11,6 +11,7 @@
     "./acceso": "./src/acceso.ts",
     "./almacen": "./src/almacen.ts",
     "./catalogo": "./src/catalogo.ts",
+    "./clientes": "./src/clientes.ts",
     "./correo": "./src/correo.ts",
     "./entorno": "./src/entorno.ts",
     "./limites": "./src/limites.ts",

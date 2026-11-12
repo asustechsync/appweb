@@ -9,18 +9,23 @@
  */
 
 import {
+  ahorroDePack,
   autorDeResena,
   compararTallas,
+  type ComponentePack,
+  ESTADOS_VENTA,
   etiquetaVigente,
   type FiltrosListado,
   type BannerDePortada,
   type OpcionDeTalla,
   opcionesDeCompra,
+  precioSueltoDePack,
   resolverDisponibilidad,
   resolverNivelStock,
   resolverPrecio,
   resumenCalificacion,
   type ResumenCalificacion,
+  stockDePack,
   urlDeFoto,
 } from "@appweb/core";
 import { diaDeLima } from "@appweb/core/formato";
@@ -183,6 +188,119 @@ export async function leerNovedades(limite = 5): Promise<ProductoDeRejilla[]> {
   });
 
   return aRejilla(sinAgotadosOcultos(productos));
+}
+
+/**
+ * Los productos activos con mas unidades vendidas: la seccion "Mas vendidos".
+ * Solo cuentan los pedidos que son venta (`ESTADOS_VENTA`). Sin ventas aun,
+ * devuelve una lista vacia y la portada muestra las novedades.
+ */
+export async function leerMasVendidos(limite = 8): Promise<ProductoDeRejilla[]> {
+  const lineas = await prisma.itemPedido.findMany({
+    where: { pedido: { estado: { in: [...ESTADOS_VENTA] } } },
+    select: { cantidad: true, variante: { select: { productoId: true } } },
+  });
+  const vendido = new Map<string, number>();
+  for (const linea of lineas) {
+    const id = linea.variante.productoId;
+    vendido.set(id, (vendido.get(id) ?? 0) + linea.cantidad);
+  }
+  if (vendido.size === 0) return [];
+
+  const productos = await prisma.producto.findMany({
+    where: { activo: true, id: { in: [...vendido.keys()] } },
+    include: INCLUIR_EN_REJILLA,
+  });
+  const ordenados = sinAgotadosOcultos(productos)
+    .sort((a, b) => (vendido.get(b.id) ?? 0) - (vendido.get(a.id) ?? 0))
+    .slice(0, limite);
+
+  return aRejilla(ordenados);
+}
+
+/** Un pack tal como lo muestra la portada: que trae, cuanto cuesta y cuanto ahorra. */
+export interface PackDePortada {
+  slug: string;
+  nombre: string;
+  descripcion: string | null;
+  /** Foto de la primera prenda del pack. */
+  imagenUrl: string;
+  /** Prendas que trae en total. */
+  unidades: number;
+  /** Una linea por componente: "2 × Boxer clásico · Negro · M". */
+  prendas: string[];
+  precio: number;
+  /** Lo que costaria comprar todo suelto. */
+  precioSuelto: number;
+  ahorro: number;
+}
+
+/**
+ * Packs activos que hoy se pueden armar completos, el de mayor ahorro primero.
+ * Stock, precio suelto y ahorro los deciden las funciones de @appweb/core.
+ */
+export async function leerPacks(limite = 3): Promise<PackDePortada[]> {
+  const filas = await prisma.pack.findMany({
+    where: { activo: true },
+    include: {
+      items: {
+        include: {
+          variante: {
+            select: {
+              id: true,
+              talla: true,
+              color: true,
+              stock: true,
+              costo: true,
+              activo: true,
+              producto: {
+                select: {
+                  nombre: true,
+                  precio: true,
+                  activo: true,
+                  imagenes: { orderBy: { orden: "asc" }, take: 1, select: { url: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return filas
+    .flatMap((pack): PackDePortada[] => {
+      const componentes: ComponentePack[] = pack.items.map((item) => ({
+        varianteId: item.variante.id,
+        cantidad: item.cantidad,
+        precioSuelto: Number(item.variante.producto.precio),
+        stock: item.variante.stock,
+        activa: item.variante.activo && item.variante.producto.activo,
+        costo: item.variante.costo === null ? null : Number(item.variante.costo),
+      }));
+      if (stockDePack(componentes) === 0) return [];
+
+      const precio = Number(pack.precio);
+      const precioSuelto = precioSueltoDePack(componentes);
+      return [
+        {
+          slug: pack.slug,
+          nombre: pack.nombre,
+          descripcion: pack.descripcion,
+          imagenUrl: urlDeFoto(pack.items[0]?.variante.producto.imagenes[0]?.url),
+          unidades: pack.items.reduce((suma, item) => suma + item.cantidad, 0),
+          prendas: pack.items.map(
+            (item) =>
+              `${item.cantidad} × ${item.variante.producto.nombre} · ${item.variante.color} · ${item.variante.talla}`,
+          ),
+          precio,
+          precioSuelto,
+          ahorro: ahorroDePack(precio, precioSuelto),
+        },
+      ];
+    })
+    .sort((a, b) => b.ahorro - a.ahorro)
+    .slice(0, limite);
 }
 
 /** Productos con precio de lista mayor al de venta: la seccion "Ofertas". */

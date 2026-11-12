@@ -38,6 +38,7 @@ import {
 } from "@appweb/ui";
 
 import { useEscritorio } from "@/lib/use-escritorio";
+import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 
 /** Lo que se escribe en el formulario: los montos como texto, tal cual. */
@@ -130,6 +131,8 @@ function EditorNiveles({ vigentes, compras }: { vigentes: Nivel[]; compras: Comp
         setError(null);
         setAviso("Niveles guardados. Desde ahora el checkout usa estos requisitos y descuentos.");
         void queryClient.invalidateQueries(trpc.panel.niveles.pathFilter());
+        // La portada de la tienda muestra la escalera de niveles.
+        void revalidarTienda({ portada: true });
       },
       onError: (fallo) => {
         setAviso(null);

@@ -1,3 +1,4 @@
+import { seriesPorTramo, type SeriesResumen } from "@appweb/core/panel-resumen";
 import { MONEDA } from "@appweb/core/formato";
 import {
   IconoCatalogo,
@@ -19,11 +20,14 @@ import {
 } from "react-native";
 
 import { api } from "../api";
+import { CarruselPaginado } from "../componentes/CarruselPaginado";
 import { CabeceraPantalla } from "../componentes/CabeceraPantalla";
+import { GraficoTendenciaNativo } from "../componentes/GraficoTendenciaNativo";
 import { TarjetaMetrica } from "../componentes/TarjetaMetrica";
 
 type Resumen = Awaited<ReturnType<typeof api.panel.resumen.datos.query>>;
 type Periodo = "dia" | "semana" | "mes";
+type Metrica = "ventas" | "pedidos" | "ticket" | "clientes";
 
 /** Lo que se abre desde el panel. */
 export type PantallaPanel = "panel-pedidos" | "panel-stock" | "panel-resenas";
@@ -50,6 +54,7 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
   const [datos, setDatos] = useState<Resumen | null>(null);
   const [fallo, setFallo] = useState<string | null>(null);
   const [recargas, setRecargas] = useState(0);
+  const [metricaSeleccionada, setMetricaSeleccionada] = useState<Metrica>("ventas");
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `recargas` fuerza recargar
   useEffect(() => {
@@ -71,8 +76,72 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
   }, [periodo, recargas]);
 
   const metricas = datos?.metricas;
-  const contra = datos ? `vs ${datos.etiquetaAnterior.toLowerCase()}` : undefined;
-
+  const seriesBase: SeriesResumen | null = metricas
+    ? {
+        ventas: metricas.serieVentas,
+        pedidos: metricas.seriePedidos,
+        ticket: metricas.serieTicket,
+        clientesNuevos: metricas.serieClientesNuevos,
+      }
+    : null;
+  const seriesPrevias: SeriesResumen | null = metricas
+    ? {
+        ventas: metricas.serieVentasPrevia,
+        pedidos: metricas.seriePedidosPrevia,
+        ticket: metricas.serieTicketPrevia,
+        clientesNuevos: metricas.serieClientesNuevosPrevia,
+      }
+    : null;
+  const series =
+    seriesBase && seriesPrevias
+      ? periodo === "dia"
+        ? { actual: seriesBase, previa: seriesPrevias }
+        : { actual: seriesPorTramo(seriesBase), previa: seriesPorTramo(seriesPrevias) }
+      : null;
+  const grafica =
+    metricas && series
+      ? {
+          ventas: {
+            titulo: "Ventas",
+            detalle:
+              periodo === "dia"
+                ? "Ventas acumuladas del periodo contra el anterior"
+                : "Ventas por tramo del periodo contra el anterior",
+            valor: MONEDA.format(metricas.ventas),
+            previo: MONEDA.format(metricas.anteriores.ventas),
+            serie: series.actual.ventas,
+            previa: series.previa.ventas,
+            formatear: (valor: number) => MONEDA.format(valor),
+          },
+          pedidos: {
+            titulo: "Pedidos",
+            detalle: "Pedidos del periodo contra el anterior",
+            valor: String(metricas.pedidos),
+            previo: String(metricas.anteriores.pedidos),
+            serie: series.actual.pedidos,
+            previa: series.previa.pedidos,
+            formatear: (valor: number) => String(Math.round(valor)),
+          },
+          ticket: {
+            titulo: "Ticket promedio",
+            detalle: "Ticket promedio del periodo contra el anterior",
+            valor: MONEDA.format(metricas.ticket),
+            previo: MONEDA.format(metricas.anteriores.ticket),
+            serie: series.actual.ticket,
+            previa: series.previa.ticket,
+            formatear: (valor: number) => MONEDA.format(valor),
+          },
+          clientes: {
+            titulo: "Clientes nuevos",
+            detalle: "Clientes nuevos del periodo contra el anterior",
+            valor: String(metricas.clientesNuevos),
+            previo: String(metricas.anteriores.clientesNuevos),
+            serie: series.actual.clientesNuevos,
+            previa: series.previa.clientesNuevos,
+            formatear: (valor: number) => String(Math.round(valor)),
+          },
+        }[metricaSeleccionada]
+      : null;
   return (
     <View style={estilos.pantalla}>
       <CabeceraPantalla titulo="Panel de administración" onVolver={onVolver} />
@@ -107,34 +176,59 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
 
           {metricas ? (
             <>
-              <View style={estilos.fila}>
+              <CarruselPaginado>
                 <TarjetaMetrica
                   titulo="Ventas"
                   valor={MONEDA.format(metricas.ventas)}
                   cambio={metricas.cambioVentas}
-                  {...(contra ? { contra } : {})}
+                  contra={datos.etiquetaAnterior.toLowerCase()}
+                  anterior={MONEDA.format(metricas.anteriores.ventas)}
+                  seleccionada={metricaSeleccionada === "ventas"}
+                  onSeleccionar={() => setMetricaSeleccionada("ventas")}
                 />
                 <TarjetaMetrica
                   titulo="Pedidos"
                   valor={String(metricas.pedidos)}
                   cambio={metricas.cambioPedidos}
-                  {...(contra ? { contra } : {})}
+                  contra={datos.etiquetaAnterior.toLowerCase()}
+                  anterior={String(metricas.anteriores.pedidos)}
+                  seleccionada={metricaSeleccionada === "pedidos"}
+                  onSeleccionar={() => setMetricaSeleccionada("pedidos")}
                 />
-              </View>
-              <View style={estilos.fila}>
                 <TarjetaMetrica
                   titulo="Ticket promedio"
                   valor={MONEDA.format(metricas.ticket)}
                   cambio={metricas.cambioTicket}
-                  {...(contra ? { contra } : {})}
+                  contra={datos.etiquetaAnterior.toLowerCase()}
+                  anterior={MONEDA.format(metricas.anteriores.ticket)}
+                  seleccionada={metricaSeleccionada === "ticket"}
+                  onSeleccionar={() => setMetricaSeleccionada("ticket")}
                 />
                 <TarjetaMetrica
                   titulo="Clientes nuevos"
                   valor={String(metricas.clientesNuevos)}
                   cambio={metricas.cambioClientesNuevos}
-                  {...(contra ? { contra } : {})}
+                  contra={datos.etiquetaAnterior.toLowerCase()}
+                  anterior={String(metricas.anteriores.clientesNuevos)}
+                  seleccionada={metricaSeleccionada === "clientes"}
+                  onSeleccionar={() => setMetricaSeleccionada("clientes")}
                 />
-              </View>
+              </CarruselPaginado>
+              {grafica ? (
+                <GraficoTendenciaNativo
+                  titulo={grafica.titulo}
+                  detalle={grafica.detalle}
+                  etiquetaActual={datos.titulo}
+                  valorActual={grafica.valor}
+                  etiquetaPrevia={datos.etiquetaAnterior}
+                  valorPrevio={grafica.previo}
+                  serie={grafica.serie}
+                  seriePrevia={grafica.previa}
+                  marcas={datos.marcasEje}
+                  formatear={grafica.formatear}
+                  suavizado={periodo === "dia"}
+                />
+              ) : null}
             </>
           ) : null}
 
@@ -235,10 +329,6 @@ const estilos = StyleSheet.create({
     color: t.color.textoSuave,
     fontSize: t.tipo.tamano.xs,
     fontFamily: FUENTE_NATIVA.texto[400],
-  },
-  fila: {
-    flexDirection: "row",
-    gap: t.espacio[3],
   },
   seccion: {
     marginTop: t.espacio[3],

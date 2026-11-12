@@ -35,6 +35,7 @@ import {
 
 import { useEscritorio } from "@/lib/use-escritorio";
 import { usePaginado } from "@/lib/use-paginado";
+import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 import { MONEDA, mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 
@@ -277,6 +278,8 @@ function FormularioPack({ pack, onListo }: { pack: PackDelPanel | null; onListo:
     trpc.panel.packs.guardar.mutationOptions({
       onSuccess: () => {
         void queryClient.invalidateQueries(trpc.panel.packs.pathFilter());
+        // La portada de la tienda muestra los packs.
+        void revalidarTienda({ portada: true });
         onListo();
       },
       onError: (fallo) => setError(mensajeDeFallo(fallo)),

@@ -46,6 +46,12 @@ export interface PropsGraficoTendencia {
   formatearEje?: (valor: number) => string;
   /** Controles del periodo (selector, calendario) a la derecha de la cabecera. */
   controles?: ReactNode;
+  /**
+   * Promedia cada punto con sus vecinos al dibujar. Va bien con acumulados;
+   * con valores por tramo conviene apagarlo: la curva debe pasar por el dato
+   * real y coincidir con el numero del tooltip.
+   */
+  suavizado?: boolean;
 }
 
 export interface DatoResumenTendencia {
@@ -59,8 +65,10 @@ export interface DatoResumenTendencia {
 
 const ANCHO = 640;
 const ALTO = 160;
-/** Aire arriba para que la linea no toque el borde. */
-const MARGEN = 12;
+/** Aire arriba: ahi vive el globo del tooltip, asi nunca tapa la curva. */
+const MARGEN = 56;
+/** Cuanto se separan (unidades del lienzo) las dos lineas donde coinciden en una curva. */
+const SEPARACION = 3.2;
 
 function compacto(valor: number): string {
   if (valor >= 1000) return `${Math.round(valor / 100) / 10}k`;
@@ -105,8 +113,10 @@ export function GraficoTendencia({
   formatear,
   formatearEje = compacto,
   controles,
+  suavizado = true,
 }: PropsGraficoTendencia) {
   const idDegradado = useId();
+  const idDegradadoPrevio = useId();
   // El punto que se explora y si el cursor esta encima: al salir, el tooltip
   // se desvanece donde estaba en lugar de saltar al ultimo punto.
   const [activo, setActivo] = useState<number | null>(null);
@@ -120,10 +130,17 @@ export function GraficoTendencia({
   const rejilla = marcasVerticales(tope);
   const maximo = rejilla[rejilla.length - 1] ?? tope;
   const y = (v: number) => ALTO - (v / maximo) * (ALTO - MARGEN);
-  const aPuntos = (valores: number[]) =>
-    suavizar(valores).map((v, i): [number, number] => [(i / (largo - 1)) * ANCHO, y(v)]);
-  const puntos = aPuntos(serie);
-  const puntosPrevios = seriePrevia ? aPuntos(seriePrevia) : [];
+  // Donde las dos series valen lo mismo y hay algo (una curva, no el cero plano)
+  // se separan unas unidades: Ayer baja y Hoy sube, y no se tapan una a la otra.
+  // El desplazamiento se funde solo hacia los tramos planos, que no se mueven.
+  const coincide = (i: number) => (serie[i] ?? 0) > 0 && serie[i] === seriePrevia?.[i];
+  const aPuntos = (valores: number[], desplazo: number) =>
+    (suavizado ? suavizar(valores) : valores).map((v, i): [number, number] => [
+      (i / (largo - 1)) * ANCHO,
+      y(v) + (coincide(i) ? desplazo : 0),
+    ]);
+  const puntos = aPuntos(serie, -SEPARACION / 2);
+  const puntosPrevios = seriePrevia ? aPuntos(seriePrevia, SEPARACION) : [];
   const primero = puntos[0];
   const ultimo = puntos[puntos.length - 1];
   const linea = trazo(puntos);
@@ -131,11 +148,11 @@ export function GraficoTendencia({
   const indice = Math.min(activo ?? serie.length - 1, serie.length - 1);
   const fraccion = indice / (largo - 1);
   const punto = puntos[indice];
-  const puntoPrevio = puntosPrevios[indice];
   const valorActivo = serie[indice] ?? 0;
   const valorPrevioActivo = seriePrevia?.[indice];
   const nombreActivo = etiquetasPunto?.[indice];
-  const hacia = fraccion > 0.55 ? "izquierda" : "derecha";
+  // El globo vive en el aire de arriba del area, sobre la guia: no tapa la curva.
+  const hacia = fraccion < 0.14 ? "inicio" : fraccion > 0.86 ? "fin" : "centro";
   // El punto lleno sigue al cursor; en reposo marca el ultimo valor.
   const indicePrincipal = explorando ? indice : serie.length - 1;
   const principal = puntos[indicePrincipal];
@@ -273,7 +290,18 @@ export function GraficoTendencia({
               <defs>
                 {/* El area se apaga hacia abajo: fuerte bajo la linea, nada en el eje. */}
                 <linearGradient id={idDegradado} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="currentColor" stopOpacity="0.22" />
+                  <stop offset="0" stopColor="currentColor" stopOpacity="0.32" />
+                  <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient
+                  id={idDegradadoPrevio}
+                  className="ui-grafico-tendencia__degradado-previo"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0" stopColor="currentColor" stopOpacity="0.12" />
                   <stop offset="1" stopColor="currentColor" stopOpacity="0" />
                 </linearGradient>
               </defs>
@@ -285,7 +313,13 @@ export function GraficoTendencia({
                 />
               ) : null}
               {puntosPrevios.length > 1 ? (
-                <path className="ui-grafico-tendencia__previa" d={trazo(puntosPrevios)} />
+                <>
+                  <path
+                    d={`${trazo(puntosPrevios)} L${ANCHO},${ALTO} L0,${ALTO} Z`}
+                    fill={`url(#${idDegradadoPrevio})`}
+                  />
+                  <path className="ui-grafico-tendencia__previa" d={trazo(puntosPrevios)} />
+                </>
               ) : null}
               {puntos.length > 1 ? (
                 <path className="ui-grafico-tendencia__linea" d={linea} />
@@ -307,21 +341,11 @@ export function GraficoTendencia({
                   style={{ left: `${fraccion * 100}%` }}
                   aria-hidden="true"
                 />
-                {puntoPrevio && valorPrevioActivo !== undefined ? (
-                  <span
-                    className="ui-grafico-tendencia__punto ui-grafico-tendencia__punto--previo"
-                    style={{ left: `${fraccion * 100}%`, top: pct(puntoPrevio[1]) }}
-                    aria-hidden="true"
-                  />
-                ) : null}
                 <span
                   className={`ui-grafico-tendencia__tooltip ui-grafico-tendencia__tooltip--${hacia}`}
-                  style={{ left: `${fraccion * 100}%` }}
+                  style={{ left: `${fraccion * 100}%`, top: 0 }}
                   aria-hidden="true"
                 >
-                  {nombreActivo ? (
-                    <span className="ui-grafico-tendencia__tooltip-titulo">{nombreActivo}</span>
-                  ) : null}
                   <span className="ui-grafico-tendencia__tooltip-fila">
                     <span className="ui-grafico-tendencia__marca-serie" />
                     {etiquetaActual}

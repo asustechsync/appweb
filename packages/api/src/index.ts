@@ -6,6 +6,7 @@ import { avisos } from "./rutas/panel/avisos";
 import { categorias, marcas } from "./rutas/panel/categorias";
 import { devoluciones } from "./rutas/panel/devoluciones";
 import { envios } from "./rutas/panel/envios";
+import { negocio } from "./rutas/panel/negocio";
 import { niveles } from "./rutas/panel/niveles";
 import { resumen } from "./rutas/panel/resumen";
 import { packs } from "./rutas/panel/packs";
@@ -66,6 +67,7 @@ export const enrutador = router({
     usuarios,
     promociones,
     niveles,
+    negocio,
   }),
 });
 
