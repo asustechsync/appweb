@@ -44,7 +44,7 @@ import {
   ResumenTendencia,
   TONO_NIVEL,
 } from "@appweb/ui";
-import type { BancoTransferencia } from "@appweb/ui";
+import type { BancoTransferencia, DatoResumenTendencia } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
@@ -231,6 +231,7 @@ export function Resumen({
             previa: series.previa.ventas,
             valor: MONEDA.format(metricas.ventas),
             previo: MONEDA.format(metricas.anteriores.ventas),
+            ...variacionVisual(metricas.ventas, metricas.anteriores.ventas),
             formatear: (valor: number) => MONEDA.format(valor),
           },
           pedidos: {
@@ -240,24 +241,27 @@ export function Resumen({
             previa: series.previa.pedidos,
             valor: String(metricas.pedidos),
             previo: String(metricas.anteriores.pedidos),
+            ...variacionVisual(metricas.pedidos, metricas.anteriores.pedidos),
             formatear: ENTERO,
           },
           ticket: {
-            titulo: "Ticket promedio",
+            titulo: "Ticket",
             etiqueta: "Ticket promedio del periodo contra el anterior",
             serie: series.actual.ticket,
             previa: series.previa.ticket,
             valor: MONEDA.format(metricas.ticket),
             previo: MONEDA.format(metricas.anteriores.ticket),
+            ...variacionVisual(metricas.ticket, metricas.anteriores.ticket),
             formatear: (valor: number) => MONEDA.format(valor),
           },
           clientes: {
-            titulo: "Clientes nuevos",
+            titulo: "Clientes",
             etiqueta: "Clientes nuevos del periodo contra el anterior",
             serie: series.actual.clientesNuevos,
             previa: series.previa.clientesNuevos,
             valor: String(metricas.clientesNuevos),
             previo: String(metricas.anteriores.clientesNuevos),
+            ...variacionVisual(metricas.clientesNuevos, metricas.anteriores.clientesNuevos),
             formatear: ENTERO,
           },
         }[metrica]
@@ -266,7 +270,7 @@ export function Resumen({
     const escala = Math.max(actual, previo);
     return escala > 0 ? Math.round((Math.max(0, actual) / escala) * 100) : 0;
   };
-  const resumenGrafica = metricas
+  const resumenGrafica: DatoResumenTendencia[] = metricas
     ? metrica === "ventas"
       ? [
           {
@@ -359,6 +363,8 @@ export function Resumen({
                   metricas.clientesNuevos,
                   metricas.anteriores.clientesNuevos,
                 ),
+                historial: metricas.historialClientes.nuevos,
+                color: "celeste",
               },
               {
                 etiqueta: "Compradores",
@@ -372,6 +378,8 @@ export function Resumen({
                   metricas.clientesCompradores,
                   metricas.clientesCompradoresPrevios,
                 ),
+                historial: metricas.historialClientes.compradores,
+                color: "lavanda",
               },
               {
                 etiqueta: "Recurrentes",
@@ -385,6 +393,8 @@ export function Resumen({
                   metricas.clientesRecurrentes,
                   metricas.clientesRecurrentesPrevios,
                 ),
+                historial: metricas.historialClientes.recurrentes,
+                color: "ambar",
               },
             ]
     : [];
@@ -528,7 +538,7 @@ export function Resumen({
               anterior={anterior(String(metricas.anteriores.pedidos))}
             />
             <TarjetaMetrica
-              etiqueta="Ticket promedio"
+              etiqueta="Ticket"
               seleccionada={metrica === "ticket"}
               onSeleccionar={() => setMetrica("ticket")}
               valor={MONEDA.format(metricas.ticket)}
@@ -536,7 +546,7 @@ export function Resumen({
               anterior={anterior(MONEDA.format(metricas.anteriores.ticket))}
             />
             <TarjetaMetrica
-              etiqueta="Clientes nuevos"
+              etiqueta="Clientes"
               seleccionada={metrica === "clientes"}
               onSeleccionar={() => setMetrica("clientes")}
               valor={String(metricas.clientesNuevos)}
@@ -580,6 +590,8 @@ export function Resumen({
                 }
                 etiquetaActual={titulo}
                 valor={grafica.valor}
+                cambio={grafica.cambio}
+                tono={grafica.tono}
                 // La cabecera nombra las series; el detalle del periodo va abajo.
                 cifras={[]}
                 // Se reserva siempre la linea de nota para que el area del

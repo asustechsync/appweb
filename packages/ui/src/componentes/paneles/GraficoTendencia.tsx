@@ -1,6 +1,6 @@
 "use client";
 
-import { type PointerEvent, type ReactNode, useId, useState } from "react";
+import { type CSSProperties, type PointerEvent, type ReactNode, useId, useState } from "react";
 
 import { suavizar, trazo } from "./trazo-serie";
 import "./grafico-tendencia.css";
@@ -61,10 +61,44 @@ export interface DatoResumenTendencia {
   cambio: string;
   tono: "sube" | "baja" | "igual";
   parte: number;
+  /**
+   * Una cifra por periodo, del mas viejo al actual. Con ella la tarjeta cambia
+   * la barra de progreso por un minigrafico de barras a la derecha, con la
+   * ultima (el periodo actual) resaltada.
+   */
+  historial?: number[];
+  /** Color del minigrafico: una familia de la paleta de graficos. */
+  color?: ColorHistorial;
+}
+
+export type ColorHistorial = "celeste" | "lavanda" | "ambar";
+
+/** Alto minimo de una barra en cero: que se vea el hueco y no desaparezca. */
+const BARRA_MINIMA = 6;
+
+function BarrasHistorial({ valores }: { valores: number[] }) {
+  const tope = Math.max(...valores, 0);
+  return (
+    <span className="ui-grafico-tendencia__resumen-barras" aria-hidden="true">
+      {valores.map((valor, indice) => (
+        <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: el orden es fijo, cada posicion es un periodo.
+          key={indice}
+          className={`ui-grafico-tendencia__resumen-columna${valor === 0 ? " ui-grafico-tendencia__resumen-columna--vacia" : ""}`}
+          style={{
+            blockSize: `${tope > 0 ? Math.max(BARRA_MINIMA, Math.round((valor / tope) * 100)) : BARRA_MINIMA}%`,
+          }}
+        />
+      ))}
+    </span>
+  );
 }
 
 const ANCHO = 640;
-const ALTO = 160;
+// Aire a la derecha: la curva termina un poco antes del borde y no se corta.
+const HOLGURA = 8;
+const ESCALA = (ANCHO - HOLGURA) / ANCHO;
+const ALTO = 200;
 /** Aire arriba: ahi vive el globo del tooltip, asi nunca tapa la curva. */
 const MARGEN = 56;
 /** Cuanto se separan (unidades del lienzo) las dos lineas donde coinciden en una curva. */
@@ -127,7 +161,10 @@ export function GraficoTendencia({
   // Una sola escala para las dos lineas, arrancando en cero: asi la altura es
   // dinero y no solo forma. El eje llega a una marca redonda sobre el tope.
   const tope = Math.max(...serie, ...(seriePrevia ?? []), 1);
-  const rejilla = marcasVerticales(tope);
+  // Una marca mas sobre el tope: los picos no quedan pegados a la linea de arriba.
+  const base = marcasVerticales(tope);
+  const paso = (base[1] ?? 1) - (base[0] ?? 0);
+  const rejilla = [...base, (base[base.length - 1] ?? 0) + paso];
   const maximo = rejilla[rejilla.length - 1] ?? tope;
   const y = (v: number) => ALTO - (v / maximo) * (ALTO - MARGEN);
   // Donde las dos series valen lo mismo y hay algo (una curva, no el cero plano)
@@ -136,7 +173,7 @@ export function GraficoTendencia({
   const coincide = (i: number) => (serie[i] ?? 0) > 0 && serie[i] === seriePrevia?.[i];
   const aPuntos = (valores: number[], desplazo: number) =>
     (suavizado ? suavizar(valores) : valores).map((v, i): [number, number] => [
-      (i / (largo - 1)) * ANCHO,
+      (i / (largo - 1)) * (ANCHO - HOLGURA),
       y(v) + (coincide(i) ? desplazo : 0),
     ]);
   const puntos = aPuntos(serie, -SEPARACION / 2);
@@ -146,7 +183,7 @@ export function GraficoTendencia({
   const linea = trazo(puntos);
 
   const indice = Math.min(activo ?? serie.length - 1, serie.length - 1);
-  const fraccion = indice / (largo - 1);
+  const fraccion = (indice / (largo - 1)) * ESCALA;
   const punto = puntos[indice];
   const valorActivo = serie[indice] ?? 0;
   const valorPrevioActivo = seriePrevia?.[indice];
@@ -156,12 +193,12 @@ export function GraficoTendencia({
   // El punto lleno sigue al cursor; en reposo marca el ultimo valor.
   const indicePrincipal = explorando ? indice : serie.length - 1;
   const principal = puntos[indicePrincipal];
-  const fraccionPrincipal = indicePrincipal / (largo - 1);
+  const fraccionPrincipal = (indicePrincipal / (largo - 1)) * ESCALA;
 
   function mover(evento: PointerEvent<HTMLDivElement>) {
     const caja = evento.currentTarget.getBoundingClientRect();
     if (caja.width <= 0) return;
-    const f = (evento.clientX - caja.left) / caja.width;
+    const f = (evento.clientX - caja.left) / caja.width / ESCALA;
     setActivo(Math.max(0, Math.min(serie.length - 1, Math.round(f * (largo - 1)))));
     setExplorando(true);
   }
@@ -192,6 +229,14 @@ export function GraficoTendencia({
               <span className="ui-grafico-tendencia__rotulo">
                 <span className="ui-grafico-tendencia__marca-serie" aria-hidden="true" />
                 {etiquetaActual}
+                {valor ? <b className="ui-grafico-tendencia__leyenda-valor">{valor}</b> : null}
+                {valor && cambio ? (
+                  <span
+                    className={`ui-grafico-tendencia__cambio ui-grafico-tendencia__cambio--${tono}`}
+                  >
+                    {cambio}
+                  </span>
+                ) : null}
               </span>
               {etiquetaPrevia && seriePrevia ? (
                 <span className="ui-grafico-tendencia__rotulo">
@@ -200,6 +245,9 @@ export function GraficoTendencia({
                     aria-hidden="true"
                   />
                   {etiquetaPrevia}
+                  {valorPrevio ? (
+                    <b className="ui-grafico-tendencia__leyenda-valor">{valorPrevio}</b>
+                  ) : null}
                 </span>
               ) : null}
             </span>
@@ -254,7 +302,17 @@ export function GraficoTendencia({
       </figcaption>
 
       <div className="ui-grafico-tendencia__cuerpo">
-        <div className="ui-grafico-tendencia__escala" aria-hidden="true">
+        {/* La columna mide lo que el numero mas largo: los numeros empiezan donde el
+            titulo y el aire de la izquierda iguala al de la derecha. */}
+        <div
+          className="ui-grafico-tendencia__escala"
+          style={
+            {
+              "--ui-eje-ch": Math.max(...rejilla.map((m) => formatearEje(m).length)),
+            } as CSSProperties
+          }
+          aria-hidden="true"
+        >
           {rejilla.map((marca) => (
             <span
               key={marca}
@@ -315,7 +373,7 @@ export function GraficoTendencia({
               {puntosPrevios.length > 1 ? (
                 <>
                   <path
-                    d={`${trazo(puntosPrevios)} L${ANCHO},${ALTO} L0,${ALTO} Z`}
+                    d={`${trazo(puntosPrevios)} L${ANCHO - HOLGURA},${ALTO} L0,${ALTO} Z`}
                     fill={`url(#${idDegradadoPrevio})`}
                   />
                   <path className="ui-grafico-tendencia__previa" d={trazo(puntosPrevios)} />
@@ -346,16 +404,19 @@ export function GraficoTendencia({
                   style={{ left: `${fraccion * 100}%`, top: 0 }}
                   aria-hidden="true"
                 >
+                  {nombreActivo ? (
+                    <span className="ui-grafico-tendencia__tooltip-fecha">{nombreActivo}</span>
+                  ) : null}
                   <span className="ui-grafico-tendencia__tooltip-fila">
                     <span className="ui-grafico-tendencia__marca-serie" />
-                    {etiquetaActual}
                     <b>{formatear(valorActivo)}</b>
+                    <span className="ui-grafico-tendencia__tooltip-serie">{etiquetaActual}</span>
                   </span>
                   {valorPrevioActivo !== undefined && etiquetaPrevia ? (
-                    <span className="ui-grafico-tendencia__tooltip-fila">
+                    <span className="ui-grafico-tendencia__tooltip-fila ui-grafico-tendencia__tooltip-fila--previa">
                       <span className="ui-grafico-tendencia__marca-serie ui-grafico-tendencia__marca-serie--previa" />
-                      {etiquetaPrevia}
                       <b>{formatear(valorPrevioActivo)}</b>
+                      <span className="ui-grafico-tendencia__tooltip-serie">{etiquetaPrevia}</span>
                     </span>
                   ) : null}
                 </span>
@@ -374,16 +435,11 @@ export function GraficoTendencia({
                       ? "ui-grafico-tendencia__marca ui-grafico-tendencia__marca--fin"
                       : "ui-grafico-tendencia__marca"
                 }
-                style={{ left: `${marca.posicion * 100}%` }}
+                style={{ left: `${marca.posicion * ESCALA * 100}%` }}
               >
                 {marca.texto}
               </span>
             ))}
-            {nombreActivo ? (
-              <span className="ui-grafico-tendencia__activa" style={{ left: `${fraccion * 100}%` }}>
-                {nombreActivo}
-              </span>
-            ) : null}
           </div>
         </div>
       </div>
@@ -396,28 +452,53 @@ export function ResumenTendencia({ datos }: { datos: DatoResumenTendencia[] }) {
   if (datos.length === 0) return null;
   return (
     <div className="ui-grafico-tendencia__resumen" aria-label="Resumen del periodo">
-      {datos.map((dato) => (
-        <div key={dato.etiqueta} className="ui-grafico-tendencia__resumen-dato">
-          <span className="ui-grafico-tendencia__resumen-cabecera">
-            <span className="ui-grafico-tendencia__resumen-etiqueta">{dato.etiqueta}</span>
-            <span
-              className={`ui-grafico-tendencia__resumen-cambio ui-grafico-tendencia__resumen-cambio--${dato.tono}`}
+      {datos.map((dato) => {
+        const cambio = (
+          <span
+            className={`ui-grafico-tendencia__resumen-cambio ui-grafico-tendencia__resumen-cambio--${dato.tono}`}
+          >
+            {dato.cambio}
+          </span>
+        );
+        if (dato.historial && dato.historial.length > 0) {
+          return (
+            <div
+              key={dato.etiqueta}
+              className={`ui-grafico-tendencia__resumen-dato ui-grafico-tendencia__resumen-dato--historial ui-grafico-tendencia__resumen-dato--${dato.color ?? "celeste"}`}
             >
-              {dato.cambio}
+              <span className="ui-grafico-tendencia__resumen-cuerpo">
+                <span className="ui-grafico-tendencia__resumen-texto">
+                  <span className="ui-grafico-tendencia__resumen-etiqueta">{dato.etiqueta}</span>
+                  <strong className="ui-grafico-tendencia__resumen-valor">{dato.valor}</strong>
+                  <span className="ui-grafico-tendencia__resumen-pie">
+                    <span className="ui-grafico-tendencia__resumen-previo">{dato.previo}</span>
+                    {cambio}
+                  </span>
+                </span>
+                <BarrasHistorial valores={dato.historial} />
+              </span>
+            </div>
+          );
+        }
+        return (
+          <div key={dato.etiqueta} className="ui-grafico-tendencia__resumen-dato">
+            <span className="ui-grafico-tendencia__resumen-cabecera">
+              <span className="ui-grafico-tendencia__resumen-etiqueta">{dato.etiqueta}</span>
+              {cambio}
             </span>
-          </span>
-          <strong className="ui-grafico-tendencia__resumen-valor">{dato.valor}</strong>
-          <span className="ui-grafico-tendencia__resumen-pista" aria-hidden="true">
-            <span
-              className="ui-grafico-tendencia__resumen-barra"
-              style={{ inlineSize: `${Math.max(0, Math.min(100, dato.parte))}%` }}
-            />
-          </span>
-          <span className="ui-grafico-tendencia__resumen-pie">
-            <span className="ui-grafico-tendencia__resumen-previo">{dato.previo}</span>
-          </span>
-        </div>
-      ))}
+            <strong className="ui-grafico-tendencia__resumen-valor">{dato.valor}</strong>
+            <span className="ui-grafico-tendencia__resumen-pista" aria-hidden="true">
+              <span
+                className="ui-grafico-tendencia__resumen-barra"
+                style={{ inlineSize: `${Math.max(0, Math.min(100, dato.parte))}%` }}
+              />
+            </span>
+            <span className="ui-grafico-tendencia__resumen-pie">
+              <span className="ui-grafico-tendencia__resumen-previo">{dato.previo}</span>
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }

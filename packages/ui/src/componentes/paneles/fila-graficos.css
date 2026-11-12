@@ -19,6 +19,10 @@
 .ui-fila-graficos__pila > :last-child {
   flex: 1 1 auto;
 }
+/* La franja de horas mide lo suyo; el sobrante lo absorbe el grafico de arriba. */
+.ui-fila-graficos__pila > .ui-franja-horas {
+  flex: none;
+}
 
 @media (min-width: 64rem) {
   .ui-fila-graficos {

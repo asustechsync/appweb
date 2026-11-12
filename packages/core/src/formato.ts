@@ -59,6 +59,17 @@ const DIA_MES = new Intl.DateTimeFormat("es-PE", {
 /** El dia en Lima como "2026-10-18": para saber si dos instantes caen el mismo dia. */
 const DIA_LIMA = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA });
 
+const HORA_LIMA = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  hourCycle: "h23",
+  timeZone: ZONA,
+});
+
+/** La hora del dia en Lima, de 0 a 23: para agrupar lo que paso por franjas del reloj. */
+export function horaDeLima(fecha: Date): number {
+  return Number(HORA_LIMA.format(fecha)) % 24;
+}
+
 /** El dia en Lima de un instante, como "2026-10-18": para filtrar una lista por dia. */
 export function diaDeLima(fecha: Date): string {
   return DIA_LIMA.format(fecha);
@@ -101,6 +112,12 @@ export function haceCuanto(fecha: Date, ahora = new Date()): string {
 /** Solo la hora, sin minutos cuando es en punto: "7 p. m.", "7:30 p. m.". */
 export function horaCorta(fecha: Date): string {
   return HORA.format(fecha).replace(":00", "");
+}
+
+/** Una hora del reloj (0 a 23) como se rotula: "5 a. m.", "12 m.", "9 p. m.". */
+export function etiquetaDeHora(hora: number): string {
+  if (hora === 12) return "12 m.";
+  return `${hora % 12 || 12} ${hora < 12 ? "a. m." : "p. m."}`;
 }
 
 /** Una diferencia con su signo siempre visible: "+S/ 12.00", "−3". */

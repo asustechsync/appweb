@@ -380,8 +380,10 @@ export {
   GraficoTendencia,
   ResumenTendencia,
   type DatoResumenTendencia,
+  type ColorHistorial,
   type PropsGraficoTendencia,
 } from "./componentes/paneles/GraficoTendencia";
+export { FranjaHoras, type PropsFranjaHoras } from "./componentes/paneles/FranjaHoras";
 export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";
 export {
   EscaleraNiveles,

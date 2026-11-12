@@ -33,9 +33,9 @@ type Metrica = "ventas" | "pedidos" | "ticket" | "clientes";
 export type PantallaPanel = "panel-pedidos" | "panel-stock" | "panel-resenas";
 
 const PERIODOS: { valor: Periodo; texto: string }[] = [
-  { valor: "dia", texto: "Día" },
-  { valor: "semana", texto: "Semana" },
-  { valor: "mes", texto: "Mes" },
+  { valor: "dia", texto: "1D" },
+  { valor: "semana", texto: "7D" },
+  { valor: "mes", texto: "1M" },
 ];
 
 interface PropsPanel {
@@ -123,7 +123,7 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
             formatear: (valor: number) => String(Math.round(valor)),
           },
           ticket: {
-            titulo: "Ticket promedio",
+            titulo: "Ticket",
             detalle: "Ticket promedio del periodo contra el anterior",
             valor: MONEDA.format(metricas.ticket),
             previo: MONEDA.format(metricas.anteriores.ticket),
@@ -132,7 +132,7 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
             formatear: (valor: number) => MONEDA.format(valor),
           },
           clientes: {
-            titulo: "Clientes nuevos",
+            titulo: "Clientes",
             detalle: "Clientes nuevos del periodo contra el anterior",
             valor: String(metricas.clientesNuevos),
             previo: String(metricas.anteriores.clientesNuevos),
@@ -196,7 +196,7 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
                   onSeleccionar={() => setMetricaSeleccionada("pedidos")}
                 />
                 <TarjetaMetrica
-                  titulo="Ticket promedio"
+                  titulo="Ticket"
                   valor={MONEDA.format(metricas.ticket)}
                   cambio={metricas.cambioTicket}
                   contra={datos.etiquetaAnterior.toLowerCase()}
@@ -205,7 +205,7 @@ export function Panel({ onVolver, onAbrir }: PropsPanel) {
                   onSeleccionar={() => setMetricaSeleccionada("ticket")}
                 />
                 <TarjetaMetrica
-                  titulo="Clientes nuevos"
+                  titulo="Clientes"
                   valor={String(metricas.clientesNuevos)}
                   cambio={metricas.cambioClientesNuevos}
                   contra={datos.etiquetaAnterior.toLowerCase()}

@@ -2,13 +2,41 @@ import { describe, expect, it } from "vitest";
 
 import {
   acumular,
+  franjasDelResumen,
+  historialDeClientes,
   marcasDelEje,
   repartoPorMedio,
   serieEnTramos,
   seriesDelResumen,
+  tramosDelHistorial,
   ventanaDe,
   ventanaDeFecha,
 } from "./resumen";
+
+describe("franjas por hora", () => {
+  it("agrupa por hora de Lima, no por la del servidor", () => {
+    // 10:30 UTC son las 5:30 a. m. en Lima; 04:10 UTC, las 11:10 p. m. del dia anterior.
+    const franjas = franjasDelResumen(
+      [
+        { en: new Date("2026-11-12T10:30:00Z"), total: 100 },
+        { en: new Date("2026-11-12T10:50:00Z"), total: 50 },
+      ],
+      [new Date("2026-11-12T10:05:00Z"), new Date("2026-11-12T04:10:00Z")],
+    );
+    expect(franjas.pedidos).toHaveLength(24);
+    expect(franjas.pedidos[5]).toBe(2);
+    expect(franjas.ventas[5]).toBe(150);
+    expect(franjas.ticket[5]).toBe(75);
+    expect(franjas.clientesNuevos[5]).toBe(1);
+    expect(franjas.clientesNuevos[23]).toBe(1);
+  });
+
+  it("sin datos, las 24 horas valen 0", () => {
+    const franjas = franjasDelResumen([], []);
+    expect(franjas.ticket.every((v) => v === 0)).toBe(true);
+    expect(franjas.ticket).toHaveLength(24);
+  });
+});
 
 describe("reparto por medio de pago", () => {
   it("ordena de mas a menos plata y los porcentajes suman 100", () => {
@@ -56,18 +84,48 @@ describe("marcas del eje", () => {
     expect(marcas.map((m) => m.posicion)).toEqual([0, 0.25, 0.5, 0.75, 1]);
   });
 
-  it("una semana: un dia por marca, al centro de su columna", () => {
+  it("una semana: un dia por marca, en su hora 0", () => {
     // Del lunes 19 al lunes 26 de octubre de 2026.
     const marcas = marcasDelEje(new Date(2026, 9, 19), new Date(2026, 9, 26));
     expect(marcas.map((m) => m.texto)).toEqual(["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]);
-    expect(marcas[0]?.posicion).toBeCloseTo(0.5 / 7);
-    expect(marcas[6]?.posicion).toBeCloseTo(6.5 / 7);
+    expect(marcas[0]?.posicion).toBe(0);
+    expect(marcas[6]?.posicion).toBeCloseTo(6 / 7);
   });
 
-  it("un mes: el 1, 8, 15, 22 y 29", () => {
+  it("un mes: cinco marcas repartidas, la ultima es el ultimo dia", () => {
+    const textos = (desde: Date, fin: Date) => marcasDelEje(desde, fin).map((m) => m.texto);
+    // Octubre (31), noviembre (30), febrero (28) y febrero bisiesto (29).
+    expect(textos(new Date(2026, 9, 1), new Date(2026, 10, 1))).toEqual([
+      "1",
+      "9",
+      "16",
+      "24",
+      "31",
+    ]);
+    expect(textos(new Date(2026, 10, 1), new Date(2026, 11, 1))).toEqual([
+      "1",
+      "8",
+      "16",
+      "23",
+      "30",
+    ]);
+    expect(textos(new Date(2026, 1, 1), new Date(2026, 2, 1))).toEqual([
+      "1",
+      "8",
+      "15",
+      "21",
+      "28",
+    ]);
+    expect(textos(new Date(2028, 1, 1), new Date(2028, 2, 1))).toEqual([
+      "1",
+      "8",
+      "15",
+      "22",
+      "29",
+    ]);
     const marcas = marcasDelEje(new Date(2026, 9, 1), new Date(2026, 10, 1));
-    expect(marcas.map((m) => m.texto)).toEqual(["1", "8", "15", "22", "29"]);
     expect(marcas[0]?.posicion).toBe(0);
+    expect(marcas[4]?.posicion).toBe(1);
   });
 
   it("un periodo vacio no tiene marcas", () => {
@@ -177,5 +235,45 @@ describe("serie en tramos", () => {
 
   it("ignora lo que cae fuera de la ventana", () => {
     expect(serieEnTramos([{ en: hasta, valor: 9 }], desde, hasta, 4)).toEqual([0, 0, 0, 0]);
+  });
+});
+
+describe("historial de las tarjetas", () => {
+  const ahora = new Date(2026, 10, 12, 15, 0);
+
+  it("da siete dias que terminan hoy, con ayer como penultimo", () => {
+    const ventana = ventanaDe("dia", ahora);
+    const tramos = tramosDelHistorial(ventana, "dia");
+    expect(tramos).toHaveLength(7);
+    expect(tramos[0]?.desde).toEqual(new Date(2026, 10, 6));
+    expect(tramos[5]).toEqual({ desde: ventana.previoDesde, hasta: ventana.previoHasta });
+    expect(tramos[6]).toEqual({ desde: ventana.desde, hasta: ventana.fin });
+  });
+
+  it("retrocede meses del calendario, no bloques de treinta dias", () => {
+    const tramos = tramosDelHistorial(ventanaDe("mes", ahora), "mes");
+    expect(tramos[0]?.desde).toEqual(new Date(2026, 4, 1));
+    expect(tramos[5]?.hasta).toEqual(new Date(2026, 10, 1));
+  });
+
+  it("cuenta nuevos, compradores y recurrentes de cada tramo", () => {
+    const tramos = tramosDelHistorial(ventanaDe("dia", ahora), "dia", 2);
+    const ayer = new Date(2026, 10, 11, 10);
+    const hoy = new Date(2026, 10, 12, 10);
+    const historial = historialDeClientes(
+      tramos,
+      [ayer, hoy, hoy],
+      [
+        { usuarioId: "a", en: ayer },
+        { usuarioId: "a", en: hoy },
+        { usuarioId: "b", en: hoy },
+        { usuarioId: "b", en: hoy },
+      ],
+      new Map([
+        ["a", ayer],
+        ["b", hoy],
+      ]),
+    );
+    expect(historial).toEqual({ nuevos: [1, 2], compradores: [1, 2], recurrentes: [0, 1] });
   });
 });

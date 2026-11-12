@@ -8,6 +8,7 @@
  */
 
 import { desdeIso, hoyIso } from "../calendario";
+import { horaDeLima } from "../formato";
 import type { EstadoPedido } from "../pedidos/estados";
 
 /** Solo estos estados son plata que entro: lo demas todavia puede caerse. */
@@ -140,6 +141,39 @@ export function seriesDelResumen(
   };
 }
 
+/**
+ * Cuanto pasa en cada hora del reloj (0 a 23, hora de Lima) a lo largo del
+ * periodo entero: las horas fuertes de la tienda. Cada serie tiene 24 valores.
+ * El ticket es el promedio de cada hora y queda en 0 si no entro nada.
+ */
+export function franjasDelResumen(
+  pedidos: { en: Date; total: number }[],
+  altas: Date[],
+): SeriesResumen {
+  const vacia = () => Array.from({ length: 24 }, () => 0);
+  const ventas = vacia();
+  const cantidad = vacia();
+  const clientesNuevos = vacia();
+  for (const pedido of pedidos) {
+    const hora = horaDeLima(pedido.en);
+    ventas[hora] = (ventas[hora] ?? 0) + pedido.total;
+    cantidad[hora] = (cantidad[hora] ?? 0) + 1;
+  }
+  for (const alta of altas) {
+    const hora = horaDeLima(alta);
+    clientesNuevos[hora] = (clientesNuevos[hora] ?? 0) + 1;
+  }
+  return {
+    ventas,
+    pedidos: cantidad,
+    ticket: ventas.map((monto, i) => {
+      const n = cantidad[i] ?? 0;
+      return n > 0 ? monto / n : 0;
+    }),
+    clientesNuevos,
+  };
+}
+
 /** Lo que entro en cada tramo: la diferencia con el punto anterior (el primero queda en 0). */
 function porTramo(acumulada: number[]): number[] {
   return acumulada.map((valor, i) => (i === 0 ? 0 : Math.max(0, valor - (acumulada[i - 1] ?? 0))));
@@ -216,8 +250,8 @@ const DIA_MS = 86_400_000;
  * Las marcas del eje de la tendencia segun el largo del periodo:
  *
  *   · un dia      — cada 6 horas: 0 h, 6 h, 12 h, 18 h, y 24 h al final del eje.
- *   · una semana  — un dia por marca, al centro de su columna: Lun … Dom.
- *   · un mes      — el 1, 8, 15, 22 y 29, al inicio de su dia.
+ *   · una semana  — un dia por marca, en su hora 0: Lun … Dom.
+ *   · un mes      — cinco marcas repartidas por igual, del 1 al ultimo dia.
  *
  * Las posiciones son fracciones del periodo entero, las mismas que usan las
  * series: asi la marca cae justo bajo el tramo que nombra.
@@ -242,17 +276,18 @@ export function marcasDelEje(desde: Date, fin: Date): MarcaEje[] {
         .format(dia)
         .replace(".", "");
       return {
-        posicion: (i + 0.5) / dias,
+        posicion: i / dias,
         texto: nombre.charAt(0).toUpperCase() + nombre.slice(1),
       };
     });
   }
 
-  const marcas: MarcaEje[] = [];
-  for (let dia = 1; dia <= dias; dia += 7) {
-    marcas.push({ posicion: (dia - 1) / dias, texto: String(dia) });
-  }
-  return marcas;
+  // Cinco marcas repartidas por igual, de modo que la ultima sea siempre el
+  // ultimo dia del mes (28, 29, 30 o 31) y el eje cubra el mes entero.
+  return [0, 1, 2, 3, 4].map((i) => {
+    const dia = Math.round(1 + (i * (dias - 1)) / 4);
+    return { posicion: i === 4 ? 1 : (dia - 1) / dias, texto: String(dia) };
+  });
 }
 
 /** Cuantos dias lleva esperando algo creado en `desde`. */
@@ -267,9 +302,9 @@ export const PERIODOS = ["dia", "semana", "mes"] as const;
 export type Periodo = (typeof PERIODOS)[number];
 
 export const ETIQUETAS_PERIODO: Record<Periodo, string> = {
-  dia: "Día",
-  semana: "Semana",
-  mes: "Mes",
+  dia: "1D",
+  semana: "7D",
+  mes: "1M",
 };
 
 export interface VentanaResumen {
@@ -378,4 +413,85 @@ export function ventanaDeFecha(iso: string, ahora = new Date()): VentanaResumen 
     titulo: new Intl.DateTimeFormat("es-PE", { dateStyle: "medium" }).format(elegida),
     contexto: "más que el día anterior",
   };
+}
+
+// ── Historial corto de las tarjetas ─────────────────────────────────────────
+
+/** Cuantas barras lleva el minigrafico de cada tarjeta: el periodo actual y los seis anteriores. */
+export const BARRAS_HISTORIAL = 7;
+
+export interface TramoHistorial {
+  desde: Date;
+  /** Fin exclusivo. */
+  hasta: Date;
+}
+
+/** Mueve una fecha `pasos` periodos hacia atras: dias, semanas o meses del calendario. */
+function retroceder(fecha: Date, periodo: Periodo, pasos: number): Date {
+  const movida = new Date(fecha);
+  if (periodo === "mes") movida.setMonth(fecha.getMonth() - pasos);
+  else movida.setDate(fecha.getDate() - pasos * (periodo === "semana" ? 7 : 1));
+  return movida;
+}
+
+/**
+ * Los periodos que terminan en el actual, del mas viejo al actual: hoy y los
+ * seis dias anteriores, esta semana y las seis anteriores, o este mes y los
+ * seis anteriores. El penultimo es justo el periodo anterior de la ventana,
+ * asi las dos ultimas barras coinciden con la cifra y su "Ayer".
+ */
+export function tramosDelHistorial(
+  ventana: VentanaResumen,
+  periodo: Periodo,
+  cantidad = BARRAS_HISTORIAL,
+): TramoHistorial[] {
+  return Array.from({ length: cantidad }, (_, i) => {
+    const pasos = cantidad - 1 - i;
+    return {
+      desde: retroceder(ventana.desde, periodo, pasos),
+      hasta:
+        pasos === 0
+          ? (ventana.hasta ?? ventana.fin)
+          : retroceder(ventana.desde, periodo, pasos - 1),
+    };
+  });
+}
+
+export interface HistorialClientes {
+  nuevos: number[];
+  compradores: number[];
+  recurrentes: number[];
+}
+
+/**
+ * Clientes de cada tramo del historial:
+ *
+ *   · Nuevos      — cuentas creadas en el tramo.
+ *   · Compradores — clientes distintos con al menos una venta en el tramo.
+ *   · Recurrentes — compradores del tramo que ya habian comprado antes de el.
+ *
+ * `primeraCompra` es la venta mas antigua de cada comprador, de siempre.
+ */
+export function historialDeClientes(
+  tramos: TramoHistorial[],
+  altas: Date[],
+  ventas: { usuarioId: string; en: Date }[],
+  primeraCompra: ReadonlyMap<string, Date>,
+): HistorialClientes {
+  const dentro = (en: Date, tramo: TramoHistorial) => en >= tramo.desde && en < tramo.hasta;
+  const historial: HistorialClientes = { nuevos: [], compradores: [], recurrentes: [] };
+  for (const tramo of tramos) {
+    const compradores = new Set(
+      ventas.filter((venta) => dentro(venta.en, tramo)).map((venta) => venta.usuarioId),
+    );
+    let recurrentes = 0;
+    for (const usuarioId of compradores) {
+      const primera = primeraCompra.get(usuarioId);
+      if (primera && primera < tramo.desde) recurrentes += 1;
+    }
+    historial.nuevos.push(altas.filter((alta) => dentro(alta, tramo)).length);
+    historial.compradores.push(compradores.size);
+    historial.recurrentes.push(recurrentes);
+  }
+  return historial;
 }

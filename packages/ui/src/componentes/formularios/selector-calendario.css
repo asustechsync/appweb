@@ -33,6 +33,11 @@
   inline-size: 100%;
   cursor: pointer;
 }
+/* Con fecha elegida, el icono y el texto respiran: mas aire a los lados y entre ellos. */
+.ui-campo--calendario .ui-selector-calendario .ui-selector-calendario__disparador {
+  gap: var(--espacio-3);
+  padding-inline: var(--espacio-4);
+}
 .ui-selector-calendario__vacio {
   color: color-mix(in srgb, var(--color-textoSuave) 72%, transparent);
 }

@@ -34,7 +34,6 @@ const ABAJO = 160;
 /** Grafica nativa con escala, series comparativas y exploración táctil. */
 export function GraficoTendenciaNativo({
   titulo,
-  detalle,
   etiquetaActual,
   valorActual,
   etiquetaPrevia,
@@ -91,7 +90,7 @@ export function GraficoTendenciaNativo({
       <View style={estilos.encabezado}>
         <View style={estilos.titulos}>
           <Text style={estilos.titulo}>{titulo}</Text>
-          <Text style={estilos.detalle}>{detalle}</Text>
+
           {nota ? <Text style={estilos.nota}>{nota}</Text> : null}
         </View>
       </View>
@@ -119,7 +118,7 @@ export function GraficoTendenciaNativo({
         onTouchMove={(evento) => explorar(evento.nativeEvent.locationX)}
         accessibilityLabel={`${titulo}: ${valorActual}, ${etiquetaPrevia}: ${valorPrevio}`}
       >
-        <Svg width="100%" height={ALTO} viewBox={`0 0 ${ANCHO} ${ALTO}`} preserveAspectRatio="none">
+        <Svg width="100%" height="100%" viewBox={`0 0 ${ANCHO} ${ALTO}`} preserveAspectRatio="xMidYMid meet">
           <Defs>
             <LinearGradient id={idDegradado} x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor={t.color.serieActual} stopOpacity="0.28" />
@@ -149,13 +148,20 @@ export function GraficoTendenciaNativo({
               d={trazoPrevio}
               fill="none"
               stroke={t.color.seriePrevia}
-              strokeWidth={2}
-              strokeDasharray="6 6"
-              opacity={0.75}
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           ) : null}
           {puntosActuales.length > 1 ? (
-            <Path d={trazoActual} fill="none" stroke={t.color.serieActual} strokeWidth={3} />
+            <Path
+              d={trazoActual}
+              fill="none"
+              stroke={t.color.serieActual}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           ) : null}
           {indiceTocado !== null ? (
             <Line
@@ -367,7 +373,8 @@ const estilos = StyleSheet.create({
     fontFamily: FUENTE_NATIVA.texto[600],
   },
   areaGrafico: {
-    height: ALTO,
+    width: "100%",
+    aspectRatio: ANCHO / ALTO,
     position: "relative",
   },
   etiquetasEjeY: {
@@ -420,3 +427,5 @@ const estilos = StyleSheet.create({
     fontFamily: FUENTE_NATIVA.texto[500],
   },
 });
+
+

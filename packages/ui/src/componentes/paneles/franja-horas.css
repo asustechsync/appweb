@@ -1,0 +1,42 @@
+/* Franja de horas: titulo y hora fuerte arriba, 24 casillas y el eje al pie. */
+.ui-franja-horas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: var(--espacio-4) var(--espacio-5);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-bloque);
+  background: var(--color-fondo);
+}
+.ui-franja-horas__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+.ui-franja-horas__titulo {
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}
+.ui-franja-horas__pico {
+  color: var(--color-texto);
+  font-size: var(--tipo-tamano-sm);
+  font-weight: var(--tipo-peso-medio);
+}
+.ui-franja-horas__celdas {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+  gap: 2px;
+}
+.ui-franja-horas__celda {
+  block-size: var(--espacio-5);
+  border-radius: var(--radio-sm);
+  background: var(--color-serieActual);
+}
+.ui-franja-horas__eje {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-textoTenue);
+  font-size: var(--tipo-tamano-xs);
+}

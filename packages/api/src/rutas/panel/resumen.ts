@@ -25,6 +25,9 @@ import {
   puede,
   repartoPorMedio,
   seriesDelResumen,
+  franjasDelResumen,
+  historialDeClientes,
+  tramosDelHistorial,
   UMBRAL_STOCK_BAJO,
   variacion,
   vendidoDe,
@@ -374,6 +377,45 @@ export const resumen = router({
         : [],
     ]);
 
+    // Minigrafico de las tarjetas de clientes: el periodo actual y los seis
+    // anteriores del mismo tamaño (dias, semanas o meses).
+    const tramosHistorial = tramosDelHistorial(periodo, input.fecha ? "dia" : input.periodo);
+    const ventanaHistorial = {
+      gte: tramosHistorial[0]?.desde ?? periodo.desde,
+      lt: tramosHistorial.at(-1)?.hasta ?? periodo.fin,
+    };
+    const [altasHistorial, ventasHistorial] = verVentas
+      ? await Promise.all([
+          ctx.prisma.usuario.findMany({
+            where: { creadoEn: ventanaHistorial },
+            select: { creadoEn: true },
+          }),
+          ctx.prisma.pedido.findMany({
+            where: { estado: { in: estadosVenta }, creadoEn: ventanaHistorial },
+            select: { usuarioId: true, creadoEn: true },
+          }),
+        ])
+      : [[], []];
+    const compradoresHistorial = [...new Set(ventasHistorial.map((venta) => venta.usuarioId))];
+    const primerasCompras =
+      compradoresHistorial.length > 0
+        ? await ctx.prisma.pedido.groupBy({
+            by: ["usuarioId"],
+            where: { usuarioId: { in: compradoresHistorial }, estado: { in: estadosVenta } },
+            _min: { creadoEn: true },
+          })
+        : [];
+    const historialClientes = historialDeClientes(
+      tramosHistorial,
+      altasHistorial.map((alta) => alta.creadoEn),
+      ventasHistorial.map((venta) => ({ usuarioId: venta.usuarioId, en: venta.creadoEn })),
+      new Map(
+        primerasCompras.flatMap((fila) =>
+          fila._min.creadoEn ? [[fila.usuarioId, fila._min.creadoEn] as const] : [],
+        ),
+      ),
+    );
+
     // Las dos lineas comparten el eje del periodo entero: la actual se corta
     // en ahora y la anterior llega completa, asi se ve cuanto falta.
     const series = seriesDelResumen(
@@ -388,6 +430,12 @@ export const resumen = router({
       altasSeriePrevia.map((u) => u.creadoEn),
       periodo.previoDesde,
       periodo.previoHasta,
+    );
+
+    // Las horas fuertes del periodo: cuanto entra en cada hora del reloj.
+    const franjas = franjasDelResumen(
+      pedidosSerie.map((p) => ({ en: p.creadoEn, total: vendidoDe(p) })),
+      altasSerie.map((u) => u.creadoEn),
     );
 
     return {
@@ -493,6 +541,7 @@ export const resumen = router({
             cambioClientesNuevos: variacion(clientesNuevos, clientesNuevosPrevios),
             serieClientesNuevos: series.clientesNuevos,
             serieClientesNuevosPrevia: seriesPrevias.clientesNuevos,
+            franjas,
             diferenciaClientesNuevos: clientesNuevos - clientesNuevosPrevios,
             pedidosRecibidos,
             pedidosRecibidosPrevios,
@@ -508,6 +557,8 @@ export const resumen = router({
             clientesCompradoresPrevios: compradoresPrevios.length,
             clientesRecurrentes: compradoresRecurrentes.length,
             clientesRecurrentesPrevios: compradoresRecurrentesPrevios.length,
+            // Una cifra por periodo, del mas viejo al actual: las barras de cada tarjeta.
+            historialClientes,
             // Lo que se dejo de cobrar por cupones y niveles en el periodo.
             descuentos: Number(pedidosVentana?._sum.descuento ?? 0),
             margen: margenDeLineas(lineasVendidas),

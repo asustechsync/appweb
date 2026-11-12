@@ -347,6 +347,7 @@ export {
   serieEnTramos,
   acumular,
   seriesDelResumen,
+  franjasDelResumen,
   marcasDelEje,
   repartoPorMedio,
   type MarcaEje,
@@ -355,6 +356,11 @@ export {
   type SeriesResumen,
   TRAMOS_SERIE,
   diasDesde,
+  BARRAS_HISTORIAL,
+  tramosDelHistorial,
+  historialDeClientes,
+  type TramoHistorial,
+  type HistorialClientes,
 } from "./panel/resumen";
 
 // Usuarios
