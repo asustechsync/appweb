@@ -33,6 +33,9 @@ function traducirError(error: unknown, que: "categoría" | "marca"): never {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
     const campos = String((error.meta as { target?: unknown } | undefined)?.target ?? "");
     if (campos.includes("nombre")) rechazar(`Ya existe una ${que} con ese nombre.`, "CONFLICT");
+    if (campos.includes("publico")) {
+      rechazar("Ya hay una categoría para ese público. Quítaselo a la otra primero.", "CONFLICT");
+    }
     rechazar(`Ya hay una ${que} con esa dirección web. Cambia el slug.`, "CONFLICT");
   }
   throw error;
@@ -43,6 +46,7 @@ function datosDeCategoria(d: z.infer<typeof esquemaCategoria>) {
     nombre: d.nombre,
     slug: d.slug,
     padreId: d.padreId,
+    publico: d.publico,
     descripcion: d.descripcion || null,
     imagenUrl: d.imagenUrl || null,
     tituloSeo: d.tituloSeo || null,
@@ -78,6 +82,7 @@ export const categorias = router({
       nombre: c.nombre,
       slug: c.slug,
       padreId: c.padreId,
+      publico: c.publico,
       descripcion: c.descripcion ?? "",
       imagenUrl: c.imagenUrl ?? "",
       tituloSeo: c.tituloSeo ?? "",
@@ -91,10 +96,34 @@ export const categorias = router({
   }),
 
   guardar: gestionar.input(esquemaCategoria).mutation(async ({ ctx, input }) => {
+    // Una categoria de publico ("Hombre") va en el menu y lista por publico:
+    // no tiene padre, ni hijas, ni productos propios.
+    if (input.publico !== null) {
+      if (input.padreId !== null) {
+        rechazar("Una categoría de público va en el primer nivel: quita «Va dentro de».");
+      }
+      if (input.categoriaId) {
+        const propia = await ctx.prisma.categoria.findUnique({
+          where: { id: input.categoriaId },
+          select: { _count: { select: { productos: true, hijas: true } } },
+        });
+        if (propia && (propia._count.productos > 0 || propia._count.hijas > 0)) {
+          rechazar(
+            "Esta categoría tiene productos o subcategorías: déjala como categoría de tipo.",
+          );
+        }
+      }
+    }
+
     if (input.padreId !== null) {
-      const todas = await ctx.prisma.categoria.findMany({ select: { id: true, padreId: true } });
+      const todas = await ctx.prisma.categoria.findMany({
+        select: { id: true, padreId: true, publico: true },
+      });
       const padres = new Map(todas.map((c) => [c.id, c.padreId]));
       if (!padres.has(input.padreId)) rechazar("La categoría padre ya no existe.", "NOT_FOUND");
+      if (todas.some((c) => c.id === input.padreId && c.publico !== null)) {
+        rechazar("Dentro de una categoría de público no van otras: sus tipos salen solos.");
+      }
       if (input.categoriaId && creariaCiclo(input.categoriaId, input.padreId, padres)) {
         rechazar("Una categoría no puede ir dentro de sí misma ni de una de sus subcategorías.");
       }

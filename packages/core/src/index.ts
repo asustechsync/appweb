@@ -59,6 +59,7 @@ export {
 export type { ClaseAtributo, DetallesPrenda, RequisitoPublicacion } from "./catalogo/gestion";
 
 export { creariaCiclo } from "./catalogo/arbol";
+export { ETIQUETA_PUBLICO, ordenarPublicos, PUBLICOS, type Publico } from "./catalogo/publicos";
 export type { BannerDePortada } from "./catalogo/banners";
 
 export {

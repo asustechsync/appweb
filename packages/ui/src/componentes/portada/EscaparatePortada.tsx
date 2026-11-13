@@ -46,10 +46,9 @@ export interface PropsEscaparatePortada {
 }
 
 const categorias = [
-  { titulo: "Hombres", detalle: "Boxers y medias", href: "/categorias/hombres" },
-  { titulo: "Mujeres", detalle: "Calzones y medias", href: "/categorias/mujeres" },
-  { titulo: "Jóvenes", detalle: "Tallas juveniles", href: "/categorias/jovenes" },
-  { titulo: "Niños", detalle: "De 2 a 12 años", href: "/categorias/ninos" },
+  { titulo: "Hombre", detalle: "Boxers, calzoncillos y medias", href: "/categorias/hombre" },
+  { titulo: "Mujer", detalle: "Ropa interior y medias", href: "/categorias/mujer" },
+  { titulo: "Niños", detalle: "De 2 a 14 años", href: "/categorias/ninos" },
   { titulo: "Bebés", detalle: "Algodón suave", href: "/categorias/bebes" },
 ] as const;
 

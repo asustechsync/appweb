@@ -14,17 +14,21 @@ import {
   compararTallas,
   type ComponentePack,
   ESTADOS_VENTA,
+  ETIQUETA_PUBLICO,
   etiquetaVigente,
   type FiltrosListado,
   type BannerDePortada,
   type OpcionDeTalla,
   opcionesDeCompra,
+  type Publico,
+  PUBLICOS,
   precioSueltoDePack,
   resolverDisponibilidad,
   resolverNivelStock,
   resolverPrecio,
   resumenCalificacion,
   type ResumenCalificacion,
+  slugDesdeTexto,
   stockDePack,
   urlDeFoto,
 } from "@appweb/core";
@@ -317,13 +321,23 @@ export async function leerOfertas(limite = 10): Promise<ProductoDeRejilla[]> {
   return (await aRejilla(sinAgotadosOcultos(productos))).filter((p) => p.descuentoPct !== null);
 }
 
-/** Categorias de primer nivel y activas, en el orden del panel. */
-export function leerCategorias(): Promise<{ slug: string; nombre: string }[]> {
-  return prisma.categoria.findMany({
+/**
+ * El menu: las categorias de publico (Hombre, Mujer...) activas, en el orden
+ * del panel. Las de tipo ("Medias") quedan fuera del menu: se llega a ellas
+ * desde el filtro de cada publico y desde el buscador. Una tienda sin
+ * categorias de publico muestra las de primer nivel, como antes.
+ */
+export async function leerCategorias(): Promise<{ slug: string; nombre: string }[]> {
+  const primerNivel = await prisma.categoria.findMany({
     where: { activo: true, padreId: null },
     orderBy: [{ orden: "asc" }, { nombre: "asc" }],
-    select: { slug: true, nombre: true },
+    select: { slug: true, nombre: true, publico: true },
   });
+  const dePublico = primerNivel.filter((c) => c.publico !== null);
+  return (dePublico.length > 0 ? dePublico : primerNivel).map(({ slug, nombre }) => ({
+    slug,
+    nombre,
+  }));
 }
 
 /** Promociones activas del carrusel de la portada, en el orden del panel. */
@@ -608,6 +622,8 @@ export interface CategoriaDeListado {
   descripcion: string | null;
   tituloSeo: string | null;
   descripcionSeo: string | null;
+  /** Puesto = categoria de publico: su filtro de tipos sale de `Facetas.tipos`. */
+  publico: Publico | null;
   padre: { slug: string; nombre: string } | null;
   hijas: { slug: string; nombre: string }[];
 }
@@ -622,6 +638,7 @@ export async function leerCategoria(slug: string): Promise<CategoriaDeListado | 
       descripcion: true,
       tituloSeo: true,
       descripcionSeo: true,
+      publico: true,
       padre: { select: { slug: true, nombre: true } },
       hijas: {
         where: { activo: true },
@@ -632,11 +649,26 @@ export async function leerCategoria(slug: string): Promise<CategoriaDeListado | 
   });
 }
 
-/** Productos de la categoria y de sus hijas: una camiseta de "Boxers" tambien es de "Hombres". */
-function enCategoria(slug: string): Prisma.ProductoWhereInput {
+/** Productos de una categoria de tipo y de sus hijas: "Deportivas" tambien es de "Medias". */
+function enTipo(slug: string): Prisma.ProductoWhereInput {
   return {
     categoria: { activo: true, OR: [{ slug }, { padre: { slug } }] },
   };
+}
+
+/**
+ * Que productos lista la categoria. De publico ("Hombre"): los que lo tienen,
+ * esten en la categoria de tipo que esten. De tipo ("Medias"): los suyos y los
+ * de sus hijas. `null` si la categoria no existe o esta oculta.
+ */
+async function enCategoria(slug: string): Promise<Prisma.ProductoWhereInput | null> {
+  const categoria = await prisma.categoria.findFirst({
+    where: { slug, activo: true },
+    select: { publico: true },
+  });
+  if (categoria === null) return null;
+  if (categoria.publico === null) return enTipo(slug);
+  return { publicos: { has: categoria.publico }, categoria: { activo: true } };
 }
 
 export interface Facetas {
@@ -644,6 +676,12 @@ export interface Facetas {
   /** Colores con stock, con la escritura con que los guarda la variante. */
   colores: string[];
   marcas: { slug: string; nombre: string }[];
+  /**
+   * Categorias de tipo con productos en el listado, por su orden en el panel.
+   * Son el filtro de una categoria de publico ("Hombre" -> Boxers, Medias).
+   * Una categoria de tipo filtra por sus hijas, no por esto.
+   */
+  tipos: { slug: string; nombre: string }[];
   /**
    * Precio mas bajo y mas alto de la categoria en soles enteros (el minimo
    * redondeado hacia abajo y el maximo hacia arriba, para que el rango
@@ -660,11 +698,22 @@ export interface Facetas {
  * `portada`).
  */
 export async function leerFacetas(slug: string): Promise<Facetas> {
+  const donde = await enCategoria(slug);
+  if (donde === null) return { tallas: [], colores: [], marcas: [], tipos: [], precio: null };
   const productos = await prisma.producto.findMany({
-    where: { activo: true, ...enCategoria(slug) },
+    where: { activo: true, ...donde },
     select: {
       precio: true,
       marca: { select: { slug: true, nombre: true, activo: true } },
+      // El tipo de primer nivel: "Deportivas" filtra como "Medias".
+      categoria: {
+        select: {
+          slug: true,
+          nombre: true,
+          orden: true,
+          padre: { select: { slug: true, nombre: true, orden: true, activo: true } },
+        },
+      },
       variantes: {
         where: { activo: true, stock: { gt: 0 } },
         select: { talla: true, color: true },
@@ -676,6 +725,7 @@ export async function leerFacetas(slug: string): Promise<Facetas> {
   // Clave en minusculas: "negro" y "Negro" son el mismo color en el filtro.
   const colores = new Map<string, string>();
   const marcas = new Map<string, string>();
+  const tipos = new Map<string, { nombre: string; orden: number }>();
   let masBarato = Number.POSITIVE_INFINITY;
   let masCaro = Number.NEGATIVE_INFINITY;
   for (const p of productos) {
@@ -685,6 +735,8 @@ export async function leerFacetas(slug: string): Promise<Facetas> {
       if (!colores.has(clave)) colores.set(clave, v.color);
     }
     if (p.marca?.activo) marcas.set(p.marca.slug, p.marca.nombre);
+    const tipo = p.categoria.padre?.activo ? p.categoria.padre : p.categoria;
+    tipos.set(tipo.slug, { nombre: tipo.nombre, orden: tipo.orden });
     masBarato = Math.min(masBarato, Number(p.precio));
     masCaro = Math.max(masCaro, Number(p.precio));
   }
@@ -696,6 +748,9 @@ export async function leerFacetas(slug: string): Promise<Facetas> {
     marcas: [...marcas]
       .map(([slugMarca, nombre]) => ({ slug: slugMarca, nombre }))
       .sort((a, b) => a.nombre.localeCompare(b.nombre, "es")),
+    tipos: [...tipos]
+      .sort(([, a], [, b]) => a.orden - b.orden || a.nombre.localeCompare(b.nombre, "es"))
+      .map(([slugTipo, { nombre }]) => ({ slug: slugTipo, nombre })),
     precio: Number.isFinite(min) && Number.isFinite(max) && max > min ? { min, max } : null,
   };
 }
@@ -705,7 +760,7 @@ const TOPE_LISTADO = 120;
 
 function condicionesDeFiltros(f: FiltrosListado): Prisma.ProductoWhereInput[] {
   const y: Prisma.ProductoWhereInput[] = [];
-  if (f.sub) y.push({ categoria: { slug: f.sub, activo: true } });
+  if (f.sub) y.push(enTipo(f.sub));
   if (f.marca) y.push({ marca: { slug: f.marca, activo: true } });
   if (f.ofertas) y.push({ precioLista: { not: null } });
   if (f.precioMin !== null || f.precioMax !== null) {
@@ -747,10 +802,12 @@ export async function leerListado(
   slug: string,
   filtros: FiltrosListado,
 ): Promise<ProductoDeRejilla[]> {
+  const donde = await enCategoria(slug);
+  if (donde === null) return [];
   const productos = await prisma.producto.findMany({
     where: {
       activo: true,
-      AND: [enCategoria(slug), ...condicionesDeFiltros(filtros)],
+      AND: [donde, ...condicionesDeFiltros(filtros)],
     },
     orderBy: ordenDe(filtros),
     take: TOPE_LISTADO,
@@ -765,6 +822,12 @@ export async function leerListado(
  * encuentra los boxers de Fila. Cache corta por termino: no se invalida por
  * evento, caduca sola.
  */
+/** "hombre", "nino", "bebe": los publicos cuyo nombre empieza asi. Menos de 3 letras, ninguno. */
+function publicosDeTermino(termino: string): Publico[] {
+  if (termino.length < 3) return [];
+  return PUBLICOS.filter((p) => slugDesdeTexto(ETIQUETA_PUBLICO[p]).startsWith(termino));
+}
+
 export async function leerBusqueda(terminos: string[]): Promise<ProductoDeRejilla[]> {
   if (terminos.length === 0) return [];
   const productos = await prisma.producto.findMany({
@@ -778,6 +841,7 @@ export async function leerBusqueda(terminos: string[]): Promise<ProductoDeRejill
           { nombre: { contains: t, mode: "insensitive" as const } },
           { marca: { slug: { contains: t } } },
           { categoria: { slug: { contains: t } } },
+          { publicos: { hasSome: publicosDeTermino(t) } },
         ],
       })),
     },

@@ -56,7 +56,7 @@ const baiJamjuree = Bai_Jamjuree({
  */
 export function DocumentoRaiz({ children }: { children: ReactNode }) {
   return (
-    <html lang="es-PE" suppressHydrationWarning>
+    <html lang="es-PE" data-scroll-behavior="smooth" suppressHydrationWarning>
       {/* biome-ignore lint/style/noHeadElement: es el <head> del layout raiz del App Router, no next/head */}
       <head>
         <GuionTemaInicial />

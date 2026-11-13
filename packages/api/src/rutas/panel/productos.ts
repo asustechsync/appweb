@@ -57,7 +57,7 @@ function datosDeProducto(datos: z.infer<typeof esquemaProducto>) {
   return {
     nombre: datos.nombre,
     slug: datos.slug,
-    categoriaId: datos.categoriaId,
+    publicos: datos.publicos,
     marcaId: datos.marcaId ?? null,
     precio: datos.precio,
     precioLista: datos.precioLista ?? null,
@@ -125,17 +125,34 @@ async function exigirEtiquetas(
   }
 }
 
+/**
+ * La categoria del producto la decide su tipo de prenda (BX -> Boxers), como
+ * las colecciones automaticas de las tiendas grandes: nunca se elige a mano,
+ * asi un boxer no puede caer en "Medias". Las de publico ("Hombre") no
+ * guardan productos: los listan por `publicos`.
+ */
+async function categoriaDelTipo(
+  prisma: Prisma.TransactionClient,
+  codigoTipo: string,
+): Promise<string> {
+  const tipo = await prisma.tipoPrenda.findUnique({
+    where: { codigo: codigoTipo },
+    select: { nombre: true, categoria: { select: { id: true, publico: true } } },
+  });
+  if (tipo === null) rechazar("Ese tipo de prenda ya no existe.", "NOT_FOUND");
+  if (tipo.categoria === null || tipo.categoria.publico !== null) {
+    rechazar(`Asigna una categoría al tipo «${tipo.nombre}» en Atributos → Tallas.`);
+  }
+  return tipo.categoria.id;
+}
+
 export const productos = router({
   /**
-   * Lo que el formulario ofrece elegir: categorias y marcas, los tipos con
-   * sus tallas y los colores, diseños y etiquetas visibles.
+   * Lo que el formulario ofrece elegir: marcas, los tipos con sus tallas y su
+   * categoria, y los colores, diseños y etiquetas visibles.
    */
   opciones: gestionar.query(async ({ ctx }) => {
-    const [categorias, marcas, tipos, atributos] = await Promise.all([
-      ctx.prisma.categoria.findMany({
-        orderBy: [{ orden: "asc" }, { nombre: "asc" }],
-        select: { id: true, nombre: true, activo: true, padre: { select: { nombre: true } } },
-      }),
+    const [marcas, tipos, atributos] = await Promise.all([
       ctx.prisma.marca.findMany({
         orderBy: { nombre: "asc" },
         select: { id: true, nombre: true, activo: true },
@@ -143,7 +160,14 @@ export const productos = router({
       // Tambien los ocultos: un producto de un tipo oculto sigue ofreciendo sus tallas.
       ctx.prisma.tipoPrenda.findMany({
         orderBy: [{ orden: "asc" }, { nombre: "asc" }],
-        select: { codigo: true, nombre: true, palabras: true, tallas: true, activo: true },
+        select: {
+          codigo: true,
+          nombre: true,
+          palabras: true,
+          tallas: true,
+          activo: true,
+          categoria: { select: { nombre: true } },
+        },
       }),
       ctx.prisma.atributo.findMany({
         where: { activo: true },
@@ -154,7 +178,8 @@ export const productos = router({
     const deClase = (clase: (typeof atributos)[number]["clase"]) =>
       atributos.filter((a) => a.clase === clase).map((a) => a.nombre);
     return {
-      tipos,
+      // `categoria`: donde caeran sus productos; `null` = aun no se puede usar.
+      tipos: tipos.map(({ categoria, ...t }) => ({ ...t, categoria: categoria?.nombre ?? null })),
       colores: atributos
         .filter((a) => a.clase === "COLOR")
         .map((a) => ({ nombre: a.nombre, hex: a.hex })),
@@ -163,11 +188,6 @@ export const productos = router({
       materiales: deClase("MATERIAL"),
       ajustes: deClase("AJUSTE"),
       caracteristicas: deClase("CARACTERISTICA"),
-      categorias: categorias.map((c) => ({
-        id: c.id,
-        nombre: c.padre ? `${c.padre.nombre} › ${c.nombre}` : c.nombre,
-        activo: c.activo,
-      })),
       marcas,
     };
   }),
@@ -212,6 +232,7 @@ export const productos = router({
       const p = await ctx.prisma.producto.findUnique({
         where: { id: input.productoId },
         include: {
+          categoria: { select: { nombre: true } },
           imagenes: { orderBy: { orden: "asc" }, select: { id: true, url: true, alt: true } },
           variantes: {
             orderBy: [{ talla: "asc" }, { color: "asc" }, { disenoCodigo: "asc" }],
@@ -233,10 +254,12 @@ export const productos = router({
       return {
         id: p.id,
         codigo: p.codigo,
+        // Solo se muestra: la decide el tipo de prenda.
+        categoria: p.categoria.nombre,
         datos: {
           nombre: p.nombre,
           slug: p.slug,
-          categoriaId: p.categoriaId,
+          publicos: p.publicos,
           marcaId: p.marcaId,
           precio: Number(p.precio),
           precioLista: p.precioLista === null ? null : Number(p.precioLista),
@@ -272,6 +295,7 @@ export const productos = router({
   crear: gestionar.input(esquemaProductoNuevo).mutation(async ({ ctx, input }) => {
     const tipo = await ctx.prisma.tipoPrenda.findUnique({ where: { codigo: input.tipo } });
     if (tipo === null || !tipo.activo) rechazar("Elige un tipo de prenda de la lista.");
+    const categoriaId = await categoriaDelTipo(ctx.prisma, input.tipo);
     await exigirEtiquetas(ctx.prisma, input.datos.etiquetas, []);
     try {
       // Codigo de modelo: el siguiente del tipo elegido. Si dos altas chocan,
@@ -284,6 +308,7 @@ export const productos = router({
         data: {
           ...datosDeProducto(input.datos),
           ...specsConDetalles(null, input.datos.detalles),
+          categoriaId,
           activo: false,
           codigo: siguienteCodigoProducto(
             input.tipo,
@@ -308,6 +333,7 @@ export const productos = router({
       where: { id: input.productoId },
       select: {
         slug: true,
+        codigo: true,
         activo: true,
         categoria: { select: { slug: true } },
         variantes: { select: { activo: true, stock: true } },
@@ -318,6 +344,10 @@ export const productos = router({
       },
     });
     if (antes === null) rechazar("Ese producto no existe.", "NOT_FOUND");
+    // La categoria sigue a su tipo. Un producto sin codigo (anterior a los
+    // tipos) se queda donde esta hasta que se regeneren los SKU.
+    const tipo = antes.codigo ? tipoDeCodigo(antes.codigo) : null;
+    const categoriaId = tipo ? await categoriaDelTipo(ctx.prisma, tipo) : undefined;
     await exigirEtiquetas(ctx.prisma, input.datos.etiquetas, [
       ...(antes.etiqueta ? [antes.etiqueta] : []),
       ...antes.etiquetasExtra,
@@ -347,6 +377,7 @@ export const productos = router({
         data: {
           ...datosDeProducto(input.datos),
           ...specsConDetalles(antes.specs, input.datos.detalles),
+          ...(categoriaId ? { categoriaId } : {}),
         },
         select: { slug: true, activo: true, categoria: { select: { slug: true } } },
       });
@@ -396,6 +427,7 @@ export const productos = router({
           enBuscador: true,
           specs: true,
           categoriaId: true,
+          publicos: true,
           marcaId: true,
           precio: true,
           precioLista: true,
@@ -460,6 +492,7 @@ export const productos = router({
             enBuscador: origen.enBuscador,
             ...(origen.specs === null ? {} : { specs: origen.specs as Prisma.InputJsonValue }),
             categoriaId: origen.categoriaId,
+            publicos: origen.publicos,
             marcaId: origen.marcaId,
             precio: origen.precio,
             precioLista: origen.precioLista,

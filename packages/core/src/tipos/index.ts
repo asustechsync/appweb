@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { errorNumeroDocumento, TIPOS_DOCUMENTO } from "../usuarios/documento";
 import { GENEROS } from "../usuarios/genero";
+import { ordenarPublicos, PUBLICOS } from "../catalogo/publicos";
 import { PERIODOS } from "../panel/resumen";
 import { ESTADOS_PEDIDO } from "../pedidos/estados";
 import { ESTADOS_PAGO } from "../pedidos/gestion";
@@ -404,7 +405,12 @@ export const esquemaProducto = z
       .min(3, "La dirección web es demasiado corta")
       .max(80, "La dirección web es demasiado larga")
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Solo minúsculas, números y guiones"),
-    categoriaId: z.string().min(1, "Elige una categoría"),
+    // Sin categoria: la decide el tipo de prenda (BX -> Boxers), nunca a mano.
+    // Para quien es: sale en la categoria de cada publico. Varios si es unisex.
+    publicos: z
+      .array(z.enum(PUBLICOS))
+      .min(1, "Elige para quién es")
+      .transform((p) => ordenarPublicos(p)),
     marcaId: z.string().min(1).nullable().optional(),
     precio: z
       .number({ error: "Escribe el precio" })
@@ -538,6 +544,9 @@ export const esquemaCategoria = z.object({
   nombre: z.string().trim().min(2, "Escribe el nombre").max(60, "El nombre es demasiado largo"),
   slug: esquemaSlug,
   padreId: z.string().min(1).nullable(),
+  // Puesto = categoria de publico ("Hombre"): lista los productos de ese
+  // publico en vez de guardar los suyos. `null` = categoria de tipo ("Medias").
+  publico: z.enum(PUBLICOS).nullable().default(null),
   descripcion: textoOpcional(500, "La descripción es demasiado larga"),
   imagenUrl: urlOpcional,
   tituloSeo: textoOpcional(70, "El título SEO admite hasta 70 caracteres"),
@@ -575,6 +584,9 @@ export const esquemaTipoPrenda = z.object({
   nombre: z.string().trim().min(2, "Escribe el nombre").max(40, "El nombre es demasiado largo"),
   tallas: listaDeTextos(20, 12).refine((t) => t.length > 0, "Escribe al menos una talla"),
   palabras: listaDeTextos(20, 30),
+  // Categoria de tipo donde caen sus productos ("Boxers"). Sin ella el tipo
+  // existe, pero aun no se pueden crear productos de el.
+  categoriaId: z.string().min(1).nullable().default(null),
   orden: esquemaOrden,
   activo: z.boolean().default(true),
 });

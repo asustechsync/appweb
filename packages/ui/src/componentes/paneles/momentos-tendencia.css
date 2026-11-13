@@ -1,68 +1,66 @@
-/* Capsula aparte bajo la grafica: datos en columnas separadas por una linea fina. */
+/* Franja baja bajo la grafica, solo tipografia. Movil: datos apilados con una
+   linea fina entre ellos. Desde 48rem: columnas iguales. */
 .ui-momentos-tendencia {
   display: grid;
-  padding-block: var(--espacio-3);
+  padding-block: var(--espacio-2);
   border-radius: var(--radio-bloque);
   background: var(--color-fondo);
 }
 .ui-momentos-tendencia__dato {
   display: grid;
-  align-content: start;
   min-inline-size: 0;
-  gap: var(--espacio-1);
-  padding-inline: var(--espacio-3);
+  gap: 2px;
+  padding: var(--espacio-2) var(--espacio-4);
 }
 .ui-momentos-tendencia__dato + .ui-momentos-tendencia__dato {
-  border-inline-start: 1px solid var(--color-borde);
+  border-block-start: 1px solid var(--color-borde);
 }
-.ui-momentos-tendencia__etiqueta {
-  overflow: hidden;
-  color: var(--color-textoSuave);
-  font-size: var(--tipo-tamano-xs);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.ui-momentos-tendencia__fila {
+  display: flex;
+  align-items: baseline;
+  min-inline-size: 0;
+  gap: var(--espacio-2);
 }
+/* Las cifras siempre van en el color normal; solo la flecha lleva color. */
 .ui-momentos-tendencia__valor {
+  overflow: hidden;
   color: var(--color-texto);
   font-family: var(--tipo-familia-cifras);
-  font-size: var(--tipo-tamano-lg);
+  font-size: var(--tipo-tamano-xl);
   font-weight: var(--tipo-peso-fuerte);
+  line-height: 1.1;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Nota tenue con su cifra corta en negrita; el color lo lleva la cifra grande. */
-.ui-momentos-tendencia__nota {
+.ui-momentos-tendencia__porcentaje {
+  flex: none;
+  color: var(--color-textoSuave);
+  font-size: var(--tipo-tamano-xs);
+  white-space: nowrap;
+}
+.ui-momentos-tendencia__flecha--sube {
+  color: var(--color-exito);
+}
+.ui-momentos-tendencia__flecha--baja {
+  color: var(--color-error);
+}
+.ui-momentos-tendencia__pie {
   overflow: hidden;
-  color: var(--color-textoTenue);
+  color: var(--color-textoSuave);
   font-size: var(--tipo-tamano-xs);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.ui-momentos-tendencia__destacado {
-  color: var(--color-textoSuave);
-  font-weight: var(--tipo-peso-fuerte);
+.ui-momentos-tendencia__nota {
+  color: var(--color-textoTenue);
 }
-.ui-momentos-tendencia__valor--sube {
-  color: var(--color-exito);
-}
-.ui-momentos-tendencia__valor--baja {
-  color: var(--color-error);
-}
-.ui-momentos-tendencia__valor--info {
-  color: var(--color-info);
-}
-.ui-momentos-tendencia__valor--alerta {
-  color: var(--color-alerta);
-}
-.ui-momentos-tendencia__barra {
-  display: block;
-  block-size: var(--espacio-1);
-  overflow: hidden;
-  border-radius: var(--radio-etiqueta);
-  background: var(--color-fondoSutil);
-}
-.ui-momentos-tendencia__relleno {
-  display: block;
-  block-size: 100%;
-  border-radius: inherit;
-  background: var(--color-info);
+@media (min-width: 48rem) {
+  .ui-momentos-tendencia {
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+  }
+  .ui-momentos-tendencia__dato + .ui-momentos-tendencia__dato {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--color-borde);
+  }
 }

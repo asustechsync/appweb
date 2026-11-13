@@ -9,6 +9,7 @@ import {
   Alerta,
   Boton,
   Campo,
+  CampoSelect,
   Cargando,
   Casilla,
   ChipAgregar,
@@ -21,6 +22,7 @@ import {
   Tarjeta,
 } from "@appweb/ui";
 
+import { revalidarTienda } from "@/lib/revalidar";
 import { useTRPC } from "@/lib/trpc";
 import { mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 
@@ -37,7 +39,7 @@ import { mensajeDeFallo, numeroDesdeTexto } from "@appweb/core/formato";
 type Pestana = "TALLAS" | ClaseAtributo;
 
 const PESTANAS: { id: Pestana; etiqueta: string }[] = [
-  { id: "TALLAS", etiqueta: "Tallas" },
+  { id: "TALLAS", etiqueta: "Tipos y tallas" },
   { id: "COLOR", etiqueta: "Colores" },
   { id: "DISENO", etiqueta: "Diseños" },
   { id: "ETIQUETA", etiqueta: "Etiquetas" },
@@ -48,7 +50,7 @@ const PESTANAS: { id: Pestana; etiqueta: string }[] = [
 
 const AYUDA: Record<Pestana, string> = {
   TALLAS:
-    "Cada tipo de prenda tiene sus tallas: son las que se marcan al crear variantes. Las dos letras del tipo inician el código del modelo (BX012).",
+    "Cada tipo de prenda tiene su código (BX), sus tallas y su categoría. El producto solo elige el tipo: el código inicia su modelo (BX012) y la categoría donde aparece sale de aquí.",
   COLOR:
     "Cada color tiene un código fijo de dos dígitos que va en el SKU; la decena es la familia. Arrastra un chip para cambiar el orden.",
   DISENO: "Su número en el SKU (1 a 9) se asigna dentro de cada producto. Arrastra para ordenar.",
@@ -86,7 +88,7 @@ export function Atributos() {
       />
       <p>{AYUDA[pestana]}</p>
       {pestana === "TALLAS" ? (
-        <PestanaTallas tipos={lista.data.tipos} />
+        <PestanaTallas tipos={lista.data.tipos} categorias={lista.data.categorias} />
       ) : (
         <PestanaValores
           key={pestana}
@@ -106,12 +108,27 @@ interface TipoDelPanel {
   nombre: string;
   tallas: string[];
   palabras: string[];
+  /** Categoria de tipo donde caen sus productos; `null` = aun no se puede usar. */
+  categoriaId: string | null;
+  categoria: string | null;
   orden: number;
   activo: boolean;
   usos: number;
 }
 
-function PestanaTallas({ tipos }: { tipos: TipoDelPanel[] }) {
+interface CategoriaDeTipo {
+  id: string;
+  nombre: string;
+  activo: boolean;
+}
+
+function PestanaTallas({
+  tipos,
+  categorias,
+}: {
+  tipos: TipoDelPanel[];
+  categorias: CategoriaDeTipo[];
+}) {
   const trpc = useTRPC();
   const refrescar = useRefrescar();
   const [editando, setEditando] = useState<string | null>(null);
@@ -137,6 +154,7 @@ function PestanaTallas({ tipos }: { tipos: TipoDelPanel[] }) {
       nombre: tipo.nombre,
       tallas,
       palabras: tipo.palabras,
+      categoriaId: tipo.categoriaId,
       orden: tipo.orden,
       activo: tipo.activo,
     });
@@ -147,6 +165,7 @@ function PestanaTallas({ tipos }: { tipos: TipoDelPanel[] }) {
     return (
       <FormularioTipo
         tipo={tipo}
+        categorias={categorias}
         onListo={(mensaje) => {
           setEditando(null);
           setAviso(mensaje ?? null);
@@ -162,7 +181,7 @@ function PestanaTallas({ tipos }: { tipos: TipoDelPanel[] }) {
       {tipos.map((t) => (
         <GrupoChips
           key={t.id}
-          titulo={`${t.codigo} · ${t.nombre} · ${t.usos} ${t.usos === 1 ? "producto" : "productos"}${t.activo ? "" : " · oculto"}`}
+          titulo={`${t.codigo} · ${t.nombre} → ${t.categoria ?? "sin categoría"} · ${t.usos} ${t.usos === 1 ? "producto" : "productos"}${t.activo ? "" : " · oculto"}`}
           accion={
             <Boton variante="secundario" onClick={() => setEditando(t.id)}>
               Editar
@@ -213,9 +232,11 @@ function listaDesdeTexto(texto: string): string[] {
 
 function FormularioTipo({
   tipo,
+  categorias,
   onListo,
 }: {
   tipo: TipoDelPanel | null;
+  categorias: CategoriaDeTipo[];
   onListo: (mensaje?: string) => void;
 }) {
   const trpc = useTRPC();
@@ -224,15 +245,19 @@ function FormularioTipo({
   const [nombre, setNombre] = useState(tipo?.nombre ?? "");
   const [tallas, setTallas] = useState(tipo?.tallas.join(", ") ?? "");
   const [palabras, setPalabras] = useState(tipo?.palabras.join(", ") ?? "");
+  const [categoriaId, setCategoriaId] = useState(tipo?.categoriaId ?? "");
   const [orden, setOrden] = useState(String(tipo?.orden ?? 0));
   const [activo, setActivo] = useState(tipo?.activo ?? true);
   const [error, setError] = useState<string | null>(null);
 
   const guardar = useMutation(
     trpc.panel.atributos.guardarTipo.mutationOptions({
-      onSuccess: () => {
+      onSuccess: async (r) => {
         refrescar();
-        onListo(tipo ? "Tipo de prenda guardado." : "Tipo de prenda creado.");
+        // Solo si cambio de categoria y movio productos: sus paginas se regeneran.
+        const tiendaAlDia = await revalidarTienda(r.revalidar);
+        const mensaje = tipo ? "Tipo de prenda guardado." : "Tipo de prenda creado.";
+        onListo(tiendaAlDia ? mensaje : `${mensaje} La tienda tardará unos minutos en mostrarlo.`);
       },
       onError: (fallo) => setError(mensajeDeFallo(fallo)),
     }),
@@ -249,6 +274,7 @@ function FormularioTipo({
           nombre,
           tallas: listaDesdeTexto(tallas),
           palabras: listaDesdeTexto(palabras),
+          categoriaId: categoriaId === "" ? null : categoriaId,
           orden: Math.trunc(numeroDesdeTexto(orden || "0")),
           activo,
         });
@@ -274,6 +300,19 @@ function FormularioTipo({
           requerido
         />
       </FilaUnida>
+      <CampoSelect
+        id="tipo-categoria"
+        etiqueta="Categoría donde aparecen sus productos"
+        valor={categoriaId}
+        opciones={[
+          { valor: "", etiqueta: "Sin categoría (aún no se puede usar)" },
+          ...categorias.map((c) => ({
+            valor: c.id,
+            etiqueta: c.activo ? c.nombre : `${c.nombre} (oculta)`,
+          })),
+        ]}
+        onCambio={setCategoriaId}
+      />
       <Campo
         id="tipo-tallas"
         etiqueta="Tallas (separadas por comas)"

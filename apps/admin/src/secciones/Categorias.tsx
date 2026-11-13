@@ -4,7 +4,7 @@ import { type ReactNode, useMemo, useState } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { slugDesdeTexto } from "@appweb/core";
+import { ETIQUETA_PUBLICO, type Publico, PUBLICOS, slugDesdeTexto } from "@appweb/core";
 import {
   Alerta,
   BarraLista,
@@ -57,6 +57,8 @@ interface Ficha {
 
 interface CategoriaDelPanel extends Ficha {
   padreId: string | null;
+  /** Puesta = categoria de publico: va en el menu y lista por publico. */
+  publico: Publico | null;
   imagenUrl: string;
   hijas: number;
 }
@@ -370,7 +372,13 @@ export function Categorias() {
       ruta="/categorias/"
       fichas={[...ordenadas, ...huerfanas]}
       imagenDe={(c) => c.imagenUrl}
-      detalleDe={(c) => (c.padreId ? `dentro de ${nombreDe(c.padreId)}` : null)}
+      detalleDe={(c) =>
+        c.publico
+          ? `público: ${ETIQUETA_PUBLICO[c.publico]}`
+          : c.padreId
+            ? `dentro de ${nombreDe(c.padreId)}`
+            : "tipo de producto"
+      }
       cifrasDe={(c) => [{ valor: String(c.hijas), etiqueta: "Subcategorías" }]}
       formulario={(c, onListo) => (
         <FormularioCategoria categoria={c} todas={todas} onListo={onListo} />
@@ -393,6 +401,7 @@ function FormularioCategoria({
   const [nombre, setNombre] = useState(categoria?.nombre ?? "");
   const [slug, setSlug] = useState(categoria?.slug ?? "");
   const [padreId, setPadreId] = useState(categoria?.padreId ?? "");
+  const [publico, setPublico] = useState<Publico | "">(categoria?.publico ?? "");
   const [descripcion, setDescripcion] = useState(categoria?.descripcion ?? "");
   const [imagenUrl, setImagenUrl] = useState(categoria?.imagenUrl ?? "");
   const [tituloSeo, setTituloSeo] = useState(categoria?.tituloSeo ?? "");
@@ -414,8 +423,9 @@ function FormularioCategoria({
     }),
   );
 
-  // El padre puede ser cualquiera menos ella misma (los ciclos los rechaza core).
-  const padres = todas.filter((c) => c.id !== categoria?.id);
+  // El padre puede ser cualquiera menos ella misma y las de publico, que no
+  // tienen hijas (los ciclos los rechaza core).
+  const padres = todas.filter((c) => c.id !== categoria?.id && c.publico === null);
 
   return (
     <Formulario
@@ -427,6 +437,7 @@ function FormularioCategoria({
           nombre,
           slug,
           padreId: padreId === "" ? null : padreId,
+          publico: publico === "" ? null : publico,
           descripcion,
           imagenUrl,
           tituloSeo,
@@ -461,15 +472,33 @@ function FormularioCategoria({
       </FilaUnida>
       <FilaUnida iguales>
         <CampoSelect
-          id="categoria-padre"
-          etiqueta="Va dentro de"
-          valor={padreId}
+          id="categoria-publico"
+          etiqueta="Clase"
+          valor={publico}
           opciones={[
-            { valor: "", etiqueta: "Ninguna (primer nivel)" },
-            ...padres.map((c) => ({ valor: c.id, etiqueta: c.nombre })),
+            { valor: "", etiqueta: "Tipo de producto (aquí viven los productos)" },
+            ...PUBLICOS.map((p) => ({
+              valor: p,
+              etiqueta: `Público: ${ETIQUETA_PUBLICO[p]} (va en el menú)`,
+            })),
           ]}
-          onCambio={setPadreId}
+          onCambio={(valor) => {
+            setPublico(valor as Publico | "");
+            if (valor !== "") setPadreId("");
+          }}
         />
+        {publico === "" ? (
+          <CampoSelect
+            id="categoria-padre"
+            etiqueta="Va dentro de"
+            valor={padreId}
+            opciones={[
+              { valor: "", etiqueta: "Ninguna (primer nivel)" },
+              ...padres.map((c) => ({ valor: c.id, etiqueta: c.nombre })),
+            ]}
+            onCambio={setPadreId}
+          />
+        ) : null}
         <Campo id="categoria-orden" etiqueta="Orden" valor={orden} onCambio={setOrden} />
       </FilaUnida>
       <CampoTexto

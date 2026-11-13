@@ -33,6 +33,9 @@ const config: NextConfig = {
   // Clase A: HTML cacheado que no toca la base en el request del visitante.
   // `experimental.useCache` esta deprecado en esta version; absorbido aqui.
   cacheComponents: true,
+  // Prefetch solo de la parte estatica de cada ruta; recomendado junto a
+  // Cache Components y por defecto en la proxima version mayor de Next.
+  partialPrefetching: true,
   images: {
     remotePatterns: hostFotos
       ? [{ protocol: "https", hostname: hostFotos, pathname: "/storage/v1/object/public/**" }]

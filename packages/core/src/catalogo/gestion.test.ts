@@ -181,7 +181,12 @@ describe("requisitos de publicacion", () => {
 });
 
 describe("esquemaProducto", () => {
-  const base = { nombre: "Boxer pima", slug: "boxer-pima", categoriaId: "c1", precio: 29.9 };
+  const base = {
+    nombre: "Boxer pima",
+    slug: "boxer-pima",
+    publicos: ["HOMBRE"],
+    precio: 29.9,
+  };
 
   it("acepta un producto sin oferta", () => {
     expect(esquemaProducto.safeParse(base).success).toBe(true);

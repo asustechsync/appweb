@@ -154,6 +154,18 @@ model Direccion {
 
 // ═══ CATALOGO ══════════════════════════════════════════════════════════════
 
+// Para quien es una prenda. Atributo del producto, como la talla o el color:
+// una media unisex se registra una vez y sale en Hombre y en Mujer.
+enum Publico {
+  HOMBRE
+  MUJER
+  NINOS
+  BEBES
+}
+
+// Dos clases de categoria. De tipo ("Medias", `publico` vacio): ahi vive el
+// producto (`Producto.categoriaId`). De publico ("Hombre", `publico` puesto):
+// no guarda productos; lista los que tienen ese publico y filtra por tipo.
 model Categoria {
   // Identidad
   id             String   @id @default(cuid())
@@ -164,6 +176,9 @@ model Categoria {
   imagenUrl      String?
   // Arbol
   padreId        String?
+  // Puesto = categoria de publico: sale en el menu y lista los productos que
+  // lo tienen en `Producto.publicos`. Vacio = categoria de tipo.
+  publico        Publico? @unique
   // SEO
   tituloSeo      String?
   descripcionSeo String?
@@ -175,9 +190,11 @@ model Categoria {
   creadoEn       DateTime @default(now())
   editadoEn      DateTime @updatedAt
 
-  padre     Categoria?  @relation("Arbol", fields: [padreId], references: [id])
-  hijas     Categoria[] @relation("Arbol")
+  padre     Categoria?   @relation("Arbol", fields: [padreId], references: [id])
+  hijas     Categoria[]  @relation("Arbol")
   productos Producto[]
+  // Tipos de prenda que la llenan: "Boxers" <- BX. Solo en las de tipo.
+  tipos     TipoPrenda[]
 
   @@index([padreId])
   // Menu de la cabecera: activas, de primer nivel, por orden.
@@ -218,19 +235,27 @@ model Marca {
 // panel ofrece marcar al crear variantes de ese tipo.
 model TipoPrenda {
   // Identidad
-  id       String   @id @default(cuid())
-  codigo   String   @unique
-  nombre   String   @unique
+  id          String   @id @default(cuid())
+  codigo      String   @unique
+  nombre      String   @unique
   // Contenido
   // Palabras que lo delatan en el nombre del producto: "boxer", "medias".
-  palabras String[] @default([])
-  tallas   String[] @default([])
+  palabras    String[] @default([])
+  tallas      String[] @default([])
   // Estado. Oculto = ya no se ofrece al crear; los productos que lo usan siguen igual.
-  orden    Int      @default(0)
-  activo   Boolean  @default(true)
+  orden       Int      @default(0)
+  activo      Boolean  @default(true)
+  // Relaciones
+  // La categoria de tipo donde caen sus productos: el producto elige el tipo y
+  // la categoria sale de aqui, nunca a mano (asi un boxer no cae en "Medias").
+  // Vacia = aun no se pueden crear productos de este tipo.
+  categoriaId String?
   // Fechas
-  creadoEn DateTime @default(now())
+  creadoEn    DateTime @default(now())
 
+  categoria Categoria? @relation(fields: [categoriaId], references: [id])
+
+  @@index([categoriaId])
   @@map("tipos_prenda")
 }
 
@@ -271,13 +296,13 @@ model Atributo {
 // El producto es la ficha que se ve; lo que se vende es la Variante.
 model Producto {
   // Identidad
-  id               String   @id @default(cuid())
-  slug             String   @unique
+  id               String    @id @default(cuid())
+  slug             String    @unique
   // Codigo del modelo para el SKU: tipo de prenda + numero ("BX012"). Lo
   // asigna `siguienteCodigoProducto` al crear y no cambia nunca, aunque el
   // producto se renombre. Opcional solo para los productos anteriores a el;
   // `npm run regenerar-sku -w @appweb/db` se los pone.
-  codigo           String?  @unique
+  codigo           String?   @unique
   nombre           String
   // Contenido
   descripcion      String?
@@ -289,42 +314,45 @@ model Producto {
   etiqueta         String?
   // Las demas etiquetas del producto, ademas de `etiqueta` (la principal, la
   // que la tarjeta destaca). Tambien nombres de atributos ETIQUETA.
-  etiquetasExtra   String[] @default([])
+  etiquetasExtra   String[]  @default([])
   // Muestra "Envío gratis" sobre la foto de la tarjeta. Lo marca el panel a mano.
-  envioGratis      Boolean  @default(false)
+  envioGratis      Boolean   @default(false)
   // Hasta que dia (inclusive) la etiqueta "Nuevo" se muestra; pasado ese dia la
   // tienda la deja de mostrar sola. Sin fecha, la etiqueta no vence.
   nuevoHasta       DateTime? @db.Date
   // Reglas de la tienda para este producto. Todas encendidas por defecto: asi
   // se comportaban los productos antes de poder cambiarlas.
   // Sin stock: sigue en los listados como "Agotado"; apagado, se oculta de ellos.
-  mostrarAgotado   Boolean  @default(true)
+  mostrarAgotado   Boolean   @default(true)
   // Apagado: la ficha no muestra reseñas ni deja escribir nuevas.
-  permiteResenas   Boolean  @default(true)
+  permiteResenas   Boolean   @default(true)
   // Apagado: no se puede poner dentro de un pack.
-  enPacks          Boolean  @default(true)
+  enPacks          Boolean   @default(true)
   // Apagado: no sale al buscar; sigue en su categoria y en su marca.
-  enBuscador       Boolean  @default(true)
+  enBuscador       Boolean   @default(true)
   // Datos tecnicos que no justifican columna: material, composicion, cuidado.
   // Ejemplo: { "material": "Algodon pima", "composicion": "85% algodon, 15% elastano" }
   specs            Json?
+  // Para quien es: sale en la categoria de cada publico (Hombre, Mujer...).
+  // Varios a la vez si es unisex; vacio, solo en su categoria de tipo.
+  publicos         Publico[] @default([])
   // Relaciones
   categoriaId      String
   marcaId          String?
   // Precio, comun a todas las variantes. `precioLista` es el precio de antes:
   // mayor que `precio` cuando hay oferta (CHECK en prisma/sql/restricciones.sql).
-  precio           Decimal  @db.Decimal(10, 2)
-  precioLista      Decimal? @db.Decimal(10, 2)
+  precio           Decimal   @db.Decimal(10, 2)
+  precioLista      Decimal?  @db.Decimal(10, 2)
   // SEO
   tituloSeo        String?
   descripcionSeo   String?
   // Estado. `destacado` = sale en "Productos destacados" de portada; no sirve
   // de nada si `activo` es false: un producto oculto no aparece en ningun lado.
-  destacado        Boolean  @default(false)
-  activo           Boolean  @default(true)
+  destacado        Boolean   @default(false)
+  activo           Boolean   @default(true)
   // Fechas
-  creadoEn         DateTime @default(now())
-  editadoEn        DateTime @updatedAt
+  creadoEn         DateTime  @default(now())
+  editadoEn        DateTime  @updatedAt
 
   categoria Categoria        @relation(fields: [categoriaId], references: [id])
   marca     Marca?           @relation(fields: [marcaId], references: [id])
@@ -334,6 +362,8 @@ model Producto {
 
   // El indice que sostiene el listado de categoria de Clase A.
   @@index([categoriaId, activo])
+  // Listado de una categoria de publico: `publicos @> {HOMBRE}`.
+  @@index([publicos], type: Gin)
   // Pagina de marca y filtro por marca.
   @@index([marcaId, activo])
   // "Productos nuevos" de la portada: activos, del mas reciente al mas viejo.

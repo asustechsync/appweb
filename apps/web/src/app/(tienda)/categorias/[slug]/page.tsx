@@ -99,18 +99,17 @@ async function Listado({
 }) {
   const base = `/categorias/${categoria.slug}`;
   const leidos = filtrosDesdeUrl(await searchParams);
-  // Una subcategoria que no es hija de esta se ignora: no se mezclan arboles.
-  const filtros = categoria.hijas.some((h) => h.slug === leidos.sub)
-    ? leidos
-    : { ...leidos, sub: null };
+  const facetas = await facetasDeCategoria(categoria.slug);
+  // El filtro de tipo: las hijas en una categoria de tipo ("Medias" ->
+  // Deportivas), los tipos con productos en una de publico ("Hombre" -> Medias).
+  const subs = categoria.publico !== null ? facetas.tipos : categoria.hijas;
+  // Una subcategoria que no esta en ese filtro se ignora: no se mezclan arboles.
+  const filtros = subs.some((h) => h.slug === leidos.sub) ? leidos : { ...leidos, sub: null };
 
-  const [productos, facetas] = await Promise.all([
-    productosDeCategoria(categoria.slug, filtros),
-    facetasDeCategoria(categoria.slug),
-  ]);
+  const productos = await productosDeCategoria(categoria.slug, filtros);
 
   const { orden, filtros: grupos } = separarOrden(
-    gruposDeFiltros(base, filtros, { hijas: categoria.hijas, facetas }),
+    gruposDeFiltros(base, filtros, { hijas: subs, facetas }),
   );
 
   return (

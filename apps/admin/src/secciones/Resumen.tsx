@@ -289,32 +289,32 @@ export function Resumen({
     const activas = valores.filter((valor) => valor > 0).length;
     const porcentaje = (parte: number, todo: number) =>
       `${todo > 0 ? Math.round((parte / todo) * 100) : 0}%`;
-    const flecha = grafica.tono === "sube" ? "▲" : grafica.tono === "baja" ? "▼" : "•";
+    const flecha = grafica.tono === "sube" ? "▲" : grafica.tono === "baja" ? "▼" : null;
     const unidad = metrica === "ventas" ? "" : grafica.titulo.toLowerCase();
+    // Cifra real primero: el porcentaje es apoyo, no el dato.
     const datosMomentos: DatoMomento[] = [
       {
         tipo: "total",
-        etiqueta: `${titulo} vs ${etiquetaAnterior.toLowerCase()}`,
-        valor: `${flecha} ${grafica.cambio.replace(/^[+−-]/, "")}`,
-        destacado: grafica.valor,
-        nota: unidad,
+        etiqueta: `${grafica.titulo} ${titulo.toLowerCase()}`,
+        valor: grafica.valor,
+        flecha,
+        insignia: grafica.cambio.replace(/^[+−-]/, ""),
+        nota: `${etiquetaAnterior.toLowerCase()} ${grafica.previo}`,
         tono: grafica.tono,
       },
       {
         tipo: "pico",
-        etiqueta: `${porTramo ? "Tramo pico" : "Hora pico"} · ${nombres[mejor.indice] ?? "—"}`,
-        valor: porcentaje(mejor.valor, total),
-        destacado: grafica.formatear(mejor.valor),
-        nota: `de ${grafica.formatear(total)}${unidad ? ` ${unidad}` : ""}`,
-        tono: "info",
+        etiqueta: "Mejor momento",
+        valor: nombres[mejor.indice] ?? "—",
+        insignia: porcentaje(mejor.valor, total),
+        nota: `${grafica.formatear(mejor.valor)}${unidad ? ` ${unidad}` : ""}`,
       },
       {
         tipo: "actividad",
-        etiqueta: "Actividad",
-        valor: porcentaje(activas, valores.length),
-        destacado: String(activas),
-        nota: `de ${valores.length} ${porTramo ? "tramos" : "h"}`,
-        tono: "alerta",
+        etiqueta: "Con actividad",
+        valor: `${activas} de ${valores.length}`,
+        insignia: porcentaje(activas, valores.length),
+        nota: porTramo ? "tramos del periodo" : "horas del día",
       },
     ];
     return datosMomentos;

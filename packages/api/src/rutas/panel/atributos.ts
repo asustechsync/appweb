@@ -4,8 +4,8 @@
  *
  * No se borran ni se renombran: la variante y el producto guardan el nombre
  * como texto y el SKU lleva el codigo. Lo que ya no se usa se oculta, y deja
- * de ofrecerse al crear sin tocar lo ya creado. Por eso ninguna escritura de
- * aqui regenera la tienda.
+ * de ofrecerse al crear sin tocar lo ya creado. Por eso casi ninguna
+ * escritura de aqui regenera la tienda: solo mover un tipo de categoria.
  */
 
 import { TRPCError } from "@trpc/server";
@@ -18,6 +18,14 @@ import { rechazar } from "../../stock";
 import { exige, router } from "../../trpc";
 
 const gestionar = exige("gestionar_productos");
+
+/** Que regenerar en la tienda tras guardar un tipo: solo si movio productos. */
+interface RevalidarTipo {
+  productos: { slug: string; slugCategoria: string }[];
+  catalogo: boolean;
+}
+
+const SIN_CAMBIOS_EN_TIENDA: RevalidarTipo = { productos: [], catalogo: false };
 
 function traducirError(error: unknown, que: string): never {
   if (error instanceof TRPCError) throw error;
@@ -40,9 +48,12 @@ function contarUsos(valores: { valor: string | null; cantidad: number }[]) {
 export const atributos = router({
   /** Todo junto: son listas cortas y las cuatro secciones las comparten. */
   listar: gestionar.query(async ({ ctx }) => {
-    const [tipos, valores, productos, colores, disenos, etiquetas, conDetalles] = await Promise.all(
-      [
-        ctx.prisma.tipoPrenda.findMany({ orderBy: [{ orden: "asc" }, { nombre: "asc" }] }),
+    const [tipos, valores, productos, colores, disenos, etiquetas, conDetalles, categorias] =
+      await Promise.all([
+        ctx.prisma.tipoPrenda.findMany({
+          orderBy: [{ orden: "asc" }, { nombre: "asc" }],
+          include: { categoria: { select: { nombre: true } } },
+        }),
         ctx.prisma.atributo.findMany({
           orderBy: [{ orden: "asc" }, { codigo: "asc" }, { nombre: "asc" }],
         }),
@@ -57,8 +68,13 @@ export const atributos = router({
           where: { specs: { not: Prisma.DbNull } },
           select: { specs: true },
         }),
-      ],
-    );
+        // Las categorias que un tipo puede llenar: solo las de tipo.
+        ctx.prisma.categoria.findMany({
+          where: { publico: null },
+          orderBy: [{ orden: "asc" }, { nombre: "asc" }],
+          select: { id: true, nombre: true, activo: true },
+        }),
+      ]);
 
     // Los detalles viven en `specs`: cada producto cuenta una vez por valor.
     const detalles = conDetalles.map((p) => detallesDeSpecs(p.specs));
@@ -81,10 +97,13 @@ export const atributos = router({
         nombre: t.nombre,
         tallas: t.tallas,
         palabras: t.palabras,
+        categoriaId: t.categoriaId,
+        categoria: t.categoria?.nombre ?? null,
         orden: t.orden,
         activo: t.activo,
         usos: productos.filter((p) => p.codigo?.startsWith(t.codigo)).length,
       })),
+      categorias,
       valores: valores.map((a) => ({
         id: a.id,
         clase: a.clase,
@@ -98,20 +117,74 @@ export const atributos = router({
     };
   }),
 
-  /** El codigo de un tipo solo se fija al crearlo: es el prefijo de sus modelos. */
+  /**
+   * El codigo de un tipo solo se fija al crearlo: es el prefijo de sus modelos.
+   * Su categoria si cambia, y arrastra a sus productos: la categoria de un
+   * producto es siempre la de su tipo. Solo ese cambio regenera la tienda.
+   */
   guardarTipo: gestionar.input(esquemaTipoPrenda).mutation(async ({ ctx, input }) => {
+    if (input.categoriaId !== null) {
+      const categoria = await ctx.prisma.categoria.findUnique({
+        where: { id: input.categoriaId },
+        select: { publico: true },
+      });
+      if (categoria === null) rechazar("Esa categoría ya no existe.", "NOT_FOUND");
+      if (categoria.publico !== null) {
+        rechazar(
+          "Elige una categoría de tipo, como Boxers. Hombre o Mujer se marcan en el producto.",
+        );
+      }
+    }
     const datos = {
       nombre: input.nombre,
       tallas: input.tallas,
       palabras: input.palabras,
+      categoriaId: input.categoriaId,
       orden: input.orden,
       activo: input.activo,
     };
     try {
-      const fila = input.tipoId
-        ? await ctx.prisma.tipoPrenda.update({ where: { id: input.tipoId }, data: datos })
-        : await ctx.prisma.tipoPrenda.create({ data: { ...datos, codigo: input.codigo } });
-      return { id: fila.id };
+      if (!input.tipoId) {
+        const fila = await ctx.prisma.tipoPrenda.create({
+          data: { ...datos, codigo: input.codigo },
+        });
+        return { id: fila.id, revalidar: SIN_CAMBIOS_EN_TIENDA };
+      }
+
+      const antes = await ctx.prisma.tipoPrenda.findUnique({
+        where: { id: input.tipoId },
+        select: { codigo: true, categoriaId: true },
+      });
+      if (antes === null) rechazar("Ese tipo de prenda ya no existe.", "NOT_FOUND");
+      const fila = await ctx.prisma.tipoPrenda.update({ where: { id: input.tipoId }, data: datos });
+      if (input.categoriaId === null || input.categoriaId === antes.categoriaId) {
+        return { id: fila.id, revalidar: SIN_CAMBIOS_EN_TIENDA };
+      }
+
+      // Sus productos se mudan con el: la pagina vieja y la nueva se regeneran.
+      const deEsteTipo = { codigo: { startsWith: antes.codigo } };
+      const viejos = await ctx.prisma.producto.findMany({
+        where: deEsteTipo,
+        select: { slug: true, categoria: { select: { slug: true } } },
+      });
+      await ctx.prisma.producto.updateMany({
+        where: deEsteTipo,
+        data: { categoriaId: input.categoriaId },
+      });
+      const nueva = await ctx.prisma.categoria.findUniqueOrThrow({
+        where: { id: input.categoriaId },
+        select: { slug: true },
+      });
+      return {
+        id: fila.id,
+        revalidar: {
+          productos: viejos.flatMap((p) => [
+            { slug: p.slug, slugCategoria: p.categoria.slug },
+            { slug: p.slug, slugCategoria: nueva.slug },
+          ]),
+          catalogo: viejos.length > 0,
+        },
+      };
     } catch (error) {
       traducirError(error, "un tipo de prenda");
     }

@@ -28,4 +28,6 @@ if (process.env["NODE_ENV"] !== "production") {
   globalParaPrisma.prisma = prisma;
 }
 
-export * from "@prisma/client";
+// Nombres listados uno por uno: `@prisma/client` es CommonJS y Turbopack
+// avisa con `export *`. Si otro paquete necesita algo mas, se añade aqui.
+export { Prisma, PrismaClient } from "@prisma/client";

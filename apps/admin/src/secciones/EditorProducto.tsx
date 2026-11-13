@@ -9,11 +9,14 @@ import {
   DISENO_POR_DEFECTO,
   type DetallesPrenda,
   esImagenDemo,
+  ETIQUETA_PUBLICO,
   FAMILIAS_COLOR,
   IMAGEN_DEMO,
   listoParaPublicar,
   MAX_IMAGENES_POR_PRODUCTO,
   MAX_VARIANTES_POR_LOTE,
+  type Publico,
+  PUBLICOS,
   requisitosDePublicacion,
   resolverDisponibilidad,
   resolverPrecio,
@@ -74,7 +77,8 @@ import { URL_TIENDA, urlTiendaEnNavegador } from "@appweb/api/urls";
 interface DatosFormulario {
   nombre: string;
   slug: string;
-  categoriaId: string;
+  /** Para quien es: sale en la categoria de cada publico. Varios si es unisex. */
+  publicos: Publico[];
   marcaId: string | null;
   precio: number | null;
   precioLista: number | null;
@@ -101,7 +105,7 @@ interface DatosFormulario {
 const VACIO: DatosFormulario = {
   nombre: "",
   slug: "",
-  categoriaId: "",
+  publicos: [],
   marcaId: null,
   precio: null,
   precioLista: null,
@@ -128,6 +132,8 @@ interface TipoDeOpciones {
   palabras: string[];
   tallas: string[];
   activo: boolean;
+  /** Categoria donde caen sus productos; `null` = aun no se puede usar. */
+  categoria: string | null;
 }
 
 interface PropsEditorProducto {
@@ -283,7 +289,7 @@ export function EditorProducto({
       productoId={productoId}
       inicial={detalle.data?.datos ?? VACIO}
       codigo={detalle.data?.codigo ?? null}
-      categorias={opciones.data.categorias}
+      categoria={detalle.data?.categoria ?? null}
       marcas={opciones.data.marcas}
       tipos={opciones.data.tipos}
       etiquetas={opciones.data.etiquetas}
@@ -527,7 +533,8 @@ interface PropsFormularioProducto {
   inicial: DatosFormulario;
   /** Codigo de modelo ("BX008"); `null` en un producto nuevo. */
   codigo: string | null;
-  categorias: { id: string; nombre: string; activo: boolean }[];
+  /** Categoria del producto guardado (la decide su tipo); `null` en uno nuevo. */
+  categoria: string | null;
   marcas: { id: string; nombre: string; activo: boolean }[];
   /** Tipos de prenda de Atributos; al crear solo se ofrecen los visibles. */
   tipos: TipoDeOpciones[];
@@ -569,7 +576,7 @@ function FormularioProducto({
   productoId,
   inicial,
   codigo,
-  categorias,
+  categoria,
   marcas,
   tipos,
   etiquetas,
@@ -607,7 +614,7 @@ function FormularioProducto({
       : (tiposVisibles[0]?.codigo ?? ""),
   );
   const [tipoTocado, setTipoTocado] = useState(false);
-  const [categoriaId, setCategoriaId] = useState(inicial.categoriaId);
+  const [publicos, setPublicos] = useState<Publico[]>(inicial.publicos);
   const [marcaId, setMarcaId] = useState(inicial.marcaId ?? "");
   const [precio, setPrecio] = useState(inicial.precio === null ? "" : String(inicial.precio));
   const [precioLista, setPrecioLista] = useState(
@@ -641,7 +648,7 @@ function FormularioProducto({
     return {
       nombre,
       slug,
-      categoriaId,
+      publicos,
       marcaId: marcaId === "" ? null : marcaId,
       precio: numeroDesdeTexto(precio),
       precioLista: precioLista.trim() === "" ? null : numeroDesdeTexto(precioLista),
@@ -889,20 +896,30 @@ function FormularioProducto({
                             disabled
                           />
                         )}
-                        <CampoSelectorLista
+                        <Campo
                           id="producto-categoria"
-                          etiqueta="Categoría"
-                          valor={categoriaId}
-                          opciones={[
-                            { valor: "", etiqueta: "Elige una categoría" },
-                            ...categorias.map((c) => ({
-                              valor: c.id,
-                              etiqueta: c.activo ? c.nombre : `${c.nombre} (oculta)`,
-                            })),
-                          ]}
-                          onCambio={setCategoriaId}
+                          etiqueta="Categoría (la decide el tipo)"
+                          valor={
+                            nuevo
+                              ? (tipos.find((t) => t.codigo === tipo)?.categoria ??
+                                "Asígnale una en Atributos → Tallas")
+                              : (categoria ?? "Sin categoría")
+                          }
+                          onCambio={() => {}}
+                          disabled
                         />
                       </FilaUnida>
+                      <SelectorMultiple
+                        etiqueta="Para quién es (sale en cada uno; varios si es unisex)"
+                        opciones={PUBLICOS.map((p) => ({
+                          valor: p,
+                          etiqueta: ETIQUETA_PUBLICO[p],
+                        }))}
+                        valores={publicos}
+                        onCambio={(valores) =>
+                          setPublicos(PUBLICOS.filter((p) => valores.includes(p)))
+                        }
+                      />
                       <Campo
                         id="producto-resumen"
                         etiqueta="Resumen (sale en la tarjeta del listado)"

@@ -26,6 +26,8 @@ const config: NextConfig = {
   // Clase C: el panel es una SPA; esto solo aplica a las pocas rutas de
   // servidor que tenga. `experimental.useCache` esta deprecado aqui.
   cacheComponents: true,
+  // Prefetch solo de la parte estatica; recomendado junto a Cache Components.
+  partialPrefetching: true,
 };
 
 export default config;
