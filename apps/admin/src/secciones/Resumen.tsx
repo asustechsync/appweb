@@ -285,36 +285,37 @@ export function Resumen({
       propios.length,
     ).slice(1);
     const { mejor } = extremosDeSerie(valores);
-    const total = valores.reduce((suma, valor) => suma + valor, 0);
-    const activas = valores.filter((valor) => valor > 0).length;
-    const porcentaje = (parte: number, todo: number) =>
-      `${todo > 0 ? Math.round((parte / todo) * 100) : 0}%`;
-    const flecha = grafica.tono === "sube" ? "▲" : grafica.tono === "baja" ? "▼" : null;
+    const previas = (
+      porTramo ? grafica.previa : (seriesDeLaGrafica(metricas, true).previa[clave] ?? [])
+    ).slice(1);
+    const cuentaActivas = (serie: number[]) => serie.filter((valor) => valor > 0).length;
+    const activas = cuentaActivas(valores);
+    const diferencia = activas - cuentaActivas(previas);
     const unidad = metrica === "ventas" ? "" : grafica.titulo.toLowerCase();
-    // Cifra real primero: el porcentaje es apoyo, no el dato.
+    const hayPico = mejor.valor > 0;
     const datosMomentos: DatoMomento[] = [
-      {
-        tipo: "total",
-        etiqueta: `${grafica.titulo} ${titulo.toLowerCase()}`,
-        valor: grafica.valor,
-        flecha,
-        insignia: grafica.cambio.replace(/^[+−-]/, ""),
-        nota: `${etiquetaAnterior.toLowerCase()} ${grafica.previo}`,
-        tono: grafica.tono,
-      },
       {
         tipo: "pico",
         etiqueta: "Mejor momento",
-        valor: nombres[mejor.indice] ?? "—",
-        insignia: porcentaje(mejor.valor, total),
-        nota: `${grafica.formatear(mejor.valor)}${unidad ? ` ${unidad}` : ""}`,
+        valor: hayPico ? (nombres[mejor.indice] ?? "—") : "—",
+        apoyo: hayPico
+          ? `${grafica.formatear(mejor.valor)}${unidad ? ` ${unidad}` : ""}`
+          : "Aún sin movimiento",
+        tono: hayPico ? "sube" : "igual",
+        barras: valores,
+        destacada: hayPico ? mejor.indice : undefined,
       },
       {
         tipo: "actividad",
-        etiqueta: "Con actividad",
-        valor: `${activas} de ${valores.length}`,
-        insignia: porcentaje(activas, valores.length),
-        nota: porTramo ? "tramos del periodo" : "horas del día",
+        etiqueta: porTramo ? "Tramos activos" : "Horas activas",
+        valor: String(activas),
+        sufijo: `de ${valores.length}`,
+        apoyo:
+          diferencia === 0
+            ? `Igual que ${etiquetaAnterior.toLowerCase()}`
+            : `${diferencia > 0 ? "↑" : "↓"} ${conSigno(diferencia)} vs. ${etiquetaAnterior.toLowerCase()}`,
+        tono: diferencia === 0 ? "igual" : diferencia > 0 ? "sube" : "baja",
+        puntos: valores.map((valor) => valor > 0),
       },
     ];
     return datosMomentos;
