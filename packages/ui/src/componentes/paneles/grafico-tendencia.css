@@ -333,7 +333,7 @@
 .ui-grafico-tendencia__escala {
   position: relative;
   min-inline-size: calc(var(--ui-eje-ch, 3) * 1ch);
-  block-size: calc(var(--espacio-32) + var(--espacio-12));
+  block-size: calc(var(--espacio-32) + var(--espacio-6));
 }
 .ui-grafico-tendencia__valor-eje {
   position: absolute;
@@ -351,7 +351,7 @@
 }
 .ui-grafico-tendencia__area {
   position: relative;
-  block-size: calc(var(--espacio-32) + var(--espacio-12));
+  block-size: calc(var(--espacio-32) + var(--espacio-6));
   cursor: crosshair;
   touch-action: pan-y;
 }
@@ -404,46 +404,22 @@
   pointer-events: none;
 }
 
-/* Globo claro con borde: una fila por serie, con su punto de color. Va en
-   el aire de arriba del area, centrado sobre la guia, con una flecha hacia el punto. */
+/* Burbuja minima: una sola pildora clara con la hora y la cifra de cada serie,
+   cada una con su punto de color. Va en el aire de arriba del area, centrada
+   sobre la guia: no tapa las curvas. */
 .ui-grafico-tendencia__tooltip {
   position: absolute;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-inline-size: 6rem;
-  padding: var(--espacio-1) var(--espacio-3);
-  border: 1px solid var(--color-bordeFuerte);
-  border-radius: var(--radio-md);
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: 2px var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
   background: var(--color-fondo);
-  box-shadow: var(--sombra-md);
   color: var(--color-texto);
   font-size: var(--tipo-tamano-xs);
   pointer-events: none;
   white-space: nowrap;
-}
-/* La flecha: un cuadrado girado que repite el borde y el fondo del globo. */
-.ui-grafico-tendencia__tooltip--centro::after,
-.ui-grafico-tendencia__tooltip--inicio::after,
-.ui-grafico-tendencia__tooltip--fin::after {
-  content: "";
-  position: absolute;
-  inset-block-end: -5px;
-  inline-size: 8px;
-  block-size: 8px;
-  border-inline-end: 1px solid var(--color-bordeFuerte);
-  border-block-end: 1px solid var(--color-bordeFuerte);
-  background: var(--color-fondo);
-  transform: rotate(45deg);
-}
-.ui-grafico-tendencia__tooltip--centro::after {
-  inset-inline-start: calc(50% - 4px);
-}
-.ui-grafico-tendencia__tooltip--inicio::after {
-  inset-inline-start: calc(var(--espacio-3) - 4px);
-}
-.ui-grafico-tendencia__tooltip--fin::after {
-  inset-inline-end: calc(var(--espacio-3) - 4px);
 }
 .ui-grafico-tendencia__tooltip--centro {
   transform: translate(-50%, calc(-1 * var(--espacio-2)));
@@ -454,30 +430,14 @@
 .ui-grafico-tendencia__tooltip--fin {
   transform: translate(calc(-100% + var(--espacio-3)), calc(-1 * var(--espacio-2)));
 }
-/* La fecha arriba, tenue; luego una fila por serie: punto, cifra y nombre. */
 .ui-grafico-tendencia__tooltip-fecha {
-  color: var(--color-textoTenue);
-}
-.ui-grafico-tendencia__tooltip-fila {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-2);
   color: var(--color-textoSuave);
 }
-.ui-grafico-tendencia__tooltip-fila b {
-  color: var(--color-texto);
-  font-size: var(--tipo-tamano-sm);
+.ui-grafico-tendencia__tooltip-valor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
   font-weight: var(--tipo-peso-medio);
-}
-.ui-grafico-tendencia__tooltip-serie {
-  margin-inline-start: auto;
-  padding-inline-start: var(--espacio-3);
-  color: var(--color-textoTenue);
-}
-/* La serie comparada va aparte, tras una linea fina. */
-.ui-grafico-tendencia__tooltip-fila--previa {
-  padding-block-start: 2px;
-  border-block-start: 1px solid var(--color-borde);
 }
 
 /* Marcas del eje horizontal al pie, centradas bajo su punto del periodo. */

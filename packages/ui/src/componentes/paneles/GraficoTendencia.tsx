@@ -145,8 +145,8 @@ export function GraficoTendencia({
   etiqueta,
   etiquetasPunto,
   formatear,
-  formatearEje = compacto,
   controles,
+  formatearEje = compacto,
   suavizado = true,
 }: PropsGraficoTendencia) {
   const idDegradado = useId();
@@ -161,10 +161,9 @@ export function GraficoTendencia({
   // Una sola escala para las dos lineas, arrancando en cero: asi la altura es
   // dinero y no solo forma. El eje llega a una marca redonda sobre el tope.
   const tope = Math.max(...serie, ...(seriePrevia ?? []), 1);
-  // Una marca mas sobre el tope: los picos no quedan pegados a la linea de arriba.
-  const base = marcasVerticales(tope);
-  const paso = (base[1] ?? 1) - (base[0] ?? 0);
-  const rejilla = [...base, (base[base.length - 1] ?? 0) + paso];
+  // La ultima marca es la primera redonda que cubre el tope; el aire de arriba
+  // (MARGEN) deja sitio al tooltip sin inventar una marca de mas.
+  const rejilla = marcasVerticales(tope);
   const maximo = rejilla[rejilla.length - 1] ?? tope;
   const y = (v: number) => ALTO - (v / maximo) * (ALTO - MARGEN);
   // Donde las dos series valen lo mismo y hay algo (una curva, no el cero plano)
@@ -407,16 +406,14 @@ export function GraficoTendencia({
                   {nombreActivo ? (
                     <span className="ui-grafico-tendencia__tooltip-fecha">{nombreActivo}</span>
                   ) : null}
-                  <span className="ui-grafico-tendencia__tooltip-fila">
+                  <span className="ui-grafico-tendencia__tooltip-valor">
                     <span className="ui-grafico-tendencia__marca-serie" />
-                    <b>{formatear(valorActivo)}</b>
-                    <span className="ui-grafico-tendencia__tooltip-serie">{etiquetaActual}</span>
+                    {formatear(valorActivo)}
                   </span>
                   {valorPrevioActivo !== undefined && etiquetaPrevia ? (
-                    <span className="ui-grafico-tendencia__tooltip-fila ui-grafico-tendencia__tooltip-fila--previa">
+                    <span className="ui-grafico-tendencia__tooltip-valor">
                       <span className="ui-grafico-tendencia__marca-serie ui-grafico-tendencia__marca-serie--previa" />
-                      <b>{formatear(valorPrevioActivo)}</b>
-                      <span className="ui-grafico-tendencia__tooltip-serie">{etiquetaPrevia}</span>
+                      {formatear(valorPrevioActivo)}
                     </span>
                   ) : null}
                 </span>

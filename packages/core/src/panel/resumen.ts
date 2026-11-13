@@ -174,6 +174,27 @@ export function franjasDelResumen(
   };
 }
 
+/**
+ * El mejor y el peor punto de una serie y su promedio: la linea de resumen bajo
+ * la grafica. Con empate gana el primero. Una serie vacia da todo en cero.
+ */
+export function extremosDeSerie(valores: number[]): {
+  mejor: { indice: number; valor: number };
+  peor: { indice: number; valor: number };
+  promedio: number;
+} {
+  if (valores.length === 0) {
+    return { mejor: { indice: 0, valor: 0 }, peor: { indice: 0, valor: 0 }, promedio: 0 };
+  }
+  const mejorValor = Math.max(...valores);
+  const peorValor = Math.min(...valores);
+  return {
+    mejor: { indice: valores.indexOf(mejorValor), valor: mejorValor },
+    peor: { indice: valores.indexOf(peorValor), valor: peorValor },
+    promedio: valores.reduce((suma, v) => suma + v, 0) / valores.length,
+  };
+}
+
 /** Lo que entro en cada tramo: la diferencia con el punto anterior (el primero queda en 0). */
 function porTramo(acumulada: number[]): number[] {
   return acumulada.map((valor, i) => (i === 0 ? 0 : Math.max(0, valor - (acumulada[i - 1] ?? 0))));

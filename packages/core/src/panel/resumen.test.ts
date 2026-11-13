@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   acumular,
+  extremosDeSerie,
   franjasDelResumen,
   historialDeClientes,
   marcasDelEje,
@@ -12,6 +13,19 @@ import {
   ventanaDe,
   ventanaDeFecha,
 } from "./resumen";
+
+describe("extremos de una serie", () => {
+  it("da el mejor, el peor y el promedio; con empate gana el primero", () => {
+    const r = extremosDeSerie([2, 6, 0, 6, 0]);
+    expect(r.mejor).toEqual({ indice: 1, valor: 6 });
+    expect(r.peor).toEqual({ indice: 2, valor: 0 });
+    expect(r.promedio).toBeCloseTo(2.8);
+  });
+
+  it("una serie vacia no revienta", () => {
+    expect(extremosDeSerie([]).promedio).toBe(0);
+  });
+});
 
 describe("franjas por hora", () => {
   it("agrupa por hora de Lima, no por la del servidor", () => {

@@ -347,6 +347,7 @@ export {
   serieEnTramos,
   acumular,
   seriesDelResumen,
+  extremosDeSerie,
   franjasDelResumen,
   marcasDelEje,
   repartoPorMedio,

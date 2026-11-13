@@ -10,6 +10,7 @@ import {
   ETIQUETAS_MEDIO_PAGO,
   ETIQUETAS_PAGO,
   ETIQUETAS_PERIODO,
+  extremosDeSerie,
   PERIODOS,
   TRAMOS_SERIE,
   type Periodo,
@@ -27,6 +28,7 @@ import {
   FilaRanking,
   FilaResumen,
   GraficoTendencia,
+  MomentosTendencia,
   PilaGraficos,
   ParejaListas,
   IconoCatalogo,
@@ -44,7 +46,7 @@ import {
   ResumenTendencia,
   TONO_NIVEL,
 } from "@appweb/ui";
-import type { BancoTransferencia, DatoResumenTendencia } from "@appweb/ui";
+import type { BancoTransferencia, DatoMomento, DatoResumenTendencia } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
@@ -266,6 +268,57 @@ export function Resumen({
           },
         }[metrica]
       : null;
+  // Mejor, peor y promedio del periodo. El primer punto de la serie es el 0 de
+  // arranque, no un dato: no cuenta. En un dia la serie va acumulada, asi que
+  // se pasa a lo de cada hora.
+  const momentos = (() => {
+    if (!grafica || !metricas) return undefined;
+    const clave = metrica === "clientes" ? "clientesNuevos" : metrica;
+    const propios = porTramo
+      ? grafica.serie
+      : (seriesDeLaGrafica(metricas, true).actual[clave] ?? grafica.serie);
+    const valores = propios.slice(1);
+    if (valores.length === 0) return undefined;
+    const nombres = etiquetasDelEje(
+      datos.data.inicioPeriodo,
+      datos.data.finPeriodo,
+      propios.length,
+    ).slice(1);
+    const { mejor } = extremosDeSerie(valores);
+    const total = valores.reduce((suma, valor) => suma + valor, 0);
+    const activas = valores.filter((valor) => valor > 0).length;
+    const porcentaje = (parte: number, todo: number) =>
+      `${todo > 0 ? Math.round((parte / todo) * 100) : 0}%`;
+    const flecha = grafica.tono === "sube" ? "▲" : grafica.tono === "baja" ? "▼" : "•";
+    const unidad = metrica === "ventas" ? "" : grafica.titulo.toLowerCase();
+    const datosMomentos: DatoMomento[] = [
+      {
+        tipo: "total",
+        etiqueta: `${titulo} vs ${etiquetaAnterior.toLowerCase()}`,
+        valor: `${flecha} ${grafica.cambio.replace(/^[+−-]/, "")}`,
+        destacado: grafica.valor,
+        nota: unidad,
+        tono: grafica.tono,
+      },
+      {
+        tipo: "pico",
+        etiqueta: `${porTramo ? "Tramo pico" : "Hora pico"} · ${nombres[mejor.indice] ?? "—"}`,
+        valor: porcentaje(mejor.valor, total),
+        destacado: grafica.formatear(mejor.valor),
+        nota: `de ${grafica.formatear(total)}${unidad ? ` ${unidad}` : ""}`,
+        tono: "info",
+      },
+      {
+        tipo: "actividad",
+        etiqueta: "Actividad",
+        valor: porcentaje(activas, valores.length),
+        destacado: String(activas),
+        nota: `de ${valores.length} ${porTramo ? "tramos" : "h"}`,
+        tono: "alerta",
+      },
+    ];
+    return datosMomentos;
+  })();
   const parteComparativa = (actual: number, previo: number) => {
     const escala = Math.max(actual, previo);
     return escala > 0 ? Math.round((Math.max(0, actual) / escala) * 100) : 0;
@@ -589,8 +642,9 @@ export function Resumen({
                   </>
                 }
                 etiquetaActual={titulo}
-                valor={grafica.valor}
-                cambio={grafica.cambio}
+                // Leyenda compacta: solo el color y el nombre de cada serie; las
+                // cifras ya las dicen las tarjetas de arriba.
+                valor=""
                 tono={grafica.tono}
                 // La cabecera nombra las series; el detalle del periodo va abajo.
                 cifras={[]}
@@ -601,7 +655,6 @@ export function Resumen({
                     ? haceCuanto(new Date(metricas.ultimaVenta))
                     : "\u00a0"
                 }
-                valorPrevio={grafica.previo}
                 etiquetaPrevia={etiquetaAnterior}
                 marcas={marcasEje}
                 etiqueta={grafica.etiqueta}
@@ -612,6 +665,7 @@ export function Resumen({
                 )}
                 formatear={grafica.formatear}
               />
+              {momentos ? <MomentosTendencia datos={momentos} /> : null}
             </PilaGraficos>
             <ResumenTendencia datos={resumenGrafica} />
             <ListaConPestanas

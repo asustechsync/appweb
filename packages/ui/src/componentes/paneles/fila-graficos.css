@@ -20,7 +20,8 @@
   flex: 1 1 auto;
 }
 /* La franja de horas mide lo suyo; el sobrante lo absorbe el grafico de arriba. */
-.ui-fila-graficos__pila > .ui-franja-horas {
+.ui-fila-graficos__pila > .ui-franja-horas,
+.ui-fila-graficos__pila > .ui-momentos-tendencia {
   flex: none;
 }
 
