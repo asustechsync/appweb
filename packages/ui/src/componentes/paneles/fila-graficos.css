@@ -20,14 +20,27 @@
   flex: 1 1 auto;
 }
 /* La franja de horas mide lo suyo; el sobrante lo absorbe el grafico de arriba. */
-.ui-fila-graficos__pila > .ui-franja-horas,
-.ui-fila-graficos__pila > .ui-momentos-tendencia {
+.ui-fila-graficos__pila > .ui-franja-horas {
   flex: none;
 }
 
 @media (min-width: 64rem) {
   .ui-fila-graficos {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+    /* Mide lo mismo que las listas de abajo (5 filas de 52.39px con 8px de hueco,
+       cabecera de 48px, relleno de 16px y borde): la grafica y la lista de pagos
+       quedan a la par con ellas, con o sin datos. */
+    min-block-size: calc(
+      2px +
+      var(--espacio-4) *
+      2 +
+      var(--espacio-12) +
+      var(--espacio-4) +
+      5 *
+      52.39px +
+      4 *
+      var(--espacio-2)
+    );
   }
   .ui-fila-graficos > :first-child {
     grid-column: span 3;

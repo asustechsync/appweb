@@ -383,10 +383,6 @@ export {
   type ColorHistorial,
   type PropsGraficoTendencia,
 } from "./componentes/paneles/GraficoTendencia";
-export {
-  MomentosTendencia,
-  type DatoMomento,
-} from "./componentes/paneles/MomentosTendencia";
 export { FranjaHoras, type PropsFranjaHoras } from "./componentes/paneles/FranjaHoras";
 export { RejillaMetricas, type PropsRejillaMetricas } from "./componentes/paneles/RejillaMetricas";
 export {

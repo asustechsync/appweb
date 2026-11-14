@@ -361,8 +361,10 @@ export {
   BARRAS_HISTORIAL,
   tramosDelHistorial,
   historialDeClientes,
+  historialDeVentas,
   type TramoHistorial,
   type HistorialClientes,
+  type HistorialVentas,
 } from "./panel/resumen";
 
 // Usuarios

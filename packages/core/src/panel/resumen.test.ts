@@ -5,6 +5,7 @@ import {
   extremosDeSerie,
   franjasDelResumen,
   historialDeClientes,
+  historialDeVentas,
   marcasDelEje,
   repartoPorMedio,
   serieEnTramos,
@@ -289,5 +290,43 @@ describe("historial de las tarjetas", () => {
       ]),
     );
     expect(historial).toEqual({ nuevos: [1, 2], compradores: [1, 2], recurrentes: [0, 1] });
+  });
+});
+
+describe("historial de ventas por tramo", () => {
+  it("cuenta recibidos, pagados, cancelados, descuentos, ticket y ganancia de cada dia", () => {
+    const ahora = new Date(2026, 10, 12, 18);
+    const tramos = tramosDelHistorial(ventanaDe("dia", ahora), "dia", 2);
+    const ayer = new Date(2026, 10, 11, 10);
+    const hoy = new Date(2026, 10, 12, 10);
+    const historial = historialDeVentas(
+      tramos,
+      [
+        { en: ayer, estado: "PAGADO", subtotal: 100, descuento: 0 },
+        { en: hoy, estado: "ENTREGADO", subtotal: 100, descuento: 10 },
+        { en: hoy, estado: "PAGADO", subtotal: 50, descuento: 0 },
+        { en: hoy, estado: "CANCELADO", subtotal: 30, descuento: 0 },
+        { en: hoy, estado: "PENDIENTE_PAGO", subtotal: 20, descuento: 0 },
+      ],
+      [
+        { en: ayer, precioUnitario: 100, costoUnitario: 60, cantidad: 1, subtotal: 100, descuento: 0 },
+        { en: hoy, precioUnitario: 50, costoUnitario: 30, cantidad: 1, subtotal: 50, descuento: 0 },
+      ],
+      ["PAGADO", "ENTREGADO"],
+    );
+    expect(historial.recibidos).toEqual([1, 4]);
+    expect(historial.pagados).toEqual([1, 2]);
+    expect(historial.cancelados).toEqual([0, 1]);
+    expect(historial.descuentos).toEqual([0, 10]);
+    expect(historial.ticket).toEqual([100, 70]);
+    expect(historial.ticketMaximo).toEqual([100, 90]);
+    expect(historial.ticketMinimo).toEqual([100, 50]);
+    expect(historial.ganancia).toEqual([40, 20]);
+    expect(historial.margen).toEqual([40, 40]);
+  });
+
+  it("un tramo sin pedidos queda en cero", () => {
+    const tramos = tramosDelHistorial(ventanaDe("dia", new Date(2026, 10, 12, 18)), "dia", 1);
+    expect(historialDeVentas(tramos, [], [], ["PAGADO"]).ticketMinimo).toEqual([0]);
   });
 });

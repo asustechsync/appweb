@@ -27,6 +27,7 @@ import {
   seriesDelResumen,
   franjasDelResumen,
   historialDeClientes,
+  historialDeVentas,
   tramosDelHistorial,
   UMBRAL_STOCK_BAJO,
   variacion,
@@ -384,7 +385,7 @@ export const resumen = router({
       gte: tramosHistorial[0]?.desde ?? periodo.desde,
       lt: tramosHistorial.at(-1)?.hasta ?? periodo.fin,
     };
-    const [altasHistorial, ventasHistorial] = verVentas
+    const [altasHistorial, ventasHistorial, pedidosHistorial, lineasHistorial] = verVentas
       ? await Promise.all([
           ctx.prisma.usuario.findMany({
             where: { creadoEn: ventanaHistorial },
@@ -394,8 +395,23 @@ export const resumen = router({
             where: { estado: { in: estadosVenta }, creadoEn: ventanaHistorial },
             select: { usuarioId: true, creadoEn: true },
           }),
+          // Todos los pedidos del historial, tengan el estado que tengan: de ahi
+          // salen los recibidos, los cancelados y el ticket de cada tramo.
+          ctx.prisma.pedido.findMany({
+            where: { creadoEn: ventanaHistorial },
+            select: { creadoEn: true, estado: true, subtotal: true, descuento: true },
+          }),
+          ctx.prisma.itemPedido.findMany({
+            where: { pedido: { estado: { in: estadosVenta }, creadoEn: ventanaHistorial } },
+            select: {
+              precioUnitario: true,
+              costoUnitario: true,
+              cantidad: true,
+              pedido: { select: { creadoEn: true, subtotal: true, descuento: true } },
+            },
+          }),
         ])
-      : [[], []];
+      : [[], [], [], []];
     const compradoresHistorial = [...new Set(ventasHistorial.map((venta) => venta.usuarioId))];
     const primerasCompras =
       compradoresHistorial.length > 0
@@ -414,6 +430,25 @@ export const resumen = router({
           fila._min.creadoEn ? [[fila.usuarioId, fila._min.creadoEn] as const] : [],
         ),
       ),
+    );
+
+    const historialVentas = historialDeVentas(
+      tramosHistorial,
+      pedidosHistorial.map((pedido) => ({
+        en: pedido.creadoEn,
+        estado: pedido.estado,
+        subtotal: Number(pedido.subtotal),
+        descuento: Number(pedido.descuento),
+      })),
+      lineasHistorial.map((linea) => ({
+        en: linea.pedido.creadoEn,
+        precioUnitario: Number(linea.precioUnitario),
+        costoUnitario: linea.costoUnitario === null ? null : Number(linea.costoUnitario),
+        cantidad: linea.cantidad,
+        subtotal: Number(linea.pedido.subtotal),
+        descuento: Number(linea.pedido.descuento),
+      })),
+      estadosVenta,
     );
 
     // Las dos lineas comparten el eje del periodo entero: la actual se corta
@@ -559,6 +594,8 @@ export const resumen = router({
             clientesRecurrentesPrevios: compradoresRecurrentesPrevios.length,
             // Una cifra por periodo, del mas viejo al actual: las barras de cada tarjeta.
             historialClientes,
+            // Lo mismo para las tarjetas de Ventas, Pedidos y Ticket.
+            historialVentas,
             // Lo que se dejo de cobrar por cupones y niveles en el periodo.
             descuentos: Number(pedidosVentana?._sum.descuento ?? 0),
             margen: margenDeLineas(lineasVendidas),

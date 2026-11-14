@@ -8,6 +8,7 @@
  */
 
 import { desdeIso, hoyIso } from "../calendario";
+import { factorDeDescuento, margenDeVentas, vendidoDe } from "../catalogo/compras";
 import { horaDeLima } from "../formato";
 import type { EstadoPedido } from "../pedidos/estados";
 
@@ -513,6 +514,80 @@ export function historialDeClientes(
     historial.nuevos.push(altas.filter((alta) => dentro(alta, tramo)).length);
     historial.compradores.push(compradores.size);
     historial.recurrentes.push(recurrentes);
+  }
+  return historial;
+}
+
+export interface HistorialVentas {
+  ganancia: number[];
+  margen: number[];
+  descuentos: number[];
+  recibidos: number[];
+  pagados: number[];
+  cancelados: number[];
+  ticket: number[];
+  ticketMaximo: number[];
+  ticketMinimo: number[];
+}
+
+/**
+ * Ventas, pedidos y ticket de cada tramo del historial: las barras de las
+ * tarjetas de Ventas, Pedidos y Ticket.
+ *
+ *   · Recibidos / cancelados — pedidos creados en el tramo, tengan el estado que tengan.
+ *   · Pagados — los que cuentan como venta (`estadosVenta`); de ellos salen
+ *     el ticket, el descuento y, con sus lineas, la ganancia y el margen.
+ */
+export function historialDeVentas(
+  tramos: TramoHistorial[],
+  pedidos: { en: Date; estado: string; subtotal: number; descuento: number }[],
+  lineas: {
+    en: Date;
+    precioUnitario: number;
+    costoUnitario: number | null;
+    cantidad: number;
+    subtotal: number;
+    descuento: number;
+  }[],
+  estadosVenta: readonly string[],
+): HistorialVentas {
+  const dentro = (en: Date, tramo: TramoHistorial) => en >= tramo.desde && en < tramo.hasta;
+  const historial: HistorialVentas = {
+    ganancia: [],
+    margen: [],
+    descuentos: [],
+    recibidos: [],
+    pagados: [],
+    cancelados: [],
+    ticket: [],
+    ticketMaximo: [],
+    ticketMinimo: [],
+  };
+  for (const tramo of tramos) {
+    const delTramo = pedidos.filter((pedido) => dentro(pedido.en, tramo));
+    const vendidos = delTramo.filter((pedido) => estadosVenta.includes(pedido.estado));
+    const montos = vendidos.map((pedido) => vendidoDe(pedido));
+    const margen = margenDeVentas(
+      lineas
+        .filter((linea) => dentro(linea.en, tramo))
+        .map((linea) => ({
+          precioUnitario:
+            linea.precioUnitario * factorDeDescuento(linea.subtotal, linea.descuento),
+          costoUnitario: linea.costoUnitario,
+          cantidad: linea.cantidad,
+        })),
+    );
+    historial.ganancia.push(margen.ganancia);
+    historial.margen.push(margen.porcentaje);
+    historial.descuentos.push(vendidos.reduce((suma, pedido) => suma + pedido.descuento, 0));
+    historial.recibidos.push(delTramo.length);
+    historial.pagados.push(vendidos.length);
+    historial.cancelados.push(delTramo.filter((pedido) => pedido.estado === "CANCELADO").length);
+    historial.ticket.push(
+      montos.length > 0 ? montos.reduce((suma, monto) => suma + monto, 0) / montos.length : 0,
+    );
+    historial.ticketMaximo.push(montos.length > 0 ? Math.max(...montos) : 0);
+    historial.ticketMinimo.push(montos.length > 0 ? Math.min(...montos) : 0);
   }
   return historial;
 }

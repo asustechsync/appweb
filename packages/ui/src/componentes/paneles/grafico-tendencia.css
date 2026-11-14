@@ -157,11 +157,11 @@
 .ui-grafico-tendencia__cuerpo {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--espacio-2);
+  /* La linea ocupa todo el alto que deja la tarjeta (con un minimo); las marcas
+     del eje horizontal quedan al pie. */
+  grid-template-rows: minmax(calc(var(--espacio-32) + var(--espacio-6)), 1fr) auto;
+  gap: var(--espacio-2);
   flex: 1 1 auto;
-  /* Si la tarjeta es mas alta que el grafico, el aire sobrante queda arriba
-     y la base del grafico se apoya en el pie de la tarjeta. */
-  align-content: end;
 }
 .ui-grafico-tendencia__resumen {
   display: grid;
@@ -333,7 +333,8 @@
 .ui-grafico-tendencia__escala {
   position: relative;
   min-inline-size: calc(var(--ui-eje-ch, 3) * 1ch);
-  block-size: calc(var(--espacio-32) + var(--espacio-6));
+  grid-column: 1;
+  grid-row: 1;
 }
 .ui-grafico-tendencia__valor-eje {
   position: absolute;
@@ -343,15 +344,15 @@
   font-size: var(--tipo-tamano-xs);
   line-height: 1;
 }
+/* Sin caja propia: la linea y su eje son celdas del cuerpo. */
 .ui-grafico-tendencia__grafico {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-2);
-  min-inline-size: 0;
+  display: contents;
 }
 .ui-grafico-tendencia__area {
   position: relative;
-  block-size: calc(var(--espacio-32) + var(--espacio-6));
+  grid-column: 2;
+  grid-row: 1;
+  min-inline-size: 0;
   cursor: crosshair;
   touch-action: pan-y;
 }
@@ -443,6 +444,9 @@
 /* Marcas del eje horizontal al pie, centradas bajo su punto del periodo. */
 .ui-grafico-tendencia__eje {
   position: relative;
+  grid-column: 2;
+  grid-row: 2;
+  min-inline-size: 0;
   block-size: var(--espacio-5);
 }
 .ui-grafico-tendencia__marca {

@@ -10,7 +10,6 @@ import {
   ETIQUETAS_MEDIO_PAGO,
   ETIQUETAS_PAGO,
   ETIQUETAS_PERIODO,
-  extremosDeSerie,
   PERIODOS,
   TRAMOS_SERIE,
   type Periodo,
@@ -28,7 +27,6 @@ import {
   FilaRanking,
   FilaResumen,
   GraficoTendencia,
-  MomentosTendencia,
   PilaGraficos,
   ParejaListas,
   IconoCatalogo,
@@ -46,7 +44,7 @@ import {
   ResumenTendencia,
   TONO_NIVEL,
 } from "@appweb/ui";
-import type { BancoTransferencia, DatoMomento, DatoResumenTendencia } from "@appweb/ui";
+import type { BancoTransferencia, DatoResumenTendencia } from "@appweb/ui";
 
 import { ESTADO_PAGO, ETIQUETA_PAGO_RECIENTE } from "@/lib/estados-pago";
 import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
@@ -268,58 +266,6 @@ export function Resumen({
           },
         }[metrica]
       : null;
-  // Mejor, peor y promedio del periodo. El primer punto de la serie es el 0 de
-  // arranque, no un dato: no cuenta. En un dia la serie va acumulada, asi que
-  // se pasa a lo de cada hora.
-  const momentos = (() => {
-    if (!grafica || !metricas) return undefined;
-    const clave = metrica === "clientes" ? "clientesNuevos" : metrica;
-    const propios = porTramo
-      ? grafica.serie
-      : (seriesDeLaGrafica(metricas, true).actual[clave] ?? grafica.serie);
-    const valores = propios.slice(1);
-    if (valores.length === 0) return undefined;
-    const nombres = etiquetasDelEje(
-      datos.data.inicioPeriodo,
-      datos.data.finPeriodo,
-      propios.length,
-    ).slice(1);
-    const { mejor } = extremosDeSerie(valores);
-    const previas = (
-      porTramo ? grafica.previa : (seriesDeLaGrafica(metricas, true).previa[clave] ?? [])
-    ).slice(1);
-    const cuentaActivas = (serie: number[]) => serie.filter((valor) => valor > 0).length;
-    const activas = cuentaActivas(valores);
-    const diferencia = activas - cuentaActivas(previas);
-    const unidad = metrica === "ventas" ? "" : grafica.titulo.toLowerCase();
-    const hayPico = mejor.valor > 0;
-    const datosMomentos: DatoMomento[] = [
-      {
-        tipo: "pico",
-        etiqueta: "Mejor momento",
-        valor: hayPico ? (nombres[mejor.indice] ?? "—") : "—",
-        apoyo: hayPico
-          ? `${grafica.formatear(mejor.valor)}${unidad ? ` ${unidad}` : ""}`
-          : "Aún sin movimiento",
-        tono: hayPico ? "sube" : "igual",
-        barras: valores,
-        destacada: hayPico ? mejor.indice : undefined,
-      },
-      {
-        tipo: "actividad",
-        etiqueta: porTramo ? "Tramos activos" : "Horas activas",
-        valor: String(activas),
-        sufijo: `de ${valores.length}`,
-        apoyo:
-          diferencia === 0
-            ? `Igual que ${etiquetaAnterior.toLowerCase()}`
-            : `${diferencia > 0 ? "↑" : "↓"} ${conSigno(diferencia)} vs. ${etiquetaAnterior.toLowerCase()}`,
-        tono: diferencia === 0 ? "igual" : diferencia > 0 ? "sube" : "baja",
-        puntos: valores.map((valor) => valor > 0),
-      },
-    ];
-    return datosMomentos;
-  })();
   const parteComparativa = (actual: number, previo: number) => {
     const escala = Math.max(actual, previo);
     return escala > 0 ? Math.round((Math.max(0, actual) / escala) * 100) : 0;
@@ -333,6 +279,8 @@ export function Resumen({
             previo: `${etiquetaAnterior} ${MONEDA.format(metricas.margenPrevio.ganancia)}`,
             ...variacionVisual(metricas.margen.ganancia, metricas.margenPrevio.ganancia),
             parte: parteRentabilidad(metricas.margen.ganancia),
+            historial: metricas.historialVentas.ganancia,
+            color: "celeste",
           },
           {
             etiqueta: "Margen",
@@ -340,6 +288,8 @@ export function Resumen({
             previo: `${etiquetaAnterior} ${new Intl.NumberFormat("es-PE", { maximumFractionDigits: 1 }).format(metricas.margenPrevio.porcentaje)}%`,
             ...variacionMargen(metricas.margen.porcentaje, metricas.margenPrevio.porcentaje),
             parte: Math.max(0, Math.min(100, metricas.margen.porcentaje)),
+            historial: metricas.historialVentas.margen,
+            color: "lavanda",
           },
           {
             etiqueta: "Descuentos",
@@ -347,6 +297,8 @@ export function Resumen({
             previo: `${etiquetaAnterior} ${montoDescuento(metricas.descuentosPrevios)}`,
             ...variacionVisual(metricas.descuentos, metricas.descuentosPrevios, false),
             parte: parteRentabilidad(metricas.descuentos),
+            historial: metricas.historialVentas.descuentos,
+            color: "ambar",
           },
         ]
       : metrica === "pedidos"
@@ -357,6 +309,8 @@ export function Resumen({
               previo: `${etiquetaAnterior} ${ENTERO(metricas.pedidosRecibidosPrevios)}`,
               ...variacionVisual(metricas.pedidosRecibidos, metricas.pedidosRecibidosPrevios),
               parte: parteComparativa(metricas.pedidosRecibidos, metricas.pedidosRecibidosPrevios),
+              historial: metricas.historialVentas.recibidos,
+              color: "celeste",
             },
             {
               etiqueta: "Pagados",
@@ -367,6 +321,8 @@ export function Resumen({
                 metricas.pedidosRecibidos > 0
                   ? Math.round((metricas.pedidosPagados / metricas.pedidosRecibidos) * 100)
                   : 0,
+              historial: metricas.historialVentas.pagados,
+              color: "lavanda",
             },
             {
               etiqueta: "Cancelados",
@@ -381,6 +337,8 @@ export function Resumen({
                 metricas.pedidosRecibidos > 0
                   ? Math.round((metricas.pedidosCancelados / metricas.pedidosRecibidos) * 100)
                   : 0,
+              historial: metricas.historialVentas.cancelados,
+              color: "ambar",
             },
           ]
         : metrica === "ticket"
@@ -391,6 +349,8 @@ export function Resumen({
                 previo: `${etiquetaAnterior} ${MONEDA.format(metricas.anteriores.ticket)}`,
                 ...variacionVisual(metricas.ticket, metricas.anteriores.ticket),
                 parte: parteComparativa(metricas.ticket, metricas.anteriores.ticket),
+                historial: metricas.historialVentas.ticket,
+                color: "celeste",
               },
               {
                 etiqueta: "Más alto",
@@ -398,6 +358,8 @@ export function Resumen({
                 previo: `${etiquetaAnterior} ${MONEDA.format(metricas.ticketMaximoPrevio)}`,
                 ...variacionVisual(metricas.ticketMaximo, metricas.ticketMaximoPrevio),
                 parte: parteComparativa(metricas.ticketMaximo, metricas.ticketMaximoPrevio),
+                historial: metricas.historialVentas.ticketMaximo,
+                color: "lavanda",
               },
               {
                 etiqueta: "Más bajo",
@@ -405,6 +367,8 @@ export function Resumen({
                 previo: `${etiquetaAnterior} ${MONEDA.format(metricas.ticketMinimoPrevio)}`,
                 ...variacionVisual(metricas.ticketMinimo, metricas.ticketMinimoPrevio),
                 parte: parteComparativa(metricas.ticketMinimo, metricas.ticketMinimoPrevio),
+                historial: metricas.historialVentas.ticketMinimo,
+                color: "ambar",
               },
             ]
           : [
@@ -666,7 +630,6 @@ export function Resumen({
                 )}
                 formatear={grafica.formatear}
               />
-              {momentos ? <MomentosTendencia datos={momentos} /> : null}
             </PilaGraficos>
             <ResumenTendencia datos={resumenGrafica} />
             <ListaConPestanas
