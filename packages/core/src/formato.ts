@@ -49,6 +49,14 @@ export const FECHA_HORA_LARGA = new Intl.DateTimeFormat("es-PE", {
 /** 9:30 p. m. */
 export const HORA = new Intl.DateTimeFormat("es-PE", { timeStyle: "short", timeZone: ZONA });
 
+const MES = new Intl.DateTimeFormat("es-PE", { month: "long", timeZone: ZONA });
+
+/** Nombre del mes con mayuscula: "Noviembre". */
+export function nombreDelMes(fecha: Date): string {
+  const nombre = MES.format(fecha);
+  return nombre.charAt(0).toUpperCase() + nombre.slice(1);
+}
+
 /** 18 oct */
 const DIA_MES = new Intl.DateTimeFormat("es-PE", {
   day: "numeric",

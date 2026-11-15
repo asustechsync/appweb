@@ -3,9 +3,9 @@
 .ui-grafico-tendencia {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-4);
+  gap: var(--espacio-2);
   margin: 0;
-  padding: var(--espacio-5);
+  padding: var(--espacio-4);
   overflow: visible; /* el calendario de la cabecera se despliega fuera de la tarjeta */
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-bloque);
@@ -159,7 +159,7 @@
   grid-template-columns: auto minmax(0, 1fr);
   /* La linea ocupa todo el alto que deja la tarjeta (con un minimo); las marcas
      del eje horizontal quedan al pie. */
-  grid-template-rows: minmax(calc(var(--espacio-32) + var(--espacio-6)), 1fr) auto;
+  grid-template-rows: minmax(var(--espacio-20), 1fr) auto;
   gap: var(--espacio-2);
   flex: 1 1 auto;
 }
@@ -174,7 +174,7 @@
   min-inline-size: 0;
   gap: var(--espacio-1);
   align-content: center;
-  padding: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-3);
   border-radius: var(--radio-bloque);
   background: var(--color-fondo);
 }
@@ -257,7 +257,7 @@
 }
 .ui-grafico-tendencia__resumen-cuerpo {
   display: grid;
-  gap: var(--espacio-2);
+  gap: var(--espacio-1);
   min-inline-size: 0;
 }
 .ui-grafico-tendencia__resumen-dato--celeste {
@@ -281,7 +281,7 @@
   display: flex;
   align-items: flex-end;
   gap: 3px;
-  block-size: var(--espacio-6);
+  block-size: var(--espacio-4);
 }
 .ui-grafico-tendencia__resumen-columna {
   display: block;
@@ -312,11 +312,12 @@
     gap: var(--espacio-3);
   }
   .ui-grafico-tendencia__resumen-barras {
-    block-size: var(--espacio-12);
+    block-size: 4rem;
+    gap: 3px;
   }
   .ui-grafico-tendencia__resumen-columna {
     flex: none;
-    inline-size: 6px;
+    inline-size: 1rem;
   }
 }
 @media (max-width: 39.99rem) {
@@ -327,8 +328,30 @@
 @media (min-width: 64rem) {
   .ui-grafico-tendencia__resumen {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: repeat(3, minmax(0, 1fr));
+    /* Cada bloque mide lo que su contenido, igual que una tarjeta de metricas,
+       y no se estira con la grafica. */
+    grid-auto-rows: auto;
+    align-content: start;
   }
+  .ui-grafico-tendencia__resumen-dato {
+    padding: var(--espacio-4);
+  }
+}
+/* Con historial el contenido repite el de TarjetaMetrica: mismo hueco entre
+   etiqueta y cifra, misma cifra y mismos colores. Sin borde ni sombra. */
+.ui-grafico-tendencia__resumen-dato--historial {
+  /* Mismo hueco que entre la cabecera y la cifra de la tarjeta de metricas. */
+  gap: var(--espacio-6);
+}
+.ui-grafico-tendencia__resumen-dato--historial .ui-grafico-tendencia__resumen-etiqueta {
+  color: var(--color-textoTenue);
+  font-weight: var(--tipo-peso-normal);
+  /* La cabecera de la tarjeta de metricas mide 20 px por su check. */
+  line-height: var(--espacio-5);
+}
+.ui-grafico-tendencia__resumen-dato--historial .ui-grafico-tendencia__resumen-valor {
+  font-size: var(--tipo-tamano-2xl);
+  line-height: var(--tipo-altura-apretada);
 }
 .ui-grafico-tendencia__escala {
   position: relative;

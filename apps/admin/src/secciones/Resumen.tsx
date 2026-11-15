@@ -35,6 +35,7 @@ import {
   IconoLibro,
   IconoPedidos,
   ListaConPestanas,
+  TarjetaMosaico,
   RejillaMetricas,
   Tarjeta,
   TarjetaActividad,
@@ -51,7 +52,15 @@ import { LOGO_MARCA, LOGO_MEDIO } from "@/lib/logos-pago";
 import { useTRPC } from "@/lib/trpc";
 
 import { tonoDeEstado } from "./Pedidos";
-import { MONEDA, conSigno, cuandoFue, diaYHora, haceCuanto, horaCorta } from "@appweb/core/formato";
+import {
+  MONEDA,
+  conSigno,
+  nombreDelMes,
+  cuandoFue,
+  diaYHora,
+  haceCuanto,
+  horaCorta,
+} from "@appweb/core/formato";
 
 const BANCOS_TRANSFERENCIA = new Set<BancoTransferencia>([
   "BCP",
@@ -141,7 +150,6 @@ function seriesDeLaGrafica(m: SeriesDelServidor, porTramo: boolean) {
 
 /** Cuantas filas se ven por lista: es un resumen, no la seccion. */
 const FILAS_RESUMEN = 5;
-const FILAS_PAGOS_RESUMEN = 5;
 
 function variacionVisual(actual: number, previo: number, subirEsBueno = true) {
   const porcentaje = variacion(actual, previo);
@@ -158,10 +166,6 @@ function variacionMargen(actual: number, previo: number) {
     cambio: `${puntos < 0 ? "−" : puntos > 0 ? "+" : ""}${texto} pts`,
     tono: puntos === 0 ? "igual" : puntos > 0 ? "sube" : "baja",
   } as const;
-}
-
-function montoDescuento(valor: number): string {
-  return valor > 0 ? `−${MONEDA.format(valor)}` : MONEDA.format(0);
 }
 
 export function Resumen({
@@ -201,7 +205,7 @@ export function Resumen({
     marcasEje,
     metricas,
     ultimosPagos,
-    pagosRechazados,
+    caja,
     ultimosPedidos,
     ultimosUsuarios,
     rankingClientes,
@@ -291,15 +295,6 @@ export function Resumen({
             historial: metricas.historialVentas.margen,
             color: "lavanda",
           },
-          {
-            etiqueta: "Descuentos",
-            valor: montoDescuento(metricas.descuentos),
-            previo: `${etiquetaAnterior} ${montoDescuento(metricas.descuentosPrevios)}`,
-            ...variacionVisual(metricas.descuentos, metricas.descuentosPrevios, false),
-            parte: parteRentabilidad(metricas.descuentos),
-            historial: metricas.historialVentas.descuentos,
-            color: "ambar",
-          },
         ]
       : metrica === "pedidos"
         ? [
@@ -324,22 +319,6 @@ export function Resumen({
               historial: metricas.historialVentas.pagados,
               color: "lavanda",
             },
-            {
-              etiqueta: "Cancelados",
-              valor: ENTERO(metricas.pedidosCancelados),
-              previo: `${etiquetaAnterior} ${ENTERO(metricas.pedidosCanceladosPrevios)}`,
-              ...variacionVisual(
-                metricas.pedidosCancelados,
-                metricas.pedidosCanceladosPrevios,
-                false,
-              ),
-              parte:
-                metricas.pedidosRecibidos > 0
-                  ? Math.round((metricas.pedidosCancelados / metricas.pedidosRecibidos) * 100)
-                  : 0,
-              historial: metricas.historialVentas.cancelados,
-              color: "ambar",
-            },
           ]
         : metrica === "ticket"
           ? [
@@ -360,15 +339,6 @@ export function Resumen({
                 parte: parteComparativa(metricas.ticketMaximo, metricas.ticketMaximoPrevio),
                 historial: metricas.historialVentas.ticketMaximo,
                 color: "lavanda",
-              },
-              {
-                etiqueta: "Más bajo",
-                valor: MONEDA.format(metricas.ticketMinimo),
-                previo: `${etiquetaAnterior} ${MONEDA.format(metricas.ticketMinimoPrevio)}`,
-                ...variacionVisual(metricas.ticketMinimo, metricas.ticketMinimoPrevio),
-                parte: parteComparativa(metricas.ticketMinimo, metricas.ticketMinimoPrevio),
-                historial: metricas.historialVentas.ticketMinimo,
-                color: "ambar",
               },
             ]
           : [
@@ -398,21 +368,6 @@ export function Resumen({
                 ),
                 historial: metricas.historialClientes.compradores,
                 color: "lavanda",
-              },
-              {
-                etiqueta: "Recurrentes",
-                valor: ENTERO(metricas.clientesRecurrentes),
-                previo: `${etiquetaAnterior} ${ENTERO(metricas.clientesRecurrentesPrevios)}`,
-                ...variacionVisual(
-                  metricas.clientesRecurrentes,
-                  metricas.clientesRecurrentesPrevios,
-                ),
-                parte: parteComparativa(
-                  metricas.clientesRecurrentes,
-                  metricas.clientesRecurrentesPrevios,
-                ),
-                historial: metricas.historialClientes.recurrentes,
-                color: "ambar",
               },
             ]
     : [];
@@ -632,28 +587,40 @@ export function Resumen({
               />
             </PilaGraficos>
             <ResumenTendencia datos={resumenGrafica} />
-            <ListaConPestanas
-              etiqueta="Pagos"
-              reservar={FILAS_PAGOS_RESUMEN}
-              pestanas={[
-                {
-                  valor: "recientes",
-                  etiqueta: "Recientes",
-                  titulo: "Pagos recientes",
-                  vacio: "Todavía no hay pagos registrados.",
-                  ...(onVerPagos ? { onVerTodos: onVerPagos } : {}),
-                  filas: ultimosPagos.map(filaPago),
-                },
-                {
-                  valor: "rechazados",
-                  etiqueta: "Rechazados",
-                  titulo: "Pagos rechazados",
-                  vacio: "No hay pagos rechazados.",
-                  ...(onVerPagos ? { onVerTodos: onVerPagos } : {}),
-                  filas: pagosRechazados.map(filaPago),
-                },
-              ]}
-            />
+            {caja ? (
+              <TarjetaMosaico
+                titulo="Caja del mes"
+                principal={{
+                  etiqueta: "Queda en caja",
+                  valor: MONEDA.format(caja.queda),
+                  lateral: `${caja.porcentaje}%`,
+                  progreso: caja.porcentaje,
+                }}
+                detalle={`de ${MONEDA.format(caja.cobrado)} cobrados en ${
+                  caja.pagos === 1 ? "1 pago" : `${caja.pagos} pagos`
+                }`}
+                filas={[
+                  {
+                    etiqueta: "Proveedores",
+                    valor: caja.compras > 0 ? `− ${MONEDA.format(caja.compras)}` : MONEDA.format(0),
+                    tono: caja.compras > 0 ? "error" : "neutro",
+                  },
+                  {
+                    etiqueta: "Por verificar",
+                    valor: MONEDA.format(caja.porVerificar),
+                    tono: caja.pagosPorVerificar > 0 ? "alerta" : "neutro",
+                  },
+                ]}
+                pie={[
+                  `${nombreDelMes(new Date(caja.inicioMes))} · ${
+                    caja.cantidadCompras === 1 ? "1 compra" : `${caja.cantidadCompras} compras`
+                  }`,
+                  caja.rechazados === 1
+                    ? "1 pago rechazado"
+                    : `${caja.rechazados} pagos rechazados`,
+                ]}
+              />
+            ) : null}
           </FilaGraficos>
         </Tarjeta>
       ) : null}
@@ -725,12 +692,12 @@ export function Resumen({
                 filas: filasRanking(rankingClientes.porGasto, "gasto"),
               },
               {
-                valor: "pedidos",
-                etiqueta: "Pedidos",
-                titulo: "Clientes con más pedidos",
-                vacio: "Todavía no hay compras.",
-                ...(onVerClientes ? { onVerTodos: onVerClientes } : {}),
-                filas: filasRanking(rankingClientes.porPedidos, "pedidos"),
+                valor: "pagos",
+                etiqueta: "Pagos",
+                titulo: "Pagos recientes",
+                vacio: "Todavía no hay pagos registrados.",
+                ...(onVerPagos ? { onVerTodos: onVerPagos } : {}),
+                filas: ultimosPagos.map(filaPago),
               },
             ]}
           />

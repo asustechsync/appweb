@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   acumular,
+  cajaDelMes,
   extremosDeSerie,
   franjasDelResumen,
   historialDeClientes,
@@ -309,7 +310,14 @@ describe("historial de ventas por tramo", () => {
         { en: hoy, estado: "PENDIENTE_PAGO", subtotal: 20, descuento: 0 },
       ],
       [
-        { en: ayer, precioUnitario: 100, costoUnitario: 60, cantidad: 1, subtotal: 100, descuento: 0 },
+        {
+          en: ayer,
+          precioUnitario: 100,
+          costoUnitario: 60,
+          cantidad: 1,
+          subtotal: 100,
+          descuento: 0,
+        },
         { en: hoy, precioUnitario: 50, costoUnitario: 30, cantidad: 1, subtotal: 50, descuento: 0 },
       ],
       ["PAGADO", "ENTREGADO"],
@@ -328,5 +336,24 @@ describe("historial de ventas por tramo", () => {
   it("un tramo sin pedidos queda en cero", () => {
     const tramos = tramosDelHistorial(ventanaDe("dia", new Date(2026, 10, 12, 18)), "dia", 1);
     expect(historialDeVentas(tramos, [], [], ["PAGADO"]).ticketMinimo).toEqual([0]);
+  });
+});
+
+describe("caja del mes", () => {
+  it("resta las compras de lo cobrado y da la parte que queda", () => {
+    expect(cajaDelMes(2380, 1050)).toEqual({
+      cobrado: 2380,
+      compras: 1050,
+      queda: 1330,
+      porcentaje: 56,
+    });
+  });
+
+  it("sin cobros el porcentaje es 0, aunque haya compras", () => {
+    expect(cajaDelMes(0, 300)).toMatchObject({ queda: -300, porcentaje: 0 });
+  });
+
+  it("no arrastra decimales flotantes", () => {
+    expect(cajaDelMes(0.3, 0.1).queda).toBe(0.2);
   });
 });

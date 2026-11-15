@@ -344,6 +344,8 @@ export {
   type Periodo,
   type VentanaResumen,
   variacion,
+  cajaDelMes,
+  type CajaDelMes,
   serieAcumulada,
   serieEnTramos,
   acumular,

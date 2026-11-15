@@ -34,6 +34,7 @@ import {
   vendidoDe,
   ventanaDe,
   ventanaDeFecha,
+  cajaDelMes,
   type EstadoPago,
   type EstadoPedido,
   type TipoReclamo,
@@ -97,6 +98,8 @@ export const resumen = router({
     const ventanaPrevia = { gte: periodo.previoDesde, lt: periodo.previoHasta };
 
     const ahora = new Date();
+    // La caja siempre mira el mes en curso, del dia 1 a hoy.
+    const mes = ventanaDe("mes", ahora);
 
     // Todo en un viaje: ninguna de estas consultas depende de otra.
     const [
@@ -113,7 +116,10 @@ export const resumen = router({
       pedidosSeriePrevia,
       altasSeriePrevia,
       ultimosPagos,
-      pagosRechazados,
+      cobradoMes,
+      comprasMes,
+      porVerificar,
+      rechazadosMes,
       pagosPorMedio,
       enviosEnCamino,
       reclamosPendientes,
@@ -218,24 +224,32 @@ export const resumen = router({
             },
           })
         : [],
-      // Cobros rechazados: para contactar al cliente y recuperar la venta.
+      // Caja del mes calendario, sin importar el periodo elegido: lo cobrado
+      // (solo confirmado), lo pagado a proveedores y lo que falta verificar.
       verVentas
-        ? ctx.prisma.pago.findMany({
-            where: { estado: "RECHAZADO" },
-            orderBy: { creadoEn: "desc" },
-            take: TOPE_LISTA,
-            select: {
-              id: true,
-              medio: true,
-              monto: true,
-              estado: true,
-              creadoEn: true,
-              tarjetaMarca: true,
-              tarjetaUltimos: true,
-              pedido: { select: { codigo: true, bancoTransferencia: true } },
-            },
+        ? ctx.prisma.pago.aggregate({
+            where: { estado: "CONFIRMADO", creadoEn: { gte: mes.desde } },
+            _sum: { monto: true },
+            _count: { _all: true },
           })
-        : [],
+        : null,
+      verVentas
+        ? ctx.prisma.compra.aggregate({
+            where: { creadoEn: { gte: mes.desde } },
+            _sum: { total: true },
+            _count: { _all: true },
+          })
+        : null,
+      verVentas
+        ? ctx.prisma.pago.aggregate({
+            where: { estado: "PENDIENTE" },
+            _sum: { monto: true },
+            _count: { _all: true },
+          })
+        : null,
+      verVentas
+        ? ctx.prisma.pago.count({ where: { estado: "RECHAZADO", creadoEn: { gte: mes.desde } } })
+        : 0,
       // Por que medio entro la plata del periodo: solo pagos confirmados, lo
       // pendiente o rechazado todavia no es plata.
       verVentas
@@ -507,20 +521,18 @@ export const resumen = router({
             ? { marca: marcaDeTarjeta(pago.tarjetaMarca), ultimos: pago.tarjetaUltimos }
             : null,
       })),
-      pagosRechazados: pagosRechazados.map((pago) => ({
-        id: pago.id,
-        medio: pago.medio as MedioPagoPedido,
-        estado: pago.estado as EstadoPago,
-        monto: Number(pago.monto),
-        creadoEn: pago.creadoEn.toISOString(),
-        codigo: pago.pedido.codigo,
-        bancoTransferencia: pago.pedido.bancoTransferencia,
-        // Solo con tarjeta: la marca reconocida y los ultimos 4 digitos.
-        tarjeta:
-          pago.medio === "TARJETA"
-            ? { marca: marcaDeTarjeta(pago.tarjetaMarca), ultimos: pago.tarjetaUltimos }
-            : null,
-      })),
+      caja:
+        cobradoMes && comprasMes && porVerificar
+          ? {
+              ...cajaDelMes(Number(cobradoMes._sum.monto ?? 0), Number(comprasMes._sum.total ?? 0)),
+              pagos: cobradoMes._count._all,
+              cantidadCompras: comprasMes._count._all,
+              porVerificar: Number(porVerificar._sum.monto ?? 0),
+              pagosPorVerificar: porVerificar._count._all,
+              rechazados: rechazadosMes,
+              inicioMes: mes.desde.toISOString(),
+            }
+          : null,
       alertas: {
         pedidosPendientes: pedidosPendientes.map((pedido) => ({
           id: pedido.id,

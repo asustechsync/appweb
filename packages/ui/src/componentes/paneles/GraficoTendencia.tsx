@@ -75,6 +75,8 @@ export type ColorHistorial = "celeste" | "lavanda" | "ambar";
 
 /** Alto minimo de una barra en cero: que se vea el hueco y no desaparezca. */
 const BARRA_MINIMA = 6;
+/** Una barra con dato nunca baja de esta parte del tope: la tendencia se lee sin que los periodos bajos se pierdan. */
+const BARRA_CON_DATO_MINIMA = 20;
 
 function BarrasHistorial({ valores }: { valores: number[] }) {
   const tope = Math.max(...valores, 0);
@@ -86,7 +88,11 @@ function BarrasHistorial({ valores }: { valores: number[] }) {
           key={indice}
           className={`ui-grafico-tendencia__resumen-columna${valor === 0 ? " ui-grafico-tendencia__resumen-columna--vacia" : ""}`}
           style={{
-            blockSize: `${tope > 0 ? Math.max(BARRA_MINIMA, Math.round((valor / tope) * 100)) : BARRA_MINIMA}%`,
+            blockSize: `${
+              tope > 0 && valor > 0
+                ? Math.max(BARRA_CON_DATO_MINIMA, Math.round((valor / tope) * 100))
+                : BARRA_MINIMA
+            }%`,
           }}
         />
       ))}
@@ -463,13 +469,15 @@ export function ResumenTendencia({ datos }: { datos: DatoResumenTendencia[] }) {
               key={dato.etiqueta}
               className={`ui-grafico-tendencia__resumen-dato ui-grafico-tendencia__resumen-dato--historial ui-grafico-tendencia__resumen-dato--${dato.color ?? "celeste"}`}
             >
+              <span className="ui-grafico-tendencia__resumen-cabecera">
+                <span className="ui-grafico-tendencia__resumen-etiqueta">{dato.etiqueta}</span>
+                {cambio}
+              </span>
               <span className="ui-grafico-tendencia__resumen-cuerpo">
                 <span className="ui-grafico-tendencia__resumen-texto">
-                  <span className="ui-grafico-tendencia__resumen-etiqueta">{dato.etiqueta}</span>
                   <strong className="ui-grafico-tendencia__resumen-valor">{dato.valor}</strong>
                   <span className="ui-grafico-tendencia__resumen-pie">
                     <span className="ui-grafico-tendencia__resumen-previo">{dato.previo}</span>
-                    {cambio}
                   </span>
                 </span>
                 <BarrasHistorial valores={dato.historial} />

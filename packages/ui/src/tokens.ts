@@ -160,6 +160,17 @@ export const tokens = {
     // Cada hecho dentro de una lista de actividad (pagos recientes): el mismo
     // gris azulado del fondo de la web, un paso bajo el blanco del bloque.
     fondoActividad: "#EFF1F3",
+    // Tarjeta mosaico (caja del mes): bloque en el azul de `info` (el del check
+    // de las metricas) con la cifra grande, y un bloque rayado celeste para la
+    // cifra de apoyo. Igual en los dos temas.
+    mosaicoFondo: "#2F7DB8",
+    mosaicoTexto: "#FFFFFF",
+    mosaicoTextoSuave: "#CFE4F5",
+    mosaicoCifra: "#CFE4F5",
+    mosaicoPista: "rgb(255 255 255 / 0.25)",
+    mosaicoRayaFondo: "#E6F1FB",
+    mosaicoRaya: "#B5D4F4",
+    mosaicoRayaTexto: "#0C447C",
     vidrio: "rgb(62 66 72 / 0.5)",
     vidrioBorde: "rgb(255 255 255 / 0.24)",
     textoVidrio: "#FFFFFF",
@@ -401,6 +412,17 @@ export const tokensOscuro = {
     fondoEscritorio: "#27292D",
     // En oscuro, un paso sobre el fondo del bloque para que se distinga.
     fondoActividad: "#27292D",
+    // Tarjeta mosaico (caja del mes): bloque en el azul de `info` (el del check
+    // de las metricas) con la cifra grande, y un bloque rayado celeste para la
+    // cifra de apoyo. Igual en los dos temas.
+    mosaicoFondo: "#2F7DB8",
+    mosaicoTexto: "#FFFFFF",
+    mosaicoTextoSuave: "#CFE4F5",
+    mosaicoCifra: "#CFE4F5",
+    mosaicoPista: "rgb(255 255 255 / 0.25)",
+    mosaicoRayaFondo: "#E6F1FB",
+    mosaicoRaya: "#B5D4F4",
+    mosaicoRayaTexto: "#0C447C",
     vidrio: "rgb(255 255 255 / 0.08)",
     vidrioBorde: "rgb(255 255 255 / 0.14)",
     textoVidrio: "#F2F2F2",

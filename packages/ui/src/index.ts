@@ -377,6 +377,11 @@ export {
   type PropsTarjetasGanancia,
 } from "./componentes/paneles/TarjetasGanancia";
 export {
+  TarjetaMosaico,
+  type FilaMosaico,
+  type PropsTarjetaMosaico,
+} from "./componentes/paneles/TarjetaMosaico";
+export {
   GraficoTendencia,
   ResumenTendencia,
   type DatoResumenTendencia,

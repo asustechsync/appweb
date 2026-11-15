@@ -43,6 +43,31 @@ export function variacion(actual: number, anterior: number): number {
   return Math.round(((actual - anterior) / anterior) * 100);
 }
 
+/** La caja del mes: lo cobrado, lo pagado a proveedores y lo que queda. */
+export interface CajaDelMes {
+  cobrado: number;
+  compras: number;
+  /** Cobrado menos compras; puede ser negativo si se compro mas de lo cobrado. */
+  queda: number;
+  /** Que parte de lo cobrado queda, en %. Sin cobros es 0. */
+  porcentaje: number;
+}
+
+/**
+ * Lo que queda en caja: lo cobrado (solo pagos confirmados) menos lo que se
+ * pago a proveedores. No descuenta envios: el costo real del courier no se
+ * guarda, solo lo que pago el cliente.
+ */
+export function cajaDelMes(cobrado: number, compras: number): CajaDelMes {
+  const queda = Math.round((cobrado - compras) * 100) / 100;
+  return {
+    cobrado,
+    compras,
+    queda,
+    porcentaje: cobrado > 0 ? Math.round((queda / cobrado) * 100) : 0,
+  };
+}
+
 /**
  * En cuantos tramos iguales se parte un periodo para el minigrafico de cada
  * cifra: una hora por tramo en el dia, y el mismo numero en semana y mes para
@@ -571,8 +596,7 @@ export function historialDeVentas(
       lineas
         .filter((linea) => dentro(linea.en, tramo))
         .map((linea) => ({
-          precioUnitario:
-            linea.precioUnitario * factorDeDescuento(linea.subtotal, linea.descuento),
+          precioUnitario: linea.precioUnitario * factorDeDescuento(linea.subtotal, linea.descuento),
           costoUnitario: linea.costoUnitario,
           cantidad: linea.cantidad,
         })),
