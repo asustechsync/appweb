@@ -2,8 +2,7 @@
 // Fuente: src/iconos/fuente/interfaz/papelera.svg
 import type { PropsIcono } from "../tipos";
 
-/** Cubo de basura: borde ovalado, cuerpo que se angosta y una marca al fondo. Dibujado a partir de trash.svg. */
-export function IconoPapelera({ tamano = 20, className }: PropsIcono) {
+export function IconoPapelera({ tamano = 16, className }: PropsIcono) {
   return (
     <svg
       width={tamano}
@@ -17,9 +16,8 @@ export function IconoPapelera({ tamano = 20, className }: PropsIcono) {
       aria-hidden="true"
       className={className}
     >
-      <ellipse cx="12" cy="5.5" rx="8.5" ry="2.5" />
-      <path d="M3.5 5.5L6 19.5C6.25 20.5 7 21 8 21H16C17 21 17.75 20.5 18 19.5L20.5 5.5" />
-      <path d="M10 17H14" />
+      <path d="m3 4l2.303 14.077a4 4 0 0 0 2.738 3.166l.328.104a12 12 0 0 0 7.262 0l.328-.104a4 4 0 0 0 2.738-3.166L21 4" />
+      <ellipse cx="12" cy="4" rx="9" ry="2" />
     </svg>
   );
 }

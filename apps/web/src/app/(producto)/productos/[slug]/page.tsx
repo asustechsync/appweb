@@ -8,9 +8,10 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { URL_TIENDA } from "@appweb/api/urls";
-import { Contenedor, ListaResenas, Migas } from "@appweb/ui";
+import { Cargando, Contenedor, ListaResenas, Migas } from "@appweb/ui";
 
 import { type ProductoDeFicha, productoPorSlug, slugsDeProductos } from "@/lib/consultas";
 
@@ -30,7 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const producto = await productoPorSlug(slug);
 
-  if (producto === null) return { title: "Producto no encontrado" };
+  // El 404 sale dentro de <Suspense>, ya con estado 200: `noindex` evita
+  // que Google guarde la pagina vacia.
+  if (producto === null) return { title: "Producto no encontrado", robots: { index: false } };
 
   const descripcion = producto.descripcionSeo ?? producto.descripcionCorta;
 
@@ -51,52 +54,67 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PaginaProducto({ params }: Props) {
+/**
+ * El `slug` se lee dentro de <Suspense>: con `partialPrefetching` el App Shell
+ * se comparte entre todos los enlaces a la ruta y no puede depender de la URL.
+ * Los datos salen de `productoPorSlug`, cacheada, asi que llegan enseguida.
+ */
+export default function PaginaProducto({ params }: Props) {
+  return (
+    <main>
+      <Contenedor>
+        <Suspense fallback={<Cargando texto="Cargando producto…" />}>
+          <Ficha params={params} />
+        </Suspense>
+      </Contenedor>
+    </main>
+  );
+}
+
+async function Ficha({ params }: Props) {
   const { slug } = await params;
   const producto = await productoPorSlug(slug);
 
   if (producto === null) notFound();
 
   return (
-    <main>
-      <Contenedor>
-        <Migas
-          tramos={[
-            { nombre: "Inicio", href: "/" },
-            ...(producto.categoria.padre
-              ? [
-                  {
-                    nombre: producto.categoria.padre.nombre,
-                    href: `/categorias/${producto.categoria.padre.slug}`,
-                  },
-                ]
-              : []),
-            { nombre: producto.categoria.nombre, href: `/categorias/${producto.categoria.slug}` },
-            { nombre: producto.nombre },
-          ]}
-        />
-        <FichaProductoCliente
-          nombre={producto.nombre}
-          marca={producto.marca}
-          descripcion={producto.descripcion}
-          imagenes={producto.imagenes}
-          precio={producto.precio}
-          precioLista={producto.precioLista}
-          descuentoPct={producto.descuentoPct}
-          disponible={producto.disponible}
-          stockBajo={producto.stockBajo}
-          stockTotal={producto.stockTotal}
-          opciones={producto.opciones}
-          {...(producto.calificacion
-            ? {
-                calificacion: producto.calificacion.promedio,
-                totalOpiniones: producto.calificacion.total,
-              }
-            : {})}
-          extras={<SeccionesFicha />}
-        />
-        <ListaResenas calificacion={producto.calificacion} resenas={producto.resenas} />
-      </Contenedor>
+    <>
+      <Migas
+        tramos={[
+          { nombre: "Inicio", href: "/" },
+          ...(producto.categoria.padre
+            ? [
+                {
+                  nombre: producto.categoria.padre.nombre,
+                  href: `/categorias/${producto.categoria.padre.slug}`,
+                },
+              ]
+            : []),
+          { nombre: producto.categoria.nombre, href: `/categorias/${producto.categoria.slug}` },
+          { nombre: producto.nombre },
+        ]}
+      />
+      <FichaProductoCliente
+        nombre={producto.nombre}
+        marca={producto.marca}
+        descripcion={producto.descripcion}
+        imagenes={producto.imagenes}
+        precio={producto.precio}
+        precioLista={producto.precioLista}
+        descuentoPct={producto.descuentoPct}
+        disponible={producto.disponible}
+        stockBajo={producto.stockBajo}
+        stockTotal={producto.stockTotal}
+        opciones={producto.opciones}
+        {...(producto.calificacion
+          ? {
+              calificacion: producto.calificacion.promedio,
+              totalOpiniones: producto.calificacion.total,
+            }
+          : {})}
+        extras={<SeccionesFicha />}
+      />
+      <ListaResenas calificacion={producto.calificacion} resenas={producto.resenas} />
       <script
         type="application/ld+json"
         // JSON.stringify no escapa "<": sin esto, un comentario con "</script>"
@@ -106,7 +124,7 @@ export default async function PaginaProducto({ params }: Props) {
           __html: JSON.stringify(datosEstructurados(producto)).replace(/</g, "\\u003c"),
         }}
       />
-    </main>
+    </>
   );
 }
 

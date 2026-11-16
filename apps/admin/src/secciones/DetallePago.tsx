@@ -54,10 +54,7 @@ export function DetallePago({ pagoId, puedeGestionar, onVolver, onVerPedido }: P
   const pago = detalle.data;
   const medio = ETIQUETAS_MEDIO_PAGO[pago.medio];
   const revisable =
-    puedeGestionar &&
-    pago.estado === "PENDIENTE" &&
-    pago.pedido.estado === "PENDIENTE_PAGO" &&
-    pago.medio !== "CONTRA_ENTREGA";
+    puedeGestionar && pago.estado === "PENDIENTE" && pago.pedido.estado === "PENDIENTE_PAGO";
   return (
     <>
       <ZonaImprimible>

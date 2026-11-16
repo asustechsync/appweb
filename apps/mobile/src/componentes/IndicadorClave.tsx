@@ -1,5 +1,5 @@
 import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
-import { IconoMarcarCirculo, IconoMarcarCirculoRelleno } from "@appweb/ui/iconos.nativos";
+import { IconoMarcarCirculo, IconoMarcarCirculoBold } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -37,7 +37,7 @@ export function IndicadorClave({ requisitos, vacia = false }: PropsIndicadorClav
             style={estilos.fila}
           >
             {r.cumplido ? (
-              <IconoMarcarCirculoRelleno tamano={t.espacio[4]} color={t.color.claveMuyFuerte} />
+              <IconoMarcarCirculoBold tamano={t.espacio[4]} color={t.color.claveMuyFuerte} />
             ) : (
               <IconoMarcarCirculo tamano={t.espacio[4]} color={t.color.textoMarca} />
             )}

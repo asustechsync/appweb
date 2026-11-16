@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { CALIFICACION } from "@appweb/core/formato";
 
-import { IconoEstrellaRellena, IconoGaleria, IconoMensaje, IconoVerificado } from "../../iconos";
+import { IconoEstrellaBold, IconoGaleria, IconoMensaje, IconoVerificado } from "../../iconos";
 import { GaleriaProducto, type ImagenGaleria } from "./GaleriaProducto";
 import { Precio } from "./Precio";
 import { SelectorVariantes, type OpcionDeCompra } from "./SelectorVariantes";
@@ -84,7 +84,7 @@ export function FichaProducto({
 
         {calificacion !== undefined ? (
           <div className="ui-ficha-producto__opiniones">
-            <IconoEstrellaRellena className="ui-ficha-producto__estrella" tamano={18} />
+            <IconoEstrellaBold className="ui-ficha-producto__estrella" tamano={18} />
             <span className="ui-ficha-producto__nota">{CALIFICACION.format(calificacion)}</span>
             {totalOpiniones !== undefined ? (
               <span className="ui-ficha-producto__dato">

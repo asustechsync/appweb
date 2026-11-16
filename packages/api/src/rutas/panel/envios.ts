@@ -75,8 +75,6 @@ export const envios = router({
         id: p.id,
         codigo: p.codigo,
         estado: p.estado as EstadoPedido,
-        // Para el repartidor: si tiene que cobrar al entregar.
-        cobrarAlEntregar: p.medioPago === "CONTRA_ENTREGA",
         creadoEn: p.creadoEn.toISOString(),
         destinatario: p.envioDestinatario ?? p.usuario.nombre,
         telefono: p.envioTelefono ?? p.usuario.telefono,

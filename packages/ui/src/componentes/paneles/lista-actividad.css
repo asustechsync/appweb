@@ -247,10 +247,6 @@
   --ui-logo-base: var(--color-fondo);
   color: var(--color-graficoGrafito);
 }
-.ui-logo-medio-pago--contraEntrega {
-  --ui-logo-base: color-mix(in srgb, var(--color-graficoAmbar) 22%, var(--color-fondo));
-  color: var(--color-alerta);
-}
 
 .ui-logo-medio-pago--yape,
 .ui-logo-medio-pago--visa,

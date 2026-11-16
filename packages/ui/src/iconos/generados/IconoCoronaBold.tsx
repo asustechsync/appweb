@@ -1,8 +1,8 @@
 // GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
-// Fuente: src/iconos/fuente/interfaz/corona-rellena.svg
+// Fuente: src/iconos/fuente/interfaz/corona-bold.svg
 import type { PropsIcono } from "../tipos";
 
-export function IconoCoronaRellena({ tamano = 16, className }: PropsIcono) {
+export function IconoCoronaBold({ tamano = 16, className }: PropsIcono) {
   return (
     <svg
       width={tamano}

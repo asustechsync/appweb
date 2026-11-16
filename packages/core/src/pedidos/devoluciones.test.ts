@@ -60,7 +60,6 @@ describe("revisar devolucion", () => {
       "reembolso_excede",
     );
     expect(revisarDevolucion({ ...base, reembolso: 30 })).toBe("falta_referencia");
-    expect(revisarDevolucion({ ...base, medio: "CONTRA_ENTREGA", reembolso: 30 })).toBeNull();
   });
 
   it("un cambio es por otra variante del mismo producto con stock", () => {
@@ -131,9 +130,6 @@ describe("rechazar pago", () => {
   it("rechaza un pago pendiente con motivo", () => {
     expect(revisarRechazoPago(pago)).toBeNull();
     expect(revisarRechazoPago({ ...pago, motivo: "" })).toBe("falta_motivo");
-    expect(revisarRechazoPago({ ...pago, medio: "CONTRA_ENTREGA" })).toBe(
-      "contra_entrega_no_se_rechaza",
-    );
     expect(revisarRechazoPago({ ...pago, estadoPago: "CONFIRMADO" })).toBe("pago_ya_resuelto");
     expect(revisarRechazoPago({ ...pago, estadoPedido: "PAGADO" })).toBe("pedido_no_pendiente");
   });

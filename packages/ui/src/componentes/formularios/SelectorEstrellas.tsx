@@ -1,6 +1,6 @@
 "use client";
 
-import { IconoEstrella, IconoEstrellaRellena } from "../../iconos";
+import { IconoEstrella, IconoEstrellaBold } from "../../iconos";
 
 import "../estilos.css";
 
@@ -50,7 +50,7 @@ export function SelectorEstrellas({
               {n} {n === 1 ? "estrella" : "estrellas"}, {TEXTOS[n - 1]}
             </span>
             {n <= valor ? (
-              <IconoEstrellaRellena tamano={28} className="ui-selector-estrellas__llena" />
+              <IconoEstrellaBold tamano={28} className="ui-selector-estrellas__llena" />
             ) : (
               <IconoEstrella tamano={28} className="ui-selector-estrellas__vacia" />
             )}

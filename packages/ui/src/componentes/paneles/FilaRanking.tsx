@@ -1,4 +1,4 @@
-import { IconoCoronaRellena } from "../../iconos";
+import { IconoCoronaBold } from "../../iconos";
 import { InsigniaNivel, type TonoNivel } from "./EscaleraNiveles";
 
 import "./fila-ranking.css";
@@ -40,7 +40,7 @@ export function FilaRanking({ puesto, nombre, nivel, cifra, falta, onAbrir }: Pr
           <InsigniaNivel tono={nivel.tono}>{nivel.nombre}</InsigniaNivel>
           {puesto === 1 ? (
             <span className="ui-fila-ranking__corona" role="img" aria-label="Primer puesto">
-              <IconoCoronaRellena tamano={14} />
+              <IconoCoronaBold tamano={14} />
             </span>
           ) : null}
           <span className="ui-fila-ranking__falta">{falta}</span>

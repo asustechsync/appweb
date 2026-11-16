@@ -1,10 +1,10 @@
 // GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
-// Fuente: src/iconos/fuente/interfaz/marcar-circulo-relleno.svg
+// Fuente: src/iconos/fuente/interfaz/marcar-circulo-bold.svg
 import Svg, { Path } from "react-native-svg";
 
 import type { PropsIconoNativo } from "../tipos";
 
-export function IconoMarcarCirculoRelleno({ tamano = 20, color }: PropsIconoNativo) {
+export function IconoMarcarCirculoBold({ tamano = 20, color }: PropsIconoNativo) {
   return (
     <Svg
       width={tamano}

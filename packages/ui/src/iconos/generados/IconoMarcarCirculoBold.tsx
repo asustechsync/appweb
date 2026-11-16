@@ -1,8 +1,8 @@
 // GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
-// Fuente: src/iconos/fuente/interfaz/marcar-circulo-relleno.svg
+// Fuente: src/iconos/fuente/interfaz/marcar-circulo-bold.svg
 import type { PropsIcono } from "../tipos";
 
-export function IconoMarcarCirculoRelleno({ tamano = 20, className }: PropsIcono) {
+export function IconoMarcarCirculoBold({ tamano = 20, className }: PropsIcono) {
   return (
     <svg
       width={tamano}

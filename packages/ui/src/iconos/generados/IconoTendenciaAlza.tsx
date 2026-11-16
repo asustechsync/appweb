@@ -16,8 +16,8 @@ export function IconoTendenciaAlza({ tamano = 20, className }: PropsIcono) {
       aria-hidden="true"
       className={className}
     >
-      <path d="M4 16.5L9.5 11L13 14.5L20 7.5" />
-      <path d="M15 7.5H20V12.5" />
+      <path d="M16 7h6v6" />
+      <path d="m22 7-8.5 8.5-5-5L2 17" />
     </svg>
   );
 }

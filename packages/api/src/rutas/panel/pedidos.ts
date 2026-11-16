@@ -185,18 +185,6 @@ async function cambiarEnTransaccion(
       });
     }
 
-    if (hacia === "ENTREGADO" && pedido.medioPago === "CONTRA_ENTREGA") {
-      // Contra entrega: el cobro llega con el paquete.
-      await tx.pago.updateMany({
-        where: { pedidoId: pedido.id, estado: "PENDIENTE" },
-        data: {
-          estado: "CONFIRMADO",
-          confirmadoPorId: actorId,
-          confirmadoEn: ahora,
-        },
-      });
-    }
-
     const tocados = await aplicarMovimientos(tx, movimientos);
 
     await tx.historialPedido.create({
@@ -308,7 +296,6 @@ export const pedidos = router({
         // Pendiente de pago, pero el cliente ya envio su comprobante: falta que el equipo lo confirme.
         porConfirmar:
           p.estado === "PENDIENTE_PAGO" &&
-          p.medioPago !== "CONTRA_ENTREGA" &&
           p.pagos.some((g) => g.referencia !== null || g.comprobanteUrl !== null),
         primerProducto: p.items[0]?.nombreProducto ?? null,
         imagen: p.items[0]?.variante.producto.imagenes[0]?.url ?? null,

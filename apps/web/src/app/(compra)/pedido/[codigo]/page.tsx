@@ -127,7 +127,8 @@ export default async function PaginaPedido({ params }: Props) {
               <span>{ETIQUETAS_MEDIO[medio]?.etiqueta ?? "Pago"}</span>
               {pedido.bancoTransferencia ? (
                 <span>
-                  Banco de destino: {ETIQUETAS_BANCO[pedido.bancoTransferencia] ?? pedido.bancoTransferencia}
+                  Banco de destino:{" "}
+                  {ETIQUETAS_BANCO[pedido.bancoTransferencia] ?? pedido.bancoTransferencia}
                 </span>
               ) : null}
               <MontoDetalle>{MONEDA.format(pedido.total)}</MontoDetalle>

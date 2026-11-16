@@ -11,7 +11,7 @@ import {
   IconoPedidos,
   IconoSoporte,
   IconoUbicacion,
-  IconoPerfil,
+  IconoUsuario,
   IconoPremio,
   IconoFavorito,
   MenuCuenta,
@@ -46,7 +46,7 @@ const IDS = SECCIONES.filter((seccion) => !seccion.href).map((seccion) => seccio
 const GRUPOS_MENU: GrupoMenuCuenta[] = [
   {
     opciones: [
-      { id: "perfil", etiqueta: "Perfil", icono: <IconoPerfil />, seccion: "perfil" },
+      { id: "perfil", etiqueta: "Perfil", icono: <IconoUsuario />, seccion: "perfil" },
       {
         id: "direcciones",
         etiqueta: "Direcciones",

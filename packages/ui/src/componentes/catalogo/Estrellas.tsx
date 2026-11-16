@@ -1,6 +1,6 @@
 import { CALIFICACION } from "@appweb/core/formato";
 
-import { IconoEstrella, IconoEstrellaRellena } from "../../iconos";
+import { IconoEstrella, IconoEstrellaBold } from "../../iconos";
 
 import "../estilos.css";
 
@@ -21,7 +21,7 @@ export function Estrellas({ valor, tamano = 16 }: PropsEstrellas) {
     >
       {[1, 2, 3, 4, 5].map((n) =>
         n <= llenas ? (
-          <IconoEstrellaRellena key={n} tamano={tamano} className="ui-estrellas__llena" />
+          <IconoEstrellaBold key={n} tamano={tamano} className="ui-estrellas__llena" />
         ) : (
           <IconoEstrella key={n} tamano={tamano} className="ui-estrellas__vacia" />
         ),

@@ -4,20 +4,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 
-import {
-  IconoLuna,
-  IconoNotificacion,
-  IconoPedidos,
-  IconoPerfil,
-  IconoUsuario,
-} from "../../iconos";
+import { IconoLuna, IconoNotificacion, IconoPedidos, IconoUsuario } from "../../iconos";
 
 import { AlternarTema } from "../base/AlternarTema";
 
 import "../estilos.css";
 
 const OPCIONES = [
-  { href: "/mi-cuenta/perfil", nombre: "Perfil", Icono: IconoPerfil },
+  { href: "/mi-cuenta/perfil", nombre: "Perfil", Icono: IconoUsuario },
   { href: "/mi-cuenta/pedidos", nombre: "Pedidos", Icono: IconoPedidos },
   {
     href: "/mi-cuenta/notificaciones",

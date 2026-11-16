@@ -92,16 +92,13 @@ export function DetallePedidoPanel({ pedidoId, onVolver }: PropsDetallePedidoPan
     pasar();
   }
 
-  const contraEntrega = pedido?.medioPago === "CONTRA_ENTREGA";
-  const siguientes: readonly Estado[] = pedido
-    ? siguientesEstados(pedido.estado, { contraEntrega })
-    : [];
+  const siguientes: readonly Estado[] = pedido ? siguientesEstados(pedido.estado) : [];
   // Pendiente de pago: el cambio a PAGADO pasa por confirmar el pago con su operacion.
   const pagoPendiente =
-    pedido?.estado === "PENDIENTE_PAGO" && !contraEntrega
+    pedido?.estado === "PENDIENTE_PAGO"
       ? pedido.pagos.find((p) => p.estado === "PENDIENTE")
       : undefined;
-  const otrasAcciones = siguientes.filter((e) => !(e === "PAGADO" && !contraEntrega));
+  const otrasAcciones = siguientes.filter((e) => e !== "PAGADO");
 
   return (
     <View style={estilos.pantalla}>

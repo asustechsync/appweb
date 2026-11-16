@@ -529,7 +529,7 @@ function RegistrarDevolucion({ codigo, puedeGestionar, onVolver }: PropsRegistra
                 etiqueta="Número de operación del reembolso"
                 valor={referencia}
                 onCambio={setReferencia}
-                requerido={p.medioPago !== "CONTRA_ENTREGA"}
+                requerido
               />
             ) : null}
           </Tarjeta>

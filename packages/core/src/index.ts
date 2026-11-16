@@ -209,7 +209,6 @@ export {
   ETIQUETAS,
   ESTADOS_PEDIDO,
   type EstadoPedido,
-  type OpcionesEstado,
   type PasoPedido,
   type SituacionPaso,
 } from "./pedidos/estados";

@@ -1,4 +1,4 @@
-import { IconoEstrella, IconoEstrellaRellena } from "@appweb/ui/iconos.nativos";
+import { IconoEstrella, IconoEstrellaBold } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { StyleSheet, View } from "react-native";
 
@@ -11,7 +11,7 @@ export function Estrellas({ nota, tamano = 14 }: { nota: number; tamano?: number
     <View style={estilos.fila} accessibilityLabel={`${nota.toFixed(1)} de 5 estrellas`}>
       {ESCALA.map((n) =>
         n <= llenas ? (
-          <IconoEstrellaRellena key={n} tamano={tamano} color={t.color.calificacion} />
+          <IconoEstrellaBold key={n} tamano={tamano} color={t.color.calificacion} />
         ) : (
           <IconoEstrella key={n} tamano={tamano} color={t.color.textoTenue} />
         ),

@@ -10,7 +10,6 @@
  * Despues  -> PagoIzipay, PagoCulqi, lo que sea: misma interfaz.
  */
 
-/** Sin contra entrega: la tienda no cobra al recibir. */
 export type MedioPago = "yape" | "plin" | "transferencia" | "tarjeta";
 
 export interface SolicitudPago {

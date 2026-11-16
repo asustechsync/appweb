@@ -3,9 +3,9 @@ import Link from "next/link";
 import { CALIFICACION, MONEDA } from "@appweb/core/formato";
 
 import {
-  IconoCamion,
+  IconoEnvio,
   IconoEstrella,
-  IconoEstrellaRellena,
+  IconoEstrellaBold,
   IconoFlash,
   IconoFlechaIzquierda,
   IconoLlama,
@@ -100,7 +100,7 @@ function NotaDeTarjeta({
   const opiniones = calificacion.total === 1 ? "opinión" : "opiniones";
   return (
     <span className={clase}>
-      <IconoEstrellaRellena tamano={12} />
+      <IconoEstrellaBold tamano={12} />
       <span aria-hidden="true">
         <span className={`${clase}-nota`}>{nota}</span> ({calificacion.total})
       </span>
@@ -289,7 +289,7 @@ export function TarjetaProducto({
         ) : null}
         {!portada && entrega ? (
           <span className="ui-tarjeta-producto__entrega">
-            <IconoCamion tamano={14} />
+            <IconoEnvio tamano={14} />
             {entrega}
           </span>
         ) : null}

@@ -51,7 +51,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const categoria = await categoriaPorSlug(slug);
-  if (categoria === null) return { title: "Categoría no encontrada" };
+  // El 404 sale dentro de <Suspense>, ya con estado 200: `noindex` lo saca de Google.
+  if (categoria === null) return { title: "Categoría no encontrada", robots: { index: false } };
 
   // `tituloSeo` se escribe completo en el panel: va como `absolute` para no
   // repetir el sufijo de la plantilla (igual que en la ficha).
@@ -60,33 +61,48 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return description !== null ? { title, description } : { title };
 }
 
-export default async function PaginaCategoria({ params, searchParams }: Props) {
+/**
+ * El `slug` se lee dentro de <Suspense>: con `partialPrefetching` el App Shell
+ * se comparte entre todos los enlaces a la ruta y no puede depender de la URL.
+ * Los datos salen de funciones cacheadas, asi que el contenido llega enseguida.
+ */
+export default function PaginaCategoria({ params, searchParams }: Props) {
+  return (
+    <main>
+      <Contenedor>
+        <Suspense fallback={<Cargando texto="Cargando categoría…" />}>
+          <Contenido params={params} searchParams={searchParams} />
+        </Suspense>
+      </Contenedor>
+    </main>
+  );
+}
+
+async function Contenido({ params, searchParams }: Props) {
   const { slug } = await params;
   const categoria = await categoriaPorSlug(slug);
   if (categoria === null) notFound();
 
   return (
-    <main>
-      <Contenedor>
-        <Migas
-          tramos={[
-            { nombre: "Inicio", href: "/" },
-            ...(categoria.padre
-              ? [
-                  {
-                    nombre: categoria.padre.nombre,
-                    href: `/categorias/${categoria.padre.slug}`,
-                  },
-                ]
-              : []),
-            { nombre: categoria.nombre },
-          ]}
-        />
-        <Suspense fallback={<Cargando texto="Cargando productos…" />}>
-          <Listado categoria={categoria} searchParams={searchParams} />
-        </Suspense>
-      </Contenedor>
-    </main>
+    <>
+      <Migas
+        tramos={[
+          { nombre: "Inicio", href: "/" },
+          ...(categoria.padre
+            ? [
+                {
+                  nombre: categoria.padre.nombre,
+                  href: `/categorias/${categoria.padre.slug}`,
+                },
+              ]
+            : []),
+          { nombre: categoria.nombre },
+        ]}
+      />
+      <Suspense fallback={<Cargando texto="Cargando productos…" />}>
+        <Listado categoria={categoria} searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }
 

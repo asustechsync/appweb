@@ -14,6 +14,8 @@
     "desplegar": "prisma migrate deploy",
     "semilla": "tsx prisma/semilla.ts",
     "demo-stock": "tsx prisma/demo-stock.ts",
+    "demo-catalogo": "tsx prisma/demo-catalogo.ts",
+    "demo-pedidos": "tsx prisma/demo-pedidos.ts",
     "demo-pagos": "tsx prisma/demo-pagos.ts",
     "demo-costos": "tsx prisma/demo-costos.ts",
     "regenerar-sku": "tsx prisma/regenerar-sku.ts",

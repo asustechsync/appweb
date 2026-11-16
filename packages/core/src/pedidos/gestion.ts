@@ -18,13 +18,10 @@ import {
 import { afectaStock, ETIQUETAS, puedePasarA, type EstadoPedido } from "./estados";
 
 /** TARJETA llega con la pasarela: hoy la base lo acepta, pero el checkout no lo ofrece. */
-export const MEDIOS_PAGO = ["YAPE", "PLIN", "TRANSFERENCIA", "CONTRA_ENTREGA", "TARJETA"] as const;
+export const MEDIOS_PAGO = ["YAPE", "PLIN", "TRANSFERENCIA", "TARJETA"] as const;
 export type MedioPagoPedido = (typeof MEDIOS_PAGO)[number];
 
-/**
- * Los medios con los que la tienda cobra hoy. CONTRA_ENTREGA sigue en la base
- * por si algun pedido viejo lo tuviera, pero ya no se ofrece ni se reporta.
- */
+/** Los medios con los que la tienda cobra hoy. */
 export const MEDIOS_DE_COBRO: readonly MedioPagoPedido[] = [
   "YAPE",
   "PLIN",
@@ -36,7 +33,6 @@ export const ETIQUETAS_MEDIO_PAGO: Record<MedioPagoPedido, string> = {
   YAPE: "Yape",
   PLIN: "Plin",
   TRANSFERENCIA: "Transferencia",
-  CONTRA_ENTREGA: "Contra entrega",
   TARJETA: "Tarjeta",
 };
 
@@ -82,7 +78,6 @@ export type RechazoPedido =
   | "pedido_no_pendiente"
   | "pago_ya_resuelto"
   | "falta_referencia"
-  | "contra_entrega_sin_pago_previo"
   | "transicion_invalida"
   | "pagado_solo_confirmando"
   | "fuera_del_despacho"
@@ -92,8 +87,6 @@ const MENSAJES: Record<RechazoPedido, string> = {
   pedido_no_pendiente: "Este pedido ya no está esperando un pago.",
   pago_ya_resuelto: "Ese pago ya fue confirmado o rechazado.",
   falta_referencia: "Escribe el número de operación del pago.",
-  contra_entrega_sin_pago_previo:
-    "Contra entrega se cobra al entregar: confirma el pedido pasándolo a Preparando.",
   transicion_invalida: "Ese cambio de estado no está permitido.",
   pagado_solo_confirmando: "Para marcarlo pagado, confirma el pago con su número de operación.",
   fuera_del_despacho: "Desde envíos solo se prepara, se envía o se entrega un pedido.",
@@ -120,7 +113,6 @@ export interface EntradaConfirmacionPago {
  * responde "¿de que transferencia salio esta plata?" si el cliente reclama.
  */
 export function revisarConfirmacionPago(entrada: EntradaConfirmacionPago): RechazoPedido | null {
-  if (entrada.medio === "CONTRA_ENTREGA") return "contra_entrega_sin_pago_previo";
   if (entrada.estadoPedido !== "PENDIENTE_PAGO") return "pedido_no_pendiente";
   if (entrada.estadoPago !== "PENDIENTE") return "pago_ya_resuelto";
   if ((entrada.referencia ?? "").trim() === "") return "falta_referencia";
@@ -141,8 +133,7 @@ export interface EntradaCambioEstado {
  */
 export function revisarCambioEstado(entrada: EntradaCambioEstado): RechazoPedido | null {
   if (entrada.hacia === "PAGADO") return "pagado_solo_confirmando";
-  const contraEntrega = entrada.medio === "CONTRA_ENTREGA";
-  if (!puedePasarA(entrada.desde, entrada.hacia, { contraEntrega })) return "transicion_invalida";
+  if (!puedePasarA(entrada.desde, entrada.hacia)) return "transicion_invalida";
   return null;
 }
 

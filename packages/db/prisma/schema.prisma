@@ -538,7 +538,6 @@ enum MedioPago {
   YAPE
   PLIN
   TRANSFERENCIA
-  CONTRA_ENTREGA
   // Llega con la pasarela; el checkout todavia no lo ofrece.
   TARJETA
 }
@@ -667,7 +666,7 @@ model Pago {
   confirmadoPor Usuario? @relation("PagoConfirmadoPor", fields: [confirmadoPorId], references: [id])
 
   // El mismo numero de operacion no puede cobrar dos pedidos. Los NULL no
-  // chocan entre si, asi que contra entrega queda libre.
+  // chocan entre si, asi que un pago sin referencia queda libre.
   @@unique([medio, referencia])
   @@index([pedidoId])
   @@index([estado, creadoEn])

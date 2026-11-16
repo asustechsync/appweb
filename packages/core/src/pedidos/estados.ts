@@ -26,25 +26,6 @@ const TRANSICIONES: Record<EstadoPedido, readonly EstadoPedido[]> = {
   CANCELADO: [],
 };
 
-/**
- * Contra entrega se cobra al final: el pedido no puede esperar un pago para
- * salir, porque el pago llega con el paquete. Se confirma directo a
- * PREPARANDO (ahi se descuenta el stock) y el cobro se registra al entregar.
- */
-const TRANSICIONES_CONTRA_ENTREGA: Record<EstadoPedido, readonly EstadoPedido[]> = {
-  ...TRANSICIONES,
-  PENDIENTE_PAGO: ["PREPARANDO", "CANCELADO"],
-};
-
-export interface OpcionesEstado {
-  /** El pedido se paga al recibirlo. */
-  contraEntrega?: boolean;
-}
-
-function tabla(opciones: OpcionesEstado) {
-  return opciones.contraEntrega ? TRANSICIONES_CONTRA_ENTREGA : TRANSICIONES;
-}
-
 export const ETIQUETAS: Record<EstadoPedido, string> = {
   PENDIENTE_PAGO: "Pendiente de pago",
   PAGADO: "Pagado",
@@ -62,19 +43,12 @@ export function tonoDeEstado(estado: EstadoPedido): "exito" | "alerta" | "error"
   return "neutro";
 }
 
-export function puedePasarA(
-  desde: EstadoPedido,
-  hacia: EstadoPedido,
-  opciones: OpcionesEstado = {},
-): boolean {
-  return tabla(opciones)[desde].includes(hacia);
+export function puedePasarA(desde: EstadoPedido, hacia: EstadoPedido): boolean {
+  return TRANSICIONES[desde].includes(hacia);
 }
 
-export function siguientesEstados(
-  desde: EstadoPedido,
-  opciones: OpcionesEstado = {},
-): readonly EstadoPedido[] {
-  return tabla(opciones)[desde];
+export function siguientesEstados(desde: EstadoPedido): readonly EstadoPedido[] {
+  return TRANSICIONES[desde];
 }
 
 export function esFinal(estado: EstadoPedido): boolean {
@@ -83,8 +57,7 @@ export function esFinal(estado: EstadoPedido): boolean {
 
 /**
  * El stock se descuenta cuando el pedido sale de "pendiente de pago" hacia
- * adelante (al pagar, o al confirmar uno contra entrega) y se devuelve al
- * cancelar uno que ya lo habia descontado.
+ * adelante (al pagar) y se devuelve al cancelar uno que ya lo habia descontado.
  */
 export function afectaStock(
   desde: EstadoPedido,

@@ -1,7 +1,7 @@
 import { MAX_POR_LINEA } from "@appweb/core/carrito";
 import { FECHA, MONEDA } from "@appweb/core/formato";
 import {
-  IconoEstrellaRellena,
+  IconoEstrellaBold,
   IconoFavorito,
   IconoFlechaIzquierda,
   IconoWhatsAppLinea,
@@ -189,7 +189,7 @@ export function DetalleProducto({ slug, onVolver, onCarrito, onMarca }: PropsDet
                     <Text style={estilos.separador}>·</Text>
                   </>
                 ) : null}
-                <IconoEstrellaRellena
+                <IconoEstrellaBold
                   tamano={12}
                   color={ficha.calificacion ? t.color.calificacion : t.color.textoTenue}
                 />

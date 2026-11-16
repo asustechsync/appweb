@@ -282,8 +282,7 @@ export function Pagos({ puedeGestionar, onVerPedido, pagoInicial = null }: Props
                 const revisable =
                   puedeGestionar &&
                   pago.estado === "PENDIENTE" &&
-                  pago.estadoPedido === "PENDIENTE_PAGO" &&
-                  pago.medio !== "CONTRA_ENTREGA";
+                  pago.estadoPedido === "PENDIENTE_PAGO";
                 const { dia, hora } = diaYHora(new Date(pago.creadoEn));
                 return (
                   <FilaMovimiento

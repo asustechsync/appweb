@@ -4,8 +4,7 @@ import Svg, { Ellipse, Path } from "react-native-svg";
 
 import type { PropsIconoNativo } from "../tipos";
 
-/** Cubo de basura: borde ovalado, cuerpo que se angosta y una marca al fondo. Dibujado a partir de trash.svg. */
-export function IconoPapelera({ tamano = 20, color }: PropsIconoNativo) {
+export function IconoPapelera({ tamano = 16, color }: PropsIconoNativo) {
   return (
     <Svg
       width={tamano}
@@ -18,9 +17,8 @@ export function IconoPapelera({ tamano = 20, color }: PropsIconoNativo) {
       strokeLinejoin="round"
       {...(color ? { color } : {})}
     >
-      <Ellipse cx="12" cy="5.5" rx="8.5" ry="2.5" />
-      <Path d="M3.5 5.5L6 19.5C6.25 20.5 7 21 8 21H16C17 21 17.75 20.5 18 19.5L20.5 5.5" />
-      <Path d="M10 17H14" />
+      <Path d="m3 4l2.303 14.077a4 4 0 0 0 2.738 3.166l.328.104a12 12 0 0 0 7.262 0l.328-.104a4 4 0 0 0 2.738-3.166L21 4" />
+      <Ellipse cx="12" cy="4" rx="9" ry="2" />
     </Svg>
   );
 }

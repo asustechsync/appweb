@@ -30,7 +30,7 @@ import {
   PilaGraficos,
   ParejaListas,
   IconoCatalogo,
-  IconoCamion,
+  IconoEnvio,
   IconoEstrella,
   IconoLibro,
   IconoPedidos,
@@ -126,11 +126,11 @@ interface SeriesDelServidor {
 }
 
 /**
- * Las series de la grafica grande. En un dia van acumuladas (cuanto llevas);
- * en Semana y Mes, por tramo (cuanto entro en cada uno), asi la linea sube y
- * baja y se nota cuando se vende mas.
+ * Las series de la grafica grande, por tramo en todos los periodos (Dia,
+ * Semana y Mes): cuanto entro en cada uno, asi la linea sube y baja y se nota
+ * cuando se vende mas.
  */
-function seriesDeLaGrafica(m: SeriesDelServidor, porTramo: boolean) {
+function seriesDeLaGrafica(m: SeriesDelServidor) {
   const actual: SeriesResumen = {
     ventas: m.serieVentas,
     pedidos: m.seriePedidos,
@@ -143,9 +143,7 @@ function seriesDeLaGrafica(m: SeriesDelServidor, porTramo: boolean) {
     ticket: m.serieTicketPrevia,
     clientesNuevos: m.serieClientesNuevosPrevia,
   };
-  return porTramo
-    ? { actual: seriesPorTramo(actual), previa: seriesPorTramo(previa) }
-    : { actual, previa };
+  return { actual: seriesPorTramo(actual), previa: seriesPorTramo(previa) };
 }
 
 /** Cuantas filas se ven por lista: es un resumen, no la seccion. */
@@ -219,18 +217,14 @@ export function Resumen({
     : 0;
   const parteRentabilidad = (valor: number) =>
     baseRentabilidad > 0 ? Math.round((Math.max(0, valor) / baseRentabilidad) * 100) : 0;
-  // Un dia concreto o el filtro Dia: acumulado. Semana y Mes: lo de cada tramo.
-  const porTramo = !fecha && periodo !== "dia";
-  const series = metricas ? seriesDeLaGrafica(metricas, porTramo) : null;
+  const series = metricas ? seriesDeLaGrafica(metricas) : null;
   // Lo que pinta la grafica segun el check: cada cifra con su serie y su formato.
   const grafica =
     metricas && series
       ? {
           ventas: {
             titulo: "Ventas",
-            etiqueta: porTramo
-              ? "Ventas por tramo del periodo contra el anterior"
-              : "Ventas acumuladas del periodo contra el anterior",
+            etiqueta: "Ventas por tramo del periodo contra el anterior",
             serie: series.actual.ventas,
             previa: series.previa.ventas,
             valor: MONEDA.format(metricas.ventas),
@@ -413,7 +407,7 @@ export function Resumen({
   const filasEnvios = enviosEnCamino.slice(0, FILAS_RESUMEN).map((pedido) => (
     <FilaResumen
       key={pedido.id}
-      marca={<IconoCamion tamano={16} />}
+      marca={<IconoEnvio tamano={16} />}
       titulo={pedido.codigo}
       subtitulo={pedido.transportista ?? "Sin transportista"}
       estado={{
@@ -533,7 +527,7 @@ export function Resumen({
                 serie={grafica.serie}
                 seriePrevia={grafica.previa}
                 titulo={grafica.titulo}
-                suavizado={!porTramo}
+                suavizado={false}
                 controles={
                   <>
                     <SelectorCalendario

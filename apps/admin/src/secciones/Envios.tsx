@@ -19,7 +19,7 @@ import {
   FilaUnida,
   Formulario,
   IconoBuscar,
-  IconoCamion,
+  IconoEnvio,
   Insignia,
   LimpiarFiltros,
   ListaConLateral,
@@ -352,7 +352,7 @@ export function Envios({ puedeTarifas }: { puedeTarifas: boolean }) {
                 return (
                   <FilaPedido
                     key={p.id}
-                    logo={<LogoIcono icono={<IconoCamion tamano={16} />} nombre="Envío" />}
+                    logo={<LogoIcono icono={<IconoEnvio tamano={16} />} nombre="Envío" />}
                     titulo={p.codigo}
                     detalle={p.destinatario}
                     contenido={`${p.distrito || p.departamento} · ${unidades} ${unidades === 1 ? "unidad" : "unidades"}`}

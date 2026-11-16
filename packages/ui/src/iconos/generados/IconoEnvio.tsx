@@ -2,7 +2,7 @@
 // Fuente: src/iconos/fuente/comercio/envio.svg
 import type { PropsIcono } from "../tipos";
 
-export function IconoEnvio({ tamano = 24, className }: PropsIcono) {
+export function IconoEnvio({ tamano = 20, className }: PropsIcono) {
   return (
     <svg
       width={tamano}

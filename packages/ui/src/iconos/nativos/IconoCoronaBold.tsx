@@ -1,10 +1,10 @@
 // GENERADO POR generar-iconos.ts — NO EDITAR A MANO. Corre: npm run ui:iconos
-// Fuente: src/iconos/fuente/interfaz/corona-rellena.svg
+// Fuente: src/iconos/fuente/interfaz/corona-bold.svg
 import Svg, { Path } from "react-native-svg";
 
 import type { PropsIconoNativo } from "../tipos";
 
-export function IconoCoronaRellena({ tamano = 16, color }: PropsIconoNativo) {
+export function IconoCoronaBold({ tamano = 16, color }: PropsIconoNativo) {
   return (
     <Svg
       width={tamano}

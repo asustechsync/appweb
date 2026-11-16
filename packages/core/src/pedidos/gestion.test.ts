@@ -51,12 +51,6 @@ describe("confirmar pago", () => {
       "pedido_no_pendiente",
     );
   });
-
-  it("contra entrega no se confirma por adelantado", () => {
-    expect(revisarConfirmacionPago({ ...pendiente, medio: "CONTRA_ENTREGA" })).toBe(
-      "contra_entrega_sin_pago_previo",
-    );
-  });
 });
 
 describe("cambiar estado", () => {
@@ -73,26 +67,16 @@ describe("cambiar estado", () => {
     );
   });
 
-  it("contra entrega pasa de pendiente a preparando", () => {
-    expect(
-      revisarCambioEstado({
-        desde: "PENDIENTE_PAGO",
-        hacia: "PREPARANDO",
-        medio: "CONTRA_ENTREGA",
-      }),
-    ).toBeNull();
+  it("un pedido pendiente no salta el pago", () => {
     expect(
       revisarCambioEstado({ desde: "PENDIENTE_PAGO", hacia: "PREPARANDO", medio: "YAPE" }),
     ).toBe("transicion_invalida");
-    expect(siguientesEstados("PENDIENTE_PAGO", { contraEntrega: true })).toEqual([
-      "PREPARANDO",
-      "CANCELADO",
-    ]);
-    expect(puedePasarA("PENDIENTE_PAGO", "PAGADO", { contraEntrega: true })).toBe(false);
+    expect(siguientesEstados("PENDIENTE_PAGO")).toEqual(["PAGADO", "CANCELADO"]);
+    expect(puedePasarA("PENDIENTE_PAGO", "PAGADO")).toBe(true);
   });
 
-  it("descuenta al confirmar contra entrega y devuelve al cancelar", () => {
-    expect(afectaStock("PENDIENTE_PAGO", "PREPARANDO")).toBe("descontar");
+  it("descuenta al pagar y devuelve al cancelar", () => {
+    expect(afectaStock("PENDIENTE_PAGO", "PAGADO")).toBe("descontar");
     expect(afectaStock("PREPARANDO", "CANCELADO")).toBe("devolver");
   });
 });

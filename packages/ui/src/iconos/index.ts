@@ -4,13 +4,9 @@ export type { PropsIcono } from "./tipos";
 
 // comercio
 export { IconoBanco } from "./generados/IconoBanco";
-export { IconoBilletera } from "./generados/IconoBilletera";
 export { IconoCaja } from "./generados/IconoCaja";
-export { IconoCamionCarga } from "./generados/IconoCamionCarga";
-export { IconoCamion } from "./generados/IconoCamion";
 export { IconoCarrito } from "./generados/IconoCarrito";
 export { IconoCatalogo } from "./generados/IconoCatalogo";
-export { IconoCategoria } from "./generados/IconoCategoria";
 export { IconoCrecimiento } from "./generados/IconoCrecimiento";
 export { IconoDevolucion } from "./generados/IconoDevolucion";
 export { IconoDolar } from "./generados/IconoDolar";
@@ -23,17 +19,13 @@ export { IconoMoneda } from "./generados/IconoMoneda";
 export { IconoPack } from "./generados/IconoPack";
 export { IconoPedidos } from "./generados/IconoPedidos";
 export { IconoPromociones } from "./generados/IconoPromociones";
-export { IconoProveedor } from "./generados/IconoProveedor";
 export { IconoTicket } from "./generados/IconoTicket";
 export { IconoTienda } from "./generados/IconoTienda";
-export { IconoVentas } from "./generados/IconoVentas";
 
 // contacto
-export { IconoAuriculares } from "./generados/IconoAuriculares";
 export { IconoCorreo } from "./generados/IconoCorreo";
 export { IconoGlobo } from "./generados/IconoGlobo";
 export { IconoLibro } from "./generados/IconoLibro";
-export { IconoOpiniones } from "./generados/IconoOpiniones";
 export { IconoPregunta } from "./generados/IconoPregunta";
 export { IconoSoporte } from "./generados/IconoSoporte";
 export { IconoTelefono } from "./generados/IconoTelefono";
@@ -44,7 +36,6 @@ export { IconoCandado } from "./generados/IconoCandado";
 export { IconoClientes } from "./generados/IconoClientes";
 export { IconoConfiguracion } from "./generados/IconoConfiguracion";
 export { IconoEscudo } from "./generados/IconoEscudo";
-export { IconoPerfil } from "./generados/IconoPerfil";
 export { IconoPremio } from "./generados/IconoPremio";
 export { IconoSalir } from "./generados/IconoSalir";
 export { IconoTarjetaPersonal } from "./generados/IconoTarjetaPersonal";
@@ -54,14 +45,13 @@ export { IconoUsuario } from "./generados/IconoUsuario";
 // interfaz
 export { IconoAyuda } from "./generados/IconoAyuda";
 export { IconoCalendario } from "./generados/IconoCalendario";
-export { IconoCamara } from "./generados/IconoCamara";
 export { IconoCerrarCirculo } from "./generados/IconoCerrarCirculo";
 export { IconoCerrarCuadrado } from "./generados/IconoCerrarCuadrado";
 export { IconoCerrar } from "./generados/IconoCerrar";
 export { IconoCopiar } from "./generados/IconoCopiar";
-export { IconoCoronaRellena } from "./generados/IconoCoronaRellena";
+export { IconoCoronaBold } from "./generados/IconoCoronaBold";
 export { IconoCorona } from "./generados/IconoCorona";
-export { IconoEstrellaRellena } from "./generados/IconoEstrellaRellena";
+export { IconoEstrellaBold } from "./generados/IconoEstrellaBold";
 export { IconoEstrella } from "./generados/IconoEstrella";
 export { IconoExportar } from "./generados/IconoExportar";
 export { IconoFlash } from "./generados/IconoFlash";
@@ -70,7 +60,7 @@ export { IconoFlechaSubida } from "./generados/IconoFlechaSubida";
 export { IconoGaleria } from "./generados/IconoGaleria";
 export { IconoLlama } from "./generados/IconoLlama";
 export { IconoLuna } from "./generados/IconoLuna";
-export { IconoMarcarCirculoRelleno } from "./generados/IconoMarcarCirculoRelleno";
+export { IconoMarcarCirculoBold } from "./generados/IconoMarcarCirculoBold";
 export { IconoMarcarCirculo } from "./generados/IconoMarcarCirculo";
 export { IconoMarcarCuadrado } from "./generados/IconoMarcarCuadrado";
 export { IconoMarcar } from "./generados/IconoMarcar";
@@ -82,6 +72,7 @@ export { IconoPapelera } from "./generados/IconoPapelera";
 export { IconoRefrescar } from "./generados/IconoRefrescar";
 export { IconoReloj } from "./generados/IconoReloj";
 export { IconoSol } from "./generados/IconoSol";
+export { IconoVerificadoBold } from "./generados/IconoVerificadoBold";
 export { IconoVerificado } from "./generados/IconoVerificado";
 
 // marcas

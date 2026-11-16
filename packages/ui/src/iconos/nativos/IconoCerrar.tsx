@@ -10,10 +10,15 @@ export function IconoCerrar({ tamano = 16, color }: PropsIconoNativo) {
       width={tamano}
       height={tamano}
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       {...(color ? { color } : {})}
     >
-      <Path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6 6.4 5Z" />
+      <Path d="M18 6 6 18" />
+      <Path d="m6 6 12 12" />
     </Svg>
   );
 }

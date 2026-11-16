@@ -22,6 +22,13 @@ export const correo: Notificaciones = crearCorreo();
  * checkout ni una recuperacion de clave. El fallo queda en el log del servidor.
  */
 export async function enviarCorreo(destino: string, asunto: string, cuerpo: string): Promise<void> {
+  // Con CORREOS_PERMITIDOS definida, nada sale a una direccion fuera de la lista:
+  // asi las cuentas de prueba nunca reciben correo de verdad.
+  const permitidos = entorno().correosPermitidos;
+  if (permitidos && !permitidos.includes(destino.trim().toLowerCase())) {
+    console.warn(`Correo a ${destino} omitido: no está en CORREOS_PERMITIDOS.`);
+    return;
+  }
   try {
     const resultado = await correo.enviar({ canal: "correo", destino, asunto, cuerpo });
     if (!resultado.enviado) console.error(`Correo a ${destino} no enviado: ${resultado.motivo}`);

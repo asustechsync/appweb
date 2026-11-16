@@ -64,8 +64,7 @@ const ETIQUETAS_BANCO: Record<string, string> = {
 };
 
 /** Como se lee cada cambio en el selector. */
-function etiquetaDeCambio(hacia: EstadoPedido, contraEntrega: boolean): string {
-  if (hacia === "PREPARANDO" && contraEntrega) return "Confirmar pedido (se cobra al entregar)";
+function etiquetaDeCambio(hacia: EstadoPedido): string {
   if (hacia === "PREPARANDO") return "Pasar a Preparando";
   if (hacia === "ENVIADO") return "Marcar como enviado";
   if (hacia === "ENTREGADO") return "Marcar como entregado";
@@ -148,11 +147,10 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
   }
 
   const p = consulta.data;
-  const contraEntrega = p.medioPago === "CONTRA_ENTREGA";
   const pagoPendiente = p.pagos.find((pago) => pago.estado === "PENDIENTE");
-  const opcionesCambio = siguientesEstados(p.estado, { contraEntrega })
+  const opcionesCambio = siguientesEstados(p.estado)
     .filter((estado) => estado !== "PAGADO")
-    .map((estado) => ({ valor: estado, etiqueta: etiquetaDeCambio(estado, contraEntrega) }));
+    .map((estado) => ({ valor: estado, etiqueta: etiquetaDeCambio(estado) }));
   const pendiente = p.estado === "PENDIENTE_PAGO";
   const trabajando = cambiar.isPending;
   const whatsappCliente = enlaceWhatsApp(
@@ -252,7 +250,7 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
         <LineaEstados pasos={pasosDelPedido(p.estado)} />
       </Tarjeta>
 
-      {pendiente && !contraEntrega ? (
+      {pendiente ? (
         // El dinero se revisa en Pagos: aqui solo se ve que el pedido espera.
         <Alerta tono="info">
           {pagoPendiente
@@ -309,11 +307,6 @@ export function DetallePedido({ pedidoId, puedeGestionar, onVolver }: PropsDetal
                 {pendiente
                   ? "El pedido se cancela y su pago pendiente ya no se acepta."
                   : "El stock vuelve al almacén. Si el cliente ya pagó, devuélvele el dinero por fuera del sistema."}
-              </Alerta>
-            ) : null}
-            {estadoNuevo === "PREPARANDO" && contraEntrega ? (
-              <Alerta tono="info">
-                Se descuenta el stock ahora. El cobro se registra al marcarlo entregado.
               </Alerta>
             ) : null}
             <Campo

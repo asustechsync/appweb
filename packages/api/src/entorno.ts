@@ -41,6 +41,8 @@ const esquema = z.object({
   RESEND_API_KEY: texto,
   CORREO_REMITENTE: texto,
   NOTIFICAR_PEDIDOS_A: texto,
+  // Lista separada por comas. Con valor, el correo solo sale a esas direcciones.
+  CORREOS_PERMITIDOS: texto,
 
   WHATSAPP_TIENDA: texto,
   WHATSAPP_MAYORISTA: texto,
@@ -58,6 +60,8 @@ export type Entorno = z.infer<typeof esquema> & {
   avisosReclamos: string | undefined;
   /** El checkout ofrece la tarjeta de prueba. Nunca en produccion. */
   tarjetaDePrueba: boolean;
+  /** Direcciones a las que se puede escribir, en minusculas. `null` = a cualquiera. */
+  correosPermitidos: string[] | null;
 };
 
 let cache: Entorno | null = null;
@@ -72,6 +76,11 @@ export function entorno(): Entorno {
     produccion,
     tarjetaDePrueba:
       !produccion && ["si", "1", "true"].includes((leido.PAGO_TARJETA_PRUEBA ?? "").toLowerCase()),
+    correosPermitidos: leido.CORREOS_PERMITIDOS
+      ? leido.CORREOS_PERMITIDOS.split(",")
+          .map((c) => c.trim().toLowerCase())
+          .filter((c) => c !== "")
+      : null,
     avisosPedidos: leido.NOTIFICAR_PEDIDOS_A,
     avisosReclamos: leido.TIENDA_CORREO ?? leido.NOTIFICAR_PEDIDOS_A,
   };

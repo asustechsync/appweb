@@ -126,6 +126,8 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       setGuardadas(depuradas);
       setVariantes(resueltas);
       setContacto(datosSesion.sesion);
+      // El DNI de la cuenta entra listo; el cliente puede cambiarlo.
+      if (datosSesion.sesion.dni) setDocumento(datosSesion.sesion.dni);
       setDirecciones(datosSesion.direcciones);
       setNivel(datosSesion.nivel);
       const principal =
@@ -206,6 +208,20 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
       }),
     [lineasCalculo, metodoElegido, cupon.aplicado, descuentoNivelPct],
   );
+
+  /**
+   * Cambia boleta <-> factura. Si el campo tiene el documento guardado del
+   * otro tipo (o esta vacio), pone el guardado del nuevo; lo que el cliente
+   * escribio a mano no se toca.
+   */
+  function elegirComprobante(tipo: TipoComprobante) {
+    const guardadoDe = (t: TipoComprobante) =>
+      (t === "factura" ? contacto?.ruc : contacto?.dni) ?? "";
+    const anterior = guardadoDe(comprobante);
+    if (documento === "" || documento === anterior) setDocumento(guardadoDe(tipo));
+    setComprobante(tipo);
+    limpiarError("documento");
+  }
 
   function limpiarError(campo: string) {
     setErrores((actual) => {
@@ -599,10 +615,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
             name="comprobante"
             value="boleta"
             checked={comprobante === "boleta"}
-            onChange={() => {
-              setComprobante("boleta");
-              limpiarError("documento");
-            }}
+            onChange={() => elegirComprobante("boleta")}
           >
             <strong>Boleta</strong>
             <span>Con tu DNI.</span>
@@ -611,10 +624,7 @@ export function CheckoutCliente({ metodos, mediosDePago }: PropsCheckoutCliente)
             name="comprobante"
             value="factura"
             checked={comprobante === "factura"}
-            onChange={() => {
-              setComprobante("factura");
-              limpiarError("documento");
-            }}
+            onChange={() => elegirComprobante("factura")}
           >
             <strong>Factura</strong>
             <span>Con el RUC de tu empresa.</span>

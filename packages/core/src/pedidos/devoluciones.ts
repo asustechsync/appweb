@@ -116,11 +116,7 @@ export function revisarDevolucion(entrada: EntradaDevolucion): RechazoDevolucion
   if (entrada.reembolso < 0 || entrada.reembolso > entrada.reembolsable + 0.005) {
     return "reembolso_excede";
   }
-  if (
-    entrada.reembolso > 0 &&
-    entrada.medio !== "CONTRA_ENTREGA" &&
-    (entrada.referencia ?? "").trim() === ""
-  ) {
+  if (entrada.reembolso > 0 && (entrada.referencia ?? "").trim() === "") {
     return "falta_referencia";
   }
   if (entrada.motivo.trim() === "") return "falta_motivo";

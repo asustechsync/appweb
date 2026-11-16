@@ -17,8 +17,8 @@ export function IconoTendenciaBaja({ tamano = 20, color }: PropsIconoNativo) {
       strokeLinejoin="round"
       {...(color ? { color } : {})}
     >
-      <Path d="M4 7.5L9.5 13L13 9.5L20 16.5" />
-      <Path d="M15 16.5H20V11.5" />
+      <Path d="M16 17h6v-6" />
+      <Path d="m22 17-8.5-8.5-5 5L2 7" />
     </Svg>
   );
 }

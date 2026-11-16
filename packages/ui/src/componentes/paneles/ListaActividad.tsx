@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from "react";
 
 import {
   IconoBanco,
-  IconoCamion,
   IconoExportar,
   IconoGaleria,
   IconoMastercard,
@@ -157,14 +156,7 @@ export function TarjetaActividad({
  * Visa y Mastercard ya tienen su logo aunque la base todavia no guarde pagos
  * con tarjeta: llegan con la pasarela, y el resumen no tendra que cambiar.
  */
-export type MedioLogo =
-  | "yape"
-  | "plin"
-  | "visa"
-  | "mastercard"
-  | "tarjeta"
-  | "transferencia"
-  | "contraEntrega";
+export type MedioLogo = "yape" | "plin" | "visa" | "mastercard" | "tarjeta" | "transferencia";
 
 export interface PropsLogoMedioPago {
   medio: MedioLogo;
@@ -190,7 +182,6 @@ export function LogoMedioPago({ medio, nombre }: PropsLogoMedioPago) {
       {medio === "mastercard" ? <IconoMastercard /> : null}
       {medio === "tarjeta" ? <IconoTarjetaPersonal tamano={16} /> : null}
       {medio === "transferencia" ? <IconoBanco /> : null}
-      {medio === "contraEntrega" ? <IconoCamion tamano={16} /> : null}
     </span>
   );
 }

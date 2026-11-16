@@ -1,0 +1,241 @@
+{
+  "comercio/banco": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "comercio/caja": {
+    "origen": "iconsax"
+  },
+  "comercio/carrito": {
+    "origen": "iconsax"
+  },
+  "comercio/catalogo": {
+    "origen": "iconsax"
+  },
+  "comercio/devolucion": {
+    "origen": "iconsax"
+  },
+  "comercio/dolar": {
+    "origen": "iconsax"
+  },
+  "comercio/envio": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "comercio/etiqueta": {
+    "origen": "iconsax"
+  },
+  "comercio/favorito": {
+    "origen": "iconsax"
+  },
+  "comercio/pack": {
+    "origen": "iconsax"
+  },
+  "comercio/pedidos": {
+    "origen": "iconsax"
+  },
+  "comercio/promociones": {
+    "origen": "iconsax"
+  },
+  "comercio/ticket": {
+    "origen": "iconsax"
+  },
+  "comercio/tienda": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "contacto/correo": {
+    "origen": "iconsax"
+  },
+  "contacto/globo": {
+    "origen": "iconsax"
+  },
+  "contacto/libro": {
+    "origen": "iconsax"
+  },
+  "contacto/pregunta": {
+    "origen": "iconsax"
+  },
+  "contacto/soporte": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "contacto/telefono": {
+    "origen": "iconsax"
+  },
+  "contacto/whats-app-linea": {
+    "origen": "iconsax"
+  },
+  "cuenta/candado": {
+    "origen": "iconsax"
+  },
+  "cuenta/clientes": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "cuenta/configuracion": {
+    "origen": "iconsax"
+  },
+  "cuenta/escudo": {
+    "origen": "iconsax"
+  },
+  "cuenta/premio": {
+    "origen": "iconsax"
+  },
+  "cuenta/salir": {
+    "origen": "iconsax"
+  },
+  "cuenta/tarjeta-personal": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "cuenta/ubicacion": {
+    "origen": "iconsax"
+  },
+  "cuenta/usuario": {
+    "origen": "iconsax"
+  },
+  "interfaz/ayuda": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "interfaz/calendario": {
+    "origen": "iconsax"
+  },
+  "interfaz/cerrar": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "interfaz/cerrar-circulo": {
+    "origen": "iconsax"
+  },
+  "interfaz/cerrar-cuadrado": {
+    "origen": "iconsax"
+  },
+  "interfaz/copiar": {
+    "origen": "iconsax"
+  },
+  "interfaz/corona": {
+    "origen": "iconsax"
+  },
+  "interfaz/corona-bold": {
+    "origen": "iconsax"
+  },
+  "interfaz/estrella": {
+    "origen": "iconsax"
+  },
+  "interfaz/estrella-bold": {
+    "origen": "iconsax"
+  },
+  "interfaz/exportar": {
+    "origen": "iconsax"
+  },
+  "interfaz/flash": {
+    "origen": "iconsax"
+  },
+  "interfaz/flecha-bajada": {
+    "origen": "iconsax"
+  },
+  "interfaz/flecha-subida": {
+    "origen": "iconsax"
+  },
+  "interfaz/galeria": {
+    "origen": "iconsax"
+  },
+  "interfaz/llama": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "interfaz/luna": {
+    "origen": "iconsax"
+  },
+  "interfaz/marcar": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "interfaz/marcar-circulo": {
+    "origen": "iconsax"
+  },
+  "interfaz/marcar-cuadrado": {
+    "origen": "iconsax"
+  },
+  "interfaz/mensaje": {
+    "origen": "iconsax"
+  },
+  "interfaz/notificacion": {
+    "origen": "iconsax"
+  },
+  "interfaz/ojo": {
+    "origen": "iconsax"
+  },
+  "interfaz/ojo-tachado": {
+    "origen": "iconsax"
+  },
+  "interfaz/papelera": {
+    "origen": "akar-icons",
+    "licencia": "MIT",
+    "via": "iconify.design"
+  },
+  "interfaz/refrescar": {
+    "origen": "iconsax"
+  },
+  "interfaz/reloj": {
+    "origen": "iconsax"
+  },
+  "interfaz/sol": {
+    "origen": "iconsax"
+  },
+  "interfaz/verificado": {
+    "origen": "iconsax"
+  },
+  "interfaz/verificado-bold": {
+    "origen": "iconsax"
+  },
+  "marcas/apple": {
+    "origen": "iconsax"
+  },
+  "marcas/google": {
+    "origen": "logos",
+    "licencia": "CC0",
+    "via": "iconify.design"
+  },
+  "marcas/mastercard": {
+    "origen": "logos",
+    "licencia": "CC0",
+    "via": "iconify.design"
+  },
+  "marcas/visa": {
+    "origen": "logos",
+    "licencia": "CC0",
+    "via": "iconify.design"
+  },
+  "navegacion/buscar": {
+    "origen": "iconsax"
+  },
+  "navegacion/flecha-abajo": {
+    "origen": "iconsax"
+  },
+  "navegacion/flecha-arriba": {
+    "origen": "iconsax"
+  },
+  "navegacion/flecha-derecha": {
+    "origen": "iconsax"
+  },
+  "navegacion/flecha-izquierda": {
+    "origen": "iconsax"
+  },
+  "navegacion/inicio": {
+    "origen": "iconsax"
+  },
+  "navegacion/opciones": {
+    "origen": "iconsax"
+  },
+  "navegacion/tendencia-alza": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  },
+  "navegacion/tendencia-baja": {
+    "origen": "lucide",
+    "licencia": "ISC"
+  }
+}

@@ -4,7 +4,7 @@ import Svg, { Circle, Path } from "react-native-svg";
 
 import type { PropsIconoNativo } from "../tipos";
 
-export function IconoEnvio({ tamano = 24, color }: PropsIconoNativo) {
+export function IconoEnvio({ tamano = 20, color }: PropsIconoNativo) {
   return (
     <Svg
       width={tamano}

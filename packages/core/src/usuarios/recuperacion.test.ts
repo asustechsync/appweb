@@ -65,13 +65,13 @@ describe("despacho", () => {
     expect(revisarDespacho({ desde: "ENVIADO", hacia: "ENTREGADO", medio: "YAPE" })).toBeNull();
   });
 
-  it("no cancela ni confirma pedidos contra entrega", () => {
+  it("no cancela ni confirma pagos desde el despacho", () => {
     expect(revisarDespacho({ desde: "PAGADO", hacia: "CANCELADO", medio: "YAPE" })).toBe(
       "fuera_del_despacho",
     );
-    expect(
-      revisarDespacho({ desde: "PENDIENTE_PAGO", hacia: "PREPARANDO", medio: "CONTRA_ENTREGA" }),
-    ).toBe("fuera_del_despacho");
+    expect(revisarDespacho({ desde: "PENDIENTE_PAGO", hacia: "PREPARANDO", medio: "YAPE" })).toBe(
+      "fuera_del_despacho",
+    );
   });
 });
 

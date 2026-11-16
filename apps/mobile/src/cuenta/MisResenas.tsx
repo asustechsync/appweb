@@ -5,7 +5,7 @@ import {
   tonoDeEstadoResena,
 } from "@appweb/core/resenas";
 import { FUENTE_NATIVA } from "@appweb/ui/fuentes.nativas";
-import { IconoEstrella, IconoEstrellaRellena } from "@appweb/ui/iconos.nativos";
+import { IconoEstrella, IconoEstrellaBold } from "@appweb/ui/iconos.nativos";
 import { tokensNativos as t } from "@appweb/ui/tokens.native";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -132,7 +132,7 @@ function TarjetaResena({ producto, onGuardada }: { producto: Producto; onGuardad
             hitSlop={4}
           >
             {n <= estrellas ? (
-              <IconoEstrellaRellena tamano={26} color={t.color.calificacion} />
+              <IconoEstrellaBold tamano={26} color={t.color.calificacion} />
             ) : (
               <IconoEstrella tamano={26} color={t.color.textoTenue} />
             )}

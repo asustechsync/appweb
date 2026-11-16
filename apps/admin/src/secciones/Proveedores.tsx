@@ -23,7 +23,7 @@ import {
   Formulario,
   IconoBuscar,
   IconoMensaje,
-  IconoProveedor,
+  IconoCaja,
   IconoTelefono,
   LimpiarFiltros,
   ListaConLateral,
@@ -197,7 +197,7 @@ export function Proveedores() {
               {visibles.map((p) => (
                 <FilaPedido
                   key={p.id}
-                  logo={<LogoIcono icono={<IconoProveedor tamano={16} />} nombre={p.nombre} />}
+                  logo={<LogoIcono icono={<IconoCaja tamano={16} />} nombre={p.nombre} />}
                   titulo={p.nombre}
                   {...(p.contacto ? { detalle: p.contacto } : {})}
                   contenido={
@@ -243,7 +243,7 @@ function CuadrosProveedor({
   return (
     <RejillaBento>
       <CuadroMonto
-        logo={<LogoIcono icono={<IconoProveedor tamano={16} />} nombre={p.nombre} />}
+        logo={<LogoIcono icono={<IconoCaja tamano={16} />} nombre={p.nombre} />}
         estado={estadoDeProveedor(p)}
         etiqueta={p.nombre}
         monto={MONEDA.format(p.comprado)}
@@ -430,7 +430,7 @@ function DetalleProveedor({
               return (
                 <FilaMovimiento
                   key={c.id}
-                  logo={<LogoIcono icono={<IconoProveedor tamano={16} />} nombre="Compra" />}
+                  logo={<LogoIcono icono={<IconoCaja tamano={16} />} nombre="Compra" />}
                   titulo={c.documento || "Compra"}
                   detalle={c.usuario}
                   subtitulo={

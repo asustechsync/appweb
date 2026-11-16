@@ -48,6 +48,9 @@ export interface ContactoCheckout {
   nombre: string;
   email: string;
   telefono: string | null;
+  // Documento guardado en la cuenta: llena el comprobante de entrada.
+  dni: string | null;
+  ruc: string | null;
 }
 
 /** El nivel del cliente, para mostrar su descuento antes de confirmar. */
@@ -69,7 +72,7 @@ export async function sesionYDireccionesCheckout(): Promise<SesionCheckout> {
   const [usuario, direcciones, estadoNivel] = await Promise.all([
     prisma.usuario.findUnique({
       where: { id: sesion.usuarioId },
-      select: { email: true, telefono: true },
+      select: { email: true, telefono: true, tipoDocumento: true, numeroDocumento: true },
     }),
     direccionesDelUsuario(sesion.usuarioId),
     nivelDeUsuario(prisma, sesion.usuarioId),
@@ -77,7 +80,13 @@ export async function sesionYDireccionesCheckout(): Promise<SesionCheckout> {
   if (!usuario) return { sesion: null, direcciones: [], nivel: null };
 
   return {
-    sesion: { nombre: sesion.nombre, email: usuario.email, telefono: usuario.telefono },
+    sesion: {
+      nombre: sesion.nombre,
+      email: usuario.email,
+      telefono: usuario.telefono,
+      dni: usuario.tipoDocumento === "DNI" ? usuario.numeroDocumento : null,
+      ruc: usuario.tipoDocumento === "RUC" ? usuario.numeroDocumento : null,
+    },
     direcciones,
     nivel: {
       nombre: estadoNivel.nivel.nombre,

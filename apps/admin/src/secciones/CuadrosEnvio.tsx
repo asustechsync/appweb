@@ -5,12 +5,11 @@ import {
   CuadroBento,
   CuadroDesglose,
   CuadroMonto,
-  IconoCamion,
+  IconoEnvio,
   IconoPack,
   IconoReloj,
   IconoTicket,
   IconoUbicacion,
-  Insignia,
   LogoIcono,
   RejillaBento,
 } from "@appweb/ui";
@@ -22,7 +21,6 @@ export interface EnvioDeCola {
   id: string;
   codigo: string;
   estado: EstadoPedido;
-  cobrarAlEntregar: boolean;
   creadoEn: string;
   destinatario: string;
   telefono: string | null;
@@ -77,7 +75,7 @@ export function CuadrosEnvio({ pedido: p, accion }: PropsCuadrosEnvio) {
   return (
     <RejillaBento>
       <CuadroMonto
-        logo={<LogoIcono icono={<IconoCamion tamano={16} />} nombre="Envío" />}
+        logo={<LogoIcono icono={<IconoEnvio tamano={16} />} nombre="Envío" />}
         estado={{ texto: ETAPA_ENVIO[p.estado] ?? p.estado, tono: tonoDeEtapa(p.estado) }}
         etiqueta={p.transportista ?? p.metodo}
         monto={p.distrito || p.departamento}
@@ -99,9 +97,6 @@ export function CuadrosEnvio({ pedido: p, accion }: PropsCuadrosEnvio) {
         titulo="Destino"
         ancho="ancho"
         detalle={p.referencia ? `${p.direccion} · Ref.: ${p.referencia}` : p.direccion}
-        {...(p.cobrarAlEntregar
-          ? { marca: <Insignia tono="alerta">Cobrar al entregar</Insignia> }
-          : {})}
         {...(p.telefono ? { cifras: [{ valor: p.telefono, etiqueta: "teléfono" }] } : {})}
       >
         {p.destinatario}

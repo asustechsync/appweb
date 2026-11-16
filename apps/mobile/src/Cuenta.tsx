@@ -6,7 +6,7 @@ import {
   IconoEstrella,
   IconoFlechaDerecha,
   IconoPedidos,
-  IconoPerfil,
+  IconoUsuario,
   IconoSalir,
   IconoUbicacion,
   type PropsIconoNativo,
@@ -47,7 +47,7 @@ const MENU: { pantalla: PantallaCuenta; texto: string; Icono: ComponentType<Prop
     { pantalla: "pedidos", texto: "Mis pedidos", Icono: IconoPedidos },
     { pantalla: "resenas", texto: "Mis reseñas", Icono: IconoEstrella },
     { pantalla: "direcciones", texto: "Mis direcciones", Icono: IconoUbicacion },
-    { pantalla: "datos", texto: "Mis datos", Icono: IconoPerfil },
+    { pantalla: "datos", texto: "Mis datos", Icono: IconoUsuario },
     { pantalla: "clave", texto: "Contraseña", Icono: IconoCandado },
   ];
 

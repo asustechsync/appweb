@@ -350,8 +350,21 @@
   line-height: var(--espacio-5);
 }
 .ui-grafico-tendencia__resumen-dato--historial .ui-grafico-tendencia__resumen-valor {
-  font-size: var(--tipo-tamano-2xl);
+  font-size: var(--tipo-tamano-3xl);
   line-height: var(--tipo-altura-apretada);
+}
+/* Con las barras a la derecha el texto se queda con la mitad de la tarjeta: la
+   cifra baja un paso para no cortarse ("S/ 0...."). Con sitio de sobra vuelve a
+   la cifra grande. */
+@container (min-width: 13rem) {
+  .ui-grafico-tendencia__resumen-dato--historial .ui-grafico-tendencia__resumen-valor {
+    font-size: var(--tipo-tamano-2xl);
+  }
+}
+@container (min-width: 22rem) {
+  .ui-grafico-tendencia__resumen-dato--historial .ui-grafico-tendencia__resumen-valor {
+    font-size: var(--tipo-tamano-3xl);
+  }
 }
 .ui-grafico-tendencia__escala {
   position: relative;
